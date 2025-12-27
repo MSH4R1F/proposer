@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **BAILII Scraper** - Production-ready async Python scraper for UK First-tier Tribunal decisions
+  - Scrapes Property Chamber cases from https://www.bailii.org/uk/cases/UKFTT/PC/
+  - Downloads both HTML and PDF for each case
+  - Keyword-based categorization (deposit, adjacent, other)
+  - SQLite progress tracking with resume capability
+  - Rate limiting (1 req/sec) with exponential backoff retries
+  - CLI with flexible year selection (`--years`, `--year-range`)
+
+### New Files
+- `scripts/scrapers/` - BAILII scraper package
+  - `config.py` - Keywords, settings, rate limits
+  - `models.py` - Pydantic data models for cases
+  - `parsers.py` - HTML parsing for year index and case pages
+  - `downloader.py` - Async HTTP client with retries
+  - `progress.py` - SQLite progress tracking
+  - `bailii_scraper.py` - Main CLI orchestrator
+- `scripts/requirements.txt` - Scraper dependencies
+- `data/raw/bailii/` - Output directory structure
+
 ### Planned Features
 - RAG pipeline for tribunal decision retrieval
 - Knowledge Graph extraction from case facts
@@ -75,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Configure authentication (Supabase Auth)
 
 ### Phase 2: Data Pipeline (Sprint 1-2)
-- [ ] Implement PDF ingestion from GOV.UK
+- [x] Implement BAILII scraper for tribunal decisions
+- [ ] Implement PDF parsing and text extraction
 - [ ] Build RAG pipeline with ChromaDB/Pinecone
 - [ ] Implement hybrid search (keyword + semantic)
 - [ ] Add PII redaction system

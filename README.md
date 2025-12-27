@@ -235,13 +235,23 @@ proposer/
 │   └── legal-db/               # Database schemas
 │
 ├── data/
-│   ├── raw/                    # Scraped tribunal PDFs
+│   ├── raw/                    # Scraped tribunal decisions
+│   │   └── bailii/             # BAILII scraper output
+│   │       ├── deposit-cases/  # Deposit dispute cases
+│   │       ├── adjacent-cases/ # Related cases (RRO, HMO)
+│   │       └── other-cases/    # All other tribunal cases
 │   ├── processed/              # Cleaned, structured cases
 │   ├── embeddings/             # ChromaDB vector store
 │   └── test-cases/             # Evaluation datasets
 │
 ├── scripts/
-│   ├── scrape-tribunals.py     # Data collection
+│   ├── scrapers/               # Data collection scrapers
+│   │   ├── bailii_scraper.py   # BAILII tribunal decisions scraper
+│   │   ├── config.py           # Keywords and settings
+│   │   ├── models.py           # Pydantic data models
+│   │   ├── parsers.py          # HTML parsing
+│   │   ├── downloader.py       # Async HTTP client
+│   │   └── progress.py         # SQLite progress tracking
 │   ├── build-embeddings.py     # Generate vector store
 │   └── evaluate-predictions.py # Accuracy testing
 │
@@ -289,7 +299,9 @@ npm run dev
 npm run db:migrate
 
 # Scrape new tribunal decisions
-python scripts/scrape-tribunals.py --year 2024
+python -m scripts.scrapers.bailii_scraper --years 2024
+python -m scripts.scrapers.bailii_scraper --year-range 2020-2025
+python -m scripts.scrapers.bailii_scraper --resume  # Resume interrupted scrape
 
 # Rebuild embeddings
 python scripts/build-embeddings.py --source data/processed

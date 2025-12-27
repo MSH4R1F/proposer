@@ -1,0 +1,36 @@
+# BAILII Scraper Dependencies
+# Python 3.10+ required
+
+# Async HTTP client
+aiohttp>=3.9.0
+
+# HTML parsing
+beautifulsoup4>=4.12.0
+lxml>=5.0.0  # Faster HTML parser backend
+
+# Data validation
+pydantic>=2.5.0
+
+# Retry logic with exponential backoff
+tenacity>=8.2.0
+
+# Async file I/O
+aiofiles>=23.2.0
+
+# Progress bars
+tqdm>=4.66.0
+
+# Rate limiting
+aiolimiter>=1.1.0
+
+# SQLite async support
+aiosqlite>=0.19.0
+
+# CLI argument parsing
+click>=8.1.0
+
+# Logging with structured output
+structlog>=23.2.0
+
+# For robots.txt parsing
+robotexclusionrulesparser>=1.7.0

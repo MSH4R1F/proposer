@@ -271,3 +271,4 @@ docker-volumes/
 # Backup files
 *.orig
 
+data/
