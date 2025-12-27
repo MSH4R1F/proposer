@@ -200,6 +200,12 @@ This will start:
 ### Quick Test
 
 ```bash
+# Test BAILII scraper (dry run - lists cases without downloading)
+python -m scripts.scrapers.bailii_scraper --dry-run --years 2024
+
+# View scraper statistics
+python -m scripts.scrapers.bailii_scraper --stats
+
 # Run the RAG pipeline on a test case
 cd apps/api
 python -m pytest tests/test_rag.py -v
