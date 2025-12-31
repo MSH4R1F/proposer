@@ -8,92 +8,181 @@ A production-ready RAG system that retrieves semantically similar tribunal cases
 
 ## Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           RAG PIPELINE ARCHITECTURE                              │
-└─────────────────────────────────────────────────────────────────────────────────┘
+### High-Level System Architecture
 
-                              ┌──────────────────┐
-                              │   PDF Documents  │
-                              │  (BAILII cases)  │
-                              └────────┬─────────┘
-                                       │
-                    ┌──────────────────▼──────────────────┐
-                    │         INGESTION PIPELINE          │
-                    └──────────────────┬──────────────────┘
-                                       │
-           ┌───────────────────────────┼───────────────────────────┐
-           │                           │                           │
-           ▼                           ▼                           ▼
-┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
-│  PDF Extractor   │      │   Text Cleaner   │      │  Legal Chunker   │
-│    (PyMuPDF)     │─────▶│  (PII Redaction) │─────▶│ (Section-aware)  │
-│                  │      │  (Normalization) │      │  (~500 tokens)   │
-└──────────────────┘      └──────────────────┘      └────────┬─────────┘
-                                                             │
-                                                             ▼
-                                                  ┌──────────────────┐
-                                                  │ OpenAI Embeddings│
-                                                  │ (text-embedding- │
-                                                  │   3-small)       │
-                                                  └────────┬─────────┘
-                                                           │
-                         ┌─────────────────────────────────┼─────────────────────────────────┐
-                         │                                 │                                 │
-                         ▼                                 ▼                                 │
-              ┌──────────────────┐              ┌──────────────────┐                         │
-              │    ChromaDB      │              │   BM25 Index     │                         │
-              │  (Vector Store)  │              │ (Keyword Search) │                         │
-              │  Semantic Search │              │  Legal Terms     │                         │
-              └────────┬─────────┘              └────────┬─────────┘                         │
-                       │                                 │                                   │
-                       └─────────────┬───────────────────┘                                   │
-                                     │                                                       │
-                                     ▼                                                       │
-                         ┌──────────────────────┐                                            │
-                         │   RETRIEVAL QUERY    │◀───────────────────────────────────────────┘
-                         │   "case facts..."    │
-                         └──────────┬───────────┘
-                                    │
-           ┌────────────────────────┼────────────────────────┐
-           │                        │                        │
-           ▼                        ▼                        │
-┌──────────────────┐     ┌──────────────────┐               │
-│ Semantic Search  │     │   BM25 Search    │               │
-│  (Cosine Sim.)   │     │   (TF-IDF)       │               │
-└────────┬─────────┘     └────────┬─────────┘               │
-         │                        │                          │
-         └───────────┬────────────┘                          │
-                     │                                       │
-                     ▼                                       │
-          ┌──────────────────┐                               │
-          │  Hybrid Fusion   │                               │
-          │ (Reciprocal Rank │                               │
-          │    Fusion)       │                               │
-          └────────┬─────────┘                               │
-                   │                                         │
-                   ▼                                         │
-          ┌──────────────────┐                               │
-          │  Custom Reranker │                               │
-          │ - Issue Match    │                               │
-          │ - Temporal Score │                               │
-          │ - Region Match   │                               │
-          │ - Evidence Match │                               │
-          └────────┬─────────┘                               │
-                   │                                         │
-                   ▼                                         │
-          ┌──────────────────┐                               │
-          │   Uncertainty    │                               │
-          │   Detection      │                               │
-          │ (Confidence <0.5)│                               │
-          └────────┬─────────┘                               │
-                   │                                         │
-                   ▼                                         │
-          ┌──────────────────┐                               │
-          │   TOP 5 CASES    │                               │
-          │  with scores &   │                               │
-          │  explanations    │                               │
-          └──────────────────┘
+```mermaid
+flowchart TB
+    subgraph Input["📄 Data Sources"]
+        PDF[("PDF Documents<br/>(BAILII Cases)")]
+    end
+
+    subgraph Ingestion["⚙️ Ingestion Pipeline"]
+        Extract["PDF Extractor<br/>(PyMuPDF)"]
+        Clean["Text Cleaner<br/>(PII Redaction)"]
+        Chunk["Legal Chunker<br/>(Section-Aware)"]
+        Embed["OpenAI Embeddings<br/>(text-embedding-3-small)"]
+    end
+
+    subgraph Storage["💾 Storage Layer"]
+        Chroma[("ChromaDB<br/>Vector Store")]
+        BM25[("BM25 Index<br/>Keyword Search")]
+    end
+
+    subgraph Retrieval["🔍 Retrieval Pipeline"]
+        Query["User Query"]
+        Semantic["Semantic Search<br/>(Cosine Similarity)"]
+        Keyword["BM25 Search<br/>(TF-IDF)"]
+        Fusion["Hybrid Fusion<br/>(RRF k=60)"]
+        Rerank["Custom Reranker<br/>(Domain-Specific)"]
+        Confidence["Uncertainty<br/>Detection"]
+    end
+
+    subgraph Output["📊 Results"]
+        Results["Top 5 Cases<br/>+ Scores<br/>+ Explanations"]
+    end
+
+    PDF --> Extract --> Clean --> Chunk --> Embed
+    Embed --> Chroma
+    Chunk --> BM25
+
+    Query --> Semantic
+    Query --> Keyword
+    Chroma --> Semantic
+    BM25 --> Keyword
+    Semantic --> Fusion
+    Keyword --> Fusion
+    Fusion --> Rerank --> Confidence --> Results
+```
+
+### Ingestion Pipeline (Document Processing)
+
+```mermaid
+flowchart LR
+    subgraph Extract["1️⃣ Extraction"]
+        PDF["📄 PDF File"] --> PyMuPDF["PyMuPDF"]
+        PyMuPDF --> RawText["Raw Text +<br/>Metadata"]
+    end
+
+    subgraph Clean["2️⃣ Cleaning"]
+        RawText --> Encoding["Fix Encoding<br/>(UTF-8)"]
+        Encoding --> PII["Redact PII<br/>(Postcodes, Phones)"]
+        PII --> Normalize["Normalize<br/>Whitespace"]
+    end
+
+    subgraph Chunk["3️⃣ Chunking"]
+        Normalize --> Detect["Detect Sections<br/>(Background/Facts/<br/>Reasoning/Decision)"]
+        Detect --> Split["Split into<br/>~500 token chunks"]
+        Split --> Overlap["Add 50 token<br/>overlap"]
+    end
+
+    subgraph Store["4️⃣ Storage"]
+        Overlap --> OpenAI["OpenAI API<br/>Embed"]
+        OpenAI --> ChromaDB["ChromaDB<br/>(Vectors)"]
+        Overlap --> BM25Index["BM25 Index<br/>(Keywords)"]
+    end
+
+    style Extract fill:#e1f5fe
+    style Clean fill:#fff3e0
+    style Chunk fill:#e8f5e9
+    style Store fill:#fce4ec
+```
+
+### Retrieval Pipeline (Query Processing)
+
+```mermaid
+flowchart TB
+    Query["🔎 User Query<br/>'deposit not protected<br/>within 30 days'"]
+
+    subgraph Embed["1️⃣ Query Embedding"]
+        Query --> QueryEmbed["OpenAI API<br/>text-embedding-3-small"]
+    end
+
+    subgraph Search["2️⃣ Dual Search"]
+        QueryEmbed --> SemanticSearch["Semantic Search<br/>(ChromaDB)"]
+        Query --> BM25Search["BM25 Search<br/>(Keyword Match)"]
+
+        SemanticSearch --> SemResults["Top 20 by<br/>Cosine Similarity"]
+        BM25Search --> BM25Results["Top 20 by<br/>TF-IDF Score"]
+    end
+
+    subgraph Fuse["3️⃣ Hybrid Fusion"]
+        SemResults --> RRF["Reciprocal Rank<br/>Fusion (k=60)"]
+        BM25Results --> RRF
+        RRF --> |"0.7 × semantic +<br/>0.3 × keyword"| Combined["Combined<br/>Candidates"]
+    end
+
+    subgraph Rerank["4️⃣ Domain Reranking"]
+        Combined --> IssueMatch["Issue Type<br/>Match (0.4)"]
+        Combined --> Temporal["Temporal<br/>Score (0.2)"]
+        Combined --> Region["Region<br/>Match (0.1)"]
+        Combined --> Evidence["Evidence<br/>Match (0.2)"]
+
+        IssueMatch --> FinalScore
+        Temporal --> FinalScore
+        Region --> FinalScore
+        Evidence --> FinalScore
+        FinalScore["Weighted<br/>Final Score"]
+    end
+
+    subgraph Output["5️⃣ Output"]
+        FinalScore --> ConfCheck{"Confidence<br/>> 0.5?"}
+        ConfCheck -->|Yes| Results["✅ Top 5 Cases<br/>with Explanations"]
+        ConfCheck -->|No| Uncertain["⚠️ Uncertain<br/>Flag + Reason"]
+    end
+
+    style Query fill:#bbdefb
+    style Results fill:#c8e6c9
+    style Uncertain fill:#ffcdd2
+```
+
+### Component Interaction
+
+```mermaid
+graph LR
+    subgraph Extractors["extractors/"]
+        PE[pdf_extractor.py]
+        TC[text_cleaner.py]
+    end
+
+    subgraph Chunking["chunking/"]
+        LC[legal_chunker.py]
+    end
+
+    subgraph Embeddings["embeddings/"]
+        BE[base.py]
+        OE[openai_embeddings.py]
+    end
+
+    subgraph VectorStore["vectorstore/"]
+        BV[base.py]
+        CS[chroma_store.py]
+    end
+
+    subgraph Retrieval["retrieval/"]
+        BM[bm25_index.py]
+        HR[hybrid_retriever.py]
+        RR[reranker.py]
+    end
+
+    Pipeline[pipeline.py] --> PE
+    Pipeline --> TC
+    Pipeline --> LC
+    Pipeline --> OE
+    Pipeline --> CS
+    Pipeline --> BM
+    Pipeline --> HR
+    Pipeline --> RR
+
+    CLI[cli.py] --> Pipeline
+
+    OE -.->|implements| BE
+    CS -.->|implements| BV
+    HR --> CS
+    HR --> BM
+    HR --> RR
+
+    style Pipeline fill:#fff9c4
+    style CLI fill:#e1bee7
 ```
 
 ---

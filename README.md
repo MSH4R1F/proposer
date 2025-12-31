@@ -97,8 +97,15 @@ Our system combines two AI approaches:
 - **Domain Reranking**: Prioritizes by issue type, recency, region, evidence similarity
 - **Uncertainty Detection**: Flags when no similar cases found
 
-```
-Query → Embed → [Semantic Search + BM25] → RRF Fusion → Rerank → Top 5 Cases
+```mermaid
+flowchart LR
+    A["🔎 Query"] --> B["Embed"]
+    B --> C["Semantic Search"]
+    B --> D["BM25 Search"]
+    C --> E["RRF Fusion"]
+    D --> E
+    E --> F["Rerank"]
+    F --> G["✅ Top 5 Cases"]
 ```
 
 **Knowledge Graph (KG)** 🔜 *Coming Sprint 3-4*
