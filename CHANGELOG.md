@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **RAG Engine** (`packages/rag_engine/`) - Complete retrieval-augmented generation pipeline for tribunal case search
+  - **PDF Extraction**: PyMuPDF-based text extraction from tribunal decision PDFs
+  - **Text Cleaning**: PII redaction (postcodes, phones, emails), encoding normalization
+  - **Legal Chunking**: Section-aware chunking (~500 tokens) that detects Background/Facts/Reasoning/Decision sections
+  - **OpenAI Embeddings**: text-embedding-3-small integration with async batching, retry logic, cost tracking
+  - **ChromaDB Vector Store**: Persistent storage with metadata filtering (year, region, case_type)
+  - **BM25 Keyword Index**: rank-bm25 implementation for legal terminology matching
+  - **Hybrid Retrieval**: Reciprocal Rank Fusion (RRF) combining semantic + keyword search
+  - **Custom Reranker**: Domain-specific re-ranking by issue type, temporal relevance, region, evidence similarity
+  - **Uncertainty Detection**: Confidence scoring with explicit "uncertain" flags for novel cases
+  - **CLI Interface**: Commands for ingest, query, stats, and PDF extraction testing
+
 - **BAILII Scraper** - Production-ready async Python scraper for UK First-tier Tribunal decisions
   - Scrapes Property Chamber cases from https://www.bailii.org/uk/cases/UKFTT/PC/
   - Downloads both HTML and PDF for each case
@@ -17,6 +29,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CLI with flexible year selection (`--years`, `--year-range`)
 
 ### New Files
+- `packages/rag_engine/` - RAG pipeline package (~2,400 lines of code)
+  - `config.py` - Configuration and Pydantic data models (CaseDocument, DocumentChunk, RetrievalResult, QueryResult)
+  - `pipeline.py` - Main RAG orchestrator with ingest/retrieve methods
+  - `cli.py` - Click-based CLI with ingest, query, stats, clear commands
+  - `extractors/pdf_extractor.py` - PyMuPDF text extraction
+  - `extractors/text_cleaner.py` - PII redaction and text normalization
+  - `chunking/legal_chunker.py` - Section-aware legal document chunking
+  - `embeddings/base.py` - Abstract embedding interface (Pinecone-ready)
+  - `embeddings/openai_embeddings.py` - OpenAI text-embedding-3-small implementation
+  - `vectorstore/base.py` - Abstract vector store interface
+  - `vectorstore/chroma_store.py` - ChromaDB implementation with metadata filtering
+  - `retrieval/bm25_index.py` - BM25 keyword search index
+  - `retrieval/hybrid_retriever.py` - RRF fusion of semantic + BM25
+  - `retrieval/reranker.py` - Domain-specific re-ranking
+  - `README.md` - Comprehensive documentation with architecture diagram
+- `scripts/rag.py` - CLI runner script
 - `scripts/scrapers/` - BAILII scraper package
   - `config.py` - Keywords, settings, rate limits
   - `models.py` - Pydantic data models for cases
@@ -24,11 +52,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `downloader.py` - Async HTTP client with retries
   - `progress.py` - SQLite progress tracking
   - `bailii_scraper.py` - Main CLI orchestrator
-- `scripts/requirements.txt` - Scraper dependencies
-- `data/raw/bailii/` - Output directory structure
+- `data/raw/bailii/` - Output directory structure (447 cases scraped)
+
+### Technical Decisions
+- **Hybrid Search**: Combines semantic embeddings with BM25 keyword search using Reciprocal Rank Fusion
+- **text-embedding-3-small**: Chosen over large variant for 6.5x cost savings with minimal accuracy loss
+- **ChromaDB**: Local development with abstract interface for future Pinecone migration
+- **Section-aware chunking**: Preserves legal document structure (Background/Facts/Reasoning/Decision)
+- **Domain reranking**: Weights issue type match (0.4), temporal relevance (0.2), region (0.1), evidence (0.2)
 
 ### Planned Features
-- RAG pipeline for tribunal decision retrieval
 - Knowledge Graph extraction from case facts
 - Hybrid RAG + KG prediction engine
 - Shadow mediator for real-time negotiation
@@ -96,10 +129,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Phase 2: Data Pipeline (Sprint 1-2)
 - [x] Implement BAILII scraper for tribunal decisions
-- [ ] Implement PDF parsing and text extraction
-- [ ] Build RAG pipeline with ChromaDB/Pinecone
-- [ ] Implement hybrid search (keyword + semantic)
-- [ ] Add PII redaction system
+- [x] Implement PDF parsing and text extraction (PyMuPDF)
+- [x] Build RAG pipeline with ChromaDB (Pinecone-ready interface)
+- [x] Implement hybrid search (BM25 + semantic with RRF fusion)
+- [x] Add PII redaction system (postcodes, phones, emails)
 - [ ] Create basic prediction engine
 
 ### Phase 3: Knowledge Graph (Sprint 3-4)

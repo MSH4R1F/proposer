@@ -91,15 +91,20 @@ Instead of static forms, an AI agent asks dynamic questions:
 ### 2️⃣ **Hybrid Analysis**
 Our system combines two AI approaches:
 
-**Knowledge Graph (KG)**: Structured facts
+**Retrieval-Augmented Generation (RAG)** ✅ *Implemented*
+- **Hybrid Search**: Combines semantic embeddings (OpenAI) + BM25 keyword search
+- **Section-Aware**: Chunks legal documents by Background/Facts/Reasoning/Decision
+- **Domain Reranking**: Prioritizes by issue type, recency, region, evidence similarity
+- **Uncertainty Detection**: Flags when no similar cases found
+
+```
+Query → Embed → [Semantic Search + BM25] → RRF Fusion → Rerank → Top 5 Cases
+```
+
+**Knowledge Graph (KG)** 🔜 *Coming Sprint 3-4*
 - Nodes: Parties, Evidence, Issues, Claims
 - Edges: "Evidence supports claim", "Event occurred before tenancy end"
 - Ensures logical consistency
-
-**Retrieval-Augmented Generation (RAG)**: Legal precedent
-- Searches 500+ First-tier Tribunal decisions
-- Finds cases with similar fact patterns
-- Semantic search + re-ranking for relevance
 
 ### 3️⃣ **Transparent Prediction**
 The system generates a **Reasoning Trace**:
@@ -206,12 +211,18 @@ python -m scripts.scrapers.bailii_scraper --dry-run --years 2024
 # View scraper statistics
 python -m scripts.scrapers.bailii_scraper --stats
 
-# Run the RAG pipeline on a test case
-cd apps/api
-python -m pytest tests/test_rag.py -v
+# Test PDF extraction (no API key needed)
+python scripts/rag.py test-extract data/raw/bailii/adjacent-cases/2023/LON_00BK_HMF_2022_0227/decision.pdf
 
-# Check prediction accuracy on evaluation set
-python scripts/evaluate_predictions.py --test-set data/test-cases/gold-standard.json
+# Ingest PDFs into RAG index (requires OPENAI_API_KEY)
+export OPENAI_API_KEY=sk-your-key-here
+python scripts/rag.py ingest --pdf-dir data/raw/bailii
+
+# Query for similar cases
+python scripts/rag.py query "tenant deposit not protected within 30 days"
+
+# View RAG index statistics
+python scripts/rag.py stats
 ```
 
 ---
@@ -235,7 +246,14 @@ proposer/
 │
 ├── packages/
 │   ├── shared/                 # Shared TypeScript types
-│   ├── rag-engine/             # RAG pipeline (Python)
+│   ├── rag_engine/             # RAG pipeline (Python) ✅ IMPLEMENTED
+│   │   ├── extractors/         # PDF extraction, text cleaning
+│   │   ├── chunking/           # Legal document chunking
+│   │   ├── embeddings/         # OpenAI embeddings
+│   │   ├── vectorstore/        # ChromaDB storage
+│   │   ├── retrieval/          # Hybrid search, reranking
+│   │   ├── pipeline.py         # Main orchestrator
+│   │   └── cli.py              # CLI interface
 │   ├── kg-builder/             # Knowledge Graph (Python)
 │   ├── llm-orchestrator/       # LLM agents (Python)
 │   └── legal-db/               # Database schemas
@@ -304,13 +322,27 @@ npm run dev
 # Run database migrations
 npm run db:migrate
 
+# ===== DATA COLLECTION =====
 # Scrape new tribunal decisions
 python -m scripts.scrapers.bailii_scraper --years 2024
 python -m scripts.scrapers.bailii_scraper --year-range 2020-2025
 python -m scripts.scrapers.bailii_scraper --resume  # Resume interrupted scrape
 
-# Rebuild embeddings
-python scripts/build-embeddings.py --source data/processed
+# ===== RAG PIPELINE =====
+# Ingest PDFs into vector store
+python scripts/rag.py ingest --pdf-dir data/raw/bailii
+
+# Query for similar cases
+python scripts/rag.py query "deposit not protected section 213"
+python scripts/rag.py query "cleaning claim" --region LON --year 2023
+python scripts/rag.py query "damage without inventory" --json-output
+
+# View index statistics
+python scripts/rag.py stats
+
+# Clear and rebuild index
+python scripts/rag.py clear
+python scripts/rag.py ingest --pdf-dir data/raw/bailii
 
 # Type checking
 npm run type-check
