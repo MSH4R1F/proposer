@@ -213,6 +213,12 @@ class RAGConfig(BaseModel):
         description="ChromaDB collection name"
     )
 
+    # Memory optimization
+    bm25_lite_mode: bool = Field(
+        default=False,
+        description="Use lite mode for BM25 index (lower RAM for 8000+ cases)"
+    )
+
     @field_validator("openai_api_key")
     @classmethod
     def validate_api_key(cls, v: str) -> str:

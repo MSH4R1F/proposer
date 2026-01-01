@@ -64,7 +64,7 @@ class RAGPipeline:
         )
         self.embeddings = OpenAIEmbeddings(config=self.config)
         self.vectorstore = ChromaStore(config=self.config)
-        self.bm25_index = BM25Index()
+        self.bm25_index = BM25Index(lite_mode=self.config.bm25_lite_mode)
         self.reranker = Reranker()
 
         # Hybrid retriever (initialized after index is ready)
@@ -434,7 +434,7 @@ class RAGPipeline:
     async def clear_index(self) -> None:
         """Clear all indexed data."""
         await self.vectorstore.delete_collection()
-        self.bm25_index = BM25Index()
+        self.bm25_index = BM25Index(lite_mode=self.config.bm25_lite_mode)
 
         if self.config.bm25_index_path.exists():
             self.config.bm25_index_path.unlink()

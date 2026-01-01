@@ -513,10 +513,109 @@ Query String
 ### Scalability Notes
 
 - **Current**: Optimized for ~500 cases (thesis MVP)
+- **8000+ cases**: Use lite mode for BM25 index (see below)
 - **Future**: For production (10k+ cases):
   - Migrate to Pinecone for managed scaling
   - Add embedding caching layer
   - Consider async ingestion queue
+
+---
+
+## Scaling to 8000+ Cases
+
+### Memory Considerations
+
+The RAG pipeline has two main memory consumers:
+
+| Component | Full Mode | Lite Mode | Notes |
+|-----------|-----------|-----------|-------|
+| **ChromaDB** | ~50MB/1000 cases | Same | Persistent, loads on demand |
+| **BM25 Index** | ~4-6 GB (8000 cases) | ~2-3 GB | In-memory for fast search |
+| **DocumentChunks** | ~100 bytes/chunk | ~0 (not stored) | Full objects vs IDs only |
+
+### RAM Estimates for 8000 Cases (~80,000 chunks)
+
+```
+Full Mode:
+├── BM25 tokenized docs:    ~2.0 GB (500 tokens × 80k chunks × 50 bytes/token)
+├── DocumentChunk objects:  ~1.5 GB (80k chunks × 20KB avg)
+├── ChromaDB (on-disk):     ~400 MB
+└── Total RAM:              ~4-6 GB
+
+Lite Mode:
+├── BM25 tokenized docs:    ~2.0 GB (same)
+├── Chunk IDs + metadata:   ~160 MB (80k × 200 bytes)
+├── Chunk texts (strings):  ~800 MB (80k × 10KB avg)
+├── ChromaDB (on-disk):     ~400 MB
+└── Total RAM:              ~2-3 GB
+```
+
+### Using Lite Mode
+
+For large datasets (8000+ cases), enable lite mode to reduce RAM usage by ~40%:
+
+```bash
+# CLI: Use --lite-mode flag
+python scripts/rag.py --lite-mode ingest --pdf-dir data/raw/bailii
+python scripts/rag.py --lite-mode query "deposit not protected"
+
+# View mode in stats
+python scripts/rag.py stats
+# Output: Mode: lite (memory-efficient)
+```
+
+```python
+# Python API: Set bm25_lite_mode=True
+from rag_engine import RAGPipeline, RAGConfig
+
+config = RAGConfig(
+    bm25_lite_mode=True,  # Enable lite mode
+    # ... other settings
+)
+pipeline = RAGPipeline(config)
+```
+
+### What Lite Mode Does
+
+1. **Stores less data**: Only chunk IDs, minimal metadata, and texts (no full Pydantic objects)
+2. **Reconstructs on demand**: Creates DocumentChunk objects during search from stored data
+3. **Same search quality**: No impact on BM25 or hybrid search accuracy
+4. **Smaller pickle file**: Faster save/load of BM25 index
+
+### Recommendations by Dataset Size
+
+| Cases | Chunks (est.) | Recommendation | Expected RAM |
+|-------|---------------|----------------|--------------|
+| <500 | <5,000 | Full mode | <1 GB |
+| 500-2000 | 5,000-20,000 | Full mode | 1-2 GB |
+| 2000-5000 | 20,000-50,000 | Either | 2-4 GB |
+| 5000-10000 | 50,000-100,000 | **Lite mode** | 3-5 GB |
+| 10000+ | 100,000+ | Lite mode + consider Pinecone | 5+ GB |
+
+### Additional Optimizations for Large Datasets
+
+1. **Increase batch size for ingestion**:
+   ```bash
+   python scripts/rag.py ingest --pdf-dir data/raw/bailii --batch-size 50
+   ```
+
+2. **Use `--skip-existing` (default)** to avoid re-embedding:
+   ```bash
+   python scripts/rag.py ingest --pdf-dir data/raw/bailii --skip-existing
+   ```
+
+3. **Consider sharding by year** for very large datasets:
+   ```bash
+   # Ingest year by year
+   python scripts/rag.py ingest --pdf-dir data/raw/bailii/2023
+   python scripts/rag.py ingest --pdf-dir data/raw/bailii/2024
+   ```
+
+4. **Monitor with stats**:
+   ```bash
+   python scripts/rag.py stats
+   # Shows: indexed_documents, total_tokens, mode
+   ```
 
 ---
 

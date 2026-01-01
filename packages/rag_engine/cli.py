@@ -55,8 +55,13 @@ def run_async(coro):
     is_flag=True,
     help="Enable verbose logging"
 )
+@click.option(
+    "--lite-mode",
+    is_flag=True,
+    help="Use lite mode for BM25 index (recommended for 8000+ cases, uses ~40% less RAM)"
+)
 @click.pass_context
-def cli(ctx, data_dir: str, verbose: bool):
+def cli(ctx, data_dir: str, verbose: bool, lite_mode: bool):
     """RAG Engine CLI for tribunal case retrieval."""
     ctx.ensure_object(dict)
 
@@ -68,7 +73,8 @@ def cli(ctx, data_dir: str, verbose: bool):
     ctx.obj["config"] = RAGConfig(
         data_dir=Path(data_dir),
         chroma_persist_dir=Path(data_dir) / "embeddings",
-        bm25_index_path=Path(data_dir) / "embeddings" / "bm25_index.pkl"
+        bm25_index_path=Path(data_dir) / "embeddings" / "bm25_index.pkl",
+        bm25_lite_mode=lite_mode
     )
 
 
@@ -257,6 +263,7 @@ def stats(ctx):
     # BM25 stats
     bm25 = stats.get("bm25", {})
     click.echo("\nBM25 Index:")
+    click.echo(f"  Mode: {'lite (memory-efficient)' if bm25.get('lite_mode') else 'full'}")
     click.echo(f"  Indexed documents: {bm25.get('indexed_documents', 0):,}")
     click.echo(f"  Unique cases: {bm25.get('unique_case_references', 0)}")
     if bm25.get("avg_tokens_per_doc"):
