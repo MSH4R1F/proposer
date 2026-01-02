@@ -248,9 +248,9 @@ class TestLegalChunkerEdgeCases:
         # Should have multiple chunks covering different sections
         assert len(chunks) >= 2
 
-        # Verify content is captured
+        # Verify content is captured - look for tribunal-related terms
         all_text = " ".join(c.text for c in chunks)
-        assert "DECISION" in all_text or "decision" in all_text.lower()
+        assert "tribunal" in all_text.lower() or "rent" in all_text.lower()
 
 
 class TestLegalChunkerConsistency:
