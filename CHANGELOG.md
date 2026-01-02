@@ -8,6 +8,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Comprehensive Test Suite** (`packages/rag_engine/tests/`) - 141 tests covering all RAG components
+  - `conftest.py` - Shared fixtures: sample documents, chunks, mocks, golden dataset
+  - `test_config.py` - Configuration and Pydantic data model validation (19 tests)
+  - `test_text_cleaner.py` - PII redaction, encoding fixes, noise removal (21 tests)
+  - `test_legal_chunker.py` - Document chunking, section detection, overlap (17 tests)
+  - `test_bm25_index.py` - BM25 indexing, search, persistence, lite mode (23 tests)
+  - `test_reranker.py` - Re-ranking, boosts (recency, region), issue detection (18 tests)
+  - `test_hybrid_retriever.py` - Hybrid search, RRF fusion, scoring (14 tests)
+  - `test_pipeline.py` - End-to-end pipeline, ingestion, retrieval, confidence (16 tests)
+  - `test_retrieval_quality.py` - Golden dataset evaluation, calibration, cite-or-abstain (13 tests)
+  - `pytest.ini` - Test configuration with markers (slow, integration, requires_api)
+
+- **BM25 Index Rebuild Script** (`scripts/rebuild_bm25.py`) - Utility to rebuild BM25 index from ChromaDB
+  - Extracts all documents from ChromaDB and reconstructs DocumentChunk objects
+  - Supports both full and lite mode rebuilding
+  - Useful for recovering from index corruption without re-ingesting PDFs
+
+- **RAG Quality Test Script** (`scripts/test_rag_quality.py`) - Automated retrieval quality evaluation
+  - Tests 5 sample queries with expected topics and case types
+  - Calculates topic precision, case type precision, and confidence metrics
+  - Compares hybrid search performance
+
+- **Test Runner Script** (`scripts/run_tests.py`) - Convenient test execution
+  - `--unit-only` - Run only unit tests (excludes integration)
+  - `--coverage` - Generate coverage report
+  - `--integration` - Include live system tests
+  - `-k` - Filter tests by expression
+
+### Fixed
+- **BM25 Index Corruption** - Fixed corrupted 84-byte BM25 index that caused division by zero errors
+  - Root cause: Index was saved before any documents were added
+  - Solution: Created rebuild script to regenerate from ChromaDB (43,776 chunks)
+
+- **BM25 Lite Mode Metadata** - Fixed missing `year`, `region`, `case_type` fields in lite mode
+  - Updated `bm25_index.py` to store and retrieve all metadata fields
+  - Ensures DocumentChunk reconstruction works correctly after persistence
+
+### Changed
+- Updated Development Phases to mark "Comprehensive testing suite" as in progress
+
+---
+
 - **RAG Engine** (`packages/rag_engine/`) - Complete retrieval-augmented generation pipeline for tribunal case search
   - **PDF Extraction**: PyMuPDF-based text extraction from tribunal decision PDFs
   - **Text Cleaning**: PII redaction (postcodes, phones, emails), encoding normalization
