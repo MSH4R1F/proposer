@@ -257,8 +257,43 @@ def stats(ctx):
     click.echo("\nVector Store (ChromaDB):")
     click.echo(f"  Collection: {vs.get('collection_name', 'N/A')}")
     click.echo(f"  Total chunks: {vs.get('total_chunks', 0):,}")
-    click.echo(f"  Years: {vs.get('sample_years', [])}")
-    click.echo(f"  Regions: {vs.get('sample_regions', [])}")
+    
+    # Show unique cases if available
+    if vs.get('unique_cases'):
+        click.echo(f"  Unique cases: {vs.get('unique_cases', 0):,}")
+        avg_chunks = vs.get('total_chunks', 0) / vs.get('unique_cases', 1)
+        click.echo(f"  Avg chunks/case: {avg_chunks:.1f}")
+    
+    # Show year distribution
+    if vs.get('year_distribution'):
+        click.echo(f"\n  Year Distribution:")
+        year_dist = vs['year_distribution']
+        total = sum(year_dist.values())
+        for year in sorted(year_dist.keys()):
+            count = year_dist[year]
+            percentage = (count / total) * 100 if total > 0 else 0
+            bar = "█" * int(percentage / 3)
+            click.echo(f"    {year}: {count:6,} chunks ({percentage:5.1f}%) {bar}")
+    elif vs.get('years'):
+        click.echo(f"  Years: {vs.get('years', [])}")
+    
+    # Show region distribution
+    if vs.get('region_distribution'):
+        click.echo(f"\n  Region Distribution:")
+        region_dist = vs['region_distribution']
+        total = sum(region_dist.values())
+        for region in sorted(region_dist.keys()):
+            count = region_dist[region]
+            percentage = (count / total) * 100 if total > 0 else 0
+            click.echo(f"    {region}: {count:5,} chunks ({percentage:5.1f}%)")
+    elif vs.get('regions'):
+        click.echo(f"  Regions: {vs.get('regions', [])}")
+    
+    # Show top case types
+    if vs.get('top_case_types'):
+        click.echo(f"\n  Top Case Types:")
+        for case_type, count in list(vs['top_case_types'].items())[:5]:
+            click.echo(f"    {case_type}: {count:,} chunks")
 
     # BM25 stats
     bm25 = stats.get("bm25", {})

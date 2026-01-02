@@ -231,28 +231,60 @@ class ChromaStore(BaseVectorStore):
         """Get collection statistics."""
         count = self._collection.count()
 
-        # Get sample of metadata to understand data distribution
-        sample_results = self._collection.peek(limit=100)
-
-        years = set()
-        regions = set()
-        case_types = set()
-
-        if sample_results.get("metadatas"):
-            for meta in sample_results["metadatas"]:
-                if meta.get("year"):
-                    years.add(meta["year"])
-                if meta.get("region"):
-                    regions.add(meta["region"])
-                if meta.get("case_type"):
-                    case_types.add(meta["case_type"])
+        # Get full statistics by scanning all chunks
+        # This ensures accuracy for year/region distributions
+        from collections import Counter
+        
+        years = []
+        regions = []
+        case_types = []
+        case_refs = set()
+        
+        if count == 0:
+            # Empty collection
+            pass
+        else:
+            # Scan all chunks in batches for accurate statistics
+            batch_size = 5000
+            logger.info(
+                "collecting_stats",
+                total_chunks=count,
+                message="Scanning all chunks for accurate statistics..."
+            )
+            
+            for offset in range(0, count, batch_size):
+                results = self._collection.get(
+                    limit=min(batch_size, count - offset),
+                    offset=offset,
+                    include=["metadatas"]
+                )
+                
+                if results.get("metadatas"):
+                    for meta in results["metadatas"]:
+                        if meta.get("year"):
+                            years.append(meta["year"])
+                        if meta.get("region"):
+                            regions.append(meta["region"])
+                        if meta.get("case_type"):
+                            case_types.append(meta["case_type"])
+                        if meta.get("case_reference"):
+                            case_refs.add(meta["case_reference"])
+        
+        # Calculate distributions
+        year_counts = Counter(years)
+        region_counts = Counter(regions)
+        case_type_counts = Counter(case_types)
 
         return {
             "collection_name": self._collection_name,
             "total_chunks": count,
-            "sample_years": sorted(years),
-            "sample_regions": sorted(regions),
-            "sample_case_types": sorted(case_types),
+            "unique_cases": len(case_refs),
+            "years": sorted(set(years)),
+            "year_distribution": dict(sorted(year_counts.items())),
+            "regions": sorted(set(regions)),
+            "region_distribution": dict(sorted(region_counts.items())),
+            "case_types": sorted(set(case_types)),
+            "top_case_types": dict(case_type_counts.most_common(10)),
         }
 
     async def chunk_exists(self, chunk_id: str) -> bool:
