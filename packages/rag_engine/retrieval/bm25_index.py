@@ -101,6 +101,9 @@ class BM25Index:
                     "case_reference": chunk.case_reference,
                     "section_type": chunk.section_type,
                     "chunk_index": chunk.chunk_index,
+                    "year": chunk.year,
+                    "region": chunk.region,
+                    "case_type": chunk.case_type,
                 })
         else:
             # Full mode: store complete DocumentChunk objects
@@ -161,13 +164,16 @@ class BM25Index:
             if scores[idx] > 0:  # Only include documents with non-zero scores
                 if self._lite_mode:
                     # Reconstruct minimal DocumentChunk from stored data
+                    meta = self._chunk_metadata[idx]
                     chunk = DocumentChunk(
                         chunk_id=self._chunk_ids[idx],
-                        case_reference=self._chunk_metadata[idx]["case_reference"],
+                        case_reference=meta["case_reference"],
                         text=self._chunk_texts[idx],
-                        section_type=self._chunk_metadata[idx]["section_type"],
-                        chunk_index=self._chunk_metadata[idx]["chunk_index"],
-                        metadata={},
+                        section_type=meta["section_type"],
+                        chunk_index=meta["chunk_index"],
+                        year=meta.get("year", 2020),
+                        region=meta.get("region"),
+                        case_type=meta.get("case_type"),
                     )
                 else:
                     chunk = self._documents[idx]
@@ -316,13 +322,16 @@ class BM25Index:
         idx = self._chunk_id_to_index.get(chunk_id)
         if idx is not None:
             if self._lite_mode:
+                meta = self._chunk_metadata[idx]
                 return DocumentChunk(
                     chunk_id=self._chunk_ids[idx],
-                    case_reference=self._chunk_metadata[idx]["case_reference"],
+                    case_reference=meta["case_reference"],
                     text=self._chunk_texts[idx],
-                    section_type=self._chunk_metadata[idx]["section_type"],
-                    chunk_index=self._chunk_metadata[idx]["chunk_index"],
-                    metadata={},
+                    section_type=meta["section_type"],
+                    chunk_index=meta["chunk_index"],
+                    year=meta.get("year", 2020),
+                    region=meta.get("region"),
+                    case_type=meta.get("case_type"),
                 )
             else:
                 return self._documents[idx]
