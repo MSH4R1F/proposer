@@ -8,6 +8,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- **LLM Orchestrator Package** (`packages/llm_orchestrator/`) - Conversational intake agents and prediction engine
+  - **Core Data Models** (`models/`)
+    - `case_file.py` - CaseFile with PropertyDetails, TenancyDetails, EvidenceItem, ClaimedAmount
+    - `conversation.py` - ConversationState, Message, IntakeStage management
+    - `prediction.py` - PredictionResult, ReasoningStep, Citation, IssuePrediction
+  - **Claude Client** (`clients/claude_client.py`) - Anthropic API integration with fallback, retry, cost tracking
+  - **Intake Agent** (`agents/intake_agent.py`) - 10-stage conversational intake with role detection
+  - **Prediction Engine** (`agents/prediction_agent.py`) - RAG + LLM synthesis with cite-or-abstain rule
+  - **Fact Extractor** (`extractors/fact_extractor.py`) - LLM-based structured fact extraction
+  - **Evidence Processor** (`extractors/evidence_processor.py`) - PDF text extraction, image description
+  - **Prompt Templates** (`prompts/`)
+    - Separate tenant and landlord interview flows
+    - Fact extraction prompts with confidence scoring
+    - Prediction synthesis with JSON schema output
+  - **CLI** (`cli.py`) - Interactive chat interface for testing intake flow
+
+- **Knowledge Graph Builder** (`packages/kg_builder/`) - Structured case representation
+  - **Node Types** (`models/nodes.py`) - Party, Property, Lease, Evidence, Event, Issue, ClaimedAmount
+  - **Edge Types** (`models/edges.py`) - Evidence_Supports, Event_Before, Party_Claims, etc.
+  - **KnowledgeGraph** (`models/graph.py`) - Graph container with path finding, node queries
+  - **GraphBuilder** (`builders/graph_builder.py`) - CaseFile to KnowledgeGraph conversion
+  - **Validators** (`builders/validators.py`) - Temporal logic, evidence chain validation
+  - **JSON Storage** (`storage/json_store.py`) - File-based persistence (Neo4j-ready)
+
+- **FastAPI Application** (`apps/api/`) - REST API for the mediation system
+  - **Routers**
+    - `/chat` - Conversational intake endpoints (start, message, session)
+    - `/evidence` - File upload to Supabase Storage
+    - `/predictions` - Outcome prediction generation
+    - `/cases` - Case management
+  - **Services**
+    - `intake_service.py` - Session management, conversation orchestration
+    - `prediction_service.py` - RAG + KG + LLM prediction pipeline
+    - `storage_service.py` - Supabase/local file storage
+  - OpenAPI documentation at `/docs`
+  - Health check endpoint at `/health`
+
+- **New Scripts**
+  - `scripts/intake.py` - CLI runner for intake agent testing
+  - `scripts/api.py` - FastAPI server runner
+
+- **Root requirements.txt** - Consolidated dependencies for all packages
+
 - **Comprehensive Test Suite** (`packages/rag_engine/tests/`) - 141 tests covering all RAG components
   - `conftest.py` - Shared fixtures: sample documents, chunks, mocks, golden dataset
   - `test_config.py` - Configuration and Pydantic data model validation (19 tests)
