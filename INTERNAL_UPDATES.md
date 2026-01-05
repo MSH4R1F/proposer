@@ -4,6 +4,141 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-01-05 - Next.js Frontend Implementation
+
+### Overview
+
+Implemented complete Next.js 14+ frontend with shadcn/ui for the legal mediation system:
+- **Chat Interface**: 10-stage conversational intake with role selection
+- **Prediction Display**: Full results page with reasoning traces and citations
+
+### Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **UI Library**: shadcn/ui + Tailwind CSS
+- **Language**: TypeScript
+- **State Management**: React hooks + localStorage
+
+### New Package Created: `apps/web/`
+
+```
+apps/web/
+├── app/
+│   ├── layout.tsx              # Root layout with Inter font
+│   ├── globals.css             # Tailwind + CSS variables
+│   ├── providers.tsx           # Client providers
+│   ├── page.tsx                # Landing page
+│   ├── not-found.tsx           # 404 page
+│   ├── (chat)/
+│   │   ├── layout.tsx          # Chat layout
+│   │   ├── page.tsx            # New session
+│   │   └── [sessionId]/page.tsx # Resume session
+│   └── prediction/
+│       └── [caseId]/page.tsx   # Prediction results
+├── components/
+│   ├── ui/                     # 11 shadcn components
+│   ├── chat/                   # 9 chat components
+│   ├── prediction/             # 12 prediction components
+│   └── shared/                 # 5 shared components
+├── lib/
+│   ├── api/                    # API client
+│   ├── hooks/                  # React hooks
+│   ├── types/                  # TypeScript types
+│   ├── constants/              # Stage mappings
+│   └── utils/                  # Formatters, storage
+└── [config files]
+```
+
+### Key Components
+
+#### Chat Components (9 files)
+- `ChatContainer.tsx` - Main wrapper with state management
+- `ChatHeader.tsx` - Session info, stage, completeness
+- `MessageList.tsx` - Scrollable message container
+- `MessageBubble.tsx` - User/assistant message styling
+- `ChatInput.tsx` - Input field with send button
+- `RoleSelector.tsx` - Tenant/Landlord selection buttons
+- `ProgressIndicator.tsx` - 10-stage visual stepper
+- `CompletenessBar.tsx` - Progress percentage bar
+- `TypingIndicator.tsx` - Loading animation
+
+#### Prediction Components (12 files)
+- `PredictionCard.tsx` - Main results wrapper
+- `OutcomeDisplay.tsx` - Win/Loss/Split visualization
+- `ConfidenceGauge.tsx` - Circular confidence meter
+- `SettlementRange.tsx` - Financial summary
+- `IssuePredictionList.tsx` - Per-issue breakdown
+- `IssuePredictionCard.tsx` - Single issue card
+- `ReasoningTrace.tsx` - Expandable reasoning steps
+- `ReasoningStep.tsx` - Single step with citations
+- `CitationCard.tsx` - Case citation display
+- `StrengthsWeaknesses.tsx` - Key points lists
+- `LegalDisclaimer.tsx` - Prominent warning box
+- `PredictionSkeleton.tsx` - Loading skeleton
+
+### API Integration
+
+Frontend integrates with FastAPI backend at `http://localhost:8000`:
+
+```typescript
+// Chat flow
+POST /chat/start           → { session_id, greeting, stage }
+POST /chat/set-role        → { response, stage, completeness, case_file }
+POST /chat/message         → { response, stage, completeness, case_file }
+GET  /chat/session/{id}    → { session_id, stage, completeness, messages }
+
+// Predictions
+POST /predictions/generate → { prediction_id, overall_outcome, confidence, ... }
+```
+
+### Key Features
+
+1. **Landing Page** (`/`)
+   - Hero section with value proposition
+   - Feature cards explaining the process
+   - Statistics (500+ cases, 75% accuracy, 10 min)
+   - Call-to-action buttons
+
+2. **Chat Interface** (`/chat`)
+   - Role selection buttons after greeting
+   - Progress indicator showing 10 stages
+   - Completeness bar (0-100%)
+   - Auto-scroll to new messages
+   - Session persistence via localStorage
+
+3. **Prediction Display** (`/prediction/[caseId]`)
+   - Overall outcome with confidence gauge
+   - Settlement range display
+   - Key strengths/weaknesses lists
+   - Per-issue breakdown with reasoning
+   - Expandable reasoning trace
+   - Case citations with quotes
+   - Legal disclaimer prominently displayed
+
+### How to Run
+
+```bash
+cd apps/web
+npm install
+npm run dev
+# Visit http://localhost:3000
+```
+
+Ensure FastAPI backend is running at `http://localhost:8000`.
+
+### Files Created
+
+**Total: 60+ files**
+- Configuration: 8 files
+- App pages: 6 files
+- Types/API/Utils: 12 files
+- UI components: 11 files
+- Chat components: 9 files
+- Prediction components: 12 files
+- Shared components: 5 files
+
+---
+
 ## 2026-01-05 - LLM Orchestrator, Knowledge Graph & API Implementation
 
 ### Overview

@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Next.js Frontend** (`apps/web/`) - Complete web application for the mediation system
+  - **Landing Page** - Hero section, feature cards, statistics, call-to-action
+  - **Chat Interface** - 10-stage conversational intake with role selection
+    - Role selector (Tenant/Landlord buttons)
+    - Progress indicator showing intake stages
+    - Completeness bar (0-100%)
+    - Message bubbles with typing indicators
+    - Auto-scroll and session persistence (localStorage)
+  - **Prediction Display** - Full results page with transparent reasoning
+    - Outcome display with confidence gauge
+    - Settlement range and financial summary
+    - Per-issue breakdown with individual predictions
+    - Expandable reasoning trace with citations
+    - Key strengths/weaknesses lists
+    - Legal disclaimer prominently displayed
+  - **Components** (60+ files)
+    - 11 shadcn/ui base components (Button, Card, Progress, Badge, etc.)
+    - 9 chat components (ChatContainer, MessageBubble, RoleSelector, etc.)
+    - 12 prediction components (PredictionCard, ReasoningTrace, CitationCard, etc.)
+    - 5 shared components (Header, Footer, LoadingSpinner, ErrorMessage)
+  - **API Integration** - Full integration with FastAPI backend
+    - Chat API (start, set-role, message, session)
+    - Predictions API (generate, get)
+  - **Tech Stack**: Next.js 14+, TypeScript, shadcn/ui, Tailwind CSS
+
 - **LLM Orchestrator Package** (`packages/llm_orchestrator/`) - Conversational intake agents and prediction engine
   - **Core Data Models** (`models/`)
     - `case_file.py` - CaseFile with PropertyDetails, TenancyDetails, EvidenceItem, ClaimedAmount
@@ -231,9 +256,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 4: Frontend & UX (Sprint 5-6)
 - [ ] Build authentication flows
 - [ ] Create case dashboard
-- [ ] Implement intake chat interface
-- [ ] Design reasoning trace visualization
+- [x] Implement intake chat interface
+- [x] Design reasoning trace visualization
 - [ ] Add case status tracking
+- [x] Build landing page with CTA
+- [x] Create prediction results page
 
 ### Phase 5: Mediation Features (Sprint 7-8)
 - [ ] Implement shadow mediator agent

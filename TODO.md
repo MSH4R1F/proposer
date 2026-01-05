@@ -177,16 +177,34 @@ python scripts/api.py
 
 ---
 
-## 📱 Frontend (Future)
+## 📱 Frontend
 
 ### 11. Web Application
-**Status**: TODO
+**Status**: ✅ DONE
 
-**Features**:
-- User case intake (chat interface)
-- Query similar cases
-- View predictions with reasoning traces
-- Mediation interface
+**Completed**:
+- [x] Next.js 14+ with App Router setup
+- [x] shadcn/ui + Tailwind CSS styling
+- [x] Landing page with hero, features, CTA sections
+- [x] Chat interface with 10-stage intake flow
+- [x] Role selection (Tenant/Landlord buttons)
+- [x] Progress indicator and completeness bar
+- [x] Prediction display with reasoning traces
+- [x] Confidence gauge and outcome visualization
+- [x] Per-issue breakdown with citations
+- [x] Legal disclaimer display
+- [x] Session persistence (localStorage)
+- [x] API integration with FastAPI backend
+
+**Location**: `apps/web/`
+
+**Run with**:
+```bash
+cd apps/web
+npm install
+npm run dev
+# Visit http://localhost:3000
+```
 
 ---
 
@@ -313,6 +331,10 @@ python scripts/api.py
 - [x] Write User Guide (`docs/USER_GUIDE.md`)
 - [x] Write API Documentation (`docs/API_DOCUMENTATION.md`)
 - [x] Create package READMEs with architecture diagrams
+- [x] **Build Next.js Frontend** (`apps/web/`) - Chat interface + Prediction display
+- [x] Implement 10-stage conversational intake UI
+- [x] Create prediction results page with reasoning traces
+- [x] Add shadcn/ui components (60+ files created)
 
 ---
 
