@@ -33,6 +33,18 @@ class IntakeAgent(BaseAgent):
     Guides users (tenant or landlord) through a structured
     interview to collect case facts, adapting questions
     based on their role and previous answers.
+
+    Role Identification:
+        The user's role (tenant/landlord) is always set explicitly
+        via the set_user_role() method, called from the frontend
+        when the user clicks a role selection button. The agent
+        does not infer role from natural language.
+
+    Typical Flow:
+        1. Frontend calls start_conversation() -> agent sends greeting
+        2. Frontend shows "I'm a tenant" / "I'm a landlord" buttons
+        3. User clicks button -> frontend calls set_user_role()
+        4. Agent advances to BASIC_DETAILS and collects case info
     """
 
     # Stage transition requirements
@@ -89,14 +101,12 @@ class IntakeAgent(BaseAgent):
         # Add user message to history
         conversation.add_user_message(user_message)
 
-        # Handle first message - check for role identification
+        # Handle stage transitions at GREETING
+        # Role is always set explicitly via /chat/set-role endpoint from frontend
         if conversation.current_stage == IntakeStage.GREETING:
-            role = self._detect_role(user_message)
-            if role:
-                conversation.case_file.user_role = role
+            if conversation.role_explicitly_set:
                 conversation.advance_stage(IntakeStage.BASIC_DETAILS)
-            else:
-                conversation.advance_stage(IntakeStage.ROLE_IDENTIFICATION)
+            # If role not set, stay at GREETING - frontend should call /chat/set-role
 
         # Extract facts from the message
         extraction_result = await self.extractor.extract_facts(
@@ -154,8 +164,54 @@ class IntakeAgent(BaseAgent):
 
         return greeting, conversation
 
+    async def set_user_role(
+        self,
+        conversation: ConversationState,
+        role: PartyRole,
+    ) -> Tuple[str, ConversationState]:
+        """
+        Explicitly set the user's role (for button-triggered UI flows).
+
+        This method supports UI flows where the user clicks a "I'm a tenant"
+        or "I'm a landlord" button instead of typing their role. It sets
+        the role, advances the stage appropriately, and generates a
+        role-appropriate response.
+
+        Args:
+            conversation: Current conversation state
+            role: The user's role (TENANT or LANDLORD)
+
+        Returns:
+            Tuple of (confirmation_message, updated_conversation_state)
+        """
+        # Set the role explicitly
+        conversation.set_role(role)
+
+        # If we're at GREETING or ROLE_IDENTIFICATION, advance to BASIC_DETAILS
+        if conversation.current_stage in (IntakeStage.GREETING, IntakeStage.ROLE_IDENTIFICATION):
+            conversation.advance_stage(IntakeStage.BASIC_DETAILS)
+
+        # Generate a role-appropriate response to continue the conversation
+        response = await self._generate_response(conversation)
+        conversation.add_assistant_message(response)
+
+        logger.info(
+            "user_role_set_explicitly",
+            session_id=conversation.session_id,
+            role=role.value,
+            stage=conversation.current_stage.value,
+        )
+
+        return response, conversation
+
     def _detect_role(self, message: str) -> Optional[PartyRole]:
-        """Detect if the user has identified their role."""
+        """
+        Detect if the user has identified their role from message text.
+
+        Note: This method is deprecated and not used in the main flow.
+        Role is always set explicitly via set_user_role() from the frontend.
+        Kept for potential fallback/testing purposes.
+        """
         message_lower = message.lower()
 
         tenant_indicators = [
@@ -199,9 +255,10 @@ class IntakeAgent(BaseAgent):
         cf = conversation.case_file
         current = conversation.current_stage
 
-        # If role not yet determined, stay there
+        # Role is always set explicitly via /chat/set-role endpoint from frontend
+        # Once set, advance to BASIC_DETAILS
         if current == IntakeStage.ROLE_IDENTIFICATION:
-            if cf.user_role:
+            if conversation.role_explicitly_set:
                 return IntakeStage.BASIC_DETAILS
             return current
 

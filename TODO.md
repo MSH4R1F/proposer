@@ -145,7 +145,7 @@ python scripts/rag.py ingest --pdf-dir data/raw/bailii --skip-existing
 - [x] Generate outcome predictions with reasoning traces
 - [x] Implement cite-or-abstain rule
 - [x] Add trigger button in UI to call LLM Orchestrator from FastAPI
-- [ ] Refactor role identification logic in intake agent to work with button-triggered flows (i.e., explicit API support for detecting landlord vs tenant)
+- [x] Refactor role identification logic in intake agent to work with button-triggered flows (i.e., explicit API support for detecting landlord vs tenant)
 
 **Package**: `packages/llm_orchestrator/`
 

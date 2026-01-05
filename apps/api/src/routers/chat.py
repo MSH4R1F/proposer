@@ -18,7 +18,6 @@ class ChatMessageRequest(BaseModel):
     """Request to send a chat message."""
     session_id: str = Field(..., description="Session ID for the conversation")
     message: str = Field(..., description="User's message")
-    role: Optional[str] = Field(None, description="User role (tenant/landlord) - required for first message")
 
 
 class ChatMessageResponse(BaseModel):
@@ -34,7 +33,7 @@ class ChatMessageResponse(BaseModel):
 
 class StartSessionRequest(BaseModel):
     """Request to start a new chat session."""
-    role: Optional[str] = Field(None, description="User role (tenant/landlord)")
+    pass  # No parameters needed - role is set via /chat/set-role
 
 
 class StartSessionResponse(BaseModel):
@@ -42,6 +41,23 @@ class StartSessionResponse(BaseModel):
     session_id: str
     greeting: str
     stage: str
+
+
+class SetRoleRequest(BaseModel):
+    """Request to explicitly set user role."""
+    session_id: str = Field(..., description="Session ID for the conversation")
+    role: str = Field(..., description="User role: 'tenant' or 'landlord'")
+
+
+class SetRoleResponse(BaseModel):
+    """Response from setting user role."""
+    session_id: str
+    response: str
+    stage: str
+    completeness: float
+    is_complete: bool
+    case_file: Dict
+    role_set: bool
 
 
 class SessionStatusResponse(BaseModel):
@@ -62,13 +78,17 @@ async def start_session(
     """
     Start a new intake conversation session.
 
-    Optionally specify the user role (tenant/landlord).
-    Returns a session ID and initial greeting.
+    Returns a session ID and initial greeting. After receiving the greeting,
+    the frontend should display role selection buttons ("I'm a tenant" /
+    "I'm a landlord") and call POST /chat/set-role when clicked.
+
+    Flow:
+        1. POST /chat/start -> get session_id and greeting
+        2. POST /chat/set-role -> set tenant/landlord, get first question
+        3. POST /chat/message -> continue conversation
     """
     try:
-        greeting, session_id, stage = await intake_service.start_session(
-            role=request.role
-        )
+        greeting, session_id, stage = await intake_service.start_session()
 
         return StartSessionResponse(
             session_id=session_id,
@@ -87,14 +107,16 @@ async def send_message(
     """
     Send a message in the intake conversation.
 
-    First message should include role (tenant/landlord) if not set in start.
+    The user's role must be set via POST /chat/set-role before sending
+    messages. If role is not set, the conversation will remain at the
+    GREETING stage.
+
     Returns the agent's response and updated case file state.
     """
     try:
         result = await intake_service.process_message(
             session_id=request.session_id,
             message=request.message,
-            role=request.role,
         )
 
         return ChatMessageResponse(
@@ -105,6 +127,55 @@ async def send_message(
             is_complete=result["is_complete"],
             case_file=result["case_file"],
             suggested_actions=result.get("suggested_actions", []),
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/set-role", response_model=SetRoleResponse)
+async def set_role(
+    request: SetRoleRequest,
+    intake_service: IntakeService = Depends(get_intake_service),
+):
+    """
+    Set the user's role (required before data collection can begin).
+
+    This endpoint MUST be called after starting a session and before
+    sending messages. The frontend should display "I'm a tenant" and
+    "I'm a landlord" buttons, and call this endpoint when clicked.
+
+    The role is always set explicitly from the frontend - there is no
+    automatic role detection from natural language.
+
+    Flow:
+        1. POST /chat/start -> get session_id and greeting
+        2. POST /chat/set-role -> set tenant/landlord, get first question
+        3. POST /chat/message -> continue conversation
+
+    The role must be either "tenant" or "landlord".
+    """
+    if request.role not in ("tenant", "landlord"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'"
+        )
+
+    try:
+        result = await intake_service.set_role(
+            session_id=request.session_id,
+            role=request.role,
+        )
+
+        return SetRoleResponse(
+            session_id=request.session_id,
+            response=result["response"],
+            stage=result["stage"],
+            completeness=result["completeness"],
+            is_complete=result["is_complete"],
+            case_file=result["case_file"],
+            role_set=result["role_set"],
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

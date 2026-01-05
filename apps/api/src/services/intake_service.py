@@ -47,21 +47,17 @@ class IntakeService:
 
         logger.info("intake_service_initialized")
 
-    async def start_session(
-        self, role: Optional[str] = None
-    ) -> tuple[str, str, str]:
+    async def start_session(self) -> tuple[str, str, str]:
         """
         Start a new intake session.
 
-        Args:
-            role: Optional user role (tenant/landlord)
+        Role is NOT set here - it must be set explicitly via set_role()
+        after the user clicks a role selection button in the UI.
 
         Returns:
             Tuple of (greeting, session_id, stage)
         """
-        user_role = PartyRole(role) if role else None
-
-        greeting, conversation = await self.agent.start_conversation(user_role)
+        greeting, conversation = await self.agent.start_conversation()
 
         # Store session
         self._sessions[conversation.session_id] = conversation
@@ -70,7 +66,6 @@ class IntakeService:
         logger.info(
             "intake_session_started",
             session_id=conversation.session_id,
-            role=role,
         )
 
         return greeting, conversation.session_id, conversation.current_stage.value
@@ -79,15 +74,16 @@ class IntakeService:
         self,
         session_id: str,
         message: str,
-        role: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Process a message in an intake session.
 
+        Role must be set via set_role() before processing messages.
+        If role is not set, conversation will remain at GREETING stage.
+
         Args:
             session_id: The session ID
             message: User's message
-            role: Optional role (for first message if not set)
 
         Returns:
             Dict with response, stage, completeness, case_file
@@ -96,10 +92,6 @@ class IntakeService:
         conversation = await self._get_session(session_id)
         if not conversation:
             raise ValueError(f"Session not found: {session_id}")
-
-        # Set role if provided and not already set
-        if role and not conversation.case_file.user_role:
-            conversation.case_file.user_role = PartyRole(role)
 
         # Process message
         response, updated_conversation = await self.agent.process_message(
@@ -117,6 +109,55 @@ class IntakeService:
             "is_complete": updated_conversation.is_complete,
             "case_file": updated_conversation.case_file.model_dump(mode="json"),
             "suggested_actions": self._get_suggested_actions(updated_conversation),
+        }
+
+    async def set_role(
+        self,
+        session_id: str,
+        role: str,
+    ) -> Dict[str, Any]:
+        """
+        Explicitly set the user's role (for button-triggered UI flows).
+
+        This method supports UI flows where the user clicks a button
+        to identify as tenant or landlord.
+
+        Args:
+            session_id: The session ID
+            role: User role ("tenant" or "landlord")
+
+        Returns:
+            Dict with response, stage, completeness, case_file
+        """
+        conversation = await self._get_session(session_id)
+        if not conversation:
+            raise ValueError(f"Session not found: {session_id}")
+
+        user_role = PartyRole(role)
+
+        # Use agent method to set role and generate appropriate response
+        response, updated_conversation = await self.agent.set_user_role(
+            conversation, user_role
+        )
+
+        # Update session
+        self._sessions[session_id] = updated_conversation
+        self._save_session(updated_conversation)
+
+        logger.info(
+            "intake_role_set",
+            session_id=session_id,
+            role=role,
+            stage=updated_conversation.current_stage.value,
+        )
+
+        return {
+            "response": response,
+            "stage": updated_conversation.current_stage.value,
+            "completeness": updated_conversation.case_file.completeness_score,
+            "is_complete": updated_conversation.is_complete,
+            "case_file": updated_conversation.case_file.model_dump(mode="json"),
+            "role_set": True,
         }
 
     async def get_session_status(self, session_id: str) -> Optional[Dict]:
