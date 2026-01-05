@@ -144,6 +144,8 @@ python scripts/rag.py ingest --pdf-dir data/raw/bailii --skip-existing
 - [x] Integrate RAG retrieval with prediction engine
 - [x] Generate outcome predictions with reasoning traces
 - [x] Implement cite-or-abstain rule
+- [x] Add trigger button in UI to call LLM Orchestrator from FastAPI
+- [ ] Refactor role identification logic in intake agent to work with button-triggered flows (i.e., explicit API support for detecting landlord vs tenant)
 
 **Package**: `packages/llm_orchestrator/`
 
@@ -191,9 +193,11 @@ python scripts/api.py
 ## 📝 Documentation
 
 ### 11. Write User Guide
-**Status**: TODO
+**Status**: ✅ DONE
 
-**Include**:
+**Location**: `docs/USER_GUIDE.md`
+
+**Includes**:
 - How to ingest cases
 - How to query the system
 - Understanding confidence scores
@@ -202,13 +206,20 @@ python scripts/api.py
 ---
 
 ### 12. API Documentation
-**Status**: TODO
+**Status**: ✅ DONE
 
-**Document**:
+**Location**: `docs/API_DOCUMENTATION.md`
+
+**Documents**:
 - RAG pipeline endpoints
 - Request/response formats
 - Example queries
 - Error handling
+
+**Package READMEs**:
+- `packages/llm_orchestrator/README.md`
+- `packages/kg_builder/README.md`
+- `apps/api/README.md`
 
 ---
 
@@ -299,6 +310,9 @@ python scripts/api.py
 - [x] Create BM25 rebuild script (`scripts/rebuild_bm25.py`)
 - [x] Create RAG quality test script (`scripts/test_rag_quality.py`)
 - [x] Create test runner script (`scripts/run_tests.py`)
+- [x] Write User Guide (`docs/USER_GUIDE.md`)
+- [x] Write API Documentation (`docs/API_DOCUMENTATION.md`)
+- [x] Create package READMEs with architecture diagrams
 
 ---
 
