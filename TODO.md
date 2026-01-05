@@ -116,42 +116,74 @@ python scripts/rag.py ingest --pdf-dir data/raw/bailii --skip-existing
 
 ---
 
-## 🎯 Knowledge Graph (Future)
+## 🎯 Knowledge Graph
 
-### 8. Start KG Builder
-**Status**: NOT STARTED
+### 8. Knowledge Graph Builder
+**Status**: ✅ DONE
 
-**Tasks**:
-- [ ] Design ontology for tenancy disputes
-- [ ] Implement fact extraction from tribunal text
-- [ ] Build Neo4j schema
-- [ ] Test entity extraction accuracy
+**Completed**:
+- [x] Design ontology for tenancy disputes (Party, Lease, Evidence, Event, Issue, ClaimedAmount)
+- [x] Implement GraphBuilder (CaseFile → KnowledgeGraph conversion)
+- [x] Build JSON-based storage (Neo4j-ready migration path)
+- [x] Implement validators (temporal logic, evidence chain validation)
+
+**Package**: `packages/kg_builder/`
 
 ---
 
-## 🚀 LLM Orchestrator (Future)
+## 🚀 LLM Orchestrator
 
-### 9. Prediction Engine
-**Status**: NOT STARTED
+### 9. Prediction Engine & Intake Agent
+**Status**: ✅ DONE
 
-**Tasks**:
-- [ ] Design prompt templates
-- [ ] Integrate RAG retrieval
-- [ ] Generate outcome predictions
-- [ ] Create reasoning traces
-- [ ] Implement cite-or-abstain rule
+**Completed**:
+- [x] Design prompt templates (tenant/landlord interview flows)
+- [x] Implement Claude client with Anthropic SDK
+- [x] Build conversational intake agent (10-stage flow)
+- [x] Implement fact extractor (LLM-based structured extraction)
+- [x] Integrate RAG retrieval with prediction engine
+- [x] Generate outcome predictions with reasoning traces
+- [x] Implement cite-or-abstain rule
+
+**Package**: `packages/llm_orchestrator/`
+
+**Test with**:
+```bash
+python scripts/intake.py chat
+```
+
+---
+
+## 🌐 API Layer
+
+### 10. FastAPI Application
+**Status**: ✅ DONE
+
+**Completed**:
+- [x] Set up FastAPI in `apps/api/`
+- [x] Implement chat endpoints (`/chat/start`, `/chat/message`)
+- [x] Implement evidence upload (`/evidence/upload/{case_id}`)
+- [x] Implement prediction endpoints (`/predictions/generate`)
+- [x] Implement case management (`/cases/{case_id}`)
+- [x] Supabase storage integration (with local fallback)
+
+**Run with**:
+```bash
+python scripts/api.py
+# Visit http://localhost:8000/docs
+```
 
 ---
 
 ## 📱 Frontend (Future)
 
-### 10. Web Application
-**Status**: NOT STARTED
+### 11. Web Application
+**Status**: TODO
 
 **Features**:
-- User case intake
+- User case intake (chat interface)
 - Query similar cases
-- View predictions
+- View predictions with reasoning traces
 - Mediation interface
 
 ---
@@ -270,5 +302,5 @@ python scripts/rag.py ingest --pdf-dir data/raw/bailii --skip-existing
 
 ---
 
-*Last Updated: 2026-01-02*
+*Last Updated: 2026-01-05*
 

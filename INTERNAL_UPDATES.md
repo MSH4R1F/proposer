@@ -4,6 +4,149 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-01-05 - LLM Orchestrator, Knowledge Graph & API Implementation
+
+### Overview
+
+Implemented the complete prediction engine stack:
+- **LLM Orchestrator**: Conversational intake agents with Claude API
+- **Knowledge Graph Builder**: JSON-based structured case representation
+- **FastAPI Application**: REST API with chat, evidence, and prediction endpoints
+
+### New Packages Created
+
+#### 1. LLM Orchestrator (`packages/llm_orchestrator/`)
+
+**Core Data Models:**
+- `models/case_file.py` - CaseFile with PropertyDetails, TenancyDetails, EvidenceItem, ClaimedAmount
+- `models/conversation.py` - ConversationState, Message, IntakeStage (10 stages)
+- `models/prediction.py` - PredictionResult, ReasoningStep, Citation, IssuePrediction
+
+**Clients:**
+- `clients/claude_client.py` - Anthropic API integration with fallback, retry, cost tracking
+
+**Agents:**
+- `agents/intake_agent.py` - 10-stage conversational intake with role detection
+- `agents/prediction_agent.py` - RAG + LLM synthesis with cite-or-abstain rule
+
+**Extractors:**
+- `extractors/fact_extractor.py` - LLM-based structured fact extraction from conversation
+- `extractors/evidence_processor.py` - PDF text extraction, image description
+
+**Prompt Templates:**
+- `prompts/tenant_intake.py` - Tenant interview flow (10 stages)
+- `prompts/landlord_intake.py` - Landlord interview flow (10 stages)
+- `prompts/extraction.py` - Fact extraction with confidence scoring
+- `prompts/prediction.py` - Prediction synthesis with JSON schema output
+
+**CLI:**
+- `cli.py` - Interactive chat interface for testing intake flow
+
+#### 2. Knowledge Graph Builder (`packages/kg_builder/`)
+
+**Node Types:**
+- PartyNode (tenant, landlord, agent)
+- PropertyNode (address, type, region)
+- LeaseNode (dates, rent, deposit)
+- EvidenceNode (document, photo, statement)
+- EventNode (timeline events)
+- IssueNode (cleaning, damage, deposit_protection)
+- ClaimedAmountNode (monetary claims)
+
+**Edge Types:**
+- Evidence_Supports, Event_Before, Party_Claims, Evidence_Contradicts
+- Issue_Raised_By, Claim_For_Issue, Party_Has_Lease
+
+**Storage:**
+- JSON-based file storage (Neo4j-ready migration path)
+
+**Validators:**
+- Temporal logic validation (events in order)
+- Evidence chain validation (claims have supporting evidence)
+
+#### 3. FastAPI Application (`apps/api/`)
+
+**Routers:**
+- `/chat/start` - Start new intake session
+- `/chat/message` - Send message, receive response
+- `/chat/session/{id}` - Get session state
+- `/evidence/upload/{case_id}` - Upload evidence to Supabase
+- `/predictions/generate` - Generate outcome prediction
+- `/cases/{case_id}` - Case management
+
+**Services:**
+- `intake_service.py` - Session management, conversation orchestration
+- `prediction_service.py` - RAG + KG + LLM prediction pipeline
+- `storage_service.py` - Supabase/local file storage with fallback
+
+### Intake Flow (10 Stages)
+
+```
+1. GREETING         - Welcome and role detection
+2. ROLE_IDENTIFICATION - Confirm tenant/landlord
+3. BASIC_DETAILS    - Property address, type
+4. TENANCY_DETAILS  - Start/end dates, rent
+5. DEPOSIT_DETAILS  - Amount, protection status, scheme
+6. ISSUE_IDENTIFICATION - What's disputed
+7. EVIDENCE_COLLECTION - Upload/describe evidence
+8. CLAIM_AMOUNTS    - Specific deductions disputed
+9. NARRATIVE        - Full story in their words
+10. CONFIRMATION    - Review and confirm
+```
+
+### Key Design Decisions
+
+1. **Separate Flows**: Tenant and landlord have different prompt templates
+2. **JSON-based KG**: MVP approach, can migrate to Neo4j later
+3. **Cite-or-Abstain**: Predictions must cite retrieved cases or mark as uncertain
+4. **Supabase Storage**: Cloud storage for evidence files with local fallback
+5. **Dependency Injection**: Services use singleton pattern for efficiency
+
+### Dependencies Added
+
+```
+anthropic>=0.39.0      # Claude API
+supabase>=2.0.0        # Cloud storage
+python-multipart>=0.0.6 # File uploads
+fastapi>=0.109.0       # API framework
+uvicorn>=0.27.0        # ASGI server
+```
+
+### Scripts Added
+
+- `scripts/intake.py` - CLI runner for intake agent testing
+- `scripts/api.py` - FastAPI server runner
+
+### How to Test
+
+**CLI Intake Testing:**
+```bash
+python scripts/intake.py chat
+```
+
+**API Server:**
+```bash
+python scripts/api.py
+# Visit http://localhost:8000/docs
+```
+
+### Integration with RAG
+
+The PredictionEngine integrates with existing RAG pipeline:
+1. Builds query from CaseFile structured data
+2. Retrieves similar cases via RAGPipeline.retrieve()
+3. Checks uncertainty flag (cite-or-abstain)
+4. Synthesizes prediction with Claude API
+5. Generates reasoning trace with citations
+
+### Next Steps
+
+- Reset RAG index to adjacent cases only (TODO #1)
+- Add comprehensive unit tests for new packages
+- Implement evaluation framework with gold standard test cases
+
+---
+
 ## 2026-01-02 - RAG Engine Stats & Diagnostics
 
 ### Issues Fixed
