@@ -42,7 +42,17 @@ async def lifespan(app: FastAPI):
     """Application lifespan handler."""
     # Startup
     logger.info("api_starting", host=config.host, port=config.port)
+    logger.debug("environment_check", 
+                 anthropic_key_set=bool(config.anthropic_api_key),
+                 openai_key_set=bool(config.openai_api_key),
+                 supabase_url_set=bool(config.supabase_url))
+    
+    logger.debug("ensuring_directories", 
+                 data_dir=str(config.data_dir),
+                 sessions_dir=str(config.sessions_dir),
+                 kg_dir=str(config.kg_dir))
     config.ensure_directories()
+    logger.debug("directories_ready")
 
     yield
 
@@ -67,6 +77,7 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+logger.debug("configuring_cors", allowed_origins=config.cors_origins)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.cors_origins,
@@ -76,15 +87,18 @@ app.add_middleware(
 )
 
 # Include routers
+logger.debug("registering_routers", routers=["chat", "evidence", "predictions", "cases"])
 app.include_router(chat.router)
 app.include_router(evidence.router)
 app.include_router(predictions.router)
 app.include_router(cases.router)
+logger.debug("routers_registered")
 
 
 @app.get("/")
 async def root():
     """Root endpoint."""
+    logger.debug("root_endpoint_accessed")
     return {
         "name": "Legal Mediation System API",
         "version": "0.1.0",
@@ -96,12 +110,14 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {
+    health_status = {
         "status": "healthy",
         "anthropic_configured": bool(config.anthropic_api_key),
         "openai_configured": bool(config.openai_api_key),
         "supabase_configured": bool(config.supabase_url),
     }
+    logger.debug("health_check", **health_status)
+    return health_status
 
 
 if __name__ == "__main__":

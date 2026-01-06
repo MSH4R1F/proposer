@@ -8,9 +8,11 @@ from typing import Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
+import structlog
 
 from apps.api.src.services.prediction_service import PredictionService, get_prediction_service
 
+logger = structlog.get_logger()
 router = APIRouter(prefix="/predictions", tags=["predictions"])
 
 
@@ -66,14 +68,29 @@ async def generate_prediction(
     Requires a complete case file (from intake).
     Returns prediction with reasoning trace and citations.
     """
+    logger.debug("generate_prediction_request",
+                 case_id=request.case_id,
+                 include_reasoning=request.include_reasoning)
     try:
         # Check if case exists and is complete
+        logger.debug("checking_case_ready", case_id=request.case_id)
         case_status = await prediction_service.check_case_ready(request.case_id)
 
+        logger.debug("case_status_checked",
+                     case_id=request.case_id,
+                     exists=case_status["exists"],
+                     is_complete=case_status["is_complete"],
+                     completeness=case_status.get("completeness", 0))
+
         if not case_status["exists"]:
+            logger.warning("case_not_found_for_prediction", case_id=request.case_id)
             raise HTTPException(status_code=404, detail=f"Case not found: {request.case_id}")
 
         if not case_status["is_complete"]:
+            logger.warning("case_incomplete_for_prediction",
+                           case_id=request.case_id,
+                           completeness=case_status["completeness"],
+                           missing_info=case_status["missing_info"])
             raise HTTPException(
                 status_code=400,
                 detail=f"Intake not complete. Completeness: {case_status['completeness']:.0%}. "
@@ -81,10 +98,19 @@ async def generate_prediction(
             )
 
         # Generate prediction
+        logger.debug("calling_prediction_service", case_id=request.case_id)
         prediction = await prediction_service.generate_prediction(
             case_id=request.case_id,
             include_reasoning=request.include_reasoning,
         )
+        
+        logger.info("prediction_generated",
+                    case_id=request.case_id,
+                    prediction_id=prediction.prediction_id,
+                    overall_outcome=prediction.overall_outcome.value,
+                    confidence=prediction.overall_confidence,
+                    num_issues=len(prediction.issue_predictions),
+                    num_cases_analyzed=prediction.total_cases_analyzed)
 
         # Convert to response
         issue_preds = [
@@ -137,6 +163,10 @@ async def generate_prediction(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("generate_prediction_failed",
+                     case_id=request.case_id,
+                     error=str(e),
+                     error_type=type(e).__name__)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -148,16 +178,23 @@ async def get_prediction(
     """
     Retrieve a previously generated prediction.
     """
+    logger.debug("get_prediction_request", prediction_id=prediction_id)
     try:
         prediction = await prediction_service.get_prediction(prediction_id)
 
         if not prediction:
+            logger.warning("prediction_not_found", prediction_id=prediction_id)
             raise HTTPException(status_code=404, detail=f"Prediction not found: {prediction_id}")
 
+        logger.debug("prediction_retrieved", prediction_id=prediction_id)
         return prediction
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("get_prediction_failed",
+                     prediction_id=prediction_id,
+                     error=str(e),
+                     error_type=type(e).__name__)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -169,8 +206,18 @@ async def get_predictions_for_case(
     """
     List all predictions for a case.
     """
+    logger.debug("list_predictions_for_case_request", case_id=case_id)
     try:
         predictions = await prediction_service.list_predictions_for_case(case_id)
+        
+        logger.debug("list_predictions_success",
+                     case_id=case_id,
+                     prediction_count=len(predictions))
+        
         return {"case_id": case_id, "predictions": predictions}
     except Exception as e:
+        logger.error("list_predictions_failed",
+                     case_id=case_id,
+                     error=str(e),
+                     error_type=type(e).__name__)
         raise HTTPException(status_code=500, detail=str(e))

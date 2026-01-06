@@ -33,10 +33,20 @@ class IntakeService:
 
     def __init__(self):
         """Initialize the intake service."""
+        logger.debug("initializing_intake_service")
+        
         # Initialize LLM client
         llm_config = LLMConfig.from_env()
+        logger.debug("llm_config_loaded", 
+                     has_anthropic_key=bool(llm_config.anthropic_api_key),
+                     primary_model=llm_config.primary_model,
+                     fallback_model=llm_config.fallback_model)
+        
         self.llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
+        logger.debug("claude_client_created")
+        
         self.agent = IntakeAgent(self.llm_client)
+        logger.debug("intake_agent_created")
 
         # Session storage (in-memory for now, could use Redis)
         self._sessions: Dict[str, ConversationState] = {}
@@ -44,6 +54,7 @@ class IntakeService:
         # Persistence directory
         self.sessions_dir = config.sessions_dir
         self.sessions_dir.mkdir(parents=True, exist_ok=True)
+        logger.debug("sessions_dir_ready", path=str(self.sessions_dir))
 
         logger.info("intake_service_initialized")
 
@@ -57,11 +68,23 @@ class IntakeService:
         Returns:
             Tuple of (greeting, session_id, stage)
         """
+        logger.debug("starting_new_session")
+        
         greeting, conversation = await self.agent.start_conversation()
+        
+        logger.debug("conversation_created",
+                     session_id=conversation.session_id,
+                     stage=conversation.current_stage.value,
+                     greeting_length=len(greeting))
 
         # Store session
         self._sessions[conversation.session_id] = conversation
+        logger.debug("session_stored_in_memory", 
+                     session_id=conversation.session_id,
+                     total_sessions=len(self._sessions))
+        
         self._save_session(conversation)
+        logger.debug("session_saved_to_disk", session_id=conversation.session_id)
 
         logger.info(
             "intake_session_started",
@@ -88,19 +111,41 @@ class IntakeService:
         Returns:
             Dict with response, stage, completeness, case_file
         """
+        logger.debug("processing_message",
+                     session_id=session_id,
+                     message_length=len(message))
+        
         # Get session
         conversation = await self._get_session(session_id)
         if not conversation:
+            logger.error("session_not_found_for_message", session_id=session_id)
             raise ValueError(f"Session not found: {session_id}")
 
+        logger.debug("session_retrieved",
+                     session_id=session_id,
+                     current_stage=conversation.current_stage.value,
+                     message_count=len(conversation.messages),
+                     user_role=conversation.case_file.user_role.value if conversation.case_file.user_role else None)
+
         # Process message
+        logger.debug("calling_agent_process_message", session_id=session_id)
         response, updated_conversation = await self.agent.process_message(
             conversation, message
         )
+        
+        logger.debug("agent_response_received",
+                     session_id=session_id,
+                     response_length=len(response),
+                     new_stage=updated_conversation.current_stage.value,
+                     completeness=updated_conversation.case_file.completeness_score,
+                     is_complete=updated_conversation.is_complete)
 
         # Update session
         self._sessions[session_id] = updated_conversation
+        logger.debug("session_updated_in_memory", session_id=session_id)
+        
         self._save_session(updated_conversation)
+        logger.debug("session_saved_after_message", session_id=session_id)
 
         return {
             "response": response,
@@ -129,20 +174,37 @@ class IntakeService:
         Returns:
             Dict with response, stage, completeness, case_file
         """
+        logger.debug("setting_role", session_id=session_id, role=role)
+        
         conversation = await self._get_session(session_id)
         if not conversation:
+            logger.error("session_not_found_for_role", session_id=session_id)
             raise ValueError(f"Session not found: {session_id}")
 
+        logger.debug("session_retrieved_for_role",
+                     session_id=session_id,
+                     current_stage=conversation.current_stage.value)
+
         user_role = PartyRole(role)
+        logger.debug("party_role_created", session_id=session_id, party_role=user_role.value)
 
         # Use agent method to set role and generate appropriate response
+        logger.debug("calling_agent_set_user_role", session_id=session_id)
         response, updated_conversation = await self.agent.set_user_role(
             conversation, user_role
         )
+        
+        logger.debug("agent_role_response_received",
+                     session_id=session_id,
+                     response_length=len(response),
+                     new_stage=updated_conversation.current_stage.value)
 
         # Update session
         self._sessions[session_id] = updated_conversation
+        logger.debug("session_updated_after_role", session_id=session_id)
+        
         self._save_session(updated_conversation)
+        logger.debug("session_saved_after_role", session_id=session_id)
 
         logger.info(
             "intake_role_set",
@@ -297,10 +359,14 @@ class IntakeService:
 
     async def _get_session(self, session_id: str) -> Optional[ConversationState]:
         """Get a session by ID."""
+        logger.debug("getting_session", session_id=session_id)
+        
         if session_id in self._sessions:
+            logger.debug("session_found_in_memory", session_id=session_id)
             return self._sessions[session_id]
 
         # Try loading from disk
+        logger.debug("session_not_in_memory_trying_disk", session_id=session_id)
         return self._load_session(session_id)
 
     def _save_session(self, conversation: ConversationState) -> None:
@@ -308,23 +374,45 @@ class IntakeService:
         path = self.sessions_dir / f"session_{conversation.session_id}.json"
         data = conversation.model_dump(mode="json")
 
+        logger.debug("saving_session_to_disk",
+                     session_id=conversation.session_id,
+                     path=str(path),
+                     data_size=len(str(data)))
+
         with open(path, "w") as f:
             json.dump(data, f, indent=2, default=str)
+        
+        logger.debug("session_file_written", session_id=conversation.session_id)
 
     def _load_session(self, session_id: str) -> Optional[ConversationState]:
         """Load a session from disk."""
         path = self.sessions_dir / f"session_{session_id}.json"
+        
+        logger.debug("attempting_load_session", session_id=session_id, path=str(path))
+        
         if not path.exists():
+            logger.debug("session_file_not_found", session_id=session_id, path=str(path))
             return None
 
         try:
+            logger.debug("reading_session_file", session_id=session_id)
             with open(path) as f:
                 data = json.load(f)
+            
+            logger.debug("validating_session_data", session_id=session_id)
             conversation = ConversationState.model_validate(data)
+            
             self._sessions[session_id] = conversation
+            logger.debug("session_loaded_successfully", 
+                         session_id=session_id,
+                         stage=conversation.current_stage.value,
+                         message_count=len(conversation.messages))
             return conversation
         except Exception as e:
-            logger.error("session_load_failed", session_id=session_id, error=str(e))
+            logger.error("session_load_failed", 
+                         session_id=session_id, 
+                         error=str(e),
+                         error_type=type(e).__name__)
             return None
 
     def _get_suggested_actions(self, conversation: ConversationState) -> List[str]:

@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import Optional
 
 from pydantic import BaseModel, Field
+import structlog
+
+logger = structlog.get_logger()
 
 
 class APIConfig(BaseModel):
@@ -44,17 +47,36 @@ class APIConfig(BaseModel):
 
     def ensure_directories(self) -> None:
         """Create necessary directories."""
+        logger.debug("creating_directories",
+                     data_dir=str(self.data_dir),
+                     sessions_dir=str(self.sessions_dir),
+                     kg_dir=str(self.kg_dir))
+        
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.sessions_dir.mkdir(parents=True, exist_ok=True)
         self.kg_dir.mkdir(parents=True, exist_ok=True)
+        
+        logger.debug("directories_created")
 
     @classmethod
     def from_env(cls) -> "APIConfig":
         """Create configuration from environment variables."""
+        debug_mode = os.getenv("DEBUG", "false").lower() == "true"
+        host = os.getenv("HOST", "0.0.0.0")
+        port = int(os.getenv("PORT", "8000"))
+        
+        logger.debug("loading_config_from_env",
+                     debug=debug_mode,
+                     host=host,
+                     port=port,
+                     has_anthropic_key=bool(os.getenv("ANTHROPIC_API_KEY")),
+                     has_openai_key=bool(os.getenv("OPENAI_API_KEY")),
+                     has_supabase_url=bool(os.getenv("SUPABASE_URL")))
+        
         return cls(
-            debug=os.getenv("DEBUG", "false").lower() == "true",
-            host=os.getenv("HOST", "0.0.0.0"),
-            port=int(os.getenv("PORT", "8000")),
+            debug=debug_mode,
+            host=host,
+            port=port,
         )
 
     model_config = {"arbitrary_types_allowed": True}

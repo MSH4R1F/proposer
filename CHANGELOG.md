@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Comprehensive Debug Logging** - Enhanced structured logging throughout the FastAPI application
+  - **Main Application** (`main.py`)
+    - Environment configuration checks (API keys, directories)
+    - Directory creation tracking
+    - CORS configuration logging
+    - Router registration logging
+    - Health check endpoint logging
+  - **Chat Router** (`routers/chat.py`)
+    - Request/response logging for all endpoints (start, message, set-role, session, delete)
+    - Message length and preview tracking
+    - Stage transitions and completeness tracking
+    - Session operations (create, retrieve, delete)
+    - Role validation and setting
+    - Error logging with error types
+  - **Intake Service** (`services/intake_service.py`)
+    - Service initialization with LLM configuration details
+    - Session lifecycle tracking (create, store, load, save)
+    - Message processing flow with intermediate steps
+    - Role setting operations
+    - Agent interactions and responses
+    - Session persistence (memory vs disk)
+    - Data validation and error tracking
+  - **Evidence Router** (`routers/evidence.py`)
+    - File upload requests with metadata
+    - File type validation
+    - Storage operations
+    - Evidence listing and deletion
+    - Extracted text and image description tracking
+  - **Predictions Router** (`routers/predictions.py`)
+    - Prediction generation requests
+    - Case readiness checks
+    - Prediction results with confidence and outcomes
+    - Issue predictions and case analysis count
+    - Prediction retrieval and listing
+  - **Cases Router** (`routers/cases.py`)
+    - Case retrieval with details (role, completeness, issues)
+    - Full case file access
+    - Case listing and deletion
+  - **Configuration** (`config.py`)
+    - Environment variable loading with validation
+    - Directory creation
+  - **Logging Format**: All logs use structured format with relevant context (session_id, case_id, error types, metrics)
+  - **Logging Levels**: Debug for detailed flow, Info for important events, Warning for issues, Error for failures
+
 ### Changed
 
 - **Frontend Redesign** - Complete CSS/styling overhaul for professional legal-tech aesthetic
