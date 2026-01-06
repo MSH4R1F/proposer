@@ -1,16 +1,15 @@
 'use client';
 
-import { use } from 'react';
 import { ChatContainer } from '@/components/chat/ChatContainer';
 
 interface SessionPageProps {
-  params: Promise<{
+  params: {
     sessionId: string;
-  }>;
+  };
 }
 
 export default function SessionPage({ params }: SessionPageProps) {
-  const { sessionId } = use(params);
+  const { sessionId } = params;
 
   return <ChatContainer sessionId={sessionId} />;
 }

@@ -47,10 +47,11 @@ def main():
     """)
 
     uvicorn.run(
-        "apps.api.src.main:app",
+        "main:app",
         host=args.host,
         port=args.port,
         reload=args.reload,
+        reload_dirs=[str(project_root / "apps" / "api"), str(project_root / "packages")],
     )
 
 
