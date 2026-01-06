@@ -98,14 +98,37 @@ class IntakeAgent(BaseAgent):
         """
         self._stats["messages_processed"] += 1
 
+        logger.debug(
+            "process_message_start",
+            session_id=conversation.session_id,
+            current_stage=conversation.current_stage.value,
+            user_message=user_message,
+            history_len=len(conversation.messages),
+        )
+
         # Add user message to history
         conversation.add_user_message(user_message)
+        logger.debug(
+            "user_message_added_to_history",
+            session_id=conversation.session_id,
+            user_message=user_message,
+            messages=conversation.to_messages(),
+        )
 
         # Handle stage transitions at GREETING
         # Role is always set explicitly via /chat/set-role endpoint from frontend
         if conversation.current_stage == IntakeStage.GREETING:
+            logger.debug(
+                "at_greeting_stage_checking_role",
+                session_id=conversation.session_id,
+                role_explicitly_set=conversation.role_explicitly_set,
+            )
             if conversation.role_explicitly_set:
                 conversation.advance_stage(IntakeStage.BASIC_DETAILS)
+                logger.debug(
+                    "advanced_to_basic_details_due_to_role_explicitly_set",
+                    session_id=conversation.session_id,
+                )
             # If role not set, stay at GREETING - frontend should call /chat/set-role
 
         # Extract facts from the message
@@ -114,24 +137,59 @@ class IntakeAgent(BaseAgent):
             conversation.case_file,
             conversation.current_stage,
         )
+        logger.debug(
+            "facts_extracted_from_message",
+            session_id=conversation.session_id,
+            extraction_result=str(extraction_result),
+            prev_case_file=str(conversation.case_file),
+        )
+
         conversation.case_file = extraction_result.updated_case_file
 
         # Track extraction success
         conversation.last_extraction_successful = not extraction_result.no_new_info
+        logger.debug(
+            "extraction_result_updated",
+            session_id=conversation.session_id,
+            last_extraction_successful=conversation.last_extraction_successful,
+            updated_case_file=str(conversation.case_file),
+        )
 
         # Determine next stage
         next_stage = self._determine_next_stage(conversation)
+        logger.debug(
+            "determined_next_stage",
+            session_id=conversation.session_id,
+            current_stage=conversation.current_stage.value,
+            next_stage=next_stage.value,
+        )
         if next_stage != conversation.current_stage:
             conversation.advance_stage(next_stage)
+            logger.debug(
+                "advanced_to_next_stage",
+                session_id=conversation.session_id,
+                advanced_stage=next_stage.value,
+            )
 
         # Generate response
         response = await self._generate_response(conversation)
+        logger.debug(
+            "agent_response_generated",
+            session_id=conversation.session_id,
+            response=response,
+            stage=conversation.current_stage.value,
+        )
         conversation.add_assistant_message(response)
 
         # Check if complete
         if conversation.current_stage == IntakeStage.COMPLETE:
             conversation.mark_complete()
             self._stats["sessions_completed"] += 1
+            logger.debug(
+                "conversation_marked_complete",
+                session_id=conversation.session_id,
+                stage=conversation.current_stage.value,
+            )
 
         logger.info(
             "intake_message_processed",
@@ -139,6 +197,14 @@ class IntakeAgent(BaseAgent):
             stage=conversation.current_stage.value,
             completeness=conversation.case_file.completeness_score,
             message_count=len(conversation.messages),
+        )
+
+        logger.debug(
+            "process_message_end",
+            session_id=conversation.session_id,
+            response=response,
+            updated_stage=conversation.current_stage.value,
+            completeness=conversation.case_file.completeness_score,
         )
 
         return response, conversation
@@ -156,10 +222,20 @@ class IntakeAgent(BaseAgent):
         Returns:
             Tuple of (greeting_message, new_conversation_state)
         """
+        logger.debug(
+            "start_conversation_called",
+            user_role=user_role.value if user_role else None,
+        )
         conversation = ConversationState.new(user_role=user_role)
 
         # Generate greeting
         greeting = await self._generate_greeting(conversation)
+        logger.debug(
+            "generated_greeting_for_start_conversation",
+            session_id=conversation.session_id,
+            greeting=greeting,
+            user_role=user_role.value if user_role else None,
+        )
         conversation.add_assistant_message(greeting)
 
         return greeting, conversation
@@ -184,6 +260,7 @@ class IntakeAgent(BaseAgent):
         Returns:
             Tuple of (confirmation_message, updated_conversation_state)
         """
+        logger.debug("calling_agent_set_user_role")
         # Set the role explicitly
         conversation.set_role(role)
 
@@ -204,52 +281,7 @@ class IntakeAgent(BaseAgent):
 
         return response, conversation
 
-    def _detect_role(self, message: str) -> Optional[PartyRole]:
-        """
-        Detect if the user has identified their role from message text.
-
-        Note: This method is deprecated and not used in the main flow.
-        Role is always set explicitly via set_user_role() from the frontend.
-        Kept for potential fallback/testing purposes.
-        """
-        message_lower = message.lower()
-
-        tenant_indicators = [
-            "i am a tenant",
-            "i'm a tenant",
-            "i am the tenant",
-            "i'm the tenant",
-            "as a tenant",
-            "tenant here",
-            "i rented",
-            "my landlord",
-            "i was renting",
-        ]
-
-        landlord_indicators = [
-            "i am a landlord",
-            "i'm a landlord",
-            "i am the landlord",
-            "i'm the landlord",
-            "as a landlord",
-            "landlord here",
-            "i let",
-            "my tenant",
-            "i was letting",
-            "i own",
-            "property owner",
-        ]
-
-        for indicator in tenant_indicators:
-            if indicator in message_lower:
-                return PartyRole.TENANT
-
-        for indicator in landlord_indicators:
-            if indicator in message_lower:
-                return PartyRole.LANDLORD
-
-        return None
-
+    
     def _determine_next_stage(self, conversation: ConversationState) -> IntakeStage:
         """Determine the appropriate next stage based on collected info."""
         cf = conversation.case_file

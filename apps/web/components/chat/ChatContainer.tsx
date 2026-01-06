@@ -30,6 +30,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     roleSelected,
     caseFile,
     startSession,
+    startSessionWithRole,
     setRole,
     sendMessage,
     resumeSession,
@@ -42,15 +43,64 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
   // Track if we've already initialized to prevent infinite loops
   const initializedRef = useRef(false);
   const lastSessionIdRef = useRef<string | undefined>(undefined);
+  // Prevent duplicate session creation in React StrictMode (dev) and during redirects
+  const startingNewSessionRef = useRef(false);
+  const redirectingToSessionRef = useRef<string | null>(null);
+
+  // Debug: Log key state on each render
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.debug('[ChatContainer] Render', {
+      sessionIdFromProps: sessionId,
+      currentSessionId,
+      stage,
+      completeness,
+      isLoading,
+      error,
+      roleSelected,
+      isComplete,
+      canGeneratePrediction,
+      showRoleSelector,
+      messagesCount: messages.length,
+      caseFileId: caseFile?.case_id,
+    });
+  }
 
   // Start or resume session on mount
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.debug('[ChatContainer] useEffect: sessionId change or mount', {
+        sessionIdFromProps: sessionId,
+        initialized: initializedRef.current,
+        lastSessionId: lastSessionIdRef.current,
+      });
+    }
+    // If we've already kicked off a "start new session" flow and we're still on `/chat`
+    // (i.e. no sessionId in the URL yet), do not start another one.
+    // This commonly happens in dev because React StrictMode runs effects twice.
+    if (startingNewSessionRef.current && !sessionId) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug('[ChatContainer] New session start already in-flight, waiting for redirect...');
+      }
+      return;
+    }
+
     // Only initialize once, or when sessionId from URL changes
     if (initializedRef.current && lastSessionIdRef.current === sessionId) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug('[ChatContainer] Already initialized for this sessionId, skipping...');
+      }
       return;
     }
 
     const initializeSession = async () => {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug('[ChatContainer] initializeSession called', { sessionId });
+      }
       if (sessionId) {
         // Mark as initialized for this sessionId
         initializedRef.current = true;
@@ -58,11 +108,20 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
 
         // Validate session ID format first
         if (!isValidSessionId(sessionId)) {
-          // Invalid session ID in URL, start a new session
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.debug('[ChatContainer] Invalid sessionId in URL, starting new session');
+          }
+          startingNewSessionRef.current = true;
           const newSessionId = await startSession();
           if (newSessionId) {
+            redirectingToSessionRef.current = newSessionId;
             lastSessionIdRef.current = newSessionId;
             router.replace(ROUTES.CHAT_SESSION(newSessionId));
+            if (process.env.NODE_ENV !== 'production') {
+              // eslint-disable-next-line no-console
+              console.debug('[ChatContainer] Redirected to new session', { newSessionId });
+            }
           }
           return;
         }
@@ -70,24 +129,36 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
         // Try to resume the valid-looking session ID
         const success = await resumeSession(sessionId);
 
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.debug('[ChatContainer] Attempted to resume session', { sessionId, success });
+        }
+
         // If resuming fails, start new session
         if (!success) {
+          if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.debug('[ChatContainer] Session resume failed. Starting new session');
+          }
+          startingNewSessionRef.current = true;
           const newSessionId = await startSession();
           if (newSessionId) {
+            redirectingToSessionRef.current = newSessionId;
             lastSessionIdRef.current = newSessionId;
             router.replace(ROUTES.CHAT_SESSION(newSessionId));
+            if (process.env.NODE_ENV !== 'production') {
+              // eslint-disable-next-line no-console
+              console.debug('[ChatContainer] Redirected to new session after failed resume', { newSessionId });
+            }
           }
         }
-      } else if (!initializedRef.current) {
-        // No sessionId in URL, start a new session (only once)
+      } else {
+        // No sessionId in URL - just show role selector, don't start session yet
+        // Session will be created when user selects a role
         initializedRef.current = true;
-
-        const newSessionId = await startSession();
-        if (newSessionId) {
-          // Update ref to prevent re-initialization after redirect
-          lastSessionIdRef.current = newSessionId;
-          // Navigate to the session-specific URL
-          router.replace(ROUTES.CHAT_SESSION(newSessionId));
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.debug('[ChatContainer] No sessionId in URL, waiting for role selection...');
         }
       }
     };
@@ -95,19 +166,58 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     initializeSession();
   }, [sessionId, resumeSession, startSession, router]);
 
-  const handleGeneratePrediction = () => {
-    if (caseFile?.case_id) {
-      router.push(ROUTES.PREDICTION(caseFile.case_id));
+  // Handle role selection - creates session if needed
+  const handleRoleSelect = async (role: 'tenant' | 'landlord') => {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.debug('[ChatContainer] Role selected', { role, hasSession: !!currentSessionId });
+    }
+
+    if (currentSessionId) {
+      // Session already exists (e.g., resumed), just set the role
+      await setRole(role);
+    } else {
+      // No session yet - create one and set role in one flow
+      startingNewSessionRef.current = true;
+      const newSessionId = await startSessionWithRole(role);
+      if (newSessionId) {
+        redirectingToSessionRef.current = newSessionId;
+        lastSessionIdRef.current = newSessionId;
+        router.replace(ROUTES.CHAT_SESSION(newSessionId));
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.debug('[ChatContainer] Session created with role, redirecting', { newSessionId, role });
+        }
+      }
     }
   };
 
-  // Initial loading state - centered in full viewport
-  if (!currentSessionId && isLoading) {
+  const handleGeneratePrediction = () => {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.debug('[ChatContainer] handleGeneratePrediction called', { caseFile });
+    }
+    if (caseFile?.case_id) {
+      router.push(ROUTES.PREDICTION(caseFile.case_id));
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug('[ChatContainer] Navigated to prediction route', { caseId: caseFile.case_id });
+      }
+    }
+  };
+
+  // Show loading only when we have a sessionId but are loading (resuming session)
+  // Don't show loading when no session - show role selector instead
+  if (sessionId && !currentSessionId && isLoading) {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.debug('[ChatContainer] Resuming session...');
+    }
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center space-y-4 animate-fade-in">
           <LoadingSpinner size="lg" />
-          <p className="text-muted-foreground font-medium">Starting your session...</p>
+          <p className="text-muted-foreground font-medium">Loading your session...</p>
         </div>
       </div>
     );
@@ -135,16 +245,29 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
         </div>
       )}
 
-      {/* Messages area - takes all available space */}
-      <div className="flex-1 overflow-hidden">
-        <MessageList messages={messages} isLoading={isLoading} />
-      </div>
+      {/* Show role selector as main content before chat starts */}
+      {showRoleSelector ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <div className="max-w-xl text-center space-y-6">
+            <h1 className="text-2xl font-semibold">Welcome to Proposer</h1>
+            <p className="text-muted-foreground">
+              I'm here to help you understand your tenancy deposit dispute.
+              First, please tell me which party you are:
+            </p>
+            <RoleSelector onSelect={handleRoleSelect} disabled={isLoading} />
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Messages area - takes all available space */}
+          <div className="flex-1 overflow-hidden">
+            <MessageList messages={messages} isLoading={isLoading} />
+          </div>
+        </>
+      )}
 
-      {/* Bottom section - role selector OR input OR completion card */}
+      {/* Bottom section - input OR completion card */}
       <div className="shrink-0 border-t bg-background">
-        {showRoleSelector && (
-          <RoleSelector onSelect={setRole} disabled={isLoading} />
-        )}
 
         {isComplete && canGeneratePrediction && (
           <div className="max-w-3xl mx-auto p-4">

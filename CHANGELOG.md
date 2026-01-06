@@ -185,6 +185,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `-k` - Filter tests by expression
 
 ### Fixed
+- **Chat routing mismatch** - Fixed Next.js routing so chat sessions resolve under `/chat` as intended
+  - Added proper routes at `app/(chat)/chat/page.tsx` and `app/(chat)/chat/[sessionId]/page.tsx`
+  - Removed conflicting `app/(chat)/page.tsx` and `app/(chat)/[sessionId]/page.tsx` which mapped to `/` and `/:sessionId`
+- **Chat session ID recycling** - Prevented repeated session creation (and rapid redirects between IDs) in dev
+  - Added an in-flight guard in `ChatContainer` to avoid duplicate `startSession()` calls during StrictMode effect re-runs
 - **Chat Session Synchronization** - Fixed critical bugs in frontend-backend chat integration
   - **Session Polling Bug**: Fixed multiple session IDs being created on each page visit
     - Root cause: `lastSessionIdRef` wasn't updated before redirect, causing re-initialization

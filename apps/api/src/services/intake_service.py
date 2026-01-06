@@ -177,6 +177,7 @@ class IntakeService:
         logger.debug("setting_role", session_id=session_id, role=role)
         
         conversation = await self._get_session(session_id)
+        print(f"conversation: {conversation}")
         if not conversation:
             logger.error("session_not_found_for_role", session_id=session_id)
             raise ValueError(f"Session not found: {session_id}")
