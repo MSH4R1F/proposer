@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Frontend Redesign** - Complete CSS/styling overhaul for professional legal-tech aesthetic
+  - **New Design System**
+    - Custom color palette with deep navy primary and warm amber accents
+    - DM Sans font for body text, JetBrains Mono for code/numbers
+    - Sophisticated shadows (soft, glow effects) and rounded corners
+    - Glass morphism effects and gradient backgrounds
+  - **Enhanced Components**
+    - Redesigned Cards with hover effects and gradient overlays
+    - Improved Buttons with active states and smooth transitions
+    - Better Input/Textarea styling with focus states
+    - Animated Skeleton loading states with shimmer effect
+  - **Homepage Improvements**
+    - Hero section with radial gradients and dot patterns
+    - Animated stats section with icons
+    - Feature cards with color-coded icons and hover effects
+    - Staggered entrance animations
+  - **Chat Interface Polish**
+    - Redesigned message bubbles with sender labels
+    - Improved role selector with hover gradients
+    - Better progress indicator with pulse animations
+    - Enhanced completeness bar with gradient fill
+  - **Prediction Page Enhancements**
+    - Outcome display with confidence gauge and color-coding
+    - Financial summary with icon-based layout
+    - Strengths/Weaknesses cards with gradient top borders
+    - Improved skeleton loading states
+  - **Header/Footer Updates**
+    - Logo with animated accent dot
+    - Better navigation styling
+    - Enhanced legal disclaimer card
+
 ### Added
 
 - **Next.js Frontend** (`apps/web/`) - Complete web application for the mediation system

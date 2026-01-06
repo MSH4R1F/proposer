@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ThumbsUp, ThumbsDown, AlertCircle } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, AlertCircle, CheckCircle2, XCircle, HelpCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface StrengthsWeaknessesProps {
   strengths: string[];
@@ -14,79 +15,94 @@ export function StrengthsWeaknesses({
 }: StrengthsWeaknessesProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg text-green-600">
-            <ThumbsUp className="h-5 w-5" />
-            Strengths
+      {/* Strengths Card */}
+      <Card className="border-0 shadow-soft overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-3 text-lg">
+            <div className="p-2 rounded-lg bg-emerald-500/10">
+              <ThumbsUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <span className="text-emerald-700 dark:text-emerald-300">Strengths</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {strengths && strengths.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {strengths.map((strength, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-2 text-sm text-muted-foreground"
+                  className="flex items-start gap-3 text-sm"
                 >
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-green-500 shrink-0" />
-                  {strength}
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground leading-relaxed">{strength}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground italic">
               No specific strengths identified
             </p>
           )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg text-red-600">
-            <ThumbsDown className="h-5 w-5" />
-            Weaknesses
+      {/* Weaknesses Card */}
+      <Card className="border-0 shadow-soft overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-red-500 to-rose-500" />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-3 text-lg">
+            <div className="p-2 rounded-lg bg-red-500/10">
+              <ThumbsDown className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+            <span className="text-red-700 dark:text-red-300">Weaknesses</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {weaknesses && weaknesses.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {weaknesses.map((weakness, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-2 text-sm text-muted-foreground"
+                  className="flex items-start gap-3 text-sm"
                 >
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
-                  {weakness}
+                  <XCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground leading-relaxed">{weakness}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground italic">
               No specific weaknesses identified
             </p>
           )}
         </CardContent>
       </Card>
 
+      {/* Uncertainties Card */}
       {uncertainties && uncertainties.length > 0 && (
-        <Card className="md:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg text-yellow-600">
-              <AlertCircle className="h-5 w-5" />
-              Uncertainties
+        <Card className="md:col-span-2 border-0 shadow-soft overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-amber-500 to-yellow-500" />
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-3 text-lg">
+              <div className="p-2 rounded-lg bg-amber-500/10">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <span className="text-amber-700 dark:text-amber-300">Uncertainties</span>
             </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              These factors may affect the final outcome
+            </p>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="grid sm:grid-cols-2 gap-3">
               {uncertainties.map((uncertainty, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-2 text-sm text-muted-foreground"
+                  className="flex items-start gap-3 text-sm p-3 rounded-lg bg-amber-500/5 border border-amber-500/10"
                 >
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow-500 shrink-0" />
-                  {uncertainty}
+                  <HelpCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground leading-relaxed">{uncertainty}</span>
                 </li>
               ))}
             </ul>

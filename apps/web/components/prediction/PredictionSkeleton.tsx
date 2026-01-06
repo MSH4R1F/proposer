@@ -3,23 +3,40 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function PredictionSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-48" />
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-14 w-14 rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+        </div>
       </div>
 
       {/* Disclaimer */}
-      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-28 w-full rounded-xl" />
 
       {/* Outcome Display */}
-      <Skeleton className="h-28 w-full rounded-lg" />
+      <div className="relative overflow-hidden rounded-2xl bg-muted/30 p-8">
+        <div className="flex flex-col sm:flex-row items-center gap-8">
+          <div className="flex-1 space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-4 w-full max-w-md" />
+          </div>
+          <Skeleton className="h-40 w-40 rounded-full" />
+        </div>
+      </div>
 
       {/* Summary Card */}
-      <Card>
-        <CardHeader className="pb-2">
-          <Skeleton className="h-6 w-32" />
+      <Card className="border-0 shadow-soft">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-6 w-24" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-2">
           <Skeleton className="h-4 w-full" />
@@ -28,55 +45,73 @@ export function PredictionSkeleton() {
       </Card>
 
       {/* Financial Summary */}
-      <Card>
-        <CardHeader className="pb-2">
-          <Skeleton className="h-6 w-40" />
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-4 w-20" />
+      <Card className="border-0 shadow-soft">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-6 w-40" />
           </div>
-          <div className="flex justify-between">
-            <Skeleton className="h-4 w-36" />
-            <Skeleton className="h-4 w-24" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-16 w-full rounded-xl" />
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Skeleton className="h-16 rounded-xl" />
+            <Skeleton className="h-16 rounded-xl" />
           </div>
         </CardContent>
       </Card>
 
       {/* Strengths & Weaknesses */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-2">
-            <Skeleton className="h-6 w-24" />
+        <Card className="border-0 shadow-soft">
+          <div className="h-1 bg-muted rounded-t-lg shimmer" />
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-lg" />
+              <Skeleton className="h-6 w-24" />
+            </div>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-            <Skeleton className="h-4 w-4/5" />
+          <CardContent className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Skeleton className="h-5 w-5 rounded-full shrink-0" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <Skeleton className="h-6 w-28" />
+        <Card className="border-0 shadow-soft">
+          <div className="h-1 bg-muted rounded-t-lg shimmer" />
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-lg" />
+              <Skeleton className="h-6 w-28" />
+            </div>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
+          <CardContent className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Skeleton className="h-5 w-5 rounded-full shrink-0" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>
 
       {/* Reasoning Trace */}
-      <Card>
-        <CardHeader className="pb-2">
-          <Skeleton className="h-6 w-36" />
+      <Card className="border-0 shadow-soft">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-6 w-36" />
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-6 w-6 rounded-full" />
+            <div key={i} className="space-y-3 p-4 rounded-xl bg-muted/30">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-8 w-8 rounded-full" />
                 <Skeleton className="h-5 w-48" />
               </div>
               <Skeleton className="h-4 w-full" />

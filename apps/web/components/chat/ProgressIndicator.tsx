@@ -16,13 +16,13 @@ export function ProgressIndicator({
 }: ProgressIndicatorProps) {
   const currentIndex = getStageIndex(currentStage);
 
-  // Show only a subset of stages for mobile
+  // Show only a subset of stages
   const visibleStages = INTAKE_STAGES.filter(
     (_, index) => index <= Math.min(currentIndex + 2, INTAKE_STAGES.length - 1)
-  ).slice(-5);
+  ).slice(-4);
 
   return (
-    <div className={cn('flex items-center gap-1', className)}>
+    <div className={cn('flex items-center gap-0.5', className)}>
       {visibleStages.map((stage, index) => {
         const stageIndex = getStageIndex(stage.key);
         const isComplete = stageIndex < currentIndex;
@@ -33,22 +33,22 @@ export function ProgressIndicator({
             {index > 0 && (
               <div
                 className={cn(
-                  'h-0.5 w-4 sm:w-8',
-                  isComplete ? 'bg-primary' : 'bg-muted'
+                  'h-px w-4',
+                  isComplete ? 'bg-primary' : 'bg-border'
                 )}
               />
             )}
             <div
               className={cn(
-                'flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full text-xs font-medium transition-colors',
+                'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-medium transition-all',
                 isComplete && 'bg-primary text-primary-foreground',
-                isCurrent && 'bg-primary text-primary-foreground ring-2 ring-primary/30',
+                isCurrent && 'bg-primary text-primary-foreground ring-2 ring-primary/20',
                 !isComplete && !isCurrent && 'bg-muted text-muted-foreground'
               )}
               title={stage.label}
             >
               {isComplete ? (
-                <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Check className="h-2.5 w-2.5" />
               ) : (
                 stage.step
               )}

@@ -10,9 +10,8 @@ import { RoleSelector } from './RoleSelector';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ROUTES } from '@/lib/constants/routes';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, PartyPopper, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface ChatContainerProps {
   sessionId?: string;
@@ -54,81 +53,93 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     }
   };
 
-  // Initial loading state
+  // Initial loading state - centered in full viewport
   if (!currentSessionId && isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <LoadingSpinner size="lg" label="Starting session..." />
+        <div className="text-center space-y-4 animate-fade-in">
+          <LoadingSpinner size="lg" />
+          <p className="text-muted-foreground font-medium">Starting your session...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full">
+      {/* Compact progress header */}
       <ChatHeader
         stage={stage}
         completeness={completeness}
         sessionId={currentSessionId}
       />
 
+      {/* Error banner if any */}
       {error && (
-        <div className="p-4">
-          <ErrorMessage
-            message={error}
-            onDismiss={clearError}
-            onRetry={() => {
-              clearError();
-              if (!currentSessionId) {
-                startSession();
-              }
-            }}
-          />
+        <div className="shrink-0 px-4 py-2 bg-destructive/10 border-b border-destructive/20">
+          <div className="max-w-3xl mx-auto flex items-center gap-3">
+            <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+            <p className="text-sm text-destructive flex-1">{error}</p>
+            <Button variant="ghost" size="sm" onClick={clearError}>
+              Dismiss
+            </Button>
+          </div>
         </div>
       )}
 
+      {/* Messages area - takes all available space */}
       <div className="flex-1 overflow-hidden">
         <MessageList messages={messages} isLoading={isLoading} />
       </div>
 
-      {showRoleSelector && (
-        <RoleSelector onSelect={setRole} disabled={isLoading} />
-      )}
+      {/* Bottom section - role selector OR input OR completion card */}
+      <div className="shrink-0 border-t bg-background">
+        {showRoleSelector && (
+          <RoleSelector onSelect={setRole} disabled={isLoading} />
+        )}
 
-      {isComplete && canGeneratePrediction && (
-        <div className="p-4 border-t">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Intake Complete
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Great! We have collected all the information needed. You can now
-                generate a prediction based on similar tribunal cases.
-              </p>
-              <Button onClick={handleGeneratePrediction} className="gap-2">
+        {isComplete && canGeneratePrediction && (
+          <div className="max-w-3xl mx-auto p-4">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-success/5 border border-success/20">
+              <div className="p-2 rounded-lg bg-success/10">
+                <PartyPopper className="h-5 w-5 text-success" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-success">Intake Complete!</p>
+                <p className="text-sm text-muted-foreground">All information collected successfully</p>
+              </div>
+              <Button 
+                onClick={handleGeneratePrediction} 
+                className="gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
                 Generate Prediction
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            </div>
+          </div>
+        )}
 
-      {!isComplete && roleSelected && (
-        <ChatInput
-          onSend={sendMessage}
-          disabled={!roleSelected || stage === 'complete'}
-          isLoading={isLoading}
-          placeholder={
-            stage === 'confirmation'
-              ? 'Type "yes" to confirm or describe any changes...'
-              : 'Type your response...'
-          }
-        />
-      )}
+        {!isComplete && roleSelected && (
+          <ChatInput
+            onSend={sendMessage}
+            disabled={!roleSelected || stage === 'complete'}
+            isLoading={isLoading}
+            placeholder={
+              stage === 'confirmation'
+                ? 'Type "yes" to confirm or describe any changes...'
+                : 'Type your response...'
+            }
+          />
+        )}
+
+        {/* Disclaimer footer - compact */}
+        <div className="px-4 py-2 text-center border-t border-border/40">
+          <p className="text-[11px] text-muted-foreground/60">
+            This service provides legal information, not legal advice. Results are predictions based on similar tribunal cases.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
