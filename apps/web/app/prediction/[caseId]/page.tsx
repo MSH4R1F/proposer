@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { usePrediction } from '@/lib/hooks/usePrediction';
@@ -12,13 +12,13 @@ import { ArrowLeft, Scale, Sparkles, Brain, AlertTriangle } from 'lucide-react';
 import { ROUTES } from '@/lib/constants/routes';
 
 interface PredictionPageProps {
-  params: {
+  params: Promise<{
     caseId: string;
-  };
+  }>;
 }
 
 export default function PredictionPage({ params }: PredictionPageProps) {
-  const { caseId } = params;
+  const { caseId } = use(params);
   const router = useRouter();
   const { prediction, isLoading, error, generatePrediction, clearError } =
     usePrediction();
