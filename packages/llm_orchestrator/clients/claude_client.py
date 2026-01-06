@@ -40,8 +40,8 @@ class ClaudeClient(BaseLLMClient):
     def __init__(
         self,
         api_key: str,
-        model: str = "claude-sonnet-4-20250514",
-        fallback_model: str = "claude-3-5-haiku-20241022",
+        model: str = "claude-haiku-4-5-20251001",
+        fallback_model: str = "claude-sonnet-4-5-20250929",
         max_retries: int = 3,
     ):
         """

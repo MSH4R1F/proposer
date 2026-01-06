@@ -18,8 +18,8 @@ from llm_orchestrator.models.prediction import PredictionResult
 from kg_builder.builders.graph_builder import GraphBuilder
 from kg_builder.storage.json_store import JSONGraphStore
 
-from ..config import config
-from .intake_service import get_intake_service
+from apps.api.src.config import config
+from apps.api.src.services.intake_service import get_intake_service
 
 logger = structlog.get_logger()
 

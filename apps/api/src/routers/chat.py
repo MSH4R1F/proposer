@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 
-from ..services.intake_service import IntakeService, get_intake_service
+from apps.api.src.services.intake_service import IntakeService, get_intake_service
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -60,6 +60,13 @@ class SetRoleResponse(BaseModel):
     role_set: bool
 
 
+class MessageData(BaseModel):
+    """Message data for API responses."""
+    role: str
+    content: str
+    timestamp: Optional[str] = None
+
+
 class SessionStatusResponse(BaseModel):
     """Response with session status."""
     session_id: str
@@ -68,6 +75,7 @@ class SessionStatusResponse(BaseModel):
     is_complete: bool
     message_count: int
     case_file: Dict
+    messages: List[MessageData] = Field(default_factory=list)
 
 
 @router.post("/start", response_model=StartSessionResponse)

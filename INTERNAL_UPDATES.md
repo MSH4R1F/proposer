@@ -4,6 +4,133 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-01-06 - Chat Session Synchronization & Integration Fixes
+
+### Overview
+
+Fixed critical bugs in the frontend-backend chat integration that were causing:
+- Multiple session IDs being created on each page visit
+- Chat messages not being restored when resuming a session
+- Role selection appearing when it shouldn't (after role already set)
+- Next.js 15 params handling compatibility issues
+
+### Issues Fixed
+
+#### 1. Session Polling / Multiple Session Creation
+**Problem:** Every time the chat page loaded, a new session was being created instead of resuming the existing one. The `lastSessionIdRef` wasn't being updated after redirect, causing re-initialization.
+
+**Root Cause:** In `ChatContainer.tsx`, when `startSession()` succeeded and redirected to `/chat/{sessionId}`, the `lastSessionIdRef` wasn't updated to the new session ID. After redirect, the check `lastSessionIdRef.current === sessionId` would fail (undefined !== newSessionId), triggering another initialization.
+
+**Fix:** Updated `ChatContainer.tsx` to set `lastSessionIdRef.current = newSessionId` before calling `router.replace()`.
+
+#### 2. Messages Not Restored on Session Resume
+**Problem:** When resuming an existing session, the chat appeared empty even though the backend had the conversation history.
+
+**Root Cause:**
+- Backend's `GET /chat/session/{session_id}` endpoint only returned `message_count`, not the actual messages
+- Frontend's `resumeSession()` function didn't populate the `messages` array
+
+**Fix:**
+- **Backend:** Added `messages` field to `SessionStatusResponse` model in `chat.py`
+- **Backend:** Updated `get_session_status()` in `intake_service.py` to return full message history
+- **Frontend:** Added `SessionMessageData` type in `chat.ts`
+- **Frontend:** Updated `resumeSession()` in `useChat.ts` to convert and restore messages
+
+#### 3. Next.js 15 Params Handling
+**Problem:** In Next.js 15, dynamic route params are now Promises and must be unwrapped.
+
+**Root Cause:** The `[sessionId]/page.tsx` was directly destructuring `params` without awaiting.
+
+**Fix:** Updated to use React's `use()` hook to properly unwrap the params Promise:
+```tsx
+// Before
+export default function SessionPage({ params }: SessionPageProps) {
+  const { sessionId } = params;
+  // ...
+}
+
+// After
+export default function SessionPage({ params }: SessionPageProps) {
+  const { sessionId } = use(params);
+  // ...
+}
+```
+
+#### 4. Role Selection Sync
+**Problem:** The role selector was sometimes appearing for sessions where a role had already been selected.
+
+**Root Cause:** `roleSelected` was only checking `!!response.case_file?.user_role`, which could be undefined even if the role was set (e.g., if the user progressed past the greeting stage).
+
+**Fix:** Updated `resumeSession()` to determine role selection based on stage progression:
+```typescript
+const hasRoleSelected = response.stage !== 'greeting' || !!response.case_file?.user_role;
+```
+
+### Files Modified
+
+#### Backend
+| File | Changes |
+|------|---------|
+| `apps/api/src/routers/chat.py` | Added `MessageData` model, added `messages` field to `SessionStatusResponse` |
+| `apps/api/src/services/intake_service.py` | Updated `get_session_status()` to return message history |
+
+#### Frontend
+| File | Changes |
+|------|---------|
+| `apps/web/lib/types/chat.ts` | Added `SessionMessageData` interface |
+| `apps/web/lib/hooks/useChat.ts` | Fixed `resumeSession()` to restore messages and role state |
+| `apps/web/components/chat/ChatContainer.tsx` | Fixed initialization logic to prevent duplicate sessions |
+| `apps/web/app/chat/[sessionId]/page.tsx` | Fixed Next.js 15 async params handling |
+
+### API Changes
+
+**`GET /chat/session/{session_id}` Response:**
+
+Before:
+```json
+{
+  "session_id": "abc123",
+  "stage": "basic_details",
+  "completeness": 0.25,
+  "is_complete": false,
+  "message_count": 4,
+  "case_file": {...}
+}
+```
+
+After:
+```json
+{
+  "session_id": "abc123",
+  "stage": "basic_details",
+  "completeness": 0.25,
+  "is_complete": false,
+  "message_count": 4,
+  "case_file": {...},
+  "messages": [
+    {"role": "assistant", "content": "Welcome! Are you a tenant or landlord?", "timestamp": "2026-01-06T10:00:00"},
+    {"role": "user", "content": "I'm a tenant", "timestamp": "2026-01-06T10:01:00"},
+    ...
+  ]
+}
+```
+
+### Testing Notes
+
+After these fixes:
+1. Going to `/chat` creates a single session and redirects to `/chat/{sessionId}`
+2. Refreshing the page restores all messages from the backend
+3. Role selection only appears at the `greeting` stage before a role is chosen
+4. The session ID in the URL remains stable across page refreshes
+
+### Migration Notes
+
+No database migrations required. Changes are backward-compatible:
+- The `messages` field in the API response uses a default empty array
+- Frontend gracefully handles missing messages with `(response.messages || [])`
+
+---
+
 ## 2026-01-05 - Next.js Frontend Implementation
 
 ### Overview

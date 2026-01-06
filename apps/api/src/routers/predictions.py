@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 
-from ..services.prediction_service import PredictionService, get_prediction_service
+from apps.api.src.services.prediction_service import PredictionService, get_prediction_service
 
 router = APIRouter(prefix="/predictions", tags=["predictions"])
 

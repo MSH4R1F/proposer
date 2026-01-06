@@ -139,6 +139,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `-k` - Filter tests by expression
 
 ### Fixed
+- **Chat Session Synchronization** - Fixed critical bugs in frontend-backend chat integration
+  - **Session Polling Bug**: Fixed multiple session IDs being created on each page visit
+    - Root cause: `lastSessionIdRef` wasn't updated before redirect, causing re-initialization
+    - Solution: Updated `ChatContainer.tsx` to set ref before `router.replace()`
+  - **Message Restoration**: Fixed chat appearing empty when resuming sessions
+    - Root cause: Backend didn't return messages in session endpoint; frontend didn't restore them
+    - Solution: Added `messages` field to `GET /chat/session/{id}` response; updated `resumeSession()` hook
+  - **Role Selection Sync**: Fixed role selector appearing incorrectly for existing sessions
+    - Root cause: Only checking `case_file.user_role` which could be undefined
+    - Solution: Also check if stage is past `greeting` to determine role selection state
+  - **Next.js 15 Params**: Fixed async params handling in dynamic routes
+    - Root cause: Next.js 15 changed params to Promises requiring `use()` hook
+    - Solution: Updated `[sessionId]/page.tsx` to use `use(params)`
+
 - **BM25 Index Corruption** - Fixed corrupted 84-byte BM25 index that caused division by zero errors
   - Root cause: Index was saved before any documents were added
   - Solution: Created rebuild script to regenerate from ChromaDB (43,776 chunks)

@@ -9,7 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends
 from pydantic import BaseModel
 
-from ..services.storage_service import StorageService, get_storage_service
+from apps.api.src.services.storage_service import StorageService, get_storage_service
 
 router = APIRouter(prefix="/evidence", tags=["evidence"])
 

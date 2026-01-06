@@ -9,7 +9,7 @@ from typing import Dict, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from ..services.intake_service import IntakeService, get_intake_service
+from apps.api.src.services.intake_service import IntakeService, get_intake_service
 
 router = APIRouter(prefix="/cases", tags=["cases"])
 

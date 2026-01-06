@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useChat } from '@/lib/hooks/useChat';
 import { ChatHeader } from './ChatHeader';
@@ -11,6 +11,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
+import { isValidSessionId } from '@/lib/utils/storage';
 import { ArrowRight, Sparkles, PartyPopper, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface ChatContainerProps {
@@ -38,14 +39,61 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     canGeneratePrediction,
   } = useChat(sessionId);
 
+  // Track if we've already initialized to prevent infinite loops
+  const initializedRef = useRef(false);
+  const lastSessionIdRef = useRef<string | undefined>(undefined);
+
   // Start or resume session on mount
   useEffect(() => {
-    if (sessionId) {
-      resumeSession(sessionId);
-    } else if (!currentSessionId) {
-      startSession();
+    // Only initialize once, or when sessionId from URL changes
+    if (initializedRef.current && lastSessionIdRef.current === sessionId) {
+      return;
     }
-  }, [sessionId, currentSessionId, resumeSession, startSession]);
+
+    const initializeSession = async () => {
+      if (sessionId) {
+        // Mark as initialized for this sessionId
+        initializedRef.current = true;
+        lastSessionIdRef.current = sessionId;
+
+        // Validate session ID format first
+        if (!isValidSessionId(sessionId)) {
+          // Invalid session ID in URL, start a new session
+          const newSessionId = await startSession();
+          if (newSessionId) {
+            lastSessionIdRef.current = newSessionId;
+            router.replace(ROUTES.CHAT_SESSION(newSessionId));
+          }
+          return;
+        }
+
+        // Try to resume the valid-looking session ID
+        const success = await resumeSession(sessionId);
+
+        // If resuming fails, start new session
+        if (!success) {
+          const newSessionId = await startSession();
+          if (newSessionId) {
+            lastSessionIdRef.current = newSessionId;
+            router.replace(ROUTES.CHAT_SESSION(newSessionId));
+          }
+        }
+      } else if (!initializedRef.current) {
+        // No sessionId in URL, start a new session (only once)
+        initializedRef.current = true;
+
+        const newSessionId = await startSession();
+        if (newSessionId) {
+          // Update ref to prevent re-initialization after redirect
+          lastSessionIdRef.current = newSessionId;
+          // Navigate to the session-specific URL
+          router.replace(ROUTES.CHAT_SESSION(newSessionId));
+        }
+      }
+    };
+
+    initializeSession();
+  }, [sessionId, resumeSession, startSession, router]);
 
   const handleGeneratePrediction = () => {
     if (caseFile?.case_id) {

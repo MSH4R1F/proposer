@@ -16,7 +16,7 @@ from llm_orchestrator.agents.intake_agent import IntakeAgent
 from llm_orchestrator.models.case_file import CaseFile, PartyRole
 from llm_orchestrator.models.conversation import ConversationState
 
-from ..config import config
+from apps.api.src.config import config
 
 logger = structlog.get_logger()
 
@@ -166,6 +166,15 @@ class IntakeService:
         if not conversation:
             return None
 
+        # Convert messages to API format
+        messages = []
+        for msg in conversation.messages:
+            messages.append({
+                "role": msg.role,
+                "content": msg.content,
+                "timestamp": msg.timestamp if hasattr(msg, 'timestamp') else None,
+            })
+
         return {
             "session_id": session_id,
             "stage": conversation.current_stage.value,
@@ -173,6 +182,7 @@ class IntakeService:
             "is_complete": conversation.is_complete,
             "message_count": len(conversation.messages),
             "case_file": conversation.case_file.model_dump(mode="json"),
+            "messages": messages,
         }
 
     async def get_case_file(self, case_id: str) -> Optional[CaseFile]:

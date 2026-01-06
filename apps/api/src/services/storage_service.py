@@ -12,7 +12,7 @@ from uuid import uuid4
 import structlog
 from fastapi import UploadFile
 
-from ..config import config
+from apps.api.src.config import config
 
 logger = structlog.get_logger()
 

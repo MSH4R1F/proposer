@@ -7,8 +7,9 @@ Legal Mediation System API
 import sys
 from pathlib import Path
 
-# Add packages to path
+# Add packages and project root to path
 project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))  # Add project root for apps.* imports
 sys.path.insert(0, str(project_root / "packages"))
 
 from contextlib import asynccontextmanager
@@ -17,13 +18,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import structlog
 
-from .config import config
-from .routers import chat, evidence, predictions, cases
+from apps.api.src.config import config
+from apps.api.src.routers import chat, evidence, predictions, cases
 
 # Configure logging
 structlog.configure(
     processors=[
-        structlog.stdlib.filter_by_level,
         structlog.stdlib.add_log_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.dev.ConsoleRenderer(colors=True),
