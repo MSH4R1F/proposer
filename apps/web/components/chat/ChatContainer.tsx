@@ -110,19 +110,10 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
         if (!isValidSessionId(sessionId)) {
           if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console
-            console.debug('[ChatContainer] Invalid sessionId in URL, starting new session');
+            console.debug('[ChatContainer] Invalid sessionId in URL, redirecting to /chat for role selection');
           }
-          startingNewSessionRef.current = true;
-          const newSessionId = await startSession();
-          if (newSessionId) {
-            redirectingToSessionRef.current = newSessionId;
-            lastSessionIdRef.current = newSessionId;
-            router.replace(ROUTES.CHAT_SESSION(newSessionId));
-            if (process.env.NODE_ENV !== 'production') {
-              // eslint-disable-next-line no-console
-              console.debug('[ChatContainer] Redirected to new session', { newSessionId });
-            }
-          }
+          // Invalid session ID - redirect to /chat to show role selector
+          router.replace(ROUTES.CHAT);
           return;
         }
 
@@ -134,23 +125,13 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
           console.debug('[ChatContainer] Attempted to resume session', { sessionId, success });
         }
 
-        // If resuming fails, start new session
+        // If resuming fails, redirect to /chat for role selection
         if (!success) {
           if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console
-            console.debug('[ChatContainer] Session resume failed. Starting new session');
+            console.debug('[ChatContainer] Session resume failed. Redirecting to /chat for role selection');
           }
-          startingNewSessionRef.current = true;
-          const newSessionId = await startSession();
-          if (newSessionId) {
-            redirectingToSessionRef.current = newSessionId;
-            lastSessionIdRef.current = newSessionId;
-            router.replace(ROUTES.CHAT_SESSION(newSessionId));
-            if (process.env.NODE_ENV !== 'production') {
-              // eslint-disable-next-line no-console
-              console.debug('[ChatContainer] Redirected to new session after failed resume', { newSessionId });
-            }
-          }
+          router.replace(ROUTES.CHAT);
         }
       } else {
         // No sessionId in URL - just show role selector, don't start session yet

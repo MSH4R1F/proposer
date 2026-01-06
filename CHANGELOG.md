@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Simplified Session Creation Flow** - Streamlined the role-setting process for better UX
+  - **Backend Changes**:
+    - `IntakeService.start_session()` now accepts optional `role` parameter
+    - `IntakeAgent.start_conversation()` advances to BASIC_DETAILS when role is provided
+    - Greeting generation now uses role-appropriate prompts when role is set at creation
+  - **API Changes**:
+    - `POST /chat/start` now directly creates session with role (single call instead of two)
+    - Removed redundant intermediate `set_role()` call from start endpoint
+    - `POST /chat/set-role` remains available for changing role mid-conversation
+  - **Benefits**:
+    - Reduced API calls from 2 to 1 for session creation
+    - Cleaner code flow and better separation of concerns
+    - First question is now role-appropriate immediately
+    - Faster user experience with less latency
+
 ### Added
 
 - **Comprehensive Debug Logging** - Enhanced structured logging throughout the FastAPI application

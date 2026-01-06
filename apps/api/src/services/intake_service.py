@@ -58,23 +58,32 @@ class IntakeService:
 
         logger.info("intake_service_initialized")
 
-    async def start_session(self) -> tuple[str, str, str]:
+    async def start_session(self, role: Optional[str] = None) -> tuple[str, str, str]:
         """
-        Start a new intake session.
+        Start a new intake session with optional role.
 
-        Role is NOT set here - it must be set explicitly via set_role()
-        after the user clicks a role selection button in the UI.
+        If role is provided, the session will start with the role already set
+        and the first question will be role-appropriate.
+
+        Args:
+            role: Optional user role ("tenant" or "landlord")
 
         Returns:
             Tuple of (greeting, session_id, stage)
         """
-        logger.debug("starting_new_session")
+        logger.debug("starting_new_session", role=role)
         
-        greeting, conversation = await self.agent.start_conversation()
+        # Convert role string to PartyRole if provided
+        user_role = PartyRole(role) if role else None
+        logger.debug("party_role_parsed", user_role=user_role.value if user_role else None)
+        
+        # Start conversation with role (agent handles role-specific greeting)
+        greeting, conversation = await self.agent.start_conversation(user_role=user_role)
         
         logger.debug("conversation_created",
                      session_id=conversation.session_id,
                      stage=conversation.current_stage.value,
+                     role=conversation.case_file.user_role.value if conversation.case_file.user_role else None,
                      greeting_length=len(greeting))
 
         # Store session
@@ -89,6 +98,7 @@ class IntakeService:
         logger.info(
             "intake_session_started",
             session_id=conversation.session_id,
+            role=role,
         )
 
         return greeting, conversation.session_id, conversation.current_stage.value

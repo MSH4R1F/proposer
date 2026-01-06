@@ -35,14 +35,18 @@ class ChatMessageResponse(BaseModel):
 
 class StartSessionRequest(BaseModel):
     """Request to start a new chat session."""
-    pass  # No parameters needed - role is set via /chat/set-role
+    role: str = Field(..., description="User role: 'tenant' or 'landlord'")
 
 
 class StartSessionResponse(BaseModel):
     """Response when starting a new session."""
     session_id: str
-    greeting: str
+    response: str
     stage: str
+    completeness: float
+    is_complete: bool
+    case_file: Dict
+    role_set: bool
 
 
 class SetRoleRequest(BaseModel):
@@ -86,30 +90,50 @@ async def start_session(
     intake_service: IntakeService = Depends(get_intake_service),
 ):
     """
-    Start a new intake conversation session.
+    Start a new intake conversation session with the user's role.
 
-    Returns a session ID and initial greeting. After receiving the greeting,
-    the frontend should display role selection buttons ("I'm a tenant" /
-    "I'm a landlord") and call POST /chat/set-role when clicked.
+    The role must be provided when creating the session. The session will
+    be created with the role already set, and the first response will be
+    a role-appropriate question.
 
     Flow:
-        1. POST /chat/start -> get session_id and greeting
-        2. POST /chat/set-role -> set tenant/landlord, get first question
+        1. Frontend shows role selector ("I'm a tenant" / "I'm a landlord")
+        2. POST /chat/start with role -> get session_id and first question
         3. POST /chat/message -> continue conversation
+
+    The role must be either "tenant" or "landlord".
     """
-    logger.debug("start_session_request_received")
+    logger.debug("start_session_request_received", role=request.role)
+    
+    # Validate role first
+    if request.role not in ("tenant", "landlord"):
+        logger.warning("invalid_role_attempted", invalid_role=request.role)
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'"
+        )
+    
     try:
-        greeting, session_id, stage = await intake_service.start_session()
+        # Create session with role - this returns a role-appropriate first question
+        greeting, session_id, stage = await intake_service.start_session(role=request.role)
+        
+        # Get the session to return full state
+        session_status = await intake_service.get_session_status(session_id)
         
         logger.debug("start_session_success", 
                      session_id=session_id, 
+                     role=request.role,
                      stage=stage,
-                     greeting_length=len(greeting))
+                     response_length=len(greeting))
 
         return StartSessionResponse(
             session_id=session_id,
-            greeting=greeting,
+            response=greeting,
             stage=stage,
+            completeness=session_status["completeness"],
+            is_complete=session_status["is_complete"],
+            case_file=session_status["case_file"],
+            role_set=True,
         )
     except Exception as e:
         logger.error("start_session_failed", error=str(e), error_type=type(e).__name__)
@@ -172,19 +196,12 @@ async def set_role(
     intake_service: IntakeService = Depends(get_intake_service),
 ):
     """
-    Set the user's role (required before data collection can begin).
+    Set or change the user's role in an existing session.
 
-    This endpoint MUST be called after starting a session and before
-    sending messages. The frontend should display "I'm a tenant" and
-    "I'm a landlord" buttons, and call this endpoint when clicked.
-
-    The role is always set explicitly from the frontend - there is no
-    automatic role detection from natural language.
-
-    Flow:
-        1. POST /chat/start -> get session_id and greeting
-        2. POST /chat/set-role -> set tenant/landlord, get first question
-        3. POST /chat/message -> continue conversation
+    NOTE: In most cases, you should use POST /chat/start with the role parameter
+    instead of this endpoint. This endpoint is mainly useful for:
+    - Changing the role in an existing/resumed session
+    - Legacy compatibility
 
     The role must be either "tenant" or "landlord".
     """

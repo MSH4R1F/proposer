@@ -217,7 +217,8 @@ class IntakeAgent(BaseAgent):
         Start a new intake conversation.
 
         Args:
-            user_role: Pre-set user role (optional)
+            user_role: Pre-set user role (optional). If provided, the conversation
+                      will start at BASIC_DETAILS stage with role-appropriate questions.
 
         Returns:
             Tuple of (greeting_message, new_conversation_state)
@@ -228,13 +229,23 @@ class IntakeAgent(BaseAgent):
         )
         conversation = ConversationState.new(user_role=user_role)
 
-        # Generate greeting
+        # If role is provided, advance to BASIC_DETAILS immediately
+        if user_role is not None:
+            conversation.advance_stage(IntakeStage.BASIC_DETAILS)
+            logger.debug(
+                "role_provided_advancing_to_basic_details",
+                session_id=conversation.session_id,
+                role=user_role.value,
+            )
+
+        # Generate greeting (will be role-specific if role is set)
         greeting = await self._generate_greeting(conversation)
         logger.debug(
             "generated_greeting_for_start_conversation",
             session_id=conversation.session_id,
             greeting=greeting,
             user_role=user_role.value if user_role else None,
+            stage=conversation.current_stage.value,
         )
         conversation.add_assistant_message(greeting)
 
@@ -264,15 +275,34 @@ class IntakeAgent(BaseAgent):
         # Set the role explicitly
         conversation.set_role(role)
 
+        logger.debug(
+            "conversation_role_set",
+            session_id=conversation.session_id,
+            role=role.value,
+            stage=conversation.current_stage.value,
+        )
         # If we're at GREETING or ROLE_IDENTIFICATION, advance to BASIC_DETAILS
         if conversation.current_stage in (IntakeStage.GREETING, IntakeStage.ROLE_IDENTIFICATION):
             conversation.advance_stage(IntakeStage.BASIC_DETAILS)
-
+        logger.debug(
+            "advanced_to_basic_details_due_to_role_explicitly_set",
+            session_id=conversation.session_id,
+        )
         # Generate a role-appropriate response to continue the conversation
         response = await self._generate_response(conversation)
+        logger.debug(
+            "generated_response_for_role_explicitly_set",
+            session_id=conversation.session_id,
+            response=response,
+        )
         conversation.add_assistant_message(response)
-
-        logger.info(
+        logger.debug(
+            "assistant_message_added_to_history",
+            session_id=conversation.session_id,
+            response=response,
+            messages=conversation.to_messages(),
+        )
+        logger.debug(
             "user_role_set_explicitly",
             session_id=conversation.session_id,
             role=role.value,
@@ -352,6 +382,11 @@ class IntakeAgent(BaseAgent):
 
     async def _generate_response(self, conversation: ConversationState) -> str:
         """Generate a response based on current conversation state."""
+        logger.debug(
+            "generating_response",
+            session_id=conversation.session_id,
+            current_stage=conversation.current_stage.value,
+        )
         # Get role-specific prompts
         if conversation.case_file.user_role == PartyRole.LANDLORD:
             system_prompt = LANDLORD_SYSTEM_PROMPT
@@ -368,7 +403,11 @@ class IntakeAgent(BaseAgent):
 
         # Build context for the response
         context = self._build_response_context(conversation, stage_guidance)
-
+        logger.debug(
+            "built_response_context",
+            session_id=conversation.session_id,
+            context=context,
+        )
         # Generate response
         response = await self.llm.generate(
             messages=conversation.to_messages(),
@@ -380,13 +419,26 @@ class IntakeAgent(BaseAgent):
         return response
 
     async def _generate_greeting(self, conversation: ConversationState) -> str:
-        """Generate the initial greeting message."""
+        """
+        Generate the initial greeting message.
+        
+        If role is set and we're at BASIC_DETAILS, generate a role-appropriate
+        first question. Otherwise, generate a generic greeting.
+        """
         if conversation.case_file.user_role == PartyRole.LANDLORD:
             system_prompt = LANDLORD_SYSTEM_PROMPT
-            stage_prompt = LANDLORD_STAGE_PROMPTS["greeting"]
+            # If we're at BASIC_DETAILS (role is set), use basic_details prompt
+            if conversation.current_stage == IntakeStage.BASIC_DETAILS:
+                stage_prompt = LANDLORD_STAGE_PROMPTS.get("basic_details", LANDLORD_STAGE_PROMPTS["greeting"])
+            else:
+                stage_prompt = LANDLORD_STAGE_PROMPTS["greeting"]
         elif conversation.case_file.user_role == PartyRole.TENANT:
             system_prompt = TENANT_SYSTEM_PROMPT
-            stage_prompt = TENANT_STAGE_PROMPTS["greeting"]
+            # If we're at BASIC_DETAILS (role is set), use basic_details prompt
+            if conversation.current_stage == IntakeStage.BASIC_DETAILS:
+                stage_prompt = TENANT_STAGE_PROMPTS.get("basic_details", TENANT_STAGE_PROMPTS["greeting"])
+            else:
+                stage_prompt = TENANT_STAGE_PROMPTS["greeting"]
         else:
             # Generic greeting when role unknown
             system_prompt = TENANT_SYSTEM_PROMPT  # Default

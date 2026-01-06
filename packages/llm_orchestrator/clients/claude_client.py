@@ -40,8 +40,8 @@ class ClaudeClient(BaseLLMClient):
     def __init__(
         self,
         api_key: str,
-        model: str = "claude-haiku-4-5-20251001",
-        fallback_model: str = "claude-sonnet-4-5-20250929",
+        model: str = "claude-haiku-4-5",
+        fallback_model: str = "claude-sonnet-4-5",
         max_retries: int = 3,
     ):
         """
@@ -92,6 +92,7 @@ class ClaudeClient(BaseLLMClient):
         Returns:
             Generated text response
         """
+    
         self._stats["calls"] += 1
         current_model = self.model
 
@@ -109,7 +110,20 @@ class ClaudeClient(BaseLLMClient):
                 self._stats["tokens_in"] += response.usage.input_tokens
                 self._stats["tokens_out"] += response.usage.output_tokens
 
+                logger.debug(
+                    "claude_generate_response",
+                    model=current_model,
+                    response=response,
+                )
+                logger.debug("response content", response=response.content)
                 # Extract text from response
+                if not response.content:
+                    logger.error(
+                        "claude_empty_response",
+                        model=current_model,
+                        stop_reason=response.stop_reason,
+                    )
+                    raise RuntimeError(f"Claude returned an empty response (stop_reason: {response.stop_reason})")
                 text = response.content[0].text
 
                 logger.debug(
