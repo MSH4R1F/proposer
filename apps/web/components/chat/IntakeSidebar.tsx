@@ -27,8 +27,12 @@ import {
   ClipboardCheck,
   User,
   Sparkles,
+  Copy,
+  Check,
+  Share2,
+  Users,
 } from 'lucide-react';
-import type { IntakeStage, CaseFile } from '@/lib/types/chat';
+import type { IntakeStage, CaseFile, DisputeInfo } from '@/lib/types/chat';
 import { INTAKE_STAGES, getStageIndex } from '@/lib/constants/stages';
 
 interface IntakeSidebarProps {
@@ -37,6 +41,8 @@ interface IntakeSidebarProps {
   completeness: number;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  dispute?: DisputeInfo | null;
+  userRole?: string;
 }
 
 const STAGE_ICONS: Record<string, React.ReactNode> = {
@@ -201,7 +207,48 @@ export function IntakeSidebar({
   completeness,
   isCollapsed = false,
   onToggleCollapse,
+  dispute,
+  userRole,
 }: IntakeSidebarProps) {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopyCode = async () => {
+    if (!dispute?.invite_code) return;
+    try {
+      await navigator.clipboard.writeText(dispute.invite_code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!dispute?.invite_code) return;
+    const shareUrl = `${window.location.origin}/chat?invite=${dispute.invite_code}`;
+    const shareData = {
+      title: 'Join My Deposit Dispute',
+      text: `Join my deposit dispute on Proposer using code: ${dispute.invite_code}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(
+          `Join my deposit dispute on Proposer: ${shareUrl}`
+        );
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to share:', err);
+    }
+  };
+
+  const otherParty = userRole === 'tenant' ? 'landlord' : 'tenant';
+
   if (isCollapsed) {
     return (
       <div className="w-12 border-l bg-muted/30 flex flex-col items-center py-4">
@@ -264,6 +311,104 @@ export function IntakeSidebar({
           />
         </div>
       </div>
+
+      {/* Missing Required Information Alert */}
+      {caseFile?.missing_info && caseFile.missing_info.length > 0 && (
+        <div className="px-3 pb-3">
+          <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-amber-900 dark:text-amber-100 mb-1.5">
+                  Required Information Missing
+                </p>
+                <ul className="text-[11px] text-amber-800 dark:text-amber-200 space-y-1">
+                  {caseFile.missing_info.map((item, index) => (
+                    <li key={index} className="flex items-start gap-1">
+                      <Circle className="h-2 w-2 fill-current shrink-0 mt-0.5" />
+                      <span className="capitalize">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-[10px] text-amber-700 dark:text-amber-300 mt-2 italic">
+                  Please provide this information to generate a prediction
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message when all required fields collected */}
+      {caseFile?.missing_info && caseFile.missing_info.length === 0 && completeness >= 0.7 && (
+        <div className="px-3 pb-3">
+          <div className="p-2.5 rounded-lg bg-success/10 border border-success/20">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-success">All Required Info Collected!</p>
+                <p className="text-[10px] text-muted-foreground">
+                  Ready to generate prediction
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Invite Code / Dispute Status Section */}
+      {dispute && (
+        <div className="px-3 pb-3 border-b">
+          {dispute.has_both_parties ? (
+            <div className="p-2.5 rounded-lg bg-success/10 border border-success/20">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-success shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-success">Both Parties Connected</p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    The {otherParty} has joined
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-2.5 rounded-lg bg-muted border">
+              <div className="flex items-center gap-2 mb-2">
+                <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <p className="text-xs font-medium">Share with {otherParty}</p>
+              </div>
+              <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex-1 px-2 py-1.5 bg-background rounded text-center">
+                  <span className="font-mono text-xs font-semibold tracking-wide">
+                    {dispute.invite_code}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  onClick={handleCopyCode}
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-success" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="w-full h-7 text-xs"
+                onClick={handleShare}
+              >
+                <Share2 className="h-3 w-3 mr-1.5" />
+                Share Link
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
       
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-1">

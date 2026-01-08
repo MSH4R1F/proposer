@@ -8,7 +8,6 @@ import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { RoleSelector } from './RoleSelector';
 import { DisputeEntrySelector } from './DisputeEntrySelector';
-import { InviteCodeDisplay } from './InviteCodeDisplay';
 import { IntakeSidebar } from './IntakeSidebar';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Button } from '@/components/ui/button';
@@ -47,6 +46,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     isComplete,
     canGeneratePrediction,
     isWaitingForOtherParty,
+    isWaitingForOtherPartyToComplete,
   } = useChat(sessionId);
 
   const [entryMode, setEntryMode] = useState<EntryMode>(
@@ -219,52 +219,73 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
             completeness={completeness}
             isCollapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            dispute={dispute}
+            userRole={caseFile?.user_role}
           />
         </div>
       )}
 
       <div className="shrink-0 border-t bg-background">
-        {dispute && !isComplete && (
-          <div className="max-w-3xl mx-auto p-4">
-            <InviteCodeDisplay
-              dispute={dispute}
-              userRole={caseFile?.user_role || 'tenant'}
-            />
-          </div>
-        )}
-
-        {isComplete && canGeneratePrediction && (
-          <div className="max-w-3xl mx-auto p-4">
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-success/5 border border-success/20">
-              <div className="p-2 rounded-lg bg-success/10">
-                <PartyPopper className="h-5 w-5 text-success" />
+        {/* Completion Status Banner - Compact and non-blocking */}
+        {isComplete && (
+          <div className="max-w-3xl mx-auto px-4 pt-3 pb-2">
+            <div className={`flex items-center gap-3 p-3 rounded-lg ${
+              (isWaitingForOtherParty || isWaitingForOtherPartyToComplete)
+                ? 'bg-amber-500/5 border border-amber-500/20' 
+                : 'bg-success/5 border border-success/20'
+            }`}>
+              <div className={`p-1.5 rounded-md ${
+                (isWaitingForOtherParty || isWaitingForOtherPartyToComplete) 
+                  ? 'bg-amber-500/10' 
+                  : 'bg-success/10'
+              }`}>
+                <PartyPopper className={`h-4 w-4 ${
+                  (isWaitingForOtherParty || isWaitingForOtherPartyToComplete) 
+                    ? 'text-amber-500' 
+                    : 'text-success'
+                }`} />
               </div>
-              <div className="flex-1">
-                <p className="font-medium text-success">Intake Complete!</p>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-medium ${
+                  (isWaitingForOtherParty || isWaitingForOtherPartyToComplete) 
+                    ? 'text-amber-600' 
+                    : 'text-success'
+                }`}>
+                  {isWaitingForOtherParty 
+                    ? 'Your Intake Complete!' 
+                    : isWaitingForOtherPartyToComplete
+                      ? 'Waiting for Other Party'
+                      : 'All Required Info Collected!'}
+                </p>
+                <p className="text-xs text-muted-foreground">
                   {isWaitingForOtherParty
-                    ? 'Waiting for the other party to complete their intake...'
-                    : 'All information collected successfully'}
+                    ? 'Share invite code with other party'
+                    : isWaitingForOtherPartyToComplete
+                      ? 'Other party still completing their intake'
+                      : 'Ready to generate prediction'}
                 </p>
               </div>
-              {!isWaitingForOtherParty && (
-                <Button onClick={handleGeneratePrediction} className="gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Generate Prediction
-                  <ArrowRight className="h-4 w-4" />
+              {canGeneratePrediction && (
+                <Button onClick={handleGeneratePrediction} size="sm" className="gap-2 shrink-0">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Generate
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               )}
             </div>
           </div>
         )}
 
-        {!isComplete && roleSelected && (
+        {/* Chat Input - Always visible when role is selected, even if required fields complete */}
+        {roleSelected && (
           <ChatInput
             onSend={sendMessage}
-            disabled={!roleSelected || stage === 'complete'}
+            disabled={!roleSelected || isLoading}
             isLoading={isLoading}
             placeholder={
-              stage === 'confirmation'
+              isComplete
+                ? 'Add more details or generate prediction above...'
+                : stage === 'confirmation'
                 ? 'Type "yes" to confirm or describe any changes...'
                 : 'Type your response...'
             }

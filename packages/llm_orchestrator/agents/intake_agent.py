@@ -489,10 +489,13 @@ Ask them to first tell you whether they are a tenant or a landlord, and then bri
             ev_str = ", ".join(e.type.value for e in cf.evidence)
             context_parts.append(f"- Evidence mentioned: {ev_str}")
 
-        # Add missing info
+        # Add missing required info with PRIORITY
         missing = cf.get_missing_required_info()
         if missing:
-            context_parts.append(f"\nSTILL NEEDED: {', '.join(missing)}")
+            context_parts.append(f"\n⚠️ REQUIRED INFO STILL MISSING (must collect before prediction): {', '.join(missing)}")
+            context_parts.append("INSTRUCTION: Proactively ask for ONE of the missing required fields in your next question.")
+        else:
+            context_parts.append("\n✓ ALL REQUIRED INFORMATION COLLECTED - User can now generate prediction!")
 
         # Add completeness
         context_parts.append(f"\nCompleteness: {cf.completeness_score:.0%}")

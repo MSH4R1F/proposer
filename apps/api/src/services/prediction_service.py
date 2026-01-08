@@ -76,6 +76,9 @@ class PredictionService:
         """
         Check if a case is ready for prediction.
 
+        NOW ENFORCES: ALL required fields must be present (100% of required info).
+        Predictions are blocked until every required field has a value.
+
         Returns:
             Dict with exists, is_complete, completeness, missing_info
         """
@@ -93,9 +96,21 @@ class PredictionService:
         case_file.calculate_completeness()
         missing = case_file.get_missing_required_info()
 
+        # STRICT VALIDATION: Require ALL required fields (not just 70%)
+        is_ready = case_file.has_all_required_info()
+
+        logger.debug(
+            "case_readiness_check",
+            case_id=case_id,
+            completeness=case_file.completeness_score,
+            has_all_required=is_ready,
+            missing_count=len(missing),
+            missing_fields=missing,
+        )
+
         return {
             "exists": True,
-            "is_complete": case_file.intake_complete or case_file.completeness_score >= 0.7,
+            "is_complete": is_ready,  # Only true if ALL required fields present
             "completeness": case_file.completeness_score,
             "missing_info": missing,
         }

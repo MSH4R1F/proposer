@@ -150,6 +150,24 @@ class IntakeService:
                      completeness=updated_conversation.case_file.completeness_score,
                      is_complete=updated_conversation.is_complete)
 
+        # Update intake_complete flag based on ALL required fields being present
+        case_file = updated_conversation.case_file
+        case_file.calculate_completeness()
+        missing_required = case_file.get_missing_required_info()
+        
+        # Mark as complete ONLY if ALL required fields are present
+        if case_file.has_all_required_info() and not case_file.intake_complete:
+            case_file.intake_complete = True
+            logger.info("intake_marked_complete_all_required_fields_present",
+                       session_id=session_id,
+                       completeness=case_file.completeness_score)
+        
+        logger.debug("intake_validation",
+                    session_id=session_id,
+                    has_all_required=case_file.has_all_required_info(),
+                    missing_required=missing_required,
+                    intake_complete=case_file.intake_complete)
+
         # Update session
         self._sessions[session_id] = updated_conversation
         logger.debug("session_updated_in_memory", session_id=session_id)
@@ -427,19 +445,24 @@ class IntakeService:
             return None
 
     def _get_suggested_actions(self, conversation: ConversationState) -> List[str]:
-        """Get suggested actions based on current state."""
+        """
+        Get suggested actions based on current state.
+        
+        Now strictly validates that ALL required fields are present before
+        suggesting prediction generation.
+        """
         actions = []
         cf = conversation.case_file
 
-        if conversation.is_complete:
+        # Only suggest prediction if ALL required fields are present
+        if cf.has_all_required_info():
             actions.append("Generate prediction")
             actions.append("Upload additional evidence")
         else:
+            # Show what's still needed
             missing = cf.get_missing_required_info()
-            if "deposit protection status" in missing:
-                actions.append("Clarify deposit protection status")
-            if "dispute issues" in missing:
-                actions.append("Describe what's being disputed")
+            if missing:
+                actions.append(f"Complete required info: {', '.join(missing)}")
 
         return actions
 

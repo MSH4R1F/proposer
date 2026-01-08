@@ -7,7 +7,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Comprehensive Architecture Documentation** - Created detailed system architecture documentation
+  - **New File**: `docs/ARCHITECTURE.md` with complete system overview
+  - **Mermaid Diagrams**:
+    - Full system architecture diagram showing Frontend → Backend → Packages → External Services
+    - Sequence diagrams for key flows: Intake Chat, Prediction Generation, Multi-Party Disputes
+  - **Documentation Sections**:
+    - Technology stack overview (Next.js 16, FastAPI, Claude, ChromaDB, etc.)
+    - API endpoints mapping (routers → services → packages)
+    - Data flow examples with detailed sequence diagrams
+    - Key architectural patterns (separation of concerns, async/await, RAG patterns)
+    - Technology choices with rationale
+    - Scaling considerations (MVP vs. production)
+    - Security & compliance guidelines
+  - **Learning Resources**: Beginner-friendly explanations of:
+    - What is RAG (Retrieval-Augmented Generation)?
+    - What is a Knowledge Graph?
+    - What is Hybrid Search?
+    - What are Embeddings?
+    - What is Async/Await?
+    - What is Structured Output?
+  - **Purpose**: Provides clear mental model for developers, helps with onboarding, and serves as living documentation
+
+- **Strict Required Field Validation** - Enforces 100% required information collection before enabling predictions
+  - **Backend Changes**:
+    - Added `has_all_required_info()` method to `CaseFile` model for strict validation
+    - Added `is_ready_for_prediction()` method that requires ALL required fields
+    - Updated `PredictionService.check_case_ready()` to enforce strict validation (was 70%, now 100%)
+    - Enhanced `IntakeService` to mark intake complete only when ALL required fields present
+    - Updated `IntakeAgent._build_response_context()` to show clear warnings about missing required fields
+    - Agent now proactively prompts for missing required information with priority indicators
+  - **Frontend Changes**:
+    - Added prominent "Missing Required Information" alert in `IntakeSidebar` with bullet list of missing fields
+    - Added success message "All Required Info Collected!" when ready for prediction
+    - Updated `useChat` hook to compute `isComplete` based on `missing_info.length === 0` (strict)
+    - Updated `canGeneratePrediction` logic to require ALL required fields before enabling button
+    - Prediction button now only appears when truly ready (not at arbitrary 70% threshold)
+  - **Required Fields**:
+    1. Property address
+    2. Tenancy start date
+    3. Deposit amount
+    4. At least one dispute issue
+    5. Deposit protection status (yes/no)
+  - **User Experience**:
+    - Clear visibility into what information is still needed
+    - No ambiguity about when prediction can be generated
+    - Agent proactively asks for missing required fields
+    - Progress bar and sidebar show completion status accurately
+  - **Impact**: Prevents incomplete predictions, ensures quality of analysis, improves prediction accuracy
+
+- **Non-Blocking Completion Banner** - Improved layout so chat input remains visible
+  - **Issue**: When required fields were complete, the completion banner blocked the chat input textbox
+  - **Fix**: Made completion banner more compact and simplified input visibility logic
+  - **Changes**:
+    - Reduced banner padding and size (from `p-4` to `p-3`, smaller button)
+    - **Simplified input condition**: shows whenever `roleSelected` is true (no stage restrictions)
+    - Input stays visible at ALL times during intake, even if system detects missing required info
+    - Updated placeholder when complete: "Add more details or generate prediction above..."
+  - **Critical Fix**: Removed `stage !== 'complete'` condition that was hiding input in some cases
+  - **User Experience**: Users can ALWAYS continue chatting and adding information once they've selected a role, ensuring they can provide missing required fields without confusion
+
 ### Changed
+
+- **Improved Invite Code Display & Prediction Blocking** - Better UX for multi-party disputes
+  - **UI Changes**:
+    - Moved invite code display from bottom input area to the right sidebar
+    - Invite code no longer blocks the chat input textbox
+    - Added compact invite code section with copy/share buttons in sidebar
+    - Shows "Both Parties Connected" indicator when other party joins
+  - **Prediction Engine Blocking**:
+    - Added `is_ready_for_prediction` field to track when both parties have completed intake
+    - Prediction button is now blocked until BOTH parties have completed their intake (not just joined)
+    - Shows distinct messaging for: waiting for other party to join vs waiting for them to complete
+    - Clear status indication: "Your Intake Complete!", "Waiting for Other Party", or "Both Parties Complete!"
+  - **Backend Changes**:
+    - Added `is_ready_for_prediction` to `DisputeInfo` API model
+    - Now returns completion status based on dispute status (BOTH_COMPLETE or READY_FOR_MEDIATION)
 
 - **Simplified Session Creation Flow** - Streamlined the role-setting process for better UX
   - **Backend Changes**:

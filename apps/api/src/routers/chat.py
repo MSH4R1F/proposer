@@ -47,6 +47,7 @@ class DisputeInfo(BaseModel):
     invite_code: str
     status: str
     has_both_parties: bool
+    is_ready_for_prediction: bool = False
     waiting_message: Optional[str] = None
 
 
@@ -147,6 +148,7 @@ async def start_session(
                     invite_code=dispute.invite_code,
                     status=dispute.status.value,
                     has_both_parties=dispute.has_both_parties,
+                    is_ready_for_prediction=dispute.is_ready_for_prediction,
                     waiting_message=dispute.get_waiting_message(request.role),
                 )
                 logger.info("session_joined_dispute", 
@@ -170,6 +172,7 @@ async def start_session(
                 invite_code=dispute.invite_code,
                 status=dispute.status.value,
                 has_both_parties=dispute.has_both_parties,
+                is_ready_for_prediction=dispute.is_ready_for_prediction,
                 waiting_message=dispute.get_waiting_message(request.role),
             )
             logger.info("dispute_created_with_session", 
@@ -330,6 +333,7 @@ async def get_session(
                 invite_code=dispute.invite_code,
                 status=dispute.status.value,
                 has_both_parties=dispute.has_both_parties,
+                is_ready_for_prediction=dispute.is_ready_for_prediction,
                 waiting_message=dispute.get_waiting_message(current_role),
             )
 
