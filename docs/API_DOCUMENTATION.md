@@ -7,49 +7,58 @@ Base URL: `http://localhost:8000`
 ### Chat
 
 The chat flow follows this sequence:
-1. `POST /chat/start` - Get session ID and greeting
-2. `POST /chat/set-role` - Set tenant/landlord role (required before messaging)
-3. `POST /chat/message` - Continue the conversation
+1. `POST /chat/start` - Create session with role and get first question
+2. `POST /chat/message` - Continue the conversation
 
 #### Start Session
 ```
 POST /chat/start
 ```
-Starts a new intake conversation. Role is NOT set here - it must be set via `/chat/set-role` after the user selects their role in the UI.
-
-**Request:**
-```json
-{}
-```
-
-**Response:**
-```json
-{
-  "session_id": "abc123def4",
-  "greeting": "Hello! I'm here to help you with your tenancy deposit dispute...",
-  "stage": "greeting"
-}
-```
-
-#### Set Role
-```
-POST /chat/set-role
-```
-Sets the user's role (tenant or landlord). Must be called after starting a session and before sending messages.
+Starts a new intake conversation with the user's role. The role must be provided when creating the session, and the first response will be a role-appropriate question.
 
 **Request:**
 ```json
 {
-  "session_id": "abc123def4",
   "role": "tenant"
 }
 ```
+Role must be either `"tenant"` or `"landlord"`.
 
 **Response:**
 ```json
 {
   "session_id": "abc123def4",
-  "response": "Thank you. Let's start by getting some basic information...",
+  "response": "Let's start by getting some basic information. What is the address of the property?",
+  "stage": "basic_details",
+  "completeness": 0.0,
+  "is_complete": false,
+  "case_file": {
+    "user_role": "tenant",
+    ...
+  },
+  "role_set": true
+}
+```
+
+#### Set Role (Optional)
+```
+POST /chat/set-role
+```
+Changes the user's role in an existing session. In most cases, you should use `POST /chat/start` with the role parameter instead. This endpoint is mainly useful for changing the role mid-conversation.
+
+**Request:**
+```json
+{
+  "session_id": "abc123def4",
+  "role": "landlord"
+}
+```
+
+**Response:**
+```json
+{
+  "session_id": "abc123def4",
+  "response": "Thank you. As a landlord, let's start by getting some basic information...",
   "stage": "basic_details",
   "completeness": 0.1,
   "is_complete": false,

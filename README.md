@@ -140,9 +140,9 @@ An AI mediator monitors negotiations in real-time:
 ### Backend
 - **FastAPI** (Python 3.11+): Async API with type safety
 - **Langfuse**: LLM observability and tracing (no LangChain; native async orchestration via FastAPI, asyncio, and aiohttp)
-- **ChromaDB**: Vector embeddings for RAG retrieval
-- **Neo4j Community**: Knowledge graph for dispute facts
-- **PostgreSQL**: User accounts, case metadata, audit logs
+- **ChromaDB**: Vector embeddings for RAG retrieval (local development, Pinecone-ready)
+- **Neo4j Community**: Knowledge graph for dispute facts (JSON storage for MVP)
+- **Supabase**: PostgreSQL database + Auth + Storage
 
 ### Frontend
 - **Next.js 16** (App Router): React framework with SSR
@@ -152,15 +152,16 @@ An AI mediator monitors negotiations in real-time:
 
 ### AI/ML
 - **Primary LLM**: Claude 3.5 Sonnet (best reasoning)
-- **Fallback LLM**: GPT-4 Turbo
+- **Fallback LLM**: Claude 3.5 Haiku
 - **Embeddings**: text-embedding-3-small (OpenAI)
-- **Frameworks**: LangChain, LangSmith (tracing)
+- **Observability**: Langfuse (LLM tracing and monitoring)
 
 ### Infrastructure
-- **Hosting**: Railway and Cloudlfare for Web Hosting
-- **Monitoring**: Sentry (errors), PostHog (analytics)
-- **CI/CD**: GitHub Actions
-- **Package Manager**: npm workspaces (monorepo)
+- **Hosting**: Railway (planned) and Cloudflare (web hosting)
+- **Monitoring**: Langfuse (LLM observability), structlog (application logging)
+- **Storage**: Supabase Storage (evidence files with local fallback)
+- **CI/CD**: GitHub Actions (planned)
+- **Package Manager**: pip (Python), npm (frontend)
 
 ---
 
@@ -169,10 +170,12 @@ An AI mediator monitors negotiations in real-time:
 ### Prerequisites
 
 - **Node.js** 18+ and **npm** 9+
-- **Python** 3.14+
-- **PostgreSQL** 14+
-- **Docker** (for Neo4j and ChromaDB)
-- **API Keys**: Anthropic (Claude)
+- **Python** 3.11+
+- **PostgreSQL** 14+ (via Supabase)
+- **Docker** (optional, for local Neo4j)
+- **API Keys**: 
+  - Anthropic (Claude) - **Required**
+  - OpenAI (embeddings) - **Required**
 
 ### Installation
 
@@ -181,37 +184,44 @@ An AI mediator monitors negotiations in real-time:
 git clone https://github.com/yourusername/proposer.git
 cd proposer
 
-# Install dependencies
-npm install
-
-# Set up Python environment
-cd apps/api
+# Set up Python environment (backend + packages)
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Set up environment variables
 cp .env.example .env
-# Edit .env with your API keys and database URLs
+# Edit .env with your API keys:
+# - ANTHROPIC_API_KEY=sk-ant-your-key
+# - OPENAI_API_KEY=sk-your-key
+# - SUPABASE_URL=your-supabase-url (optional)
+# - SUPABASE_KEY=your-supabase-key (optional)
 
-# Start databases (Docker)
-docker-compose up -d
+# Install frontend dependencies
+cd apps/web
+npm install
+cd ../..
 
-# Run database migrations
-npm run db:migrate
+# Start backend API
+python scripts/api.py
+# API available at: http://localhost:8000
+# API Docs at: http://localhost:8000/docs
 
-# Start development servers
+# Start frontend (in a new terminal)
+cd apps/web
 npm run dev
+# Frontend available at: http://localhost:3000
 ```
 
-This will start:
+**Services:**
 - Frontend: http://localhost:3000
-- API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
+- Backend API: http://localhost:8000
+- API Docs (Swagger): http://localhost:8000/docs
 
 ### Quick Test
 
 ```bash
+# ===== RAG PIPELINE TESTS =====
 # Test BAILII scraper (dry run - lists cases without downloading)
 python -m scripts.scrapers.bailii_scraper --dry-run --years 2024
 
@@ -230,6 +240,28 @@ python scripts/rag.py query "tenant deposit not protected within 30 days"
 
 # View RAG index statistics
 python scripts/rag.py stats
+
+# ===== CHAT API TESTS =====
+# Test intake agent (CLI)
+export ANTHROPIC_API_KEY=sk-ant-your-key-here
+python scripts/intake.py chat
+
+# Test intake agent (API)
+# Start backend first: python scripts/api.py
+curl -X POST http://localhost:8000/chat/start \
+  -H "Content-Type: application/json" \
+  -d '{"role": "tenant"}'
+
+# Continue conversation
+curl -X POST http://localhost:8000/chat/message \
+  -H "Content-Type: application/json" \
+  -d '{"session_id": "your-session-id", "message": "123 Main Street, London"}'
+
+# ===== PREDICTION TESTS =====
+# Generate prediction for a case
+curl -X POST http://localhost:8000/predictions/generate \
+  -H "Content-Type: application/json" \
+  -d '{"case_id": "your-case-id"}'
 ```
 
 ---
@@ -305,60 +337,92 @@ proposer/
 ### Running Tests
 
 ```bash
+# RAG Engine tests (141 tests covering all components)
+python scripts/run_tests.py
+python scripts/run_tests.py --unit-only     # Skip integration tests
+python scripts/run_tests.py --coverage      # With coverage report
+python scripts/run_tests.py -k "test_bm25"  # Filter specific tests
+
+# RAG retrieval quality tests
+python scripts/test_rag_quality.py
+
+# Backend API tests
+cd apps/api && pytest
+
 # Frontend tests
-cd apps/web
-npm test
+cd apps/web && npm test
 
-# Backend tests
-cd apps/api
-pytest
-
-# Integration tests
-npm run test:integration
-
-# Evaluation tests (critical!)
-python scripts/evaluate-predictions.py
+# Evaluation tests (critical for accuracy tracking)
+python scripts/evaluate-predictions.py  # Coming soon
 ```
 
 ### Key Development Commands
 
 ```bash
-# Start all services
-npm run dev
+# ===== START SERVICES =====
+# Backend API (from project root)
+python scripts/api.py
+# Runs at: http://localhost:8000
 
-# Run database migrations
-npm run db:migrate
+# Frontend (from project root)
+cd apps/web && npm run dev
+# Runs at: http://localhost:3000
 
 # ===== DATA COLLECTION =====
-# Scrape new tribunal decisions
+# Scrape tribunal decisions from BAILII
 python -m scripts.scrapers.bailii_scraper --years 2024
 python -m scripts.scrapers.bailii_scraper --year-range 2020-2025
 python -m scripts.scrapers.bailii_scraper --resume  # Resume interrupted scrape
+python -m scripts.scrapers.bailii_scraper --stats   # View scraper stats
 
 # ===== RAG PIPELINE =====
-# Ingest PDFs into vector store
-python scripts/rag.py ingest --pdf-dir data/raw/bailii
+# Ingest PDFs into vector store (requires OPENAI_API_KEY)
+python scripts/rag.py ingest --pdf-dir data/raw/bailii/deposit-cases
+python scripts/rag.py ingest --pdf-dir data/raw/bailii/adjacent-cases
 
 # Query for similar cases
 python scripts/rag.py query "deposit not protected section 213"
 python scripts/rag.py query "cleaning claim" --region LON --year 2023
 python scripts/rag.py query "damage without inventory" --json-output
 
-# View index statistics
+# View RAG index statistics
 python scripts/rag.py stats
 
-# Clear and rebuild index
+# Rebuild BM25 index (if corrupted)
+python scripts/rebuild_bm25.py
+
+# Clear and rebuild entire index
 python scripts/rag.py clear
 python scripts/rag.py ingest --pdf-dir data/raw/bailii
 
-# Type checking
-npm run type-check
+# ===== INTAKE AGENT =====
+# Test intake agent via CLI (requires ANTHROPIC_API_KEY)
+python scripts/intake.py chat
 
-# Linting
-npm run lint
+# ===== TESTING =====
+# Run RAG engine tests
+python scripts/run_tests.py
+python scripts/run_tests.py --unit-only  # Skip integration tests
+python scripts/run_tests.py --coverage   # With coverage report
 
-# Format code
-npm run format
+# Test RAG retrieval quality
+python scripts/test_rag_quality.py
+
+# Backend tests
+cd apps/api && pytest
+
+# Frontend tests
+cd apps/web && npm test
+
+# ===== CODE QUALITY =====
+# Type checking (frontend)
+cd apps/web && npm run type-check
+
+# Linting (frontend)
+cd apps/web && npm run lint
+
+# Format code (frontend)
+cd apps/web && npm run format
 ```
 
 ### Coding Standards

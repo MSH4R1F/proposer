@@ -51,6 +51,19 @@ python scripts/intake.py chat
 The agent guides you through 10 stages:
 1. Greeting → 2. Role → 3. Property → 4. Tenancy → 5. Deposit → 6. Issues → 7. Evidence → 8. Claims → 9. Narrative → 10. Confirmation
 
+**API Usage:**
+```bash
+# Start a session with role (recommended)
+curl -X POST http://localhost:8000/chat/start \
+  -H "Content-Type: application/json" \
+  -d '{"role": "tenant"}'
+
+# Continue conversation
+curl -X POST http://localhost:8000/chat/message \
+  -H "Content-Type: application/json" \
+  -d '{"session_id": "abc123", "message": "123 Main Street"}'
+```
+
 ## Generating Predictions
 
 Via API:

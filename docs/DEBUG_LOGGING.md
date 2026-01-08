@@ -71,10 +71,12 @@ DEBUG: health_check - Health check with service status
 
 **Session Start:**
 ```
-DEBUG: start_session_request_received
-DEBUG: start_session_success (session_id, stage, greeting_length)
+DEBUG: start_session_request_received (role)
+DEBUG: start_session_success (session_id, role, stage, response_length)
 ERROR: start_session_failed (error, error_type)
 ```
+
+> **Note:** As of 2026-01-06, the session start now accepts a `role` parameter and creates the session with role already set. The response is immediately role-appropriate.
 
 **Message Processing:**
 ```
@@ -247,26 +249,41 @@ python src/main.py 2>&1 | grep "session_id=abc-123"
 
 Let's trace a typical chat conversation:
 
+**New Flow (2026-01-06+)** - Role set at creation:
 ```
-1. DEBUG: start_session_request_received
-2. DEBUG: starting_new_session
-3. DEBUG: llm_config_loaded
-4. DEBUG: conversation_created (session_id=xxx)
+1. DEBUG: start_session_request_received (role=tenant)
+2. DEBUG: starting_new_session (role=tenant)
+3. DEBUG: party_role_parsed (user_role=tenant)
+4. DEBUG: conversation_created (session_id=xxx, stage=basic_details, role=tenant)
 5. DEBUG: session_stored_in_memory (total_sessions=1)
 6. DEBUG: session_saved_to_disk
-7. INFO: intake_session_started (session_id=xxx)
-8. DEBUG: start_session_success (session_id=xxx, stage=greeting)
+7. INFO: intake_session_started (session_id=xxx, role=tenant)
+8. DEBUG: start_session_success (session_id=xxx, role=tenant, stage=basic_details)
 ```
 
-Then when user sets role:
+Then user continues with first message:
 ```
-9. DEBUG: set_role_request (session_id=xxx, role=tenant)
-10. DEBUG: setting_role (session_id=xxx, role=tenant)
-11. DEBUG: session_retrieved_for_role (current_stage=greeting)
-12. DEBUG: calling_agent_set_user_role
-13. DEBUG: agent_role_response_received (new_stage=basic_facts)
-14. INFO: intake_role_set (session_id=xxx, role=tenant, stage=basic_facts)
-15. DEBUG: set_role_success (session_id=xxx, role=tenant, stage=basic_facts)
+9. DEBUG: send_message_request (session_id=xxx, message="123 Main Street")
+10. DEBUG: processing_message (session_id=xxx)
+11. DEBUG: session_retrieved (session_id=xxx, current_stage=basic_details, user_role=tenant)
+12. DEBUG: calling_agent_process_message
+13. DEBUG: agent_response_received (new_stage=tenancy_details, completeness=0.15)
+14. DEBUG: session_saved_after_message
+15. DEBUG: send_message_success (session_id=xxx, stage=tenancy_details)
+```
+
+**Legacy Flow (still supported)** - Separate set-role call:
+```
+1. DEBUG: start_session_request_received (no role)
+2. DEBUG: conversation_created (session_id=xxx, stage=greeting)
+3. DEBUG: start_session_success (session_id=xxx, stage=greeting)
+
+Then when user sets role via separate endpoint:
+4. DEBUG: set_role_request (session_id=xxx, role=tenant)
+5. DEBUG: setting_role (session_id=xxx, role=tenant)
+6. DEBUG: calling_agent_set_user_role
+7. INFO: intake_role_set (session_id=xxx, role=tenant, stage=basic_details)
+8. DEBUG: set_role_success (session_id=xxx, stage=basic_details)
 ```
 
 ### 4. Debugging Issues
@@ -409,15 +426,16 @@ If logs aren't showing what you expect:
 
 ## Examples
 
-### Example 1: Successful Chat Flow
+### Example 1: Successful Chat Flow (New Simplified)
 ```
 2026-01-06T11:33:20.606 [info] api_starting host=0.0.0.0 port=8000
 2026-01-06T11:33:20.607 [debug] environment_check anthropic_key_set=True openai_key_set=True
 2026-01-06T11:33:20.608 [debug] routers_registered
-2026-01-06T11:33:22.123 [debug] start_session_request_received
-2026-01-06T11:33:22.125 [debug] conversation_created session_id=abc-123 stage=greeting
-2026-01-06T11:33:22.127 [info] intake_session_started session_id=abc-123
-2026-01-06T11:33:22.128 [debug] start_session_success session_id=abc-123
+2026-01-06T11:33:22.123 [debug] start_session_request_received role=tenant
+2026-01-06T11:33:22.124 [debug] starting_new_session role=tenant
+2026-01-06T11:33:22.125 [debug] conversation_created session_id=abc-123 stage=basic_details role=tenant
+2026-01-06T11:33:22.127 [info] intake_session_started session_id=abc-123 role=tenant
+2026-01-06T11:33:22.128 [debug] start_session_success session_id=abc-123 role=tenant stage=basic_details
 ```
 
 ### Example 2: Error Flow
