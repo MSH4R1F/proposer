@@ -205,6 +205,7 @@ class DisputeService:
         Update dispute info from a session's case file.
         
         Called when session data changes to keep dispute in sync.
+        Uses robust status recalculation to fix any inconsistencies.
         """
         dispute = await self.get_dispute_by_session(session_id)
         if not dispute:
@@ -218,13 +219,47 @@ class DisputeService:
         if deposit_amount and not dispute.deposit_amount:
             dispute.deposit_amount = deposit_amount
         
-        # Update completion status
+        # Update completion status using idempotent method
         if intake_complete and role:
             dispute.mark_party_complete(role)
+            logger.info("dispute_party_marked_complete",
+                       dispute_id=dispute.dispute_id,
+                       role=role,
+                       new_status=dispute.status.value,
+                       is_ready=dispute.is_ready_for_prediction)
         
         dispute.update_timestamp()
         self._save_dispute(dispute)
         
+        return dispute
+    
+    async def sync_dispute_status_from_sessions(
+        self,
+        dispute_id: str,
+        tenant_complete: bool,
+        landlord_complete: bool,
+    ) -> Optional[DisputeCase]:
+        """
+        Sync dispute status based on actual session completion data.
+        
+        This fixes disputes that may be stuck in incorrect states.
+        """
+        dispute = await self.get_dispute(dispute_id)
+        if not dispute:
+            return None
+        
+        old_status = dispute.status
+        dispute.recalculate_status(tenant_complete, landlord_complete)
+        
+        if old_status != dispute.status:
+            logger.info("dispute_status_recalculated",
+                       dispute_id=dispute_id,
+                       old_status=old_status.value,
+                       new_status=dispute.status.value,
+                       tenant_complete=tenant_complete,
+                       landlord_complete=landlord_complete)
+        
+        self._save_dispute(dispute)
         return dispute
     
     async def list_disputes(

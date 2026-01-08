@@ -175,6 +175,25 @@ class IntakeService:
         self._save_session(updated_conversation)
         logger.debug("session_saved_after_message", session_id=session_id)
 
+        # CRITICAL: Sync dispute status when party completes required fields
+        # This enables the prediction button when BOTH parties are ready
+        try:
+            from apps.api.src.services.dispute_service import get_dispute_service
+            dispute_service = get_dispute_service()
+            await dispute_service.update_dispute_from_session(
+                session_id=session_id,
+                property_address=case_file.property.address,
+                property_postcode=case_file.property.postcode,
+                deposit_amount=case_file.tenancy.deposit_amount,
+                intake_complete=case_file.intake_complete,
+                role=case_file.user_role.value if case_file.user_role else None,
+            )
+            logger.debug("dispute_status_synced", 
+                        session_id=session_id, 
+                        intake_complete=case_file.intake_complete)
+        except Exception as e:
+            logger.warning("dispute_sync_failed", session_id=session_id, error=str(e))
+
         return {
             "response": response,
             "stage": updated_conversation.current_stage.value,

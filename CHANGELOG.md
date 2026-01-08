@@ -69,6 +69,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Critical Fix**: Removed `stage !== 'complete'` condition that was hiding input in some cases
   - **User Experience**: Users can ALWAYS continue chatting and adding information once they've selected a role, ensuring they can provide missing required fields without confusion
 
+- **Multi-Party Prediction Button Fix** - Fixed critical bug where prediction button never appeared for multi-party disputes
+  - **Root Cause 1**: `update_dispute_from_session()` was never being called to sync dispute status when parties completed intake
+  - **Root Cause 2**: `ChatMessageResponse` didn't return updated `dispute` info, so frontend never saw `is_ready_for_prediction: true`
+  - **Backend Fixes**:
+    - Added dispute status sync in `IntakeService.process_message()` after each message
+    - Added `dispute` field to `ChatMessageResponse` API model
+    - Updated `/chat/message` endpoint to return fresh dispute info with `is_ready_for_prediction` status
+    - Now calls `dispute_service.update_dispute_from_session(intake_complete=True)` when all required fields present
+    - Dispute model's `mark_party_complete()` updates status: `TENANT_COMPLETE` → `BOTH_COMPLETE` → `READY_FOR_MEDIATION`
+  - **Frontend Fixes**:
+    - Added `dispute?: DisputeInfo` to `ChatMessageResponse` TypeScript type
+    - Updated `useChat.sendMessage()` to preserve/update `dispute` from message response
+    - Frontend now receives real-time dispute status updates after each message
+  - **How It Works Now**:
+    1. Tenant sends message, completes required fields → `intake_complete = True`
+    2. Backend calls `update_dispute_from_session()` → `dispute.status = TENANT_COMPLETE`
+    3. Landlord sends message, completes required fields → `intake_complete = True`
+    4. Backend calls `update_dispute_from_session()` → `dispute.status = READY_FOR_MEDIATION`
+    5. Backend returns `dispute.is_ready_for_prediction = True` in message response
+    6. Frontend sees updated dispute → `canGeneratePrediction = True`
+    7. 🎉 Prediction button appears for both parties!
+  - **Note**: 94% completeness is CORRECT - it means all 5 required fields (70%) + some optional fields (24%)
+
+- **Critical Bug Fix: Dispute Status Regression** - Fixed bug where dispute status was reset when parties sent additional messages
+  - **Bug**: `mark_party_complete()` would reset `READY_FOR_MEDIATION` back to `TENANT_COMPLETE` or `LANDLORD_COMPLETE` when called multiple times
+  - **Root Cause**: The method wasn't idempotent - it didn't check if the party was already marked complete
+  - **Symptom**: Both parties at 94% complete, shows "complete" message, but prediction button never appears
+  - **Fix 1**: Made `mark_party_complete()` idempotent - returns early if already complete
+  - **Fix 2**: Added `recalculate_status(tenant_complete, landlord_complete)` method for robust status calculation
+  - **Fix 3**: Auto-fix on session load - `/chat/session/{id}` now checks both parties' sessions and recalculates dispute status
+  - **Impact**: Existing disputes that were stuck in wrong state will auto-fix when users refresh the page
+
 ### Changed
 
 - **Improved Invite Code Display & Prediction Blocking** - Better UX for multi-party disputes
