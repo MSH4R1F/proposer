@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 import structlog
 
 from apps.api.src.services.intake_service import IntakeService, get_intake_service
+from apps.api.src.services.dispute_service import DisputeService, get_dispute_service
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -36,6 +37,17 @@ class ChatMessageResponse(BaseModel):
 class StartSessionRequest(BaseModel):
     """Request to start a new chat session."""
     role: str = Field(..., description="User role: 'tenant' or 'landlord'")
+    invite_code: Optional[str] = Field(None, description="Invite code to join existing dispute")
+    create_dispute: bool = Field(True, description="Whether to create a new dispute case")
+
+
+class DisputeInfo(BaseModel):
+    """Dispute information embedded in session responses."""
+    dispute_id: str
+    invite_code: str
+    status: str
+    has_both_parties: bool
+    waiting_message: Optional[str] = None
 
 
 class StartSessionResponse(BaseModel):
@@ -47,6 +59,7 @@ class StartSessionResponse(BaseModel):
     is_complete: bool
     case_file: Dict
     role_set: bool
+    dispute: Optional[DisputeInfo] = None
 
 
 class SetRoleRequest(BaseModel):
@@ -82,30 +95,30 @@ class SessionStatusResponse(BaseModel):
     message_count: int
     case_file: Dict
     messages: List[MessageData] = Field(default_factory=list)
+    dispute: Optional[DisputeInfo] = None
 
 
 @router.post("/start", response_model=StartSessionResponse)
 async def start_session(
     request: StartSessionRequest,
     intake_service: IntakeService = Depends(get_intake_service),
+    dispute_service: DisputeService = Depends(get_dispute_service),
 ):
     """
     Start a new intake conversation session with the user's role.
 
-    The role must be provided when creating the session. The session will
-    be created with the role already set, and the first response will be
-    a role-appropriate question.
+    Optionally creates or joins a dispute case for linking tenant/landlord sessions.
 
-    Flow:
-        1. Frontend shows role selector ("I'm a tenant" / "I'm a landlord")
-        2. POST /chat/start with role -> get session_id and first question
-        3. POST /chat/message -> continue conversation
-
-    The role must be either "tenant" or "landlord".
+    Flow options:
+        1. New dispute: POST /chat/start with role + create_dispute=true
+        2. Join existing: POST /chat/start with role + invite_code
+        3. Standalone: POST /chat/start with role + create_dispute=false
     """
-    logger.debug("start_session_request_received", role=request.role)
+    logger.debug("start_session_request_received", 
+                 role=request.role, 
+                 invite_code=request.invite_code,
+                 create_dispute=request.create_dispute)
     
-    # Validate role first
     if request.role not in ("tenant", "landlord"):
         logger.warning("invalid_role_attempted", invalid_role=request.role)
         raise HTTPException(
@@ -114,17 +127,61 @@ async def start_session(
         )
     
     try:
-        # Create session with role - this returns a role-appropriate first question
         greeting, session_id, stage = await intake_service.start_session(role=request.role)
-        
-        # Get the session to return full state
         session_status = await intake_service.get_session_status(session_id)
+        
+        if session_status is None:
+            raise HTTPException(status_code=500, detail="Failed to get session status")
+        
+        dispute_info: Optional[DisputeInfo] = None
+        
+        if request.invite_code:
+            dispute = await dispute_service.join_dispute(
+                invite_code=request.invite_code,
+                session_id=session_id,
+                role=request.role,
+            )
+            if dispute:
+                dispute_info = DisputeInfo(
+                    dispute_id=dispute.dispute_id,
+                    invite_code=dispute.invite_code,
+                    status=dispute.status.value,
+                    has_both_parties=dispute.has_both_parties,
+                    waiting_message=dispute.get_waiting_message(request.role),
+                )
+                logger.info("session_joined_dispute", 
+                           session_id=session_id, 
+                           dispute_id=dispute.dispute_id)
+            else:
+                logger.warning("failed_to_join_dispute", invite_code=request.invite_code)
+        
+        elif request.create_dispute:
+            property_address = session_status["case_file"].get("property", {}).get("address")
+            deposit_amount = session_status["case_file"].get("tenancy", {}).get("deposit_amount")
+            
+            dispute = await dispute_service.create_dispute(
+                session_id=session_id,
+                role=request.role,
+                property_address=property_address,
+                deposit_amount=deposit_amount,
+            )
+            dispute_info = DisputeInfo(
+                dispute_id=dispute.dispute_id,
+                invite_code=dispute.invite_code,
+                status=dispute.status.value,
+                has_both_parties=dispute.has_both_parties,
+                waiting_message=dispute.get_waiting_message(request.role),
+            )
+            logger.info("dispute_created_with_session", 
+                       session_id=session_id, 
+                       dispute_id=dispute.dispute_id,
+                       invite_code=dispute.invite_code)
         
         logger.debug("start_session_success", 
                      session_id=session_id, 
                      role=request.role,
                      stage=stage,
-                     response_length=len(greeting))
+                     has_dispute=dispute_info is not None)
 
         return StartSessionResponse(
             session_id=session_id,
@@ -134,7 +191,10 @@ async def start_session(
             is_complete=session_status["is_complete"],
             case_file=session_status["case_file"],
             role_set=True,
+            dispute=dispute_info,
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("start_session_failed", error=str(e), error_type=type(e).__name__)
         raise HTTPException(status_code=500, detail=str(e))
@@ -250,10 +310,9 @@ async def set_role(
 async def get_session(
     session_id: str,
     intake_service: IntakeService = Depends(get_intake_service),
+    dispute_service: DisputeService = Depends(get_dispute_service),
 ):
-    """
-    Get the current state of a chat session.
-    """
+    """Get the current state of a chat session including linked dispute."""
     logger.debug("get_session_request", session_id=session_id)
     try:
         status = await intake_service.get_session_status(session_id)
@@ -262,12 +321,25 @@ async def get_session(
             logger.warning("session_not_found", session_id=session_id)
             raise HTTPException(status_code=404, detail=f"Session not found: {session_id}")
 
+        dispute_info: Optional[DisputeInfo] = None
+        dispute = await dispute_service.get_dispute_by_session(session_id)
+        if dispute:
+            current_role = status["case_file"].get("user_role", "tenant")
+            dispute_info = DisputeInfo(
+                dispute_id=dispute.dispute_id,
+                invite_code=dispute.invite_code,
+                status=dispute.status.value,
+                has_both_parties=dispute.has_both_parties,
+                waiting_message=dispute.get_waiting_message(current_role),
+            )
+
         logger.debug("get_session_success", 
                      session_id=session_id,
                      stage=status.get("stage"),
-                     message_count=status.get("message_count"))
+                     message_count=status.get("message_count"),
+                     has_dispute=dispute_info is not None)
 
-        return SessionStatusResponse(**status)
+        return SessionStatusResponse(**status, dispute=dispute_info)
     except HTTPException:
         raise
     except Exception as e:

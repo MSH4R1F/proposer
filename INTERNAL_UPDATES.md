@@ -4,6 +4,136 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-01-08 - Case Linking System & Intake Sidebar
+
+### Overview
+
+Implemented a system to link tenant and landlord sessions to the same dispute case, plus added a sidebar showing intake progress and collected data.
+
+### New Features
+
+#### 1. Dispute Case Linking
+
+**New Model:** `packages/llm_orchestrator/models/dispute.py`
+- `DisputeCase` model links tenant and landlord sessions
+- Human-readable invite codes (e.g., `BLUE-TIGER-42`) for easy sharing
+- Status tracking: waiting_for_party → both_in_progress → both_complete → ready_for_mediation
+
+**New Service:** `apps/api/src/services/dispute_service.py`
+- Create disputes with unique invite codes
+- Join disputes using invite codes
+- Link sessions to disputes
+- Persist disputes to JSON files
+
+**New Router:** `apps/api/src/routers/disputes.py`
+- `POST /disputes/create` - Create new dispute, get invite code
+- `POST /disputes/validate-invite` - Validate invite code before joining
+- `POST /disputes/join` - Join dispute with invite code
+- `GET /disputes/by-session/{session_id}` - Get dispute for a session
+- `GET /disputes/{dispute_id}` - Get dispute details
+- `GET /disputes/` - List all disputes (admin)
+
+#### 2. Updated Chat Flow
+
+**Modified:** `apps/api/src/routers/chat.py`
+- `POST /chat/start` now accepts `invite_code` and `create_dispute` parameters
+- Returns `dispute` info in response (invite_code, status, waiting_message)
+- `GET /chat/session/{id}` returns linked dispute info
+
+#### 3. Frontend Components
+
+**New Components:**
+- `DisputeEntrySelector` - "Start New" vs "Join Existing" choice screen
+- `InviteCodeDisplay` - Shows invite code with copy/share buttons
+- `IntakeSidebar` - Collapsible sidebar showing 10 stages with collected data
+
+**Updated:** `ChatContainer.tsx`
+- New entry flow: select mode → role selection → chat
+- Shows invite code display when dispute is created
+- Shows "waiting for other party" state
+- Integrated intake sidebar on the right
+
+**New UI Components:**
+- `components/ui/collapsible.tsx` - Radix collapsible wrapper
+- `components/ui/table.tsx` - Table components for admin dashboard
+
+#### 4. Admin Dashboard
+
+**New Page:** `apps/web/app/admin/page.tsx`
+- View all disputes with status
+- See which parties have joined (T/L badges)
+- View all sessions
+- Statistics: total disputes, both parties joined, ready for prediction
+
+### API Changes
+
+**`POST /chat/start` Request:**
+```json
+{
+  "role": "tenant",
+  "invite_code": null,        // Optional: join existing dispute
+  "create_dispute": true      // Default: create new dispute
+}
+```
+
+**`POST /chat/start` Response (new field):**
+```json
+{
+  "session_id": "abc123",
+  "response": "...",
+  "stage": "basic_details",
+  "dispute": {
+    "dispute_id": "DISP-XYZ123",
+    "invite_code": "BLUE-TIGER-42",
+    "status": "waiting_for_landlord",
+    "has_both_parties": false,
+    "waiting_message": "Waiting for the landlord to join using code: BLUE-TIGER-42"
+  }
+}
+```
+
+### User Flow
+
+1. **Tenant starts dispute:**
+   - Goes to `/chat`
+   - Clicks "Start New Dispute"
+   - Selects "I'm a Tenant"
+   - Gets invite code `BLUE-TIGER-42`
+   - Shares code with landlord
+
+2. **Landlord joins:**
+   - Goes to `/chat`
+   - Clicks "Join Existing Dispute"
+   - Enters code `BLUE-TIGER-42`
+   - Validates → shows "You will join as: Landlord"
+   - Confirms role, starts their intake
+
+3. **Both complete intake:**
+   - Each party sees "Waiting for other party" until both finish
+   - When both complete, "Generate Prediction" becomes available
+
+### Files Created/Modified
+
+| File | Type | Description |
+|------|------|-------------|
+| `packages/llm_orchestrator/models/dispute.py` | New | DisputeCase model |
+| `apps/api/src/services/dispute_service.py` | New | Dispute management service |
+| `apps/api/src/routers/disputes.py` | New | Dispute API endpoints |
+| `apps/api/src/routers/chat.py` | Modified | Added dispute linking |
+| `apps/api/src/main.py` | Modified | Registered disputes router |
+| `apps/web/lib/types/chat.ts` | Modified | Added DisputeInfo type |
+| `apps/web/lib/api/chat.ts` | Modified | Added validateInviteCode |
+| `apps/web/lib/hooks/useChat.ts` | Modified | Added dispute state |
+| `apps/web/components/chat/DisputeEntrySelector.tsx` | New | Entry mode selector |
+| `apps/web/components/chat/InviteCodeDisplay.tsx` | New | Invite code display |
+| `apps/web/components/chat/IntakeSidebar.tsx` | New | Progress sidebar |
+| `apps/web/components/chat/ChatContainer.tsx` | Modified | Integrated new components |
+| `apps/web/components/ui/collapsible.tsx` | New | Collapsible component |
+| `apps/web/components/ui/table.tsx` | New | Table components |
+| `apps/web/app/admin/page.tsx` | New | Admin dashboard |
+
+---
+
 ## 2026-01-06 - Session Creation Flow Simplification
 
 ### Overview

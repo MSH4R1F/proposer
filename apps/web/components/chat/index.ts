@@ -7,3 +7,6 @@ export { CompletenessBar } from './CompletenessBar';
 export { ChatHeader } from './ChatHeader';
 export { ChatContainer } from './ChatContainer';
 export { TypingIndicator } from './TypingIndicator';
+export { DisputeEntrySelector } from './DisputeEntrySelector';
+export { InviteCodeDisplay } from './InviteCodeDisplay';
+export { IntakeSidebar } from './IntakeSidebar';

@@ -335,8 +335,16 @@ npm run dev
 - [x] Implement 10-stage conversational intake UI
 - [x] Create prediction results page with reasoning traces
 - [x] Add shadcn/ui components (60+ files created)
+- [x] **Case Linking System** - Link tenant and landlord sessions to same dispute
+- [x] DisputeCase model with human-readable invite codes
+- [x] Disputes API endpoints (create, join, validate-invite)
+- [x] Frontend entry flow (Start New vs Join Existing)
+- [x] Invite code display with copy/share functionality
+- [x] **Intake Sidebar** - Collapsible sidebar showing 10 stages with collected data
+- [x] **Admin Dashboard** (`/admin`) - View all disputes and sessions
+- [x] "Waiting for other party" state display
 
 ---
 
-*Last Updated: 2026-01-05*
+*Last Updated: 2026-01-08*
 
