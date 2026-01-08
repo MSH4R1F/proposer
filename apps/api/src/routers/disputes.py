@@ -345,3 +345,104 @@ async def delete_dispute(
         raise HTTPException(status_code=404, detail=f"Dispute not found: {dispute_id}")
     
     return {"message": f"Dispute {dispute_id} deleted"}
+
+
+class SyncStatusRequest(BaseModel):
+    """Request to sync dispute status from session data."""
+    tenant_complete: bool = Field(False, description="Whether tenant has completed all required fields")
+    landlord_complete: bool = Field(False, description="Whether landlord has completed all required fields")
+
+
+@router.post("/{dispute_id}/sync-status")
+async def sync_dispute_status(
+    dispute_id: str,
+    request: SyncStatusRequest,
+    dispute_service: DisputeService = Depends(get_dispute_service),
+):
+    """
+    Manually sync dispute status based on actual completion state.
+    
+    Use this to fix disputes that are stuck in the wrong state.
+    If both parties have completed their required fields, this will
+    update the status to READY_FOR_MEDIATION.
+    """
+    logger.info("manual_sync_dispute_status", 
+                dispute_id=dispute_id,
+                tenant_complete=request.tenant_complete,
+                landlord_complete=request.landlord_complete)
+    
+    dispute = await dispute_service.sync_dispute_status_from_sessions(
+        dispute_id=dispute_id,
+        tenant_complete=request.tenant_complete,
+        landlord_complete=request.landlord_complete,
+    )
+    
+    if not dispute:
+        raise HTTPException(status_code=404, detail=f"Dispute not found: {dispute_id}")
+    
+    return {
+        "dispute_id": dispute.dispute_id,
+        "old_status": "unknown",  # We don't track old status in this call
+        "new_status": dispute.status.value,
+        "is_ready_for_prediction": dispute.is_ready_for_prediction,
+        "message": f"Dispute status updated to {dispute.status.value}"
+    }
+
+
+@router.post("/fix-by-session/{session_id}")
+async def fix_dispute_by_session(
+    session_id: str,
+    dispute_service: DisputeService = Depends(get_dispute_service),
+):
+    """
+    Fix a dispute's status based on a session ID.
+    
+    This will look up the dispute linked to the session and force
+    the status to READY_FOR_MEDIATION if both parties have sessions.
+    
+    Use this endpoint if the prediction button isn't showing despite
+    both parties completing their intake.
+    """
+    logger.info("fix_dispute_by_session", session_id=session_id)
+    
+    dispute = await dispute_service.get_dispute_by_session(session_id)
+    
+    if not dispute:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"No dispute found for session: {session_id}. This might be a single-party session."
+        )
+    
+    # If both parties have joined, force the status to ready
+    if dispute.has_both_parties:
+        from llm_orchestrator.models.dispute import DisputeStatus
+        
+        old_status = dispute.status.value
+        dispute.status = DisputeStatus.READY_FOR_MEDIATION
+        dispute.update_timestamp()
+        
+        # Save the dispute
+        dispute_service._disputes[dispute.dispute_id] = dispute
+        dispute_service._save_dispute(dispute)
+        
+        logger.info("dispute_status_forced_to_ready",
+                   dispute_id=dispute.dispute_id,
+                   old_status=old_status,
+                   new_status=dispute.status.value)
+        
+        return {
+            "dispute_id": dispute.dispute_id,
+            "old_status": old_status,
+            "new_status": dispute.status.value,
+            "is_ready_for_prediction": dispute.is_ready_for_prediction,
+            "message": "Dispute status fixed! Both parties can now generate predictions."
+        }
+    else:
+        return {
+            "dispute_id": dispute.dispute_id,
+            "status": dispute.status.value,
+            "is_ready_for_prediction": dispute.is_ready_for_prediction,
+            "has_tenant": dispute.tenant_session_id is not None,
+            "has_landlord": dispute.landlord_session_id is not None,
+            "message": "Cannot fix - both parties must join before prediction can be enabled."
+        }
