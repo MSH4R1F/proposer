@@ -12,8 +12,8 @@ interface IssuePredictionCardProps {
 }
 
 const outcomeColors = {
-  tenant_win: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
-  landlord_win: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
+  tenant_favored: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
+  landlord_favored: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
   split: 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950',
   uncertain: 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950',
 };
@@ -43,9 +43,9 @@ export function IssuePredictionCard({
         <div className="flex items-center justify-between">
           <Badge
             variant={
-              prediction.predicted_outcome === 'tenant_win'
+              prediction.predicted_outcome === 'tenant_favored'
                 ? 'success'
-                : prediction.predicted_outcome === 'landlord_win'
+                : prediction.predicted_outcome === 'landlord_favored'
                 ? 'destructive'
                 : 'secondary'
             }
