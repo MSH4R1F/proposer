@@ -68,6 +68,17 @@ We say: **"Here's what the law says, based on what tribunals say"**
 
 ## 🔧 How It Works
 
+### Quick Diagram
+
+```mermaid
+flowchart TD
+  U[User describes dispute] --> I[Intake (guided questions)]
+  I --> R[RAG: retrieve similar cases]
+  R --> P[Prediction + cited reasoning]
+  P --> N[Negotiation / mediation support]
+  N --> O[Outcome: settlement or next steps]
+```
+
 ### The User Journey
 
 ```mermaid
