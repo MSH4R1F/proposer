@@ -79,14 +79,14 @@ export default function HomePage() {
 
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              Resolve Your Deposit Dispute{' '}
+              Resolve Your Dispute{' '}
               <span className="text-primary">Fairly</span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-              Get a prediction of how a tribunal would likely decide your tenancy
-              deposit dispute, based on <span className="font-medium text-foreground">500+ real tribunal decisions</span>.
+              Get a prediction of how a tribunal would likely decide your case, based on
+              <span className="font-medium text-foreground"> 500+ real tribunal decisions</span>. We cite sources so you can verify every claim.
             </p>
 
             {/* CTA */}
@@ -186,7 +186,7 @@ export default function HomePage() {
                   <h3 className="font-semibold text-lg">Tenants</h3>
                 </div>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  {['Disputing unfair deposit deductions', 'Want to know chances before ADR', 'Need evidence from similar cases'].map((item) => (
+                  {['In a dispute with your landlord/agent', 'Want to understand likely outcomes before escalating', 'Need evidence from similar tribunal cases'].map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-success shrink-0 mt-0.5" />
                       <span>{item}</span>
@@ -204,7 +204,7 @@ export default function HomePage() {
                   <h3 className="font-semibold text-lg">Landlords</h3>
                 </div>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  {['Want realistic claim assessment', 'Looking for fair settlement amounts', 'Need to understand precedents'].map((item) => (
+                  {['Want a realistic claim/defence assessment', 'Looking for fair settlement ranges', 'Need to understand relevant precedents'].map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <CheckCircle2 className="h-4 w-4 text-success shrink-0 mt-0.5" />
                       <span>{item}</span>
@@ -258,7 +258,7 @@ export default function HomePage() {
               <div className="flex items-center gap-2">
                 <Scale className="h-4 w-4 text-primary" />
                 <span className="font-medium">Proposer</span>
-                <span>• AI-Powered Deposit Dispute Resolution</span>
+                <span>• AI-Powered Tribunal Outcome Prediction</span>
               </div>
               <p>© {new Date().getFullYear()} Built for university project</p>
             </div>
