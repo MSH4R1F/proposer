@@ -229,7 +229,6 @@ evaluation-reports/
 # Model Artifacts & Caches
 # ===================================
 # Model files (if you fine-tune locally)
-models/
 *.ckpt
 *.bin
 *.safetensors
