@@ -15,12 +15,14 @@ from pydantic import BaseModel, Field
 
 class PartyRole(str, Enum):
     """Role of the user in the dispute."""
+
     TENANT = "tenant"
     LANDLORD = "landlord"
 
 
 class DisputeIssue(str, Enum):
     """Types of issues in a tenancy deposit dispute."""
+
     CLEANING = "cleaning"
     DAMAGE = "damage"
     RENT_ARREARS = "rent_arrears"
@@ -36,6 +38,7 @@ class DisputeIssue(str, Enum):
 
 class EvidenceType(str, Enum):
     """Types of evidence that can be submitted."""
+
     INVENTORY_CHECKIN = "inventory_checkin"
     INVENTORY_CHECKOUT = "inventory_checkout"
     PHOTOS_BEFORE = "photos_before"
@@ -51,6 +54,7 @@ class EvidenceType(str, Enum):
 
 class EvidenceItem(BaseModel):
     """A piece of evidence uploaded or described by the user."""
+
     id: str = Field(default_factory=lambda: str(uuid4())[:8])
     type: EvidenceType
     description: str
@@ -66,6 +70,7 @@ class EvidenceItem(BaseModel):
 
 class ClaimedAmount(BaseModel):
     """An amount claimed by a party for a specific issue."""
+
     id: str = Field(default_factory=lambda: str(uuid4())[:8])
     issue: DisputeIssue
     amount: float = Field(..., ge=0)
@@ -76,6 +81,7 @@ class ClaimedAmount(BaseModel):
 
 class PropertyDetails(BaseModel):
     """Details about the rental property."""
+
     address: Optional[str] = None
     postcode: Optional[str] = None
     property_type: Optional[str] = None  # flat, house, HMO, room
@@ -92,9 +98,26 @@ class PropertyDetails(BaseModel):
 
         # London postcodes
         london_prefixes = [
-            "E", "EC", "N", "NW", "SE", "SW", "W", "WC",
-            "BR", "CR", "DA", "EN", "HA", "IG", "KT",
-            "RM", "SM", "TW", "UB", "WD"
+            "E",
+            "EC",
+            "N",
+            "NW",
+            "SE",
+            "SW",
+            "W",
+            "WC",
+            "BR",
+            "CR",
+            "DA",
+            "EN",
+            "HA",
+            "IG",
+            "KT",
+            "RM",
+            "SM",
+            "TW",
+            "UB",
+            "WD",
         ]
         for prefix in london_prefixes:
             if postcode_upper.startswith(prefix):
@@ -122,11 +145,11 @@ class PropertyDetails(BaseModel):
         return "CHI"  # Default fallback
 
         ## TODO: addd a better way to infer region from postcode
-        
 
 
 class TenancyDetails(BaseModel):
     """Details about the tenancy agreement."""
+
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     tenancy_type: Optional[str] = None  # AST, periodic, etc.
@@ -153,6 +176,7 @@ class CaseFile(BaseModel):
     This is the central data structure that flows through
     the entire system: Intake -> KG -> RAG -> Prediction.
     """
+
     case_id: str = Field(default_factory=lambda: str(uuid4())[:12])
     user_role: PartyRole
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
@@ -224,17 +248,19 @@ class CaseFile(BaseModel):
 
         Returns a score between 0 and 1.
         """
-        # Required fields (70% weight)
         required_checks = [
+            len(self.issues) > 0,
+        ]
+        required_score = sum(required_checks) / len(required_checks) * 0.3
+
+        recommended_checks = [
             self.property.address is not None,
             self.tenancy.start_date is not None,
             self.tenancy.deposit_amount is not None,
-            len(self.issues) > 0,
             self.tenancy.deposit_protected is not None,
         ]
-        required_score = sum(required_checks) / len(required_checks) * 0.7
+        recommended_score = sum(recommended_checks) / len(recommended_checks) * 0.4
 
-        # Optional but valuable fields (30% weight)
         optional_checks = [
             len(self.evidence) > 0,
             len(self.tenant_claims) > 0 or len(self.landlord_claims) > 0,
@@ -244,11 +270,18 @@ class CaseFile(BaseModel):
         ]
         optional_score = sum(optional_checks) / len(optional_checks) * 0.3
 
-        self.completeness_score = required_score + optional_score
+        self.completeness_score = required_score + recommended_score + optional_score
         return self.completeness_score
 
     def get_missing_required_info(self) -> List[str]:
-        """Get list of missing required information."""
+        missing = []
+        if not self.issues:
+            missing.append("dispute issues")
+
+        self.missing_info = missing
+        return missing
+
+    def get_missing_recommended_info(self) -> List[str]:
         missing = []
         if not self.property.address:
             missing.append("property address")
@@ -256,31 +289,38 @@ class CaseFile(BaseModel):
             missing.append("tenancy start date")
         if not self.tenancy.deposit_amount:
             missing.append("deposit amount")
-        if not self.issues:
-            missing.append("dispute issues")
         if self.tenancy.deposit_protected is None:
             missing.append("deposit protection status")
-
-        self.missing_info = missing
         return missing
 
     def has_all_required_info(self) -> bool:
-        """
-        Check if ALL required fields are present.
-        
-        Returns True only if every required field has a value.
-        This is stricter than completeness_score which includes optional fields.
-        """
-        missing = self.get_missing_required_info()
-        return len(missing) == 0
+        return len(self.get_missing_required_info()) == 0
 
     def is_ready_for_prediction(self) -> bool:
-        """
-        Determine if the case file is ready for prediction generation.
-        
-        Requires ALL required fields to be present (100% of required info).
-        """
         return self.has_all_required_info()
+
+    def get_data_quality_tier(self) -> str:
+        """
+        Classify how much data the case file has for prediction quality.
+
+        Returns 'insufficient', 'minimal', 'partial', or 'full'.
+        Cases with >= 50% completeness can still generate predictions
+        at 'minimal' or 'partial' quality.
+        """
+        self.calculate_completeness()
+
+        if self.completeness_score < 0.5:
+            return "insufficient"
+
+        if not self.has_all_required_info():
+            return "minimal"
+
+        recommended_missing = self.get_missing_recommended_info()
+        if len(recommended_missing) == 0:
+            return "full"
+        if len(recommended_missing) <= 2:
+            return "partial"
+        return "minimal"
 
     def to_query_string(self) -> str:
         """
@@ -310,7 +350,10 @@ class CaseFile(BaseModel):
 
         # Add evidence types mentioned
         evidence_types = set(e.type.value for e in self.evidence)
-        if "inventory_checkin" in evidence_types or "inventory_checkout" in evidence_types:
+        if (
+            "inventory_checkin" in evidence_types
+            or "inventory_checkout" in evidence_types
+        ):
             parts.append("inventory")
         if "photos_before" in evidence_types or "photos_after" in evidence_types:
             parts.append("photographs evidence")

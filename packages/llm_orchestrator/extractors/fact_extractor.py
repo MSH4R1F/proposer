@@ -26,6 +26,8 @@ from ..prompts.extraction import (
     FACT_EXTRACTION_PROMPT,
     FACT_EXTRACTION_CONTEXT,
     STAGE_EXTRACTION_FOCUS,
+    BULK_EXTRACTION_PROMPT,
+    BULK_EXTRACTION_CONTEXT,
 )
 
 logger = structlog.get_logger()
@@ -33,6 +35,7 @@ logger = structlog.get_logger()
 
 class ExtractionResult(BaseModel):
     """Result of fact extraction from a message."""
+
     updated_case_file: CaseFile
     extracted_facts: Dict[str, Any] = Field(default_factory=dict)
     confidence_scores: Dict[str, float] = Field(default_factory=dict)
@@ -77,8 +80,7 @@ class FactExtractor:
         # Build context for extraction
         case_summary = self._summarize_case_file(case_file)
         stage_focus = STAGE_EXTRACTION_FOCUS.get(
-            current_stage.value,
-            "any relevant information about the dispute"
+            current_stage.value, "any relevant information about the dispute"
         )
 
         context = FACT_EXTRACTION_CONTEXT.format(
@@ -117,7 +119,8 @@ class FactExtractor:
                 stage=current_stage.value,
                 num_facts=len(extracted),
                 confidence_avg=sum(confidence_scores.values()) / len(confidence_scores)
-                if confidence_scores else 0,
+                if confidence_scores
+                else 0,
             )
 
             return ExtractionResult(
@@ -131,6 +134,89 @@ class FactExtractor:
             return ExtractionResult(
                 updated_case_file=case_file,
                 extraction_notes=[f"Extraction error: {str(e)}"],
+            )
+
+    async def extract_bulk(
+        self,
+        case_text: str,
+        case_file: CaseFile,
+    ) -> ExtractionResult:
+        """
+        Extract ALL facts from a complete case description in a single pass.
+
+        Used for the "paste all details" intake mode where users provide
+        their full case description at once instead of going through Q&A.
+
+        Args:
+            case_text: The user's complete case description
+            case_file: Fresh case file to populate (with role already set)
+
+        Returns:
+            ExtractionResult with fully populated case file
+        """
+        role = case_file.user_role.value
+
+        system_prompt = BULK_EXTRACTION_PROMPT.format(role=role)
+        context = BULK_EXTRACTION_CONTEXT.format(role=role, case_text=case_text)
+
+        try:
+            response = await self.llm.generate(
+                messages=[{"role": "user", "content": context}],
+                system_prompt=system_prompt,
+                max_tokens=4096,
+                temperature=0.1,
+            )
+
+            extracted = self._parse_extraction_response(response)
+
+            if extracted.get("no_new_info", False):
+                logger.warning("bulk_extraction_found_nothing", role=role)
+                return ExtractionResult(
+                    updated_case_file=case_file,
+                    no_new_info=True,
+                    extraction_notes=[
+                        "No information could be extracted from the provided text."
+                    ],
+                )
+
+            if "tenant_name" in extracted:
+                case_file.tenant_name = self._get_value(extracted["tenant_name"])
+            if "landlord_name" in extracted:
+                case_file.landlord_name = self._get_value(extracted["landlord_name"])
+            if "agent_name" in extracted:
+                case_file.agent_name = self._get_value(extracted["agent_name"])
+
+            updated_case_file, confidence_scores = self._apply_extractions(
+                case_file, extracted
+            )
+
+            num_facts = sum(
+                1
+                for k in extracted
+                if k
+                not in ("no_new_info", "tenant_name", "landlord_name", "agent_name")
+                and extracted[k]
+            )
+
+            logger.info(
+                "bulk_facts_extracted",
+                role=role,
+                num_categories=num_facts,
+                completeness=updated_case_file.completeness_score,
+                missing=updated_case_file.missing_info,
+            )
+
+            return ExtractionResult(
+                updated_case_file=updated_case_file,
+                extracted_facts=extracted,
+                confidence_scores=confidence_scores,
+            )
+
+        except Exception as e:
+            logger.error("bulk_fact_extraction_failed", error=str(e))
+            return ExtractionResult(
+                updated_case_file=case_file,
+                extraction_notes=[f"Bulk extraction error: {str(e)}"],
             )
 
     def _summarize_case_file(self, case_file: CaseFile) -> str:
@@ -150,7 +236,9 @@ class FactExtractor:
             parts.append(f"Deposit: £{case_file.tenancy.deposit_amount}")
 
         if case_file.tenancy.deposit_protected is not None:
-            status = "protected" if case_file.tenancy.deposit_protected else "NOT protected"
+            status = (
+                "protected" if case_file.tenancy.deposit_protected else "NOT protected"
+            )
             parts.append(f"Deposit: {status}")
 
         if case_file.issues:
@@ -182,7 +270,9 @@ class FactExtractor:
             return json.loads(response)
 
         except json.JSONDecodeError:
-            logger.warning("failed_to_parse_extraction_json", response_preview=response[:200])
+            logger.warning(
+                "failed_to_parse_extraction_json", response_preview=response[:200]
+            )
             return {"no_new_info": True}
 
     def _apply_extractions(
@@ -196,14 +286,20 @@ class FactExtractor:
             prop = extracted["property"]
             if "address" in prop:
                 case_file.property.address = self._get_value(prop["address"])
-                confidence_scores["property.address"] = self._get_confidence(prop["address"])
+                confidence_scores["property.address"] = self._get_confidence(
+                    prop["address"]
+                )
 
             if "postcode" in prop:
                 case_file.property.postcode = self._get_value(prop["postcode"])
-                confidence_scores["property.postcode"] = self._get_confidence(prop["postcode"])
+                confidence_scores["property.postcode"] = self._get_confidence(
+                    prop["postcode"]
+                )
 
             if "property_type" in prop:
-                case_file.property.property_type = self._get_value(prop["property_type"])
+                case_file.property.property_type = self._get_value(
+                    prop["property_type"]
+                )
 
             if "num_bedrooms" in prop:
                 case_file.property.num_bedrooms = self._get_value(prop["num_bedrooms"])
@@ -231,27 +327,41 @@ class FactExtractor:
                 case_file.tenancy.monthly_rent = self._get_value(ten["monthly_rent"])
 
             if "deposit_amount" in ten:
-                case_file.tenancy.deposit_amount = self._get_value(ten["deposit_amount"])
-                confidence_scores["tenancy.deposit_amount"] = self._get_confidence(ten["deposit_amount"])
+                case_file.tenancy.deposit_amount = self._get_value(
+                    ten["deposit_amount"]
+                )
+                confidence_scores["tenancy.deposit_amount"] = self._get_confidence(
+                    ten["deposit_amount"]
+                )
 
             if "deposit_protected" in ten:
-                case_file.tenancy.deposit_protected = self._get_value(ten["deposit_protected"])
-                confidence_scores["tenancy.deposit_protected"] = self._get_confidence(ten["deposit_protected"])
+                case_file.tenancy.deposit_protected = self._get_value(
+                    ten["deposit_protected"]
+                )
+                confidence_scores["tenancy.deposit_protected"] = self._get_confidence(
+                    ten["deposit_protected"]
+                )
 
             if "deposit_scheme" in ten:
-                case_file.tenancy.deposit_scheme = self._get_value(ten["deposit_scheme"])
+                case_file.tenancy.deposit_scheme = self._get_value(
+                    ten["deposit_scheme"]
+                )
 
             if "protection_date" in ten:
                 date_str = self._get_value(ten["protection_date"])
                 case_file.tenancy.protection_date = self._parse_date(date_str)
 
             if "prescribed_info_provided" in ten:
-                case_file.tenancy.prescribed_info_provided = self._get_value(ten["prescribed_info_provided"])
+                case_file.tenancy.prescribed_info_provided = self._get_value(
+                    ten["prescribed_info_provided"]
+                )
 
         # Update issues
         if "issues" in extracted:
             for issue_data in extracted["issues"]:
-                issue_type_str = issue_data.get("issue_type", "").lower().replace(" ", "_")
+                issue_type_str = (
+                    issue_data.get("issue_type", "").lower().replace(" ", "_")
+                )
                 try:
                     issue_type = DisputeIssue(issue_type_str)
                     if issue_type not in case_file.issues:
@@ -278,7 +388,9 @@ class FactExtractor:
                         case_file.evidence.append(evidence)
                 except ValueError:
                     ev_type = self._map_evidence_type(ev_type_str)
-                    if ev_type and not any(e.type == ev_type for e in case_file.evidence):
+                    if ev_type and not any(
+                        e.type == ev_type for e in case_file.evidence
+                    ):
                         evidence = EvidenceItem(
                             type=ev_type,
                             description=ev_data.get("description", ""),

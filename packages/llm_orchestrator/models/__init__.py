@@ -17,6 +17,12 @@ from .prediction import (
     IssuePrediction,
     ReasoningStep,
     Citation,
+    IssueType,
+    IssueOutcome,
+    EvidenceStrength,
+    VerificationResult,
+    PipelineMetadata,
+    Counterfactual,
 )
 
 __all__ = [
@@ -39,4 +45,10 @@ __all__ = [
     "IssuePrediction",
     "ReasoningStep",
     "Citation",
+    "IssueType",
+    "IssueOutcome",
+    "EvidenceStrength",
+    "VerificationResult",
+    "PipelineMetadata",
+    "Counterfactual",
 ]

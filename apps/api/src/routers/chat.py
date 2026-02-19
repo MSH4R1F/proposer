@@ -19,12 +19,14 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 class ChatMessageRequest(BaseModel):
     """Request to send a chat message."""
+
     session_id: str = Field(..., description="Session ID for the conversation")
     message: str = Field(..., description="User's message")
 
 
 class ChatMessageResponse(BaseModel):
     """Response from the chat endpoint."""
+
     session_id: str
     response: str
     stage: str
@@ -37,13 +39,19 @@ class ChatMessageResponse(BaseModel):
 
 class StartSessionRequest(BaseModel):
     """Request to start a new chat session."""
+
     role: str = Field(..., description="User role: 'tenant' or 'landlord'")
-    invite_code: Optional[str] = Field(None, description="Invite code to join existing dispute")
-    create_dispute: bool = Field(True, description="Whether to create a new dispute case")
+    invite_code: Optional[str] = Field(
+        None, description="Invite code to join existing dispute"
+    )
+    create_dispute: bool = Field(
+        True, description="Whether to create a new dispute case"
+    )
 
 
 class DisputeInfo(BaseModel):
     """Dispute information embedded in session responses."""
+
     dispute_id: str
     invite_code: str
     status: str
@@ -54,6 +62,7 @@ class DisputeInfo(BaseModel):
 
 class StartSessionResponse(BaseModel):
     """Response when starting a new session."""
+
     session_id: str
     response: str
     stage: str
@@ -64,14 +73,41 @@ class StartSessionResponse(BaseModel):
     dispute: Optional[DisputeInfo] = None
 
 
+class BulkIntakeRequest(BaseModel):
+    role: str = Field(..., description="User role: 'tenant' or 'landlord'")
+    case_text: str = Field(
+        ..., description="Complete case description text", min_length=20
+    )
+    create_dispute: bool = Field(
+        True, description="Whether to create a new dispute case"
+    )
+    invite_code: Optional[str] = Field(
+        None, description="Invite code to join existing dispute"
+    )
+
+
+class BulkIntakeResponse(BaseModel):
+    session_id: str
+    response: str
+    stage: str
+    completeness: float
+    is_complete: bool
+    case_file: Dict
+    missing_info: List[str] = Field(default_factory=list)
+    extraction_successful: bool
+    dispute: Optional[DisputeInfo] = None
+
+
 class SetRoleRequest(BaseModel):
     """Request to explicitly set user role."""
+
     session_id: str = Field(..., description="Session ID for the conversation")
     role: str = Field(..., description="User role: 'tenant' or 'landlord'")
 
 
 class SetRoleResponse(BaseModel):
     """Response from setting user role."""
+
     session_id: str
     response: str
     stage: str
@@ -83,6 +119,7 @@ class SetRoleResponse(BaseModel):
 
 class MessageData(BaseModel):
     """Message data for API responses."""
+
     role: str
     content: str
     timestamp: Optional[str] = None
@@ -90,6 +127,7 @@ class MessageData(BaseModel):
 
 class SessionStatusResponse(BaseModel):
     """Response with session status."""
+
     session_id: str
     stage: str
     completeness: float
@@ -116,27 +154,31 @@ async def start_session(
         2. Join existing: POST /chat/start with role + invite_code
         3. Standalone: POST /chat/start with role + create_dispute=false
     """
-    logger.debug("start_session_request_received", 
-                 role=request.role, 
-                 invite_code=request.invite_code,
-                 create_dispute=request.create_dispute)
-    
+    logger.debug(
+        "start_session_request_received",
+        role=request.role,
+        invite_code=request.invite_code,
+        create_dispute=request.create_dispute,
+    )
+
     if request.role not in ("tenant", "landlord"):
         logger.warning("invalid_role_attempted", invalid_role=request.role)
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'"
+            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
         )
-    
+
     try:
-        greeting, session_id, stage = await intake_service.start_session(role=request.role)
+        greeting, session_id, stage = await intake_service.start_session(
+            role=request.role
+        )
         session_status = await intake_service.get_session_status(session_id)
-        
+
         if session_status is None:
             raise HTTPException(status_code=500, detail="Failed to get session status")
-        
+
         dispute_info: Optional[DisputeInfo] = None
-        
+
         if request.invite_code:
             dispute = await dispute_service.join_dispute(
                 invite_code=request.invite_code,
@@ -152,16 +194,24 @@ async def start_session(
                     is_ready_for_prediction=dispute.is_ready_for_prediction,
                     waiting_message=dispute.get_waiting_message(request.role),
                 )
-                logger.info("session_joined_dispute", 
-                           session_id=session_id, 
-                           dispute_id=dispute.dispute_id)
+                logger.info(
+                    "session_joined_dispute",
+                    session_id=session_id,
+                    dispute_id=dispute.dispute_id,
+                )
             else:
-                logger.warning("failed_to_join_dispute", invite_code=request.invite_code)
-        
+                logger.warning(
+                    "failed_to_join_dispute", invite_code=request.invite_code
+                )
+
         elif request.create_dispute:
-            property_address = session_status["case_file"].get("property", {}).get("address")
-            deposit_amount = session_status["case_file"].get("tenancy", {}).get("deposit_amount")
-            
+            property_address = (
+                session_status["case_file"].get("property", {}).get("address")
+            )
+            deposit_amount = (
+                session_status["case_file"].get("tenancy", {}).get("deposit_amount")
+            )
+
             dispute = await dispute_service.create_dispute(
                 session_id=session_id,
                 role=request.role,
@@ -176,16 +226,20 @@ async def start_session(
                 is_ready_for_prediction=dispute.is_ready_for_prediction,
                 waiting_message=dispute.get_waiting_message(request.role),
             )
-            logger.info("dispute_created_with_session", 
-                       session_id=session_id, 
-                       dispute_id=dispute.dispute_id,
-                       invite_code=dispute.invite_code)
-        
-        logger.debug("start_session_success", 
-                     session_id=session_id, 
-                     role=request.role,
-                     stage=stage,
-                     has_dispute=dispute_info is not None)
+            logger.info(
+                "dispute_created_with_session",
+                session_id=session_id,
+                dispute_id=dispute.dispute_id,
+                invite_code=dispute.invite_code,
+            )
+
+        logger.debug(
+            "start_session_success",
+            session_id=session_id,
+            role=request.role,
+            stage=stage,
+            has_dispute=dispute_info is not None,
+        )
 
         return StartSessionResponse(
             session_id=session_id,
@@ -201,6 +255,91 @@ async def start_session(
         raise
     except Exception as e:
         logger.error("start_session_failed", error=str(e), error_type=type(e).__name__)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/bulk-intake", response_model=BulkIntakeResponse)
+async def bulk_intake(
+    request: BulkIntakeRequest,
+    intake_service: IntakeService = Depends(get_intake_service),
+    dispute_service: DisputeService = Depends(get_dispute_service),
+):
+    """
+    Process a complete case description in one shot.
+
+    Alternative to the guided Q&A flow — user pastes all case details
+    at once and the system extracts structured facts to populate the case file.
+    """
+    logger.debug(
+        "bulk_intake_request", role=request.role, text_length=len(request.case_text)
+    )
+
+    if request.role not in ("tenant", "landlord"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
+        )
+
+    try:
+        result = await intake_service.bulk_intake(
+            role=request.role,
+            case_text=request.case_text,
+        )
+
+        session_id = result["session_id"]
+        dispute_info: Optional[DisputeInfo] = None
+
+        if request.invite_code:
+            dispute = await dispute_service.join_dispute(
+                invite_code=request.invite_code,
+                session_id=session_id,
+                role=request.role,
+            )
+            if dispute:
+                dispute_info = DisputeInfo(
+                    dispute_id=dispute.dispute_id,
+                    invite_code=dispute.invite_code,
+                    status=dispute.status.value,
+                    has_both_parties=dispute.has_both_parties,
+                    is_ready_for_prediction=dispute.is_ready_for_prediction,
+                    waiting_message=dispute.get_waiting_message(request.role),
+                )
+        elif request.create_dispute:
+            property_address = result["case_file"].get("property", {}).get("address")
+            deposit_amount = (
+                result["case_file"].get("tenancy", {}).get("deposit_amount")
+            )
+
+            dispute = await dispute_service.create_dispute(
+                session_id=session_id,
+                role=request.role,
+                property_address=property_address,
+                deposit_amount=deposit_amount,
+            )
+            dispute_info = DisputeInfo(
+                dispute_id=dispute.dispute_id,
+                invite_code=dispute.invite_code,
+                status=dispute.status.value,
+                has_both_parties=dispute.has_both_parties,
+                is_ready_for_prediction=dispute.is_ready_for_prediction,
+                waiting_message=dispute.get_waiting_message(request.role),
+            )
+
+        return BulkIntakeResponse(
+            session_id=session_id,
+            response=result["response"],
+            stage=result["stage"],
+            completeness=result["completeness"],
+            is_complete=result["is_complete"],
+            case_file=result["case_file"],
+            missing_info=result["missing_info"],
+            extraction_successful=result["extraction_successful"],
+            dispute=dispute_info,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("bulk_intake_failed", error=str(e), error_type=type(e).__name__)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -220,10 +359,14 @@ async def send_message(
     Returns the agent's response and updated case file state.
     Now also returns updated dispute status (critical for multi-party prediction).
     """
-    logger.debug("send_message_request", 
-                 session_id=request.session_id, 
-                 message_length=len(request.message),
-                 message_preview=request.message[:100] if len(request.message) > 100 else request.message)
+    logger.debug(
+        "send_message_request",
+        session_id=request.session_id,
+        message_length=len(request.message),
+        message_preview=request.message[:100]
+        if len(request.message) > 100
+        else request.message,
+    )
     try:
         result = await intake_service.process_message(
             session_id=request.session_id,
@@ -244,14 +387,18 @@ async def send_message(
                 waiting_message=dispute.get_waiting_message(current_role),
             )
 
-        logger.debug("send_message_success",
-                     session_id=request.session_id,
-                     stage=result["stage"],
-                     completeness=result["completeness"],
-                     is_complete=result["is_complete"],
-                     response_length=len(result["response"]),
-                     num_suggested_actions=len(result.get("suggested_actions", [])),
-                     dispute_ready=dispute_info.is_ready_for_prediction if dispute_info else None)
+        logger.debug(
+            "send_message_success",
+            session_id=request.session_id,
+            stage=result["stage"],
+            completeness=result["completeness"],
+            is_complete=result["is_complete"],
+            response_length=len(result["response"]),
+            num_suggested_actions=len(result.get("suggested_actions", [])),
+            dispute_ready=dispute_info.is_ready_for_prediction
+            if dispute_info
+            else None,
+        )
 
         return ChatMessageResponse(
             session_id=request.session_id,
@@ -264,11 +411,17 @@ async def send_message(
             dispute=dispute_info,  # Include updated dispute status!
         )
     except ValueError as e:
-        logger.error("send_message_not_found", session_id=request.session_id, error=str(e))
+        logger.error(
+            "send_message_not_found", session_id=request.session_id, error=str(e)
+        )
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        logger.error("send_message_failed", session_id=request.session_id, 
-                     error=str(e), error_type=type(e).__name__)
+        logger.error(
+            "send_message_failed",
+            session_id=request.session_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -288,14 +441,16 @@ async def set_role(
     The role must be either "tenant" or "landlord".
     """
     logger.debug("set_role_request", session_id=request.session_id, role=request.role)
-    
+
     if request.role not in ("tenant", "landlord"):
-        logger.warning("invalid_role_attempted", 
-                       session_id=request.session_id, 
-                       invalid_role=request.role)
+        logger.warning(
+            "invalid_role_attempted",
+            session_id=request.session_id,
+            invalid_role=request.role,
+        )
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'"
+            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
         )
 
     try:
@@ -304,11 +459,13 @@ async def set_role(
             role=request.role,
         )
 
-        logger.debug("set_role_success",
-                     session_id=request.session_id,
-                     role=request.role,
-                     stage=result["stage"],
-                     response_length=len(result["response"]))
+        logger.debug(
+            "set_role_success",
+            session_id=request.session_id,
+            role=request.role,
+            stage=result["stage"],
+            response_length=len(result["response"]),
+        )
 
         return SetRoleResponse(
             session_id=request.session_id,
@@ -323,8 +480,13 @@ async def set_role(
         logger.error("set_role_not_found", session_id=request.session_id, error=str(e))
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        logger.error("set_role_failed", session_id=request.session_id, 
-                     role=request.role, error=str(e), error_type=type(e).__name__)
+        logger.error(
+            "set_role_failed",
+            session_id=request.session_id,
+            role=request.role,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -341,36 +503,44 @@ async def get_session(
 
         if not status:
             logger.warning("session_not_found", session_id=session_id)
-            raise HTTPException(status_code=404, detail=f"Session not found: {session_id}")
+            raise HTTPException(
+                status_code=404, detail=f"Session not found: {session_id}"
+            )
 
         dispute_info: Optional[DisputeInfo] = None
         dispute = await dispute_service.get_dispute_by_session(session_id)
         if dispute:
             current_role = status["case_file"].get("user_role", "tenant")
-            
+
             # AUTO-FIX: Recalculate dispute status based on actual session data
             # This fixes disputes that may have been corrupted by previous bugs
             tenant_complete = False
             landlord_complete = False
-            
+
             # Check current session's completion
             current_intake_complete = status["case_file"].get("intake_complete", False)
             if current_role == "tenant":
                 tenant_complete = current_intake_complete
             else:
                 landlord_complete = current_intake_complete
-            
+
             # Check other party's session completion
-            other_session_id = dispute.landlord_session_id if current_role == "tenant" else dispute.tenant_session_id
+            other_session_id = (
+                dispute.landlord_session_id
+                if current_role == "tenant"
+                else dispute.tenant_session_id
+            )
             if other_session_id:
                 other_status = await intake_service.get_session_status(other_session_id)
                 if other_status:
-                    other_complete = other_status["case_file"].get("intake_complete", False)
+                    other_complete = other_status["case_file"].get(
+                        "intake_complete", False
+                    )
                     if current_role == "tenant":
                         landlord_complete = other_complete
                     else:
                         tenant_complete = other_complete
-            
+
             # Recalculate status if both parties might be complete
             if tenant_complete or landlord_complete:
                 await dispute_service.sync_dispute_status_from_sessions(
@@ -380,7 +550,7 @@ async def get_session(
                 )
                 # Reload dispute to get updated status
                 dispute = await dispute_service.get_dispute(dispute.dispute_id)
-            
+
             dispute_info = DisputeInfo(
                 dispute_id=dispute.dispute_id,
                 invite_code=dispute.invite_code,
@@ -390,19 +560,27 @@ async def get_session(
                 waiting_message=dispute.get_waiting_message(current_role),
             )
 
-        logger.debug("get_session_success", 
-                     session_id=session_id,
-                     stage=status.get("stage"),
-                     message_count=status.get("message_count"),
-                     has_dispute=dispute_info is not None,
-                     dispute_ready=dispute_info.is_ready_for_prediction if dispute_info else None)
+        logger.debug(
+            "get_session_success",
+            session_id=session_id,
+            stage=status.get("stage"),
+            message_count=status.get("message_count"),
+            has_dispute=dispute_info is not None,
+            dispute_ready=dispute_info.is_ready_for_prediction
+            if dispute_info
+            else None,
+        )
 
         return SessionStatusResponse(**status, dispute=dispute_info)
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("get_session_failed", session_id=session_id, 
-                     error=str(e), error_type=type(e).__name__)
+        logger.error(
+            "get_session_failed",
+            session_id=session_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -420,15 +598,21 @@ async def delete_session(
 
         if not deleted:
             logger.warning("delete_session_not_found", session_id=session_id)
-            raise HTTPException(status_code=404, detail=f"Session not found: {session_id}")
+            raise HTTPException(
+                status_code=404, detail=f"Session not found: {session_id}"
+            )
 
         logger.info("session_deleted", session_id=session_id)
         return {"message": f"Session {session_id} deleted"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("delete_session_failed", session_id=session_id, 
-                     error=str(e), error_type=type(e).__name__)
+        logger.error(
+            "delete_session_failed",
+            session_id=session_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 

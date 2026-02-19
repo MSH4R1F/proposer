@@ -248,6 +248,43 @@ python scripts/run_tests.py           # Run 141 tests
 
 The following technical documents are mentioned in the main README but located in `docs/` subdirectory:
 
+#### `docs/PRD_AGENT_MEDIATION_SYSTEM.md`
+**Status**: ✅ **Exists**
+**Purpose**: Product Requirements Document for the Agent Mediation System built on RAG and Knowledge Graph.
+
+**Key Sections**:
+- **Executive Summary**: Vision for agent-driven mediation with RAG + KG as backbone
+- **Current State**: RAG pipeline and KG implementation summary; current agent usage; gaps (Shadow Mediator, unified coordinator, settlement)
+- **Product Requirements**: Principles (RAG/KG backbone, agent clarity, legal safety); FRs for Intake, Prediction, Shadow Mediator, Mediation Session/Coordinator, Settlement (future); NFRs (performance, security, observability, evaluation)
+- **System Architecture**: High-level flow, data dependencies, agent responsibility matrix
+- **Scope and Phasing**: Phase 1 (current) → Phase 2 (mediation backbone, Shadow Mediator) → Phase 3 (mediation UX) → Phase 4 (settlement)
+- **Success Criteria**: Technical, product, compliance
+- **Open Questions**: RAG index strategy, ZOPA formula, nudge frequency, coordinator design
+
+**Target Audience**: Product, engineering, and stakeholders planning the evolution from prediction-only to full agent mediation.
+
+---
+
+#### `docs/PRD_PREDICTIVE_ENGINE.md`
+**Status**: ✅ **Exists**
+**Purpose**: Product Requirements Document for the Predictive Engine (RAG + KG–based outcome prediction).
+
+**Key Sections**:
+- **Executive Summary**: Scope (prediction flow, output contract, cite-or-abstain); out of scope (intake, Shadow Mediator, RAG internals)
+- **Current State**: Components (PredictionEngine, models, prompts, PredictionService); end-to-end flow; cite-or-abstain rule; known gaps (query building, KG in prompt, citation verification, calibration, evaluation)
+- **Product Requirements**: FRs (inputs, output contract, cite-or-abstain, legal safety, transparency); NFRs (latency, cost, reliability, observability)
+- **Improvements (Prioritized)**:
+  - **P0**: Citation verification (I1), Evaluation framework (I2), Structured output / tool use (I3)
+  - **P1**: KG-informed query building (I4), RAG scores in citations (I5), Richer KG context in prompt (I6), Calibration tracking (I7)
+  - **P2**: Retry/fallback (I8), Configurable thresholds (I9), Settlement range validation (I10), Data quality in confidence (I11)
+  - **P3**: Multi-query RAG (I12), Uncertainty reasons (I13), Caching (I14)
+- **Success Criteria**: Accuracy ≥70%, Brier ≤0.20, hallucination <2%, latency, cost, reliability, compliance
+- **Open Questions**: Gold set source, structured output approach, multi-query merge, confidence scaling
+
+**Target Audience**: Engineers working on prediction accuracy, calibration, and evaluation; product for prioritization of improvements.
+
+---
+
 #### `docs/ARCHITECTURE.md`
 **Status**: ✅ **Exists** (mentioned in CHANGELOG)
 **Content** (based on CHANGELOG):

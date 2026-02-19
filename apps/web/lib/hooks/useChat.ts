@@ -77,7 +77,65 @@ export function useChat(initialSessionId?: string) {
     }
   }, []);
 
-  // Set user role (tenant/landlord) - requires existing session
+  const startBulkSession = useCallback(async (
+    role: PartyRole,
+    caseText: string,
+    options?: { inviteCode?: string; createDispute?: boolean }
+  ): Promise<string | null> => {
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
+    try {
+      const response = await chatApi.bulkIntake(role, caseText, options);
+
+      const truncatedText = caseText.length > 200
+        ? caseText.slice(0, 200) + '...'
+        : caseText;
+
+      const userMessage: Message = {
+        id: `msg_${Date.now()}`,
+        role: 'user',
+        content: truncatedText,
+        timestamp: new Date().toISOString(),
+      };
+
+      const assistantMessage: Message = {
+        id: `msg_${Date.now() + 1}`,
+        role: 'assistant',
+        content: response.response,
+        timestamp: new Date().toISOString(),
+      };
+
+      setState((prev) => ({
+        ...prev,
+        sessionId: response.session_id,
+        messages: [userMessage, assistantMessage],
+        stage: response.stage as IntakeStage,
+        completeness: response.completeness,
+        roleSelected: true,
+        caseFile: response.case_file,
+        dispute: response.dispute || null,
+        isLoading: false,
+      }));
+
+      saveSessionId(response.session_id);
+
+      if (response.case_file?.case_id) {
+        saveCaseId(response.case_file.case_id);
+      }
+
+      return response.session_id;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to process case details';
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+      }));
+      return null;
+    }
+  }, []);
+
   const setRole = useCallback(
     async (role: PartyRole) => {
       if (!state.sessionId) return;
@@ -241,53 +299,50 @@ export function useChat(initialSessionId?: string) {
     }
   }, []);
 
-  // Check if other party has joined but not completed their intake
   const otherPartyJoinedButNotComplete = state.dispute !== null && 
     state.dispute.has_both_parties && 
     !state.dispute.is_ready_for_prediction;
 
-  // Check if ALL required fields are present (strict validation)
-  // Note: missing_info is an array - check if it exists AND has length 0
   const hasAllRequiredInfo = Array.isArray(state.caseFile?.missing_info) 
     && state.caseFile.missing_info.length === 0;
 
-  // Determine if we can generate prediction
-  // For single-party: just need all required info
-  // For multi-party: need all required info AND both parties ready
+  const meetsMinimumCompleteness = state.completeness >= 0.5;
+
   const disputeReady = state.dispute === null || 
     state.dispute === undefined || 
     state.dispute.is_ready_for_prediction === true;
   
-  const canGenerate = hasAllRequiredInfo && disputeReady;
+  const canGenerate = meetsMinimumCompleteness && disputeReady;
 
-  // Debug logging (can remove later)
-  if (hasAllRequiredInfo && !canGenerate) {
-    console.log('[useChat] Has all required info but cannot generate:', {
-      hasAllRequiredInfo,
-      disputeExists: state.dispute !== null && state.dispute !== undefined,
-      disputeReady: state.dispute?.is_ready_for_prediction,
-      dispute: state.dispute,
-    });
+  const missingRecommended: string[] = [];
+  if (state.caseFile) {
+    if (!state.caseFile.property?.address) missingRecommended.push('property address');
+    if (!state.caseFile.tenancy?.start_date) missingRecommended.push('tenancy start date');
+    if (!state.caseFile.tenancy?.deposit_amount) missingRecommended.push('deposit amount');
+    if (state.caseFile.tenancy?.deposit_protected == null) missingRecommended.push('deposit protection status');
   }
+
+  const hasRecommendedMissing = hasAllRequiredInfo && missingRecommended.length > 0;
 
   return {
     ...state,
     startSession,
     startSessionWithRole: startSession,
+    startBulkSession,
     setRole,
     sendMessage,
     resumeSession,
     clearError,
     reset,
     validateInviteCode,
-    // STRICT: Only complete if ALL required fields are present
     isComplete: hasAllRequiredInfo,
-    // Can only generate prediction when ALL required info collected AND dispute ready (if applicable)
     canGeneratePrediction: canGenerate,
     showRoleSelector: (!state.sessionId && !state.roleSelected) ||
       (state.stage === 'greeting' && !state.roleSelected),
     hasDispute: state.dispute !== null && state.dispute !== undefined,
     isWaitingForOtherParty: state.dispute !== null && state.dispute !== undefined && !state.dispute.has_both_parties,
     isWaitingForOtherPartyToComplete: otherPartyJoinedButNotComplete,
+    hasRecommendedMissing,
+    missingRecommended,
   };
 }

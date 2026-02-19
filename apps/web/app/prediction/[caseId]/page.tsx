@@ -1,15 +1,17 @@
 'use client';
 
-import { use, useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { usePrediction } from '@/lib/hooks/usePrediction';
+import { predictionsApi } from '@/lib/api/predictions';
 import { PredictionCard } from '@/components/prediction/PredictionCard';
 import { PredictionSkeleton } from '@/components/prediction/PredictionSkeleton';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Scale, Sparkles, Brain, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Scale, Sparkles, Brain, AlertTriangle, Info } from 'lucide-react';
 import { ROUTES } from '@/lib/constants/routes';
+import type { DataQualityTier } from '@/lib/types/prediction';
 
 interface PredictionPageProps {
   params: Promise<{
@@ -23,8 +25,17 @@ export default function PredictionPage({ params }: PredictionPageProps) {
   const { prediction, isLoading, error, generatePrediction, clearError } =
     usePrediction();
 
+  const [qualityTier, setQualityTier] = useState<DataQualityTier | null>(null);
+  const [missingRecommended, setMissingRecommended] = useState<string[]>([]);
+
   useEffect(() => {
     if (caseId && !prediction && !isLoading) {
+      predictionsApi.checkReady(caseId).then((readiness) => {
+        setQualityTier(readiness.data_quality_tier);
+        setMissingRecommended(readiness.missing_recommended);
+      }).catch(() => {
+        // Non-blocking — proceed with generation even if check fails
+      });
       generatePrediction(caseId);
     }
   }, [caseId, prediction, isLoading, generatePrediction]);
@@ -73,6 +84,35 @@ export default function PredictionPage({ params }: PredictionPageProps) {
       {/* Main content - scrollable */}
       <main className="flex-1 overflow-y-auto scrollbar-thin">
         <div className="max-w-4xl mx-auto px-4 py-8">
+          {/* Quality tier warning */}
+          {qualityTier && qualityTier !== 'full' && (
+            <div className="mb-6">
+              <div className={`flex items-start gap-3 p-4 rounded-xl border ${
+                qualityTier === 'minimal'
+                  ? 'bg-amber-500/10 border-amber-500/20'
+                  : 'bg-blue-500/10 border-blue-500/20'
+              }`}>
+                <Info className={`h-5 w-5 shrink-0 mt-0.5 ${
+                  qualityTier === 'minimal' ? 'text-amber-500' : 'text-blue-500'
+                }`} />
+                <div>
+                  <p className={`font-medium text-sm ${
+                    qualityTier === 'minimal' ? 'text-amber-600' : 'text-blue-600'
+                  }`}>
+                    {qualityTier === 'minimal'
+                      ? 'Limited case data — prediction may be less accurate'
+                      : 'Some case details missing — prediction could be improved'}
+                  </p>
+                  {missingRecommended.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Adding {missingRecommended.join(', ')} would improve prediction quality.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Error state */}
           {error && (
             <div className="mb-6">

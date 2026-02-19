@@ -113,6 +113,122 @@ STAGE_EXTRACTION_FOCUS = {
 }
 
 
+BULK_EXTRACTION_PROMPT = """You are a legal information extraction system specialising in UK tenancy deposit disputes.
+
+You will receive a COMPLETE case description pasted by a {role}. Your job is to extract ALL structured facts from this text in a single pass.
+
+EXTRACTION RULES:
+1. Extract every piece of relevant information — property, tenancy, deposit, issues, evidence, claims, events, narrative
+2. Assign confidence scores (0.0-1.0) based on how clearly stated each piece of information is
+3. Only extract information explicitly stated or clearly implied — do NOT infer or fabricate
+4. Extract dates in YYYY-MM-DD format when possible (convert UK date formats like "1st March 2023" to "2023-03-01")
+5. Extract monetary amounts as numbers without currency symbols
+6. If the user mentions evidence they have (photos, inventory, emails), extract those as evidence items
+7. Preserve the user's full narrative as well as extracting structured fields
+
+CATEGORIES TO EXTRACT:
+
+**Property Details:**
+- address: Full property address
+- postcode: UK postcode
+- property_type: flat, house, room, HMO
+- num_bedrooms: Number of bedrooms
+- furnished: Whether property was furnished (true/false)
+
+**Tenancy Details:**
+- start_date: When tenancy began (YYYY-MM-DD)
+- end_date: When tenancy ended/ends (YYYY-MM-DD)
+- monthly_rent: Monthly rent amount (number)
+- tenancy_type: AST, periodic, etc.
+
+**Deposit Details:**
+- deposit_amount: Total deposit paid (number)
+- deposit_protected: true/false/null (null if not mentioned)
+- deposit_scheme: TDS, DPS, MyDeposits, or null
+- protection_date: When deposit was protected (YYYY-MM-DD)
+- prescribed_info_provided: true/false/null
+
+**Issues** (list of all disputed items):
+- issue_type: One of: cleaning, damage, rent_arrears, deposit_protection, inventory_dispute, garden, decoration, fair_wear_and_tear, missing_items, utilities, other
+- description: Brief description of the issue
+- confidence: How clearly this was stated (0.0-1.0)
+
+**Evidence** (any evidence the user mentions having):
+- evidence_type: One of: inventory_checkin, inventory_checkout, photos_before, photos_after, receipts, invoices, correspondence, tenancy_agreement, deposit_certificate, witness_statement, other
+- description: What the evidence shows
+- confidence: How clearly this was stated (0.0-1.0)
+
+**Claims** (specific monetary amounts):
+- claimant: tenant or landlord
+- issue: What the claim is for (use issue_type values)
+- amount: Amount claimed (number)
+- description: Brief description
+
+**Events** (key events with dates):
+- event_type: inspection, damage_discovered, complaint_made, deposit_lodged, etc.
+- date: When it happened (YYYY-MM-DD, null if unknown)
+- description: What happened
+
+**Narrative:**
+- A brief summary of the dispute in the user's own words (preserve their perspective)
+
+**Names:**
+- tenant_name: Name of the tenant (if mentioned)
+- landlord_name: Name of the landlord (if mentioned)
+- agent_name: Name of the letting agent (if mentioned)
+
+OUTPUT FORMAT:
+Return ONLY a JSON object (no markdown, no explanation). Include all categories where you found information.
+
+Example:
+{{
+    "property": {{
+        "address": {{"value": "42 Oak Lane, London", "confidence": 0.95}},
+        "postcode": {{"value": "E1 6BT", "confidence": 0.9}},
+        "property_type": {{"value": "flat", "confidence": 0.85}},
+        "furnished": {{"value": true, "confidence": 0.7}}
+    }},
+    "tenancy": {{
+        "start_date": {{"value": "2022-06-01", "confidence": 0.9}},
+        "end_date": {{"value": "2023-05-31", "confidence": 0.9}},
+        "monthly_rent": {{"value": 1500, "confidence": 1.0}},
+        "deposit_amount": {{"value": 1500, "confidence": 1.0}},
+        "deposit_protected": {{"value": true, "confidence": 0.8}},
+        "deposit_scheme": {{"value": "DPS", "confidence": 0.7}}
+    }},
+    "issues": [
+        {{"issue_type": "cleaning", "description": "Landlord deducted £300 for professional cleaning despite property being left clean", "confidence": 0.95}},
+        {{"issue_type": "damage", "description": "Scratches on kitchen floor claimed by landlord", "confidence": 0.8}}
+    ],
+    "evidence": [
+        {{"evidence_type": "photos_after", "description": "Photos taken at move-out showing clean property", "confidence": 0.9}},
+        {{"evidence_type": "correspondence", "description": "Emails with landlord about deposit deductions", "confidence": 0.85}}
+    ],
+    "claims": [
+        {{"claimant": "landlord", "issue": "cleaning", "amount": 300, "description": "Professional cleaning fee"}},
+        {{"claimant": "landlord", "issue": "damage", "amount": 200, "description": "Kitchen floor repair"}}
+    ],
+    "events": [
+        {{"event_type": "tenancy_end", "date": "2023-05-31", "description": "Moved out of property"}},
+        {{"event_type": "complaint_made", "date": "2023-06-15", "description": "Received deposit deduction letter"}}
+    ],
+    "narrative": "Tenant moved out after 1 year, left property clean. Landlord deducted £500 for cleaning and floor damage. Tenant disputes both deductions.",
+    "tenant_name": "John Smith",
+    "landlord_name": "Mrs. Patel",
+    "no_new_info": false
+}}
+"""
+
+
+BULK_EXTRACTION_CONTEXT = """The user is a {role} describing their tenancy deposit dispute.
+
+Full case description:
+\"\"\"{case_text}\"\"\"
+
+Extract ALL relevant information from this text. Be thorough — this is the user's complete case description provided in one go.
+"""
+
+
 EXTRACTION_VALIDATION_PROMPT = """Validate the extracted information for consistency and completeness.
 
 Extracted data:

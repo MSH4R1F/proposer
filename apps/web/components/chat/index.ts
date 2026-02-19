@@ -10,3 +10,4 @@ export { TypingIndicator } from './TypingIndicator';
 export { DisputeEntrySelector } from './DisputeEntrySelector';
 export { InviteCodeDisplay } from './InviteCodeDisplay';
 export { IntakeSidebar } from './IntakeSidebar';
+export { BulkPasteForm } from './BulkPasteForm';

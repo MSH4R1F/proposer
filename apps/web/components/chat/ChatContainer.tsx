@@ -8,18 +8,22 @@ import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { RoleSelector } from './RoleSelector';
 import { DisputeEntrySelector } from './DisputeEntrySelector';
+import { BulkPasteForm } from './BulkPasteForm';
 import { IntakeSidebar } from './IntakeSidebar';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants/routes';
 import { isValidSessionId } from '@/lib/utils/storage';
-import { ArrowRight, Sparkles, PartyPopper, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Sparkles, PartyPopper, AlertTriangle, MessageSquare, ClipboardPaste } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { PartyRole } from '@/lib/types/chat';
 
 interface ChatContainerProps {
   sessionId?: string;
 }
 
 type EntryMode = 'select' | 'new' | 'join';
+type IntakeMode = 'select' | 'guided' | 'paste';
 
 export function ChatContainer({ sessionId }: ChatContainerProps) {
   const router = useRouter();
@@ -37,6 +41,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     caseFile,
     dispute,
     startSession,
+    startBulkSession,
     setRole,
     sendMessage,
     resumeSession,
@@ -47,6 +52,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     canGeneratePrediction,
     isWaitingForOtherParty,
     isWaitingForOtherPartyToComplete,
+    hasRecommendedMissing,
+    missingRecommended,
   } = useChat(sessionId);
 
   const [entryMode, setEntryMode] = useState<EntryMode>(
@@ -55,6 +62,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
   const [pendingInviteCode, setPendingInviteCode] = useState<string | null>(
     inviteCodeFromUrl
   );
+  const [intakeMode, setIntakeMode] = useState<IntakeMode>('select');
+  const [selectedRole, setSelectedRole] = useState<PartyRole | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const initializedRef = useRef(false);
@@ -105,16 +114,40 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     if (currentSessionId) {
       await setRole(role);
     } else {
+      setSelectedRole(role);
+      setIntakeMode('select');
+    }
+  };
+
+  const handleIntakeModeSelect = async (mode: 'guided' | 'paste') => {
+    if (mode === 'guided' && selectedRole) {
       startingNewSessionRef.current = true;
       const options = pendingInviteCode
         ? { inviteCode: pendingInviteCode, createDispute: false }
         : { createDispute: true };
-      
-      const newSessionId = await startSession(role, options);
+
+      const newSessionId = await startSession(selectedRole, options);
       if (newSessionId) {
         lastSessionIdRef.current = newSessionId;
         router.replace(ROUTES.CHAT_SESSION(newSessionId));
       }
+    } else if (mode === 'paste') {
+      setIntakeMode('paste');
+    }
+  };
+
+  const handleBulkSubmit = async (caseText: string) => {
+    if (!selectedRole) return;
+
+    startingNewSessionRef.current = true;
+    const options = pendingInviteCode
+      ? { inviteCode: pendingInviteCode, createDispute: false }
+      : { createDispute: true };
+
+    const newSessionId = await startBulkSession(selectedRole, caseText, options);
+    if (newSessionId) {
+      lastSessionIdRef.current = newSessionId;
+      router.replace(ROUTES.CHAT_SESSION(newSessionId));
     }
   };
 
@@ -140,9 +173,12 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     );
   }
 
-  const showEntrySelector = !sessionId && !currentSessionId && entryMode === 'select';
-  const showRoleSelectorForNew = !sessionId && !currentSessionId && entryMode === 'new';
-  const showRoleSelectorForJoin = !sessionId && !currentSessionId && entryMode === 'join' && pendingInviteCode;
+  const noActiveSession = !sessionId && !currentSessionId;
+  const showEntrySelector = noActiveSession && entryMode === 'select' && !selectedRole;
+  const showRoleSelectorForNew = noActiveSession && entryMode === 'new' && !selectedRole;
+  const showRoleSelectorForJoin = noActiveSession && entryMode === 'join' && pendingInviteCode && !selectedRole;
+  const showIntakeModeSelector = noActiveSession && selectedRole && intakeMode === 'select';
+  const showBulkPasteForm = noActiveSession && selectedRole && intakeMode === 'paste';
 
   return (
     <div className="flex flex-col h-full">
@@ -150,6 +186,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
         stage={stage}
         completeness={completeness}
         sessionId={currentSessionId}
+        caseId={caseFile?.case_id}
       />
 
       {error && (
@@ -197,6 +234,84 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
             )}
           </div>
         </div>
+      ) : showIntakeModeSelector ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <div className="w-full max-w-2xl mx-auto space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-semibold">How would you like to proceed?</h1>
+              <p className="text-muted-foreground">
+                Choose how you'd like to provide your case details
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-3 max-w-xl mx-auto">
+              <button
+                onClick={() => handleIntakeModeSelect('guided')}
+                disabled={isLoading}
+                className={cn(
+                  'group relative flex items-center gap-4 p-4 rounded-xl border-2 border-border/50',
+                  'bg-background hover:bg-muted/50 hover:border-primary/30',
+                  'transition-all duration-200',
+                  'disabled:opacity-50 disabled:cursor-not-allowed',
+                  'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50'
+                )}
+              >
+                <div className="p-3 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 transition-transform group-hover:scale-110">
+                  <MessageSquare className="h-6 w-6" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="block font-semibold">Guided Q&A</span>
+                  <span className="block text-xs text-muted-foreground">
+                    Answer questions step by step
+                  </span>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+
+              <button
+                onClick={() => handleIntakeModeSelect('paste')}
+                disabled={isLoading}
+                className={cn(
+                  'group relative flex items-center gap-4 p-4 rounded-xl border-2 border-border/50',
+                  'bg-background hover:bg-muted/50 hover:border-primary/30',
+                  'transition-all duration-200',
+                  'disabled:opacity-50 disabled:cursor-not-allowed',
+                  'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50'
+                )}
+              >
+                <div className="p-3 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 transition-transform group-hover:scale-110">
+                  <ClipboardPaste className="h-6 w-6" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="block font-semibold">Paste All Details</span>
+                  <span className="block text-xs text-muted-foreground">
+                    Describe everything at once
+                  </span>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </div>
+
+            <div className="text-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => { setSelectedRole(null); setIntakeMode('select'); }}
+                className="text-muted-foreground"
+              >
+                ← Back to role selection
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : showBulkPasteForm ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+          <BulkPasteForm
+            onSubmit={handleBulkSubmit}
+            onBack={() => setIntakeMode('select')}
+            isLoading={isLoading}
+          />
+        </div>
       ) : showRoleSelector ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           <div className="max-w-xl text-center space-y-6">
@@ -226,43 +341,66 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
       )}
 
       <div className="shrink-0 border-t bg-background">
-        {/* Completion Status Banner - Compact and non-blocking */}
-        {isComplete && (
-          <div className="max-w-3xl mx-auto px-4 pt-3 pb-2">
+        {(isComplete || canGeneratePrediction) && (
+          <div className="max-w-3xl mx-auto px-4 pt-3 pb-2 space-y-2">
             <div className={`flex items-center gap-3 p-3 rounded-lg ${
               (isWaitingForOtherParty || isWaitingForOtherPartyToComplete)
-                ? 'bg-amber-500/5 border border-amber-500/20' 
-                : 'bg-success/5 border border-success/20'
+                ? 'bg-amber-500/5 border border-amber-500/20'
+                : !isComplete
+                  ? 'bg-blue-500/5 border border-blue-500/20'
+                  : hasRecommendedMissing
+                    ? 'bg-blue-500/5 border border-blue-500/20'
+                    : 'bg-success/5 border border-success/20'
             }`}>
               <div className={`p-1.5 rounded-md ${
                 (isWaitingForOtherParty || isWaitingForOtherPartyToComplete) 
-                  ? 'bg-amber-500/10' 
-                  : 'bg-success/10'
+                  ? 'bg-amber-500/10'
+                  : !isComplete
+                    ? 'bg-blue-500/10'
+                    : hasRecommendedMissing
+                      ? 'bg-blue-500/10'
+                      : 'bg-success/10'
               }`}>
                 <PartyPopper className={`h-4 w-4 ${
                   (isWaitingForOtherParty || isWaitingForOtherPartyToComplete) 
-                    ? 'text-amber-500' 
-                    : 'text-success'
+                    ? 'text-amber-500'
+                    : !isComplete
+                      ? 'text-blue-500'
+                      : hasRecommendedMissing
+                        ? 'text-blue-500'
+                        : 'text-success'
                 }`} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-medium ${
                   (isWaitingForOtherParty || isWaitingForOtherPartyToComplete) 
-                    ? 'text-amber-600' 
-                    : 'text-success'
+                    ? 'text-amber-600'
+                    : !isComplete
+                      ? 'text-blue-600'
+                      : hasRecommendedMissing
+                        ? 'text-blue-600'
+                        : 'text-success'
                 }`}>
                   {isWaitingForOtherParty 
                     ? 'Your Intake Complete!' 
                     : isWaitingForOtherPartyToComplete
                       ? 'Waiting for Other Party'
-                      : 'All Required Info Collected!'}
+                      : !isComplete
+                        ? 'Enough info for an early prediction'
+                        : hasRecommendedMissing
+                          ? 'Ready — but more details would help'
+                          : 'All Required Info Collected!'}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {isWaitingForOtherParty
                     ? 'Share invite code with other party'
                     : isWaitingForOtherPartyToComplete
                       ? 'Other party still completing their intake'
-                      : 'Ready to generate prediction'}
+                      : !isComplete
+                        ? 'You can generate now or keep adding details for better accuracy'
+                        : hasRecommendedMissing
+                          ? `Adding ${missingRecommended.join(', ')} would improve accuracy`
+                          : 'Ready to generate prediction'}
                 </p>
               </div>
               {canGeneratePrediction && (
@@ -285,6 +423,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
             placeholder={
               isComplete
                 ? 'Add more details or generate prediction above...'
+                : canGeneratePrediction
+                ? 'Keep adding details or generate an early prediction above...'
                 : stage === 'confirmation'
                 ? 'Type "yes" to confirm or describe any changes...'
                 : 'Type your response...'

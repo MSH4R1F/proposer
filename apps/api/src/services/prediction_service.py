@@ -12,7 +12,7 @@ import structlog
 
 from llm_orchestrator.config import LLMConfig
 from llm_orchestrator.clients.claude_client import ClaudeClient
-from llm_orchestrator.agents.prediction_agent import PredictionEngine
+from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
 from llm_orchestrator.models.prediction import PredictionResult
 
 from kg_builder.builders.graph_builder import GraphBuilder
@@ -40,8 +40,8 @@ class PredictionService:
         llm_config = LLMConfig.from_env()
         self.llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
 
-        # Prediction engine (RAG pipeline loaded lazily)
-        self.prediction_engine = PredictionEngine(
+        # Prediction engine V2 (RAG pipeline loaded lazily)
+        self.prediction_engine = PredictionEngineV2(
             llm_client=self.llm_client,
             rag_pipeline=None,  # Will be set when needed
         )
@@ -76,11 +76,8 @@ class PredictionService:
         """
         Check if a case is ready for prediction.
 
-        NOW ENFORCES: ALL required fields must be present (100% of required info).
-        Predictions are blocked until every required field has a value.
-
-        Returns:
-            Dict with exists, is_complete, completeness, missing_info
+        Only dispute issues are strictly required. Other fields improve
+        prediction quality but don't block generation.
         """
         intake_service = get_intake_service()
         case_file = await intake_service.get_case_file(case_id)
@@ -91,28 +88,33 @@ class PredictionService:
                 "is_complete": False,
                 "completeness": 0,
                 "missing_info": [],
+                "missing_recommended": [],
+                "data_quality_tier": "insufficient",
             }
 
         case_file.calculate_completeness()
         missing = case_file.get_missing_required_info()
-
-        # STRICT VALIDATION: Require ALL required fields (not just 70%)
+        missing_recommended = case_file.get_missing_recommended_info()
+        quality_tier = case_file.get_data_quality_tier()
         is_ready = case_file.has_all_required_info()
 
         logger.debug(
             "case_readiness_check",
             case_id=case_id,
             completeness=case_file.completeness_score,
-            has_all_required=is_ready,
-            missing_count=len(missing),
-            missing_fields=missing,
+            is_ready=is_ready,
+            data_quality_tier=quality_tier,
+            missing_required=missing,
+            missing_recommended=missing_recommended,
         )
 
         return {
             "exists": True,
-            "is_complete": is_ready,  # Only true if ALL required fields present
+            "is_complete": is_ready,
             "completeness": case_file.completeness_score,
             "missing_info": missing,
+            "missing_recommended": missing_recommended,
+            "data_quality_tier": quality_tier,
         }
 
     async def generate_prediction(
@@ -177,12 +179,14 @@ class PredictionService:
                 with open(path) as f:
                     data = json.load(f)
                 if data.get("case_id") == case_id:
-                    predictions.append({
-                        "prediction_id": data.get("prediction_id"),
-                        "timestamp": data.get("timestamp"),
-                        "overall_outcome": data.get("overall_outcome"),
-                        "overall_confidence": data.get("overall_confidence"),
-                    })
+                    predictions.append(
+                        {
+                            "prediction_id": data.get("prediction_id"),
+                            "timestamp": data.get("timestamp"),
+                            "overall_outcome": data.get("overall_outcome"),
+                            "overall_confidence": data.get("overall_confidence"),
+                        }
+                    )
             except Exception:
                 continue
 

@@ -53,7 +53,10 @@ class IntakeAgent(BaseAgent):
         IntakeStage.ROLE_IDENTIFICATION: [],
         IntakeStage.BASIC_DETAILS: ["property.address"],
         IntakeStage.TENANCY_DETAILS: ["tenancy.start_date"],
-        IntakeStage.DEPOSIT_DETAILS: ["tenancy.deposit_amount", "tenancy.deposit_protected"],
+        IntakeStage.DEPOSIT_DETAILS: [
+            "tenancy.deposit_amount",
+            "tenancy.deposit_protected",
+        ],
         IntakeStage.ISSUE_IDENTIFICATION: ["issues"],
         IntakeStage.EVIDENCE_COLLECTION: [],  # Can proceed without
         IntakeStage.CLAIM_AMOUNTS: [],  # Can proceed without
@@ -282,7 +285,10 @@ class IntakeAgent(BaseAgent):
             stage=conversation.current_stage.value,
         )
         # If we're at GREETING or ROLE_IDENTIFICATION, advance to BASIC_DETAILS
-        if conversation.current_stage in (IntakeStage.GREETING, IntakeStage.ROLE_IDENTIFICATION):
+        if conversation.current_stage in (
+            IntakeStage.GREETING,
+            IntakeStage.ROLE_IDENTIFICATION,
+        ):
             conversation.advance_stage(IntakeStage.BASIC_DETAILS)
         logger.debug(
             "advanced_to_basic_details_due_to_role_explicitly_set",
@@ -311,7 +317,6 @@ class IntakeAgent(BaseAgent):
 
         return response, conversation
 
-    
     def _determine_next_stage(self, conversation: ConversationState) -> IntakeStage:
         """Determine the appropriate next stage based on collected info."""
         cf = conversation.case_file
@@ -329,7 +334,7 @@ class IntakeAgent(BaseAgent):
             if cf.property.address:
                 return IntakeStage.TENANCY_DETAILS
             conversation.current_stage_attempts += 1
-            if conversation.current_stage_attempts >= self.MAX_STAGE_ATTEMPTS:
+            if conversation.current_stage_attempts >= 2:
                 return IntakeStage.TENANCY_DETAILS
             return current
 
@@ -337,15 +342,18 @@ class IntakeAgent(BaseAgent):
             if cf.tenancy.start_date:
                 return IntakeStage.DEPOSIT_DETAILS
             conversation.current_stage_attempts += 1
-            if conversation.current_stage_attempts >= self.MAX_STAGE_ATTEMPTS:
+            if conversation.current_stage_attempts >= 2:
                 return IntakeStage.DEPOSIT_DETAILS
             return current
 
         if current == IntakeStage.DEPOSIT_DETAILS:
-            if cf.tenancy.deposit_amount is not None and cf.tenancy.deposit_protected is not None:
+            if (
+                cf.tenancy.deposit_amount is not None
+                and cf.tenancy.deposit_protected is not None
+            ):
                 return IntakeStage.ISSUE_IDENTIFICATION
             conversation.current_stage_attempts += 1
-            if conversation.current_stage_attempts >= self.MAX_STAGE_ATTEMPTS:
+            if conversation.current_stage_attempts >= 2:
                 return IntakeStage.ISSUE_IDENTIFICATION
             return current
 
@@ -374,7 +382,17 @@ class IntakeAgent(BaseAgent):
             last_msg = conversation.get_last_user_message()
             if last_msg:
                 msg_lower = last_msg.content.lower()
-                if any(word in msg_lower for word in ["yes", "correct", "right", "confirm", "looks good", "that's right"]):
+                if any(
+                    word in msg_lower
+                    for word in [
+                        "yes",
+                        "correct",
+                        "right",
+                        "confirm",
+                        "looks good",
+                        "that's right",
+                    ]
+                ):
                     return IntakeStage.COMPLETE
             return current
 
@@ -398,7 +416,7 @@ class IntakeAgent(BaseAgent):
         # Get stage-specific guidance
         stage_guidance = stage_prompts.get(
             conversation.current_stage.value,
-            "Continue the conversation naturally, collecting relevant information."
+            "Continue the conversation naturally, collecting relevant information.",
         )
 
         # Build context for the response
@@ -421,7 +439,7 @@ class IntakeAgent(BaseAgent):
     async def _generate_greeting(self, conversation: ConversationState) -> str:
         """
         Generate the initial greeting message.
-        
+
         If role is set and we're at BASIC_DETAILS, generate a role-appropriate
         first question. Otherwise, generate a generic greeting.
         """
@@ -429,14 +447,18 @@ class IntakeAgent(BaseAgent):
             system_prompt = LANDLORD_SYSTEM_PROMPT
             # If we're at BASIC_DETAILS (role is set), use basic_details prompt
             if conversation.current_stage == IntakeStage.BASIC_DETAILS:
-                stage_prompt = LANDLORD_STAGE_PROMPTS.get("basic_details", LANDLORD_STAGE_PROMPTS["greeting"])
+                stage_prompt = LANDLORD_STAGE_PROMPTS.get(
+                    "basic_details", LANDLORD_STAGE_PROMPTS["greeting"]
+                )
             else:
                 stage_prompt = LANDLORD_STAGE_PROMPTS["greeting"]
         elif conversation.case_file.user_role == PartyRole.TENANT:
             system_prompt = TENANT_SYSTEM_PROMPT
             # If we're at BASIC_DETAILS (role is set), use basic_details prompt
             if conversation.current_stage == IntakeStage.BASIC_DETAILS:
-                stage_prompt = TENANT_STAGE_PROMPTS.get("basic_details", TENANT_STAGE_PROMPTS["greeting"])
+                stage_prompt = TENANT_STAGE_PROMPTS.get(
+                    "basic_details", TENANT_STAGE_PROMPTS["greeting"]
+                )
             else:
                 stage_prompt = TENANT_STAGE_PROMPTS["greeting"]
         else:
@@ -492,10 +514,16 @@ Ask them to first tell you whether they are a tenant or a landlord, and then bri
         # Add missing required info with PRIORITY
         missing = cf.get_missing_required_info()
         if missing:
-            context_parts.append(f"\n⚠️ REQUIRED INFO STILL MISSING (must collect before prediction): {', '.join(missing)}")
-            context_parts.append("INSTRUCTION: Proactively ask for ONE of the missing required fields in your next question.")
+            context_parts.append(
+                f"\n⚠️ REQUIRED INFO STILL MISSING (must collect before prediction): {', '.join(missing)}"
+            )
+            context_parts.append(
+                "INSTRUCTION: Proactively ask for ONE of the missing required fields in your next question."
+            )
         else:
-            context_parts.append("\n✓ ALL REQUIRED INFORMATION COLLECTED - User can now generate prediction!")
+            context_parts.append(
+                "\n✓ ALL REQUIRED INFORMATION COLLECTED - User can now generate prediction!"
+            )
 
         # Add completeness
         context_parts.append(f"\nCompleteness: {cf.completeness_score:.0%}")

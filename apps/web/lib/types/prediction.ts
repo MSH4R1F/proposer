@@ -73,3 +73,14 @@ export interface PredictionListResponse {
   case_id: string;
   predictions: PredictionSummary[];
 }
+
+export type DataQualityTier = 'insufficient' | 'minimal' | 'partial' | 'full';
+
+export interface CaseReadinessResult {
+  exists: boolean;
+  is_complete: boolean;
+  completeness: number;
+  missing_info: string[];
+  missing_recommended: string[];
+  data_quality_tier: DataQualityTier;
+}

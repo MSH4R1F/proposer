@@ -6,6 +6,7 @@ import type {
   SessionStateResponse,
   PartyRole,
   ValidateInviteResponse,
+  BulkIntakeResponse,
 } from '@/lib/types/chat';
 
 interface StartSessionOptions {
@@ -52,4 +53,12 @@ export const chatApi = {
 
   validateInviteCode: (inviteCode: string) =>
     api.post<ValidateInviteResponse>('/disputes/validate-invite', { invite_code: inviteCode }),
+
+  bulkIntake: (role: PartyRole, caseText: string, options?: { inviteCode?: string; createDispute?: boolean }) =>
+    api.post<BulkIntakeResponse>('/chat/bulk-intake', {
+      role,
+      case_text: caseText,
+      invite_code: options?.inviteCode,
+      create_dispute: options?.createDispute ?? true,
+    }),
 };

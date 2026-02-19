@@ -3,9 +3,13 @@ import type {
   PredictionResult,
   GeneratePredictionRequest,
   PredictionListResponse,
+  CaseReadinessResult,
 } from '@/lib/types/prediction';
 
 export const predictionsApi = {
+  checkReady: (caseId: string) =>
+    api.get<CaseReadinessResult>(`/predictions/check/${caseId}`),
+
   generate: (request: GeneratePredictionRequest) =>
     api.post<PredictionResult>('/predictions/generate', request),
 

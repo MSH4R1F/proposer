@@ -31,6 +31,7 @@ class KnowledgeGraph(BaseModel):
     Stores structured facts about a dispute with explicit
     relationships and confidence scores.
     """
+
     graph_id: str = Field(default_factory=lambda: str(uuid4())[:12])
     case_id: str
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
@@ -43,7 +44,9 @@ class KnowledgeGraph(BaseModel):
     # Validation state
     validation_errors: List[str] = Field(default_factory=list)
     validation_warnings: List[str] = Field(default_factory=list)
+    validation_info: List[str] = Field(default_factory=list)
     is_consistent: bool = True
+    data_quality_tier: str = Field(default="minimal")
 
     # Metadata
     metadata: Dict[str, Any] = Field(default_factory=dict)
@@ -205,8 +208,7 @@ class KnowledgeGraph(BaseModel):
             "node_count": len(self.nodes),
             "edge_count": len(self.edges),
             "nodes_by_type": {
-                nt.value: len(self.get_nodes_by_type(nt))
-                for nt in NodeType
+                nt.value: len(self.get_nodes_by_type(nt)) for nt in NodeType
             },
             "is_consistent": self.is_consistent,
             "validation_errors": len(self.validation_errors),
@@ -224,7 +226,9 @@ class KnowledgeGraph(BaseModel):
         # Create nodes
         for node in self.nodes:
             props = node.model_dump(exclude={"node_type", "metadata"})
-            props_str = ", ".join(f"{k}: {repr(v)}" for k, v in props.items() if v is not None)
+            props_str = ", ".join(
+                f"{k}: {repr(v)}" for k, v in props.items() if v is not None
+            )
             statements.append(
                 f"CREATE (:{node.node_type.value.title()} {{{props_str}}})"
             )

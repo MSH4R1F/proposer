@@ -117,8 +117,13 @@ class GraphBuilder:
         # Validate if requested
         if self.validate:
             from .validators import KGValidator
+
             validator = KGValidator()
             kg = validator.validate(kg)
+
+        kg.data_quality_tier = self._compute_quality_tier(
+            property_node, lease_node, issue_nodes, evidence_nodes
+        )
 
         logger.info(
             "knowledge_graph_built",
@@ -126,9 +131,35 @@ class GraphBuilder:
             nodes=len(kg.nodes),
             edges=len(kg.edges),
             is_consistent=kg.is_consistent,
+            data_quality_tier=kg.data_quality_tier,
         )
 
         return kg
+
+    def _compute_quality_tier(
+        self,
+        property_node: Optional[PropertyNode],
+        lease_node: Optional[LeaseNode],
+        issue_nodes: list,
+        evidence_nodes: list,
+    ) -> str:
+        if not issue_nodes:
+            return "insufficient"
+
+        has_property = property_node is not None
+        has_lease = lease_node is not None
+        has_deposit_info = (
+            lease_node is not None and lease_node.deposit_amount is not None
+        )
+        has_evidence = len(evidence_nodes) > 0
+
+        score = sum([has_property, has_lease, has_deposit_info, has_evidence])
+
+        if score >= 4:
+            return "full"
+        if score >= 2:
+            return "partial"
+        return "minimal"
 
     def _build_party_nodes(self, case_file: "CaseFile") -> List[PartyNode]:
         """Build party nodes from case file."""
@@ -138,14 +169,20 @@ class GraphBuilder:
         user_node = PartyNode(
             node_id=f"party_{case_file.user_role.value}",
             role=case_file.user_role.value,
-            name=case_file.tenant_name if case_file.user_role.value == "tenant" else case_file.landlord_name,
+            name=case_file.tenant_name
+            if case_file.user_role.value == "tenant"
+            else case_file.landlord_name,
             source="user_input",
         )
         nodes.append(user_node)
 
         # Other party
         other_role = "landlord" if case_file.user_role.value == "tenant" else "tenant"
-        other_name = case_file.landlord_name if other_role == "landlord" else case_file.tenant_name
+        other_name = (
+            case_file.landlord_name
+            if other_role == "landlord"
+            else case_file.tenant_name
+        )
         if other_name or True:  # Always create the other party node
             other_node = PartyNode(
                 node_id=f"party_{other_role}",
@@ -170,7 +207,16 @@ class GraphBuilder:
     def _build_property_node(self, case_file: "CaseFile") -> Optional[PropertyNode]:
         """Build property node from case file."""
         prop = case_file.property
-        if not prop.address:
+        has_any_data = any(
+            [
+                prop.address,
+                prop.postcode,
+                prop.property_type,
+                prop.num_bedrooms is not None,
+                prop.furnished is not None,
+            ]
+        )
+        if not has_any_data:
             return None
 
         return PropertyNode(
@@ -182,12 +228,24 @@ class GraphBuilder:
             furnished=prop.furnished,
             region=prop.region or prop.infer_region(),
             source="user_input",
+            confidence=1.0 if prop.address else 0.5,
         )
 
     def _build_lease_node(self, case_file: "CaseFile") -> Optional[LeaseNode]:
         """Build lease node from case file."""
         ten = case_file.tenancy
-        if not ten.start_date and not ten.deposit_amount:
+        has_any_data = any(
+            [
+                ten.start_date,
+                ten.end_date,
+                ten.deposit_amount is not None,
+                ten.deposit_protected is not None,
+                ten.monthly_rent is not None,
+                ten.tenancy_type,
+                ten.deposit_scheme,
+            ]
+        )
+        if not has_any_data:
             return None
 
         return LeaseNode(
@@ -240,7 +298,9 @@ class GraphBuilder:
 
         return nodes
 
-    def _get_issue_description(self, issue: "DisputeIssue", case_file: "CaseFile") -> str:
+    def _get_issue_description(
+        self, issue: "DisputeIssue", case_file: "CaseFile"
+    ) -> str:
         """Get a description for an issue from the case file."""
         # Try to find claims related to this issue
         claims = case_file.tenant_claims + case_file.landlord_claims
@@ -366,85 +426,99 @@ class GraphBuilder:
         # Party -> Property edges
         if property_node:
             if landlord_node:
-                edges.append(Edge.create(
-                    EdgeType.PARTY_OWNS,
-                    landlord_node.node_id,
-                    property_node.node_id,
-                    description="Landlord owns property",
-                ))
+                edges.append(
+                    Edge.create(
+                        EdgeType.PARTY_OWNS,
+                        landlord_node.node_id,
+                        property_node.node_id,
+                        description="Landlord owns property",
+                    )
+                )
             if tenant_node:
-                edges.append(Edge.create(
-                    EdgeType.PARTY_RENTS,
-                    tenant_node.node_id,
-                    property_node.node_id,
-                    description="Tenant rents property",
-                ))
+                edges.append(
+                    Edge.create(
+                        EdgeType.PARTY_RENTS,
+                        tenant_node.node_id,
+                        property_node.node_id,
+                        description="Tenant rents property",
+                    )
+                )
 
         # Lease -> Property edge
         if lease_node and property_node:
-            edges.append(Edge.create(
-                EdgeType.LEASE_FOR,
-                lease_node.node_id,
-                property_node.node_id,
-                description="Lease agreement for property",
-            ))
+            edges.append(
+                Edge.create(
+                    EdgeType.LEASE_FOR,
+                    lease_node.node_id,
+                    property_node.node_id,
+                    description="Lease agreement for property",
+                )
+            )
 
         # Party -> Claim edges
         for claim in claim_nodes:
             party_node = tenant_node if claim.claimant == "tenant" else landlord_node
             if party_node:
-                edges.append(Edge.create(
-                    EdgeType.PARTY_CLAIMS,
-                    party_node.node_id,
-                    claim.node_id,
-                    description=f"{claim.claimant} claims £{claim.amount}",
-                ))
+                edges.append(
+                    Edge.create(
+                        EdgeType.PARTY_CLAIMS,
+                        party_node.node_id,
+                        claim.node_id,
+                        description=f"{claim.claimant} claims £{claim.amount}",
+                    )
+                )
 
         # Claim -> Issue edges
         for claim in claim_nodes:
             issue_node = next(
-                (n for n in issue_nodes if n.issue_type == claim.issue_type),
-                None
+                (n for n in issue_nodes if n.issue_type == claim.issue_type), None
             )
             if issue_node:
-                edges.append(Edge.create(
-                    EdgeType.CLAIM_RELATES_TO,
-                    claim.node_id,
-                    issue_node.node_id,
-                    description=f"Claim relates to {claim.issue_type}",
-                ))
+                edges.append(
+                    Edge.create(
+                        EdgeType.CLAIM_RELATES_TO,
+                        claim.node_id,
+                        issue_node.node_id,
+                        description=f"Claim relates to {claim.issue_type}",
+                    )
+                )
 
         # Evidence -> Issue edges
         for evidence in evidence_nodes:
             # Link evidence to relevant issues based on type
-            relevant_issues = self._get_relevant_issues_for_evidence(evidence, issue_nodes)
+            relevant_issues = self._get_relevant_issues_for_evidence(
+                evidence, issue_nodes
+            )
             for issue in relevant_issues:
-                edges.append(Edge.create(
-                    EdgeType.EVIDENCE_RELATES_TO,
-                    evidence.node_id,
-                    issue.node_id,
-                    confidence=0.7,  # Default confidence
-                    description=f"{evidence.evidence_type} relates to {issue.issue_type}",
-                ))
+                edges.append(
+                    Edge.create(
+                        EdgeType.EVIDENCE_RELATES_TO,
+                        evidence.node_id,
+                        issue.node_id,
+                        confidence=0.7,  # Default confidence
+                        description=f"{evidence.evidence_type} relates to {issue.issue_type}",
+                    )
+                )
 
         # Link evidence to claims by ID
         for claim in case_file.tenant_claims + case_file.landlord_claims:
             for ev_id in claim.evidence_ids:
                 evidence_node = next(
                     (n for n in evidence_nodes if n.node_id == f"evidence_{ev_id}"),
-                    None
+                    None,
                 )
                 claim_node = next(
-                    (n for n in claim_nodes if claim.id in n.node_id),
-                    None
+                    (n for n in claim_nodes if claim.id in n.node_id), None
                 )
                 if evidence_node and claim_node:
-                    edges.append(Edge.create(
-                        EdgeType.EVIDENCE_SUPPORTS,
-                        evidence_node.node_id,
-                        claim_node.node_id,
-                        description="Evidence supports claim",
-                    ))
+                    edges.append(
+                        Edge.create(
+                            EdgeType.EVIDENCE_SUPPORTS,
+                            evidence_node.node_id,
+                            claim_node.node_id,
+                            description="Evidence supports claim",
+                        )
+                    )
 
         # Temporal edges between events
         event_nodes = kg.get_nodes_by_type(NodeType.EVENT)
@@ -454,12 +528,14 @@ class GraphBuilder:
         )
 
         for i in range(len(sorted_events) - 1):
-            edges.append(Edge.create(
-                EdgeType.EVENT_BEFORE,
-                sorted_events[i].node_id,
-                sorted_events[i + 1].node_id,
-                description=f"{sorted_events[i].event_type} before {sorted_events[i+1].event_type}",
-            ))
+            edges.append(
+                Edge.create(
+                    EdgeType.EVENT_BEFORE,
+                    sorted_events[i].node_id,
+                    sorted_events[i + 1].node_id,
+                    description=f"{sorted_events[i].event_type} before {sorted_events[i + 1].event_type}",
+                )
+            )
 
         return edges
 

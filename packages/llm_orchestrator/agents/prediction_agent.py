@@ -16,9 +16,12 @@ from ..models.case_file import CaseFile, PartyRole
 from ..models.prediction import (
     PredictionResult,
     OutcomeType,
+    IssueOutcome,
+    IssueType,
     IssuePrediction,
     ReasoningStep,
     Citation,
+    map_str_to_issue_type,
 )
 from ..prompts.prediction import (
     PREDICTION_SYSTEM_PROMPT,
@@ -163,7 +166,11 @@ class PredictionEngine:
         case_facts = self._format_case_facts(case_file)
 
         # Format KG summary
-        kg_summary = self._format_kg_summary(knowledge_graph) if knowledge_graph else "No knowledge graph available."
+        kg_summary = (
+            self._format_kg_summary(knowledge_graph)
+            if knowledge_graph
+            else "No knowledge graph available."
+        )
 
         # Build the user prompt
         user_prompt = PREDICTION_USER_PROMPT.format(
@@ -229,11 +236,27 @@ Text:
 
     def _format_case_facts(self, case_file: CaseFile) -> str:
         """Format case file facts for LLM context."""
+        quality_tier = case_file.get_data_quality_tier()
+        missing_recommended = case_file.get_missing_recommended_info()
+
         lines = [
-            f"User Role: {case_file.user_role.value}",
-            f"Property: {case_file.property.address or 'Not specified'}",
-            f"Region: {case_file.property.region or 'Unknown'}",
+            f"DATA QUALITY: {quality_tier.upper()}",
         ]
+
+        if missing_recommended:
+            lines.append(f"MISSING RECOMMENDED DATA: {', '.join(missing_recommended)}")
+            lines.append(
+                "NOTE: Reduce confidence for areas affected by missing data. Explicitly flag assumptions made due to missing information."
+            )
+
+        lines.extend(
+            [
+                "",
+                f"User Role: {case_file.user_role.value}",
+                f"Property: {case_file.property.address or 'Not specified'}",
+                f"Region: {case_file.property.region or 'Unknown'}",
+            ]
+        )
 
         if case_file.tenancy.start_date:
             lines.append(f"Tenancy Start: {case_file.tenancy.start_date}")
@@ -242,10 +265,14 @@ Text:
         if case_file.tenancy.monthly_rent:
             lines.append(f"Monthly Rent: £{case_file.tenancy.monthly_rent}")
 
-        lines.append(f"Deposit Amount: £{case_file.tenancy.deposit_amount or 'Unknown'}")
+        lines.append(
+            f"Deposit Amount: £{case_file.tenancy.deposit_amount or 'Unknown'}"
+        )
 
         if case_file.tenancy.deposit_protected is not None:
-            status = "Protected" if case_file.tenancy.deposit_protected else "NOT PROTECTED"
+            status = (
+                "Protected" if case_file.tenancy.deposit_protected else "NOT PROTECTED"
+            )
             lines.append(f"Deposit Protection: {status}")
             if case_file.tenancy.deposit_scheme:
                 lines.append(f"Deposit Scheme: {case_file.tenancy.deposit_scheme}")
@@ -258,12 +285,16 @@ Text:
         if case_file.tenant_claims:
             lines.append(f"\nTenant Claims:")
             for claim in case_file.tenant_claims:
-                lines.append(f"  - {claim.issue.value}: £{claim.amount} - {claim.description}")
+                lines.append(
+                    f"  - {claim.issue.value}: £{claim.amount} - {claim.description}"
+                )
 
         if case_file.landlord_claims:
             lines.append(f"\nLandlord Claims:")
             for claim in case_file.landlord_claims:
-                lines.append(f"  - {claim.issue.value}: £{claim.amount} - {claim.description}")
+                lines.append(
+                    f"  - {claim.issue.value}: £{claim.amount} - {claim.description}"
+                )
 
         if case_file.evidence:
             lines.append(f"\nEvidence Available:")
@@ -325,10 +356,16 @@ Text:
             # Parse issue predictions
             issue_preds = []
             for ip in data.get("issue_predictions", []):
+                raw_outcome = ip.get("predicted_outcome", "uncertain").lower()
+                OUTCOME_COMPAT = {
+                    "tenant_win": "tenant_wins",
+                    "landlord_win": "landlord_wins",
+                }
+                raw_outcome = OUTCOME_COMPAT.get(raw_outcome, raw_outcome)
                 try:
-                    pred_outcome = OutcomeType(ip.get("predicted_outcome", "uncertain").lower())
+                    pred_outcome = IssueOutcome(raw_outcome)
                 except ValueError:
-                    pred_outcome = OutcomeType.UNCERTAIN
+                    pred_outcome = IssueOutcome.UNCERTAIN
 
                 citations = [
                     Citation(
@@ -340,16 +377,18 @@ Text:
                     for c in ip.get("supporting_cases", [])
                 ]
 
-                issue_preds.append(IssuePrediction(
-                    issue_type=ip.get("issue_type", ""),
-                    issue_description=ip.get("issue_type", ""),
-                    predicted_outcome=pred_outcome,
-                    predicted_amount=ip.get("predicted_amount"),
-                    confidence=ip.get("confidence", 0.5),
-                    reasoning=ip.get("reasoning", ""),
-                    key_factors=ip.get("key_factors", []),
-                    supporting_cases=citations,
-                ))
+                issue_preds.append(
+                    IssuePrediction(
+                        issue_type=map_str_to_issue_type(ip.get("issue_type", "other")),
+                        issue_description=ip.get("issue_type", ""),
+                        outcome=pred_outcome,
+                        predicted_amount=ip.get("predicted_amount"),
+                        raw_confidence=ip.get("confidence", 0.5),
+                        reasoning=ip.get("reasoning", ""),
+                        key_factors=ip.get("key_factors", []),
+                        supporting_cases=citations,
+                    )
+                )
 
             # Parse reasoning trace
             reasoning = []
@@ -364,14 +403,16 @@ Text:
                     for c in step.get("citations", [])
                 ]
 
-                reasoning.append(ReasoningStep(
-                    step_number=step.get("step_number", len(reasoning) + 1),
-                    category=step.get("category", "analysis"),
-                    title=step.get("title", ""),
-                    content=step.get("content", ""),
-                    citations=citations,
-                    confidence=step.get("confidence", 0.7),
-                ))
+                reasoning.append(
+                    ReasoningStep(
+                        step_number=step.get("step_number", len(reasoning) + 1),
+                        category=step.get("category", "analysis"),
+                        title=step.get("title", ""),
+                        content=step.get("content", ""),
+                        citations=citations,
+                        confidence=step.get("confidence", 0.7),
+                    )
+                )
 
             # Parse settlement range
             settlement_range = data.get("predicted_settlement_range")

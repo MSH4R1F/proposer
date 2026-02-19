@@ -1,17 +1,22 @@
 'use client';
 
+import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ProgressIndicator } from './ProgressIndicator';
 import { getStageLabel } from '@/lib/constants/stages';
+import { ROUTES } from '@/lib/constants/routes';
 import type { IntakeStage } from '@/lib/types/chat';
 
 interface ChatHeaderProps {
   stage: IntakeStage;
   completeness: number;
   sessionId?: string | null;
+  caseId?: string | null;
 }
 
-export function ChatHeader({ stage, completeness, sessionId }: ChatHeaderProps) {
+export function ChatHeader({ stage, completeness, sessionId, caseId }: ChatHeaderProps) {
   const percentage = Math.round(completeness * 100);
   
   return (
@@ -37,8 +42,18 @@ export function ChatHeader({ stage, completeness, sessionId }: ChatHeaderProps) 
             {percentage}% complete
           </span>
         </div>
-        
-        <ProgressIndicator currentStage={stage} className="hidden sm:flex" />
+
+        <div className="flex items-center gap-3">
+          {caseId && (
+            <Button asChild variant="outline" size="sm" className="gap-1.5 h-7 text-xs">
+              <Link href={ROUTES.PREDICTION(caseId)}>
+                <Sparkles className="h-3 w-3" />
+                View Prediction
+              </Link>
+            </Button>
+          )}
+          <ProgressIndicator currentStage={stage} className="hidden sm:flex" />
+        </div>
       </div>
     </div>
   );

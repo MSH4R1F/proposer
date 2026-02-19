@@ -85,9 +85,7 @@ class KGValidator:
         # Check tenancy dates make sense
         if lease.start_date and lease.end_date:
             if lease.end_date < lease.start_date:
-                kg.validation_errors.append(
-                    "Tenancy end date is before start date"
-                )
+                kg.validation_errors.append("Tenancy end date is before start date")
 
             # Check duration is reasonable (< 20 years)
             duration = (lease.end_date - lease.start_date).days
@@ -175,16 +173,10 @@ class KGValidator:
             edges = kg.get_edges_for_node(claim.node_id)
 
             # Check for evidence support
-            has_evidence = any(
-                e.edge_type == EdgeType.EVIDENCE_SUPPORTS
-                for e in edges
-            )
+            has_evidence = any(e.edge_type == EdgeType.EVIDENCE_SUPPORTS for e in edges)
 
             # Check for issue relation
-            has_issue = any(
-                e.edge_type == EdgeType.CLAIM_RELATES_TO
-                for e in edges
-            )
+            has_issue = any(e.edge_type == EdgeType.CLAIM_RELATES_TO for e in edges)
 
             if not has_evidence and not has_issue:
                 kg.validation_warnings.append(
@@ -192,28 +184,25 @@ class KGValidator:
                 )
 
     def _validate_required_nodes(self, kg: KnowledgeGraph) -> None:
-        """Check that required nodes exist."""
-        # Should have at least 2 parties
+        """Check that expected nodes exist — informational, not blocking."""
         parties = kg.get_nodes_by_type(NodeType.PARTY)
         if len(parties) < 2:
-            kg.validation_warnings.append(
-                "Expected both tenant and landlord party nodes"
+            kg.validation_info.append(
+                "Only one party node found — other party details not yet provided"
             )
 
-        # Should have a property or lease
         properties = kg.get_nodes_by_type(NodeType.PROPERTY)
         leases = kg.get_nodes_by_type(NodeType.LEASE)
 
         if not properties and not leases:
-            kg.validation_warnings.append(
-                "No property or lease information found"
+            kg.validation_info.append(
+                "No property or lease information found — prediction quality may be reduced"
             )
 
-        # Should have at least one issue
         issues = kg.get_nodes_by_type(NodeType.ISSUE)
         if not issues:
             kg.validation_warnings.append(
-                "No dispute issues identified"
+                "No dispute issues identified — this is needed for prediction"
             )
 
 

@@ -34,17 +34,19 @@ class IntakeService:
     def __init__(self):
         """Initialize the intake service."""
         logger.debug("initializing_intake_service")
-        
+
         # Initialize LLM client
         llm_config = LLMConfig.from_env()
-        logger.debug("llm_config_loaded", 
-                     has_anthropic_key=bool(llm_config.anthropic_api_key),
-                     primary_model=llm_config.primary_model,
-                     fallback_model=llm_config.fallback_model)
-        
+        logger.debug(
+            "llm_config_loaded",
+            has_anthropic_key=bool(llm_config.anthropic_api_key),
+            primary_model=llm_config.primary_model,
+            fallback_model=llm_config.fallback_model,
+        )
+
         self.llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
         logger.debug("claude_client_created")
-        
+
         self.agent = IntakeAgent(self.llm_client)
         logger.debug("intake_agent_created")
 
@@ -72,26 +74,36 @@ class IntakeService:
             Tuple of (greeting, session_id, stage)
         """
         logger.debug("starting_new_session", role=role)
-        
+
         # Convert role string to PartyRole if provided
         user_role = PartyRole(role) if role else None
-        logger.debug("party_role_parsed", user_role=user_role.value if user_role else None)
-        
+        logger.debug(
+            "party_role_parsed", user_role=user_role.value if user_role else None
+        )
+
         # Start conversation with role (agent handles role-specific greeting)
-        greeting, conversation = await self.agent.start_conversation(user_role=user_role)
-        
-        logger.debug("conversation_created",
-                     session_id=conversation.session_id,
-                     stage=conversation.current_stage.value,
-                     role=conversation.case_file.user_role.value if conversation.case_file.user_role else None,
-                     greeting_length=len(greeting))
+        greeting, conversation = await self.agent.start_conversation(
+            user_role=user_role
+        )
+
+        logger.debug(
+            "conversation_created",
+            session_id=conversation.session_id,
+            stage=conversation.current_stage.value,
+            role=conversation.case_file.user_role.value
+            if conversation.case_file.user_role
+            else None,
+            greeting_length=len(greeting),
+        )
 
         # Store session
         self._sessions[conversation.session_id] = conversation
-        logger.debug("session_stored_in_memory", 
-                     session_id=conversation.session_id,
-                     total_sessions=len(self._sessions))
-        
+        logger.debug(
+            "session_stored_in_memory",
+            session_id=conversation.session_id,
+            total_sessions=len(self._sessions),
+        )
+
         self._save_session(conversation)
         logger.debug("session_saved_to_disk", session_id=conversation.session_id)
 
@@ -121,57 +133,67 @@ class IntakeService:
         Returns:
             Dict with response, stage, completeness, case_file
         """
-        logger.debug("processing_message",
-                     session_id=session_id,
-                     message_length=len(message))
-        
+        logger.debug(
+            "processing_message", session_id=session_id, message_length=len(message)
+        )
+
         # Get session
         conversation = await self._get_session(session_id)
         if not conversation:
             logger.error("session_not_found_for_message", session_id=session_id)
             raise ValueError(f"Session not found: {session_id}")
 
-        logger.debug("session_retrieved",
-                     session_id=session_id,
-                     current_stage=conversation.current_stage.value,
-                     message_count=len(conversation.messages),
-                     user_role=conversation.case_file.user_role.value if conversation.case_file.user_role else None)
+        logger.debug(
+            "session_retrieved",
+            session_id=session_id,
+            current_stage=conversation.current_stage.value,
+            message_count=len(conversation.messages),
+            user_role=conversation.case_file.user_role.value
+            if conversation.case_file.user_role
+            else None,
+        )
 
         # Process message
         logger.debug("calling_agent_process_message", session_id=session_id)
         response, updated_conversation = await self.agent.process_message(
             conversation, message
         )
-        
-        logger.debug("agent_response_received",
-                     session_id=session_id,
-                     response_length=len(response),
-                     new_stage=updated_conversation.current_stage.value,
-                     completeness=updated_conversation.case_file.completeness_score,
-                     is_complete=updated_conversation.is_complete)
+
+        logger.debug(
+            "agent_response_received",
+            session_id=session_id,
+            response_length=len(response),
+            new_stage=updated_conversation.current_stage.value,
+            completeness=updated_conversation.case_file.completeness_score,
+            is_complete=updated_conversation.is_complete,
+        )
 
         # Update intake_complete flag based on ALL required fields being present
         case_file = updated_conversation.case_file
         case_file.calculate_completeness()
         missing_required = case_file.get_missing_required_info()
-        
+
         # Mark as complete ONLY if ALL required fields are present
         if case_file.has_all_required_info() and not case_file.intake_complete:
             case_file.intake_complete = True
-            logger.info("intake_marked_complete_all_required_fields_present",
-                       session_id=session_id,
-                       completeness=case_file.completeness_score)
-        
-        logger.debug("intake_validation",
-                    session_id=session_id,
-                    has_all_required=case_file.has_all_required_info(),
-                    missing_required=missing_required,
-                    intake_complete=case_file.intake_complete)
+            logger.info(
+                "intake_marked_complete_all_required_fields_present",
+                session_id=session_id,
+                completeness=case_file.completeness_score,
+            )
+
+        logger.debug(
+            "intake_validation",
+            session_id=session_id,
+            has_all_required=case_file.has_all_required_info(),
+            missing_required=missing_required,
+            intake_complete=case_file.intake_complete,
+        )
 
         # Update session
         self._sessions[session_id] = updated_conversation
         logger.debug("session_updated_in_memory", session_id=session_id)
-        
+
         self._save_session(updated_conversation)
         logger.debug("session_saved_after_message", session_id=session_id)
 
@@ -179,6 +201,7 @@ class IntakeService:
         # This enables the prediction button when BOTH parties are ready
         try:
             from apps.api.src.services.dispute_service import get_dispute_service
+
             dispute_service = get_dispute_service()
             await dispute_service.update_dispute_from_session(
                 session_id=session_id,
@@ -188,9 +211,11 @@ class IntakeService:
                 intake_complete=case_file.intake_complete,
                 role=case_file.user_role.value if case_file.user_role else None,
             )
-            logger.debug("dispute_status_synced", 
-                        session_id=session_id, 
-                        intake_complete=case_file.intake_complete)
+            logger.debug(
+                "dispute_status_synced",
+                session_id=session_id,
+                intake_complete=case_file.intake_complete,
+            )
         except Exception as e:
             logger.warning("dispute_sync_failed", session_id=session_id, error=str(e))
 
@@ -222,35 +247,41 @@ class IntakeService:
             Dict with response, stage, completeness, case_file
         """
         logger.debug("setting_role", session_id=session_id, role=role)
-        
+
         conversation = await self._get_session(session_id)
         print(f"conversation: {conversation}")
         if not conversation:
             logger.error("session_not_found_for_role", session_id=session_id)
             raise ValueError(f"Session not found: {session_id}")
 
-        logger.debug("session_retrieved_for_role",
-                     session_id=session_id,
-                     current_stage=conversation.current_stage.value)
+        logger.debug(
+            "session_retrieved_for_role",
+            session_id=session_id,
+            current_stage=conversation.current_stage.value,
+        )
 
         user_role = PartyRole(role)
-        logger.debug("party_role_created", session_id=session_id, party_role=user_role.value)
+        logger.debug(
+            "party_role_created", session_id=session_id, party_role=user_role.value
+        )
 
         # Use agent method to set role and generate appropriate response
         logger.debug("calling_agent_set_user_role", session_id=session_id)
         response, updated_conversation = await self.agent.set_user_role(
             conversation, user_role
         )
-        
-        logger.debug("agent_role_response_received",
-                     session_id=session_id,
-                     response_length=len(response),
-                     new_stage=updated_conversation.current_stage.value)
+
+        logger.debug(
+            "agent_role_response_received",
+            session_id=session_id,
+            response_length=len(response),
+            new_stage=updated_conversation.current_stage.value,
+        )
 
         # Update session
         self._sessions[session_id] = updated_conversation
         logger.debug("session_updated_after_role", session_id=session_id)
-        
+
         self._save_session(updated_conversation)
         logger.debug("session_saved_after_role", session_id=session_id)
 
@@ -270,6 +301,137 @@ class IntakeService:
             "role_set": True,
         }
 
+    async def bulk_intake(
+        self,
+        role: str,
+        case_text: str,
+    ) -> Dict[str, Any]:
+        """
+        Process a complete case description in one shot.
+
+        Creates a session, extracts all facts from the pasted text,
+        and returns the populated case file. The user can then
+        continue in the normal chat flow to add more details.
+        """
+        logger.debug("bulk_intake_start", role=role, text_length=len(case_text))
+
+        user_role = PartyRole(role)
+        greeting, conversation = await self.agent.start_conversation(
+            user_role=user_role
+        )
+
+        conversation.add_user_message(case_text)
+
+        extraction_result = await self.agent.extractor.extract_bulk(
+            case_text=case_text,
+            case_file=conversation.case_file,
+        )
+
+        conversation.case_file = extraction_result.updated_case_file
+        conversation.case_file.calculate_completeness()
+        conversation.case_file.get_missing_required_info()
+
+        if conversation.case_file.has_all_required_info():
+            conversation.case_file.intake_complete = True
+
+        stage = self._determine_bulk_stage(conversation.case_file)
+        conversation.advance_stage(stage)
+
+        summary = self._build_extraction_summary(
+            extraction_result, conversation.case_file
+        )
+        conversation.add_assistant_message(summary)
+
+        self._sessions[conversation.session_id] = conversation
+        self._save_session(conversation)
+
+        logger.info(
+            "bulk_intake_complete",
+            session_id=conversation.session_id,
+            completeness=conversation.case_file.completeness_score,
+            missing=conversation.case_file.missing_info,
+            intake_complete=conversation.case_file.intake_complete,
+        )
+
+        try:
+            from apps.api.src.services.dispute_service import get_dispute_service
+
+            dispute_service = get_dispute_service()
+            await dispute_service.update_dispute_from_session(
+                session_id=conversation.session_id,
+                property_address=conversation.case_file.property.address,
+                property_postcode=conversation.case_file.property.postcode,
+                deposit_amount=conversation.case_file.tenancy.deposit_amount,
+                intake_complete=conversation.case_file.intake_complete,
+                role=role,
+            )
+        except Exception as e:
+            logger.warning("bulk_intake_dispute_sync_failed", error=str(e))
+
+        return {
+            "session_id": conversation.session_id,
+            "response": summary,
+            "stage": conversation.current_stage.value,
+            "completeness": conversation.case_file.completeness_score,
+            "is_complete": conversation.is_complete,
+            "case_file": conversation.case_file.model_dump(mode="json"),
+            "missing_info": conversation.case_file.missing_info,
+            "extraction_successful": not extraction_result.no_new_info,
+        }
+
+    def _determine_bulk_stage(self, case_file):
+        from llm_orchestrator.models.conversation import IntakeStage
+
+        if case_file.has_all_required_info():
+            return IntakeStage.CONFIRMATION
+        if case_file.issues:
+            return IntakeStage.EVIDENCE_COLLECTION
+        if case_file.tenancy.deposit_amount is not None:
+            return IntakeStage.ISSUE_IDENTIFICATION
+        if case_file.tenancy.start_date:
+            return IntakeStage.DEPOSIT_DETAILS
+        if case_file.property.address:
+            return IntakeStage.TENANCY_DETAILS
+        return IntakeStage.BASIC_DETAILS
+
+    def _build_extraction_summary(self, extraction_result, case_file) -> str:
+        parts = ["Here's what I extracted from your description:\n"]
+
+        if case_file.property.address:
+            parts.append(f"**Property:** {case_file.property.address}")
+        if case_file.tenancy.start_date:
+            parts.append(f"**Tenancy Start:** {case_file.tenancy.start_date}")
+        if case_file.tenancy.end_date:
+            parts.append(f"**Tenancy End:** {case_file.tenancy.end_date}")
+        if case_file.tenancy.deposit_amount:
+            parts.append(f"**Deposit:** £{case_file.tenancy.deposit_amount}")
+        if case_file.tenancy.deposit_protected is not None:
+            status = (
+                "Protected" if case_file.tenancy.deposit_protected else "Not protected"
+            )
+            parts.append(f"**Deposit Protection:** {status}")
+        if case_file.issues:
+            issues_str = ", ".join(
+                i.value.replace("_", " ").title() for i in case_file.issues
+            )
+            parts.append(f"**Issues:** {issues_str}")
+        if case_file.evidence:
+            ev_str = ", ".join(
+                e.type.value.replace("_", " ").title() for e in case_file.evidence
+            )
+            parts.append(f"**Evidence:** {ev_str}")
+
+        missing = case_file.missing_info
+        if missing:
+            parts.append(f"\n**Still needed:** {', '.join(missing)}")
+            parts.append("You can continue chatting to provide the missing details.")
+        else:
+            parts.append(
+                "\nAll required information has been collected! You can generate a prediction or continue adding details."
+            )
+
+        return "\n".join(parts)
+
     async def get_session_status(self, session_id: str) -> Optional[Dict]:
         """Get the status of a session."""
         conversation = await self._get_session(session_id)
@@ -279,11 +441,13 @@ class IntakeService:
         # Convert messages to API format
         messages = []
         for msg in conversation.messages:
-            messages.append({
-                "role": msg.role,
-                "content": msg.content,
-                "timestamp": msg.timestamp if hasattr(msg, 'timestamp') else None,
-            })
+            messages.append(
+                {
+                    "role": msg.role,
+                    "content": msg.content,
+                    "timestamp": msg.timestamp if hasattr(msg, "timestamp") else None,
+                }
+            )
 
         return {
             "session_id": session_id,
@@ -357,12 +521,14 @@ class IntakeService:
 
         # In-memory sessions
         for session in self._sessions.values():
-            sessions.append({
-                "session_id": session.session_id,
-                "case_id": session.case_file.case_id,
-                "stage": session.current_stage.value,
-                "is_complete": session.is_complete,
-            })
+            sessions.append(
+                {
+                    "session_id": session.session_id,
+                    "case_id": session.case_file.case_id,
+                    "stage": session.current_stage.value,
+                    "is_complete": session.is_complete,
+                }
+            )
 
         return sessions
 
@@ -375,13 +541,15 @@ class IntakeService:
         for session in self._sessions.values():
             cf = session.case_file
             if cf.case_id not in seen_case_ids:
-                cases.append({
-                    "case_id": cf.case_id,
-                    "user_role": cf.user_role.value,
-                    "intake_complete": cf.intake_complete,
-                    "completeness_score": cf.completeness_score,
-                    "created_at": cf.created_at,
-                })
+                cases.append(
+                    {
+                        "case_id": cf.case_id,
+                        "user_role": cf.user_role.value,
+                        "intake_complete": cf.intake_complete,
+                        "completeness_score": cf.completeness_score,
+                        "created_at": cf.created_at,
+                    }
+                )
                 seen_case_ids.add(cf.case_id)
 
         # From disk
@@ -392,13 +560,15 @@ class IntakeService:
                 cf_data = data.get("case_file", {})
                 case_id = cf_data.get("case_id")
                 if case_id and case_id not in seen_case_ids:
-                    cases.append({
-                        "case_id": case_id,
-                        "user_role": cf_data.get("user_role", "tenant"),
-                        "intake_complete": cf_data.get("intake_complete", False),
-                        "completeness_score": cf_data.get("completeness_score", 0),
-                        "created_at": cf_data.get("created_at", ""),
-                    })
+                    cases.append(
+                        {
+                            "case_id": case_id,
+                            "user_role": cf_data.get("user_role", "tenant"),
+                            "intake_complete": cf_data.get("intake_complete", False),
+                            "completeness_score": cf_data.get("completeness_score", 0),
+                            "created_at": cf_data.get("created_at", ""),
+                        }
+                    )
                     seen_case_ids.add(case_id)
             except Exception:
                 continue
@@ -408,7 +578,7 @@ class IntakeService:
     async def _get_session(self, session_id: str) -> Optional[ConversationState]:
         """Get a session by ID."""
         logger.debug("getting_session", session_id=session_id)
-        
+
         if session_id in self._sessions:
             logger.debug("session_found_in_memory", session_id=session_id)
             return self._sessions[session_id]
@@ -422,66 +592,81 @@ class IntakeService:
         path = self.sessions_dir / f"session_{conversation.session_id}.json"
         data = conversation.model_dump(mode="json")
 
-        logger.debug("saving_session_to_disk",
-                     session_id=conversation.session_id,
-                     path=str(path),
-                     data_size=len(str(data)))
+        logger.debug(
+            "saving_session_to_disk",
+            session_id=conversation.session_id,
+            path=str(path),
+            data_size=len(str(data)),
+        )
 
         with open(path, "w") as f:
             json.dump(data, f, indent=2, default=str)
-        
+
         logger.debug("session_file_written", session_id=conversation.session_id)
 
     def _load_session(self, session_id: str) -> Optional[ConversationState]:
         """Load a session from disk."""
         path = self.sessions_dir / f"session_{session_id}.json"
-        
+
         logger.debug("attempting_load_session", session_id=session_id, path=str(path))
-        
+
         if not path.exists():
-            logger.debug("session_file_not_found", session_id=session_id, path=str(path))
+            logger.debug(
+                "session_file_not_found", session_id=session_id, path=str(path)
+            )
             return None
 
         try:
             logger.debug("reading_session_file", session_id=session_id)
             with open(path) as f:
                 data = json.load(f)
-            
+
             logger.debug("validating_session_data", session_id=session_id)
             conversation = ConversationState.model_validate(data)
-            
+
             self._sessions[session_id] = conversation
-            logger.debug("session_loaded_successfully", 
-                         session_id=session_id,
-                         stage=conversation.current_stage.value,
-                         message_count=len(conversation.messages))
+            logger.debug(
+                "session_loaded_successfully",
+                session_id=session_id,
+                stage=conversation.current_stage.value,
+                message_count=len(conversation.messages),
+            )
             return conversation
         except Exception as e:
-            logger.error("session_load_failed", 
-                         session_id=session_id, 
-                         error=str(e),
-                         error_type=type(e).__name__)
+            logger.error(
+                "session_load_failed",
+                session_id=session_id,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return None
 
     def _get_suggested_actions(self, conversation: ConversationState) -> List[str]:
         """
         Get suggested actions based on current state.
-        
-        Now strictly validates that ALL required fields are present before
-        suggesting prediction generation.
         """
         actions = []
         cf = conversation.case_file
 
-        # Only suggest prediction if ALL required fields are present
         if cf.has_all_required_info():
-            actions.append("Generate prediction")
+            quality = cf.get_data_quality_tier()
+            if quality == "minimal":
+                actions.append(
+                    "Generate prediction (limited data — add more for better results)"
+                )
+            else:
+                actions.append("Generate prediction")
             actions.append("Upload additional evidence")
+
+            recommended_missing = cf.get_missing_recommended_info()
+            if recommended_missing:
+                actions.append(
+                    f"Improve accuracy: add {', '.join(recommended_missing)}"
+                )
         else:
-            # Show what's still needed
             missing = cf.get_missing_required_info()
             if missing:
-                actions.append(f"Complete required info: {', '.join(missing)}")
+                actions.append(f"Required: {', '.join(missing)}")
 
         return actions
 

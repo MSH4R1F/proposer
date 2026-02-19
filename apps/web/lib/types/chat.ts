@@ -173,3 +173,15 @@ export interface JoinDisputeResponse {
   status?: string;
   message: string;
 }
+
+export interface BulkIntakeResponse {
+  session_id: string;
+  response: string;
+  stage: string;
+  completeness: number;
+  is_complete: boolean;
+  case_file: CaseFile;
+  missing_info: string[];
+  extraction_successful: boolean;
+  dispute?: DisputeInfo;
+}
