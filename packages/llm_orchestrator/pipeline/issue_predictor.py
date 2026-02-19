@@ -1,7 +1,9 @@
 import asyncio
 import importlib
 import json
+import math
 import structlog
+from datetime import date as _date_type
 from typing import Any, Dict, List, Optional
 
 from ..clients.base import BaseLLMClient
@@ -22,12 +24,19 @@ IRAC_JSON_SCHEMA = getattr(_prediction_v2_prompts, "IRAC_JSON_SCHEMA")
 IRAC_SYSTEM_PROMPT = getattr(_prediction_v2_prompts, "IRAC_SYSTEM_PROMPT")
 IRAC_USER_PROMPT = getattr(_prediction_v2_prompts, "IRAC_USER_PROMPT")
 
+# Optional import for CaseFile — used for richer context if available
+try:
+    from ..models.case_file import CaseFile as _CaseFile
+except ImportError:
+    _CaseFile = None
+
 logger = structlog.get_logger()
 
 
 class IssuePredictor:
-    def __init__(self, llm_client: BaseLLMClient):
+    def __init__(self, llm_client: BaseLLMClient, case_file: Any = None):
         self.llm = llm_client
+        self._case_file = case_file
 
     async def predict_all(
         self,
@@ -119,7 +128,9 @@ class IssuePredictor:
             formatted_cases.append(
                 f"CASE {i}: {case_ref} ({year})\nRelevance: {score:.3f}\n{str(text)[:1500]}\n---"
             )
-        retrieved_cases_str = "\n".join(formatted_cases)
+        retrieved_cases_str = (
+            "\n".join(formatted_cases) or "No similar cases retrieved."
+        )
 
         evidence_summary = self._format_evidence_summary(issue)
         claimed_amount = issue.claimed_amount
@@ -133,36 +144,100 @@ class IssuePredictor:
                 else None
             )
 
+        cf = self._case_file
+        deposit_amount = "unknown"
+        tenancy_duration = "unknown"
+        tenancy_type = "unknown"
+        region = "unknown"
+        deposit_protection_summary = "Not specified"
+
+        if cf is not None:
+            tenancy = getattr(cf, "tenancy", None)
+            prop = getattr(cf, "property", None)
+            if tenancy is not None:
+                if getattr(tenancy, "deposit_amount", None) is not None:
+                    deposit_amount = f"{tenancy.deposit_amount:.2f}"
+                if getattr(tenancy, "start_date", None) and getattr(
+                    tenancy, "end_date", None
+                ):
+                    days = (tenancy.end_date - tenancy.start_date).days
+                    months = round(days / 30.44)
+                    tenancy_duration = f"{months} months ({days} days)"
+                elif getattr(tenancy, "start_date", None):
+                    tenancy_duration = f"Started {tenancy.start_date}, end date unknown"
+                if getattr(tenancy, "tenancy_type", None):
+                    tenancy_type = tenancy.tenancy_type
+                deposit_protection_summary = self._build_deposit_protection_summary(
+                    tenancy
+                )
+            if prop is not None:
+                if getattr(prop, "region", None):
+                    region = prop.region
+                elif getattr(prop, "postcode", None):
+                    region = f"postcode {prop.postcode}"
+
+        tenant_claim_text = "Not provided"
+        if issue.tenant_claim:
+            parts = [issue.tenant_claim.description]
+            if issue.tenant_claim.claimed_amount is not None:
+                parts.append(
+                    f"Amount claimed: £{issue.tenant_claim.claimed_amount:.2f}"
+                )
+            tenant_claim_text = "\n".join(parts)
+
+        landlord_claim_text = "Not provided"
+        if issue.landlord_claim:
+            parts = [issue.landlord_claim.description]
+            if issue.landlord_claim.claimed_amount is not None:
+                parts.append(
+                    f"Amount claimed: £{issue.landlord_claim.claimed_amount:.2f}"
+                )
+            landlord_claim_text = "\n".join(parts)
+
+        evidence_conflicts = self._format_evidence_conflicts(issue)
+        timeline_summary = self._format_timeline(issue)
+
         prompt_kwargs = {
             "issue_type": issue.issue_type.value,
             "issue_description": issue.issue_description,
-            "claimed_amount": claimed_amount
+            "deposit_amount": deposit_amount,
+            "claimed_amount": f"{claimed_amount:.2f}"
             if claimed_amount is not None
             else "unknown",
+            "tenancy_duration": tenancy_duration,
+            "tenancy_type": tenancy_type,
+            "region": region,
             "data_completeness": issue.data_completeness,
-            "kg_constraints": "\n".join(issue.kg_constraints) or "None provided",
+            "deposit_protection_summary": deposit_protection_summary,
+            "kg_constraints": "\n".join(f"- {c}" for c in issue.kg_constraints)
+            if issue.kg_constraints
+            else "None identified",
             "evidence_summary": evidence_summary,
+            "evidence_conflicts": evidence_conflicts,
+            "timeline_summary": timeline_summary,
             "retrieved_cases": retrieved_cases_str,
-            "tenant_claim": issue.tenant_claim.description
-            if issue.tenant_claim
-            else "",
-            "landlord_claim": issue.landlord_claim.description
-            if issue.landlord_claim
-            else "",
+            "num_retrieved_cases": len(retrieval.results),
+            "tenant_claim": tenant_claim_text,
+            "landlord_claim": landlord_claim_text,
         }
         try:
             user_prompt = IRAC_USER_PROMPT.format(**prompt_kwargs)
-        except Exception:
+        except KeyError:
             user_prompt = (
                 f"Issue Type: {issue.issue_type.value}\n"
                 f"Issue Description: {issue.issue_description}\n"
-                f"Claimed Amount: {prompt_kwargs['claimed_amount']}\n"
-                f"Data Completeness: {issue.data_completeness:.2f}\n"
-                f"Tenant Claim: {prompt_kwargs['tenant_claim']}\n"
-                f"Landlord Claim: {prompt_kwargs['landlord_claim']}\n"
+                f"Deposit Amount: £{deposit_amount}\n"
+                f"Claimed Amount: £{prompt_kwargs['claimed_amount']}\n"
+                f"Tenancy Duration: {tenancy_duration}\n"
+                f"Data Completeness: {issue.data_completeness:.0%}\n"
+                f"Deposit Protection: {deposit_protection_summary}\n\n"
+                f"Tenant Claim:\n{tenant_claim_text}\n\n"
+                f"Landlord Claim:\n{landlord_claim_text}\n\n"
+                f"Evidence Conflicts:\n{evidence_conflicts}\n\n"
                 f"KG Constraints:\n{prompt_kwargs['kg_constraints']}\n\n"
                 f"Evidence Summary:\n{evidence_summary}\n\n"
-                f"Retrieved Cases:\n{retrieved_cases_str}\n"
+                f"Timeline:\n{timeline_summary}\n\n"
+                f"Retrieved Cases ({len(retrieval.results)}):\n{retrieved_cases_str}\n"
             )
 
         system_prompt = f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
@@ -226,26 +301,20 @@ class IssuePredictor:
         issue: IssueContext,
     ) -> IssuePrediction:
         try:
-            cleaned = response.strip()
-            if cleaned.startswith("```"):
-                lines = cleaned.splitlines()
-                if len(lines) >= 2:
-                    if lines[0].startswith("```"):
-                        lines = lines[1:]
-                    if lines and lines[-1].strip() == "```":
-                        lines = lines[:-1]
-                cleaned = "\n".join(lines).strip()
+            data = self._extract_json_payload(response)
+            if data is None:
+                raise ValueError("No parseable JSON object in model response")
 
-            if "```json" in cleaned:
-                start = cleaned.find("```json") + len("```json")
-                end = cleaned.find("```", start)
-                cleaned = cleaned[start : end if end != -1 else None].strip()
-            elif "```" in cleaned:
-                start = cleaned.find("```") + len("```")
-                end = cleaned.find("```", start)
-                cleaned = cleaned[start : end if end != -1 else None].strip()
+            if isinstance(data, list):
+                data = next((item for item in data if isinstance(item, dict)), {})
+            if not isinstance(data, dict):
+                raise ValueError("Parsed JSON payload is not an object")
 
-            data = json.loads(cleaned)
+            for wrapper_key in ("issue_prediction", "prediction", "data"):
+                wrapped = data.get(wrapper_key)
+                if isinstance(wrapped, dict):
+                    data = wrapped
+                    break
 
             outcome_raw = str(
                 data.get("outcome", data.get("predicted_outcome", "uncertain"))
@@ -345,6 +414,35 @@ class IssuePredictor:
                 data_completeness_impact="parse_error",
             )
 
+    def _extract_json_payload(self, response: str) -> Optional[Any]:
+        cleaned = response.strip()
+
+        if "```json" in cleaned:
+            start = cleaned.find("```json") + len("```json")
+            end = cleaned.find("```", start)
+            cleaned = cleaned[start : end if end != -1 else None].strip()
+        elif "```" in cleaned:
+            start = cleaned.find("```") + len("```")
+            end = cleaned.find("```", start)
+            cleaned = cleaned[start : end if end != -1 else None].strip()
+
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
+
+        decoder = json.JSONDecoder()
+        start_positions = [idx for idx, ch in enumerate(cleaned) if ch in "[{"]
+
+        for start in start_positions:
+            try:
+                parsed, _ = decoder.raw_decode(cleaned[start:])
+                return parsed
+            except json.JSONDecodeError:
+                continue
+
+        return None
+
     def _assess_evidence_strength(self, issue: IssueContext) -> EvidenceStrength:
         if issue.data_completeness >= 0.8:
             return EvidenceStrength.STRONG
@@ -409,7 +507,10 @@ class IssuePredictor:
     @staticmethod
     def _to_float(value: Any) -> float:
         try:
-            return float(value)
+            numeric = float(value)
+            if not math.isfinite(numeric):
+                return 0.0
+            return numeric
         except (TypeError, ValueError):
             return 0.0
 
@@ -431,3 +532,102 @@ class IssuePredictor:
             return None
         text = str(value).strip()
         return text if text else None
+
+    @staticmethod
+    def _build_deposit_protection_summary(tenancy: Any) -> str:
+        parts: List[str] = []
+
+        deposit_amount = getattr(tenancy, "deposit_amount", None)
+        if deposit_amount is not None:
+            parts.append(f"Deposit: £{deposit_amount:.2f}")
+
+        deposit_scheme = getattr(tenancy, "deposit_scheme", None)
+        deposit_protected = getattr(tenancy, "deposit_protected", None)
+
+        if deposit_protected is True:
+            scheme_text = f" in {deposit_scheme}" if deposit_scheme else ""
+            parts.append(f"Protected{scheme_text}")
+        elif deposit_protected is False:
+            parts.append("NOT protected in any scheme")
+        else:
+            parts.append("Protection status unknown")
+
+        start_date = getattr(tenancy, "start_date", None)
+        protection_date = getattr(tenancy, "protection_date", None)
+        if protection_date and start_date:
+            days = (protection_date - start_date).days
+            parts.append(
+                f"Protection date: {protection_date} ({days} days after tenancy start)"
+            )
+            if days > 30:
+                parts.append(
+                    f"⚠ Late protection — exceeds 30-day statutory deadline by "
+                    f"{days - 30} days (s.213 Housing Act 2004)"
+                )
+        elif protection_date:
+            parts.append(f"Protection date: {protection_date}")
+
+        prescribed_info = getattr(tenancy, "prescribed_info_provided", None)
+        prescribed_date = getattr(tenancy, "prescribed_info_date", None)
+        if prescribed_info is True:
+            if prescribed_date and start_date:
+                pi_days = (prescribed_date - start_date).days
+                parts.append(
+                    f"Prescribed information served: {prescribed_date} "
+                    f"({pi_days} days after tenancy start)"
+                )
+                if pi_days > 30:
+                    parts.append(
+                        f"⚠ Prescribed info served late — exceeds 30-day deadline by "
+                        f"{pi_days - 30} days (s.213(6) Housing Act 2004)"
+                    )
+            else:
+                parts.append("Prescribed information: provided (date unknown)")
+        elif prescribed_info is False:
+            parts.append(
+                "⚠ Prescribed information NOT provided — "
+                "separate breach under s.213(6) Housing Act 2004"
+            )
+
+        if not parts:
+            return "No deposit protection details available."
+
+        return ". ".join(parts) + "."
+
+    @staticmethod
+    def _format_evidence_conflicts(issue: "IssueContext") -> str:
+        conflicts = getattr(issue, "evidence_conflicts", None)
+        if not conflicts:
+            return "No direct evidence conflicts identified."
+
+        rows: List[str] = []
+        for idx, conflict in enumerate(conflicts, 1):
+            tenant_pos = getattr(conflict, "tenant_position", "")
+            landlord_pos = getattr(conflict, "landlord_position", "")
+            rows.append(
+                f"Conflict {idx}:\n"
+                f"  Tenant says: {tenant_pos}\n"
+                f"  Landlord says: {landlord_pos}"
+            )
+        return "\n".join(rows)
+
+    @staticmethod
+    def _format_timeline(issue: "IssueContext") -> str:
+        events = getattr(issue, "timeline_events", None)
+        if not events:
+            return "No timeline events recorded."
+
+        sorted_events = sorted(
+            events,
+            key=lambda e: getattr(e, "date", None) or _date_type.max,
+        )
+
+        rows: List[str] = []
+        for event in sorted_events:
+            ev_date = getattr(event, "date", None)
+            description = getattr(event, "description", "")
+            source = getattr(event, "source", "")
+            date_str = str(ev_date) if ev_date else "Date unknown"
+            source_str = f" [{source}]" if source else ""
+            rows.append(f"- {date_str}: {description}{source_str}")
+        return "\n".join(rows)

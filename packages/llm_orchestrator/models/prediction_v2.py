@@ -11,6 +11,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from .case_file import DisputeIssue
+
 DateType = date
 
 
@@ -21,21 +23,7 @@ class OutcomeType(str, Enum):
     UNCERTAIN = "uncertain"
 
 
-class IssueType(str, Enum):
-    """V2 superset enum - includes all V1 DisputeIssue values plus V2 additions."""
-
-    CLEANING = "cleaning"
-    DAMAGE = "damage"
-    RENT_ARREARS = "rent_arrears"
-    DEPOSIT_PROTECTION = "deposit_protection"
-    INVENTORY = "inventory"
-    GARDEN = "garden"
-    REDECORATION = "redecoration"
-    KEYS = "keys"
-    UTILITIES = "utilities"
-    FAIR_WEAR_AND_TEAR = "fair_wear_and_tear"
-    MISSING_ITEMS = "missing_items"
-    OTHER = "other"
+IssueType = DisputeIssue
 
 
 class IssueOutcome(str, Enum):
@@ -52,28 +40,18 @@ class EvidenceStrength(str, Enum):
     INSUFFICIENT = "insufficient"
 
 
-def map_dispute_issue_to_issue_type(issue) -> IssueType:
-    """Map V1 DisputeIssue to V2 IssueType. Import DisputeIssue at call-site."""
-    COMPAT_MAP = {
-        "inventory_dispute": IssueType.INVENTORY,
-        "decoration": IssueType.REDECORATION,
-    }
-    try:
-        return IssueType(issue.value)
-    except ValueError:
-        return COMPAT_MAP.get(issue.value, IssueType.OTHER)
-
-
 def map_str_to_issue_type(value: str) -> IssueType:
-    """Map a raw string to V2 IssueType."""
-    COMPAT_MAP = {
-        "inventory_dispute": IssueType.INVENTORY,
-        "decoration": IssueType.REDECORATION,
-    }
     try:
         return IssueType(value)
     except ValueError:
+        COMPAT_MAP = {
+            "inventory_dispute": IssueType.INVENTORY,
+            "decoration": IssueType.REDECORATION,
+        }
         return COMPAT_MAP.get(value, IssueType.OTHER)
+
+
+map_dispute_issue_to_issue_type = map_str_to_issue_type
 
 
 class Citation(BaseModel):

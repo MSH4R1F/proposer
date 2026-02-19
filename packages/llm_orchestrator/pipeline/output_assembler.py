@@ -39,6 +39,7 @@ class OutputAssembler:
 
         tenant_recovery = 0.0
         landlord_recovery = 0.0
+        penalty_recovery = 0.0
         uncertain_count = 0
         non_uncertain_for_conf: List[IssuePrediction] = []
 
@@ -49,8 +50,13 @@ class OutputAssembler:
                 continue
 
             non_uncertain_for_conf.append(prediction)
+            is_penalty_issue = prediction.issue_type == IssueType.DEPOSIT_PROTECTION
+
             if prediction.outcome == IssueOutcome.TENANT_WINS:
-                tenant_recovery += max(0.0, amount)
+                if is_penalty_issue:
+                    penalty_recovery += max(0.0, amount)
+                else:
+                    tenant_recovery += max(0.0, amount)
             elif prediction.outcome == IssueOutcome.LANDLORD_WINS:
                 landlord_recovery += max(0.0, amount)
             elif prediction.outcome == IssueOutcome.SPLIT:
@@ -63,6 +69,7 @@ class OutputAssembler:
 
         tenant_recovery = min(max(0.0, tenant_recovery), deposit_cap)
         landlord_recovery = min(max(0.0, landlord_recovery), deposit_cap)
+        tenant_recovery += penalty_recovery
 
         overall_outcome = self._determine_overall_outcome(
             deposit=deposit,
@@ -343,8 +350,9 @@ class OutputAssembler:
         central = max(0.0, self._to_float(central_estimate))
         low = max(0.0, central * 0.85)
         high = central * 1.15
-        if deposit > 0:
-            high = min(deposit, high)
+        max_possible = deposit * 3.0 if deposit > 0 else float("inf")
+        if max_possible < float("inf"):
+            high = min(max_possible, high)
         if low > high:
             low = high
         return (low, high)
@@ -396,14 +404,29 @@ class OutputAssembler:
         )
 
         has_citations = bool(verification.verified_citations)
+        has_non_uncertain_predictions = any(
+            ip.outcome != IssueOutcome.UNCERTAIN for ip in prediction.issue_predictions
+        )
         if not has_citations:
-            prediction.overall_outcome = OutcomeType.UNCERTAIN
-            prediction.uncertainties = self._dedupe_preserve_order(
-                prediction.uncertainties
-                + [
-                    "No verified citations available; result marked uncertain under cite-or-abstain."
-                ]
-            )
+            if not has_non_uncertain_predictions:
+                prediction.overall_outcome = OutcomeType.UNCERTAIN
+                prediction.uncertainties = self._dedupe_preserve_order(
+                    prediction.uncertainties
+                    + [
+                        "No verified citations and no confident predictions; "
+                        "result marked uncertain under cite-or-abstain."
+                    ]
+                )
+            else:
+                prediction.overall_confidence = min(prediction.overall_confidence, 0.4)
+                prediction.uncertainties = self._dedupe_preserve_order(
+                    prediction.uncertainties
+                    + [
+                        "No verified citations — confidence reduced. "
+                        "Predictions are based on model reasoning without "
+                        "verified case law references."
+                    ]
+                )
 
     @staticmethod
     def _get_value(obj: Any, key: str, default: Any = None) -> Any:

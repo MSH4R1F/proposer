@@ -5,7 +5,7 @@ Converts CaseFile data into a structured Knowledge Graph.
 """
 
 from datetime import date
-from typing import List, Optional
+from typing import Any, List, Optional
 from uuid import uuid4
 
 import structlog
@@ -23,18 +23,12 @@ from ..models.nodes import (
 from ..models.edges import Edge, EdgeType
 from ..models.graph import KnowledgeGraph
 
-# Import CaseFile from llm_orchestrator (will be available when used together)
-try:
-    from llm_orchestrator.models.case_file import (
-        CaseFile,
-        PartyRole,
-        DisputeIssue,
-        EvidenceItem,
-        ClaimedAmount,
-    )
-except ImportError:
-    # For standalone testing
-    CaseFile = None
+CaseFile = Any
+PartyRole = Any
+DisputeIssue = Any
+EvidenceItem = Any
+ClaimedAmount = Any
+
 
 logger = structlog.get_logger()
 
@@ -140,8 +134,8 @@ class GraphBuilder:
         self,
         property_node: Optional[PropertyNode],
         lease_node: Optional[LeaseNode],
-        issue_nodes: list,
-        evidence_nodes: list,
+        issue_nodes: list[Any],
+        evidence_nodes: list[Any],
     ) -> str:
         if not issue_nodes:
             return "insufficient"
@@ -243,6 +237,8 @@ class GraphBuilder:
                 ten.monthly_rent is not None,
                 ten.tenancy_type,
                 ten.deposit_scheme,
+                ten.prescribed_info_provided is not None,
+                ten.prescribed_info_date,
             ]
         )
         if not has_any_data:
@@ -258,6 +254,8 @@ class GraphBuilder:
             deposit_protected=ten.deposit_protected,
             deposit_scheme=ten.deposit_scheme,
             protection_date=ten.protection_date,
+            prescribed_info_provided=ten.prescribed_info_provided,
+            prescribed_info_date=ten.prescribed_info_date,
             source="user_input",
         )
 
@@ -302,27 +300,59 @@ class GraphBuilder:
         self, issue: "DisputeIssue", case_file: "CaseFile"
     ) -> str:
         """Get a description for an issue from the case file."""
-        # Try to find claims related to this issue
-        claims = case_file.tenant_claims + case_file.landlord_claims
-        for claim in claims:
-            if claim.issue == issue:
-                return claim.description
-
-        # Default descriptions
         descriptions = {
             "cleaning": "Dispute over cleaning charges",
             "damage": "Dispute over damage claims",
             "rent_arrears": "Dispute over unpaid rent",
             "deposit_protection": "Deposit protection compliance issue",
-            "inventory_dispute": "Dispute over inventory condition",
+            "inventory": "Dispute over inventory condition",
             "garden": "Dispute over garden maintenance",
-            "decoration": "Dispute over decoration/redecoration",
+            "redecoration": "Dispute over decoration/redecoration",
+            "keys": "Dispute over return of keys",
             "fair_wear_and_tear": "Dispute over fair wear and tear assessment",
             "missing_items": "Dispute over missing items",
             "utilities": "Dispute over utility charges",
         }
 
-        return descriptions.get(issue.value, f"Dispute regarding {issue.value}")
+        base_description = descriptions.get(
+            issue.value, f"Dispute regarding {issue.value}"
+        )
+        tenant_claims = [c for c in case_file.tenant_claims if c.issue == issue]
+        landlord_claims = [c for c in case_file.landlord_claims if c.issue == issue]
+
+        if not tenant_claims and not landlord_claims:
+            return base_description
+
+        details = []
+        landlord_amount = sum(claim.amount for claim in landlord_claims)
+        tenant_amount = sum(claim.amount for claim in tenant_claims)
+
+        if landlord_claims:
+            landlord_part = "Landlord claims"
+            if landlord_amount > 0:
+                landlord_part = f"{landlord_part} £{landlord_amount:g}"
+            landlord_text = "; ".join(
+                claim.description for claim in landlord_claims if claim.description
+            )
+            if landlord_text:
+                landlord_part = f"{landlord_part} ({landlord_text})"
+            details.append(landlord_part)
+
+        if tenant_claims:
+            tenant_text = "; ".join(
+                claim.description for claim in tenant_claims if claim.description
+            )
+            if tenant_amount > 0:
+                tenant_part = f"Tenant claims £{tenant_amount:g}"
+            elif tenant_text:
+                tenant_part = f"Tenant disputes ({tenant_text})"
+            else:
+                tenant_part = "Tenant disputes"
+            if tenant_amount > 0 and tenant_text:
+                tenant_part = f"{tenant_part} ({tenant_text})"
+            details.append(tenant_part)
+
+        return f"{base_description} - {', '.join(details)}"
 
     def _build_claim_nodes(self, case_file: "CaseFile") -> List[ClaimedAmountNode]:
         """Build claim nodes from case file."""
@@ -523,8 +553,8 @@ class GraphBuilder:
         # Temporal edges between events
         event_nodes = kg.get_nodes_by_type(NodeType.EVENT)
         sorted_events = sorted(
-            [e for e in event_nodes if e.event_date],
-            key=lambda x: x.event_date,
+            [e for e in event_nodes if getattr(e, "event_date", None)],
+            key=lambda x: getattr(x, "event_date", date.min),
         )
 
         for i in range(len(sorted_events) - 1):
@@ -533,7 +563,10 @@ class GraphBuilder:
                     EdgeType.EVENT_BEFORE,
                     sorted_events[i].node_id,
                     sorted_events[i + 1].node_id,
-                    description=f"{sorted_events[i].event_type} before {sorted_events[i + 1].event_type}",
+                    description=(
+                        f"{getattr(sorted_events[i], 'event_type', 'event')} before "
+                        f"{getattr(sorted_events[i + 1], 'event_type', 'event')}"
+                    ),
                 )
             )
 
@@ -546,8 +579,8 @@ class GraphBuilder:
         evidence_issue_map = {
             "inventory_checkin": ["cleaning", "damage", "fair_wear_and_tear"],
             "inventory_checkout": ["cleaning", "damage", "fair_wear_and_tear"],
-            "photos_before": ["cleaning", "damage", "decoration"],
-            "photos_after": ["cleaning", "damage", "decoration"],
+            "photos_before": ["cleaning", "damage", "redecoration"],
+            "photos_after": ["cleaning", "damage", "redecoration"],
             "receipts": ["cleaning", "damage"],
             "invoices": ["cleaning", "damage"],
             "deposit_certificate": ["deposit_protection"],

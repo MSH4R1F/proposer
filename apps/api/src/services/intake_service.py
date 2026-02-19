@@ -461,12 +461,10 @@ class IntakeService:
 
     async def get_case_file(self, case_id: str) -> Optional[CaseFile]:
         """Get a case file by case ID."""
-        # Look through sessions for matching case
         for session in self._sessions.values():
             if session.case_file.case_id == case_id:
                 return session.case_file
 
-        # Try loading from disk
         for path in self.sessions_dir.glob("session_*.json"):
             try:
                 with open(path) as f:
@@ -477,6 +475,28 @@ class IntakeService:
                 continue
 
         return None
+
+    async def get_session_id_for_case(self, case_id: str) -> Optional[str]:
+        for session_id, session in self._sessions.items():
+            if session.case_file.case_id == case_id:
+                return session_id
+
+        for path in self.sessions_dir.glob("session_*.json"):
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                if data.get("case_file", {}).get("case_id") == case_id:
+                    sid = data.get("session_id")
+                    if sid:
+                        return sid
+            except Exception:
+                continue
+
+        return None
+
+    async def get_case_file_by_session(self, session_id: str) -> Optional[CaseFile]:
+        session = await self._get_session(session_id)
+        return session.case_file if session else None
 
     async def delete_session(self, session_id: str) -> bool:
         """Delete a session."""

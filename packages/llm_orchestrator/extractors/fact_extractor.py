@@ -6,7 +6,8 @@ and update the case file.
 """
 
 import json
-from datetime import date
+import re
+from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -189,6 +190,11 @@ class FactExtractor:
             updated_case_file, confidence_scores = self._apply_extractions(
                 case_file, extracted
             )
+            self._apply_bulk_fallback_from_text(
+                case_text=case_text,
+                case_file=updated_case_file,
+                confidence_scores=confidence_scores,
+            )
 
             num_facts = sum(
                 1
@@ -327,16 +333,16 @@ class FactExtractor:
                 case_file.tenancy.monthly_rent = self._get_value(ten["monthly_rent"])
 
             if "deposit_amount" in ten:
-                case_file.tenancy.deposit_amount = self._get_value(
-                    ten["deposit_amount"]
+                case_file.tenancy.deposit_amount = self._parse_amount(
+                    self._get_value(ten["deposit_amount"])
                 )
                 confidence_scores["tenancy.deposit_amount"] = self._get_confidence(
                     ten["deposit_amount"]
                 )
 
             if "deposit_protected" in ten:
-                case_file.tenancy.deposit_protected = self._get_value(
-                    ten["deposit_protected"]
+                case_file.tenancy.deposit_protected = self._to_optional_bool(
+                    self._get_value(ten["deposit_protected"])
                 )
                 confidence_scores["tenancy.deposit_protected"] = self._get_confidence(
                     ten["deposit_protected"]
@@ -352,9 +358,57 @@ class FactExtractor:
                 case_file.tenancy.protection_date = self._parse_date(date_str)
 
             if "prescribed_info_provided" in ten:
-                case_file.tenancy.prescribed_info_provided = self._get_value(
-                    ten["prescribed_info_provided"]
+                case_file.tenancy.prescribed_info_provided = self._to_optional_bool(
+                    self._get_value(ten["prescribed_info_provided"])
                 )
+
+            if "prescribed_info_date" in ten:
+                date_str = self._get_value(ten["prescribed_info_date"])
+                case_file.tenancy.prescribed_info_date = self._parse_date(date_str)
+
+            if "tenancy_type" in ten:
+                case_file.tenancy.tenancy_type = self._get_value(ten["tenancy_type"])
+
+        if "deposit" in extracted:
+            dep = extracted["deposit"]
+            if "deposit_amount" in dep and case_file.tenancy.deposit_amount is None:
+                case_file.tenancy.deposit_amount = self._parse_amount(
+                    self._get_value(dep["deposit_amount"])
+                )
+                confidence_scores.setdefault(
+                    "tenancy.deposit_amount",
+                    self._get_confidence(dep["deposit_amount"]),
+                )
+            if (
+                "deposit_protected" in dep
+                and case_file.tenancy.deposit_protected is None
+            ):
+                case_file.tenancy.deposit_protected = self._to_optional_bool(
+                    self._get_value(dep["deposit_protected"])
+                )
+                confidence_scores.setdefault(
+                    "tenancy.deposit_protected",
+                    self._get_confidence(dep["deposit_protected"]),
+                )
+            if "deposit_scheme" in dep and case_file.tenancy.deposit_scheme is None:
+                case_file.tenancy.deposit_scheme = self._get_value(
+                    dep["deposit_scheme"]
+                )
+            if "protection_date" in dep:
+                date_str = self._get_value(dep["protection_date"])
+                if date_str and case_file.tenancy.protection_date is None:
+                    case_file.tenancy.protection_date = self._parse_date(date_str)
+            if (
+                "prescribed_info_provided" in dep
+                and case_file.tenancy.prescribed_info_provided is None
+            ):
+                case_file.tenancy.prescribed_info_provided = self._to_optional_bool(
+                    self._get_value(dep["prescribed_info_provided"])
+                )
+            if "prescribed_info_date" in dep:
+                date_str = self._get_value(dep["prescribed_info_date"])
+                if date_str and case_file.tenancy.prescribed_info_date is None:
+                    case_file.tenancy.prescribed_info_date = self._parse_date(date_str)
 
         # Update issues
         if "issues" in extracted:
@@ -417,6 +471,16 @@ class FactExtractor:
                     elif claimant == "landlord":
                         case_file.landlord_claims.append(claim)
 
+        if "events" in extracted:
+            for event_data in extracted["events"]:
+                if isinstance(event_data, dict):
+                    event_entry = {
+                        "type": event_data.get("event_type", "other"),
+                        "date": self._parse_date(event_data.get("date")),
+                        "description": event_data.get("description", ""),
+                    }
+                    case_file.events.append(event_entry)
+
         # Update narrative
         if "narrative" in extracted:
             narrative = self._get_value(extracted["narrative"])
@@ -456,21 +520,133 @@ class FactExtractor:
             return None
 
         try:
+            date_text = str(date_str).strip()
+
             # Try ISO format first
-            if "-" in str(date_str):
-                parts = str(date_str).split("-")
+            if "-" in date_text:
+                parts = date_text.split("-")
                 if len(parts) == 3:
                     return date(int(parts[0]), int(parts[1]), int(parts[2]))
 
             # Try common UK format (DD/MM/YYYY)
-            if "/" in str(date_str):
-                parts = str(date_str).split("/")
+            if "/" in date_text:
+                parts = date_text.split("/")
                 if len(parts) == 3:
                     return date(int(parts[2]), int(parts[1]), int(parts[0]))
+
+            normalized = re.sub(r"(\d+)(st|nd|rd|th)", r"\1", date_text.lower())
+            normalized = normalized.replace(",", " ")
+            normalized = re.sub(r"\s+", " ", normalized).strip()
+
+            for fmt in ("%d %B %Y", "%d %b %Y"):
+                try:
+                    return datetime.strptime(normalized, fmt).date()
+                except ValueError:
+                    continue
 
         except (ValueError, IndexError):
             pass
 
+        return None
+
+    def _apply_bulk_fallback_from_text(
+        self,
+        case_text: str,
+        case_file: CaseFile,
+        confidence_scores: Dict[str, float],
+    ) -> None:
+        text = case_text.lower()
+
+        if case_file.tenancy.deposit_amount is None:
+            inferred_deposit = self._extract_deposit_amount_from_text(case_text)
+            if inferred_deposit is not None:
+                case_file.tenancy.deposit_amount = inferred_deposit
+                confidence_scores.setdefault("tenancy.deposit_amount", 0.8)
+
+        if case_file.tenancy.deposit_scheme is None:
+            for scheme in ("dps", "tds", "mydeposits"):
+                if scheme in text:
+                    case_file.tenancy.deposit_scheme = scheme.upper()
+                    break
+
+        if case_file.tenancy.deposit_protected is None:
+            has_negative_signal = any(
+                phrase in text
+                for phrase in (
+                    "not protected",
+                    "unprotected",
+                    "failed to protect",
+                    "wasn't protected",
+                    "was not protected",
+                )
+            )
+            has_positive_signal = "deposit was protected" in text or (
+                "protected" in text and "deposit" in text
+            )
+
+            if has_negative_signal:
+                case_file.tenancy.deposit_protected = False
+                confidence_scores.setdefault("tenancy.deposit_protected", 0.7)
+            elif has_positive_signal:
+                case_file.tenancy.deposit_protected = True
+                confidence_scores.setdefault("tenancy.deposit_protected", 0.7)
+
+        if (
+            case_file.tenancy.prescribed_info_provided is None
+            and "prescribed information" in text
+        ):
+            has_missing_signal = any(
+                phrase in text
+                for phrase in (
+                    "did not receive prescribed information",
+                    "never received prescribed information",
+                    "prescribed information not provided",
+                )
+            )
+            case_file.tenancy.prescribed_info_provided = not has_missing_signal
+
+    def _extract_deposit_amount_from_text(self, text: str) -> Optional[float]:
+        patterns = [
+            r"deposit(?:\s+amount)?[^\n\r]{0,40}?£\s*([\d,]+(?:\.\d{1,2})?)",
+            r"£\s*([\d,]+(?:\.\d{1,2})?)\s+deposit",
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, text, flags=re.IGNORECASE)
+            if not match:
+                continue
+            amount = self._parse_amount(match.group(1))
+            if amount is not None and amount > 0:
+                return amount
+        return None
+
+    def _parse_amount(self, value: Any) -> Optional[float]:
+        if value is None:
+            return None
+        if isinstance(value, (int, float)):
+            return float(value)
+
+        text = str(value).strip()
+        text = text.replace("£", "").replace(",", "")
+        text = re.sub(r"\s+", "", text)
+        try:
+            amount = float(text)
+            return amount if amount >= 0 else None
+        except ValueError:
+            return None
+
+    def _to_optional_bool(self, value: Any) -> Optional[bool]:
+        if value is None:
+            return None
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"true", "yes", "y", "protected"}:
+                return True
+            if normalized in {"false", "no", "n", "not protected", "unprotected"}:
+                return False
+            if normalized in {"unknown", "null", "none", ""}:
+                return None
         return None
 
     def _map_issue_type(self, issue_str: str) -> Optional[DisputeIssue]:
@@ -488,10 +664,14 @@ class FactExtractor:
             "deposit": DisputeIssue.DEPOSIT_PROTECTION,
             "protection": DisputeIssue.DEPOSIT_PROTECTION,
             "unprotected": DisputeIssue.DEPOSIT_PROTECTION,
-            "inventory": DisputeIssue.INVENTORY_DISPUTE,
-            "garden": DisputeIssue.GARDEN_MAINTENANCE,
-            "decoration": DisputeIssue.DECORATION,
-            "decorating": DisputeIssue.DECORATION,
+            "inventory": DisputeIssue.INVENTORY,
+            "inventory_dispute": DisputeIssue.INVENTORY,
+            "garden": DisputeIssue.GARDEN,
+            "decoration": DisputeIssue.REDECORATION,
+            "decorating": DisputeIssue.REDECORATION,
+            "redecoration": DisputeIssue.REDECORATION,
+            "keys": DisputeIssue.KEYS,
+            "key": DisputeIssue.KEYS,
             "wear": DisputeIssue.FAIR_WEAR_AND_TEAR,
             "fair_wear": DisputeIssue.FAIR_WEAR_AND_TEAR,
             "missing": DisputeIssue.MISSING_ITEMS,

@@ -27,9 +27,10 @@ class DisputeIssue(str, Enum):
     DAMAGE = "damage"
     RENT_ARREARS = "rent_arrears"
     DEPOSIT_PROTECTION = "deposit_protection"
-    INVENTORY_DISPUTE = "inventory_dispute"
-    GARDEN_MAINTENANCE = "garden"
-    DECORATION = "decoration"
+    INVENTORY = "inventory"
+    GARDEN = "garden"
+    REDECORATION = "redecoration"
+    KEYS = "keys"
     FAIR_WEAR_AND_TEAR = "fair_wear_and_tear"
     MISSING_ITEMS = "missing_items"
     UTILITIES = "utilities"
@@ -361,3 +362,112 @@ class CaseFile(BaseModel):
         return " ".join(parts)
 
     model_config = {"use_enum_values": False}
+
+
+def merge_case_files(tenant_cf: "CaseFile", landlord_cf: "CaseFile") -> "CaseFile":
+    merged = CaseFile(
+        user_role=PartyRole.TENANT,
+        case_id=f"merged-{tenant_cf.case_id}-{landlord_cf.case_id}",
+    )
+
+    merged.tenant_name = tenant_cf.tenant_name or landlord_cf.tenant_name
+    merged.landlord_name = landlord_cf.landlord_name or tenant_cf.landlord_name
+    merged.agent_name = tenant_cf.agent_name or landlord_cf.agent_name
+    merged.multiple_tenants = tenant_cf.multiple_tenants or landlord_cf.multiple_tenants
+    merged.num_tenants = max(tenant_cf.num_tenants, landlord_cf.num_tenants)
+
+    t_prop = tenant_cf.property
+    l_prop = landlord_cf.property
+    merged.property = PropertyDetails(
+        address=t_prop.address or l_prop.address,
+        postcode=t_prop.postcode or l_prop.postcode,
+        property_type=t_prop.property_type or l_prop.property_type,
+        num_bedrooms=t_prop.num_bedrooms
+        if t_prop.num_bedrooms is not None
+        else l_prop.num_bedrooms,
+        furnished=t_prop.furnished
+        if t_prop.furnished is not None
+        else l_prop.furnished,
+        region=t_prop.region or l_prop.region,
+    )
+
+    t_ten = tenant_cf.tenancy
+    l_ten = landlord_cf.tenancy
+    merged.tenancy = TenancyDetails(
+        start_date=t_ten.start_date or l_ten.start_date,
+        end_date=t_ten.end_date or l_ten.end_date,
+        tenancy_type=t_ten.tenancy_type or l_ten.tenancy_type,
+        monthly_rent=t_ten.monthly_rent
+        if t_ten.monthly_rent is not None
+        else l_ten.monthly_rent,
+        deposit_amount=t_ten.deposit_amount
+        if t_ten.deposit_amount is not None
+        else l_ten.deposit_amount,
+        deposit_protected=t_ten.deposit_protected
+        if t_ten.deposit_protected is not None
+        else l_ten.deposit_protected,
+        deposit_scheme=t_ten.deposit_scheme or l_ten.deposit_scheme,
+        protection_date=t_ten.protection_date or l_ten.protection_date,
+        prescribed_info_provided=t_ten.prescribed_info_provided
+        if t_ten.prescribed_info_provided is not None
+        else l_ten.prescribed_info_provided,
+        prescribed_info_date=t_ten.prescribed_info_date or l_ten.prescribed_info_date,
+    )
+
+    issue_set: set[DisputeIssue] = set()
+    for issue in tenant_cf.issues:
+        issue_set.add(issue)
+    for issue in landlord_cf.issues:
+        issue_set.add(issue)
+    merged.issues = sorted(issue_set, key=lambda i: i.value)
+
+    seen_evidence_ids: set[str] = set()
+    for ev in tenant_cf.evidence + landlord_cf.evidence:
+        if ev.id not in seen_evidence_ids:
+            merged.evidence.append(ev)
+            seen_evidence_ids.add(ev.id)
+
+    merged.tenant_claims = list(tenant_cf.tenant_claims)
+    merged.landlord_claims = list(landlord_cf.landlord_claims)
+
+    for claim in landlord_cf.tenant_claims:
+        if not any(
+            c.issue == claim.issue and c.amount == claim.amount
+            for c in merged.tenant_claims
+        ):
+            merged.tenant_claims.append(claim)
+    for claim in tenant_cf.landlord_claims:
+        if not any(
+            c.issue == claim.issue and c.amount == claim.amount
+            for c in merged.landlord_claims
+        ):
+            merged.landlord_claims.append(claim)
+
+    merged.tenant_narrative = tenant_cf.tenant_narrative or landlord_cf.tenant_narrative
+    merged.landlord_narrative = (
+        landlord_cf.landlord_narrative or tenant_cf.landlord_narrative
+    )
+
+    seen_events: set[str] = set()
+    for event in tenant_cf.events + landlord_cf.events:
+        key = (
+            str(event.get("date", "")) + event.get("description", "")
+            if isinstance(event, dict)
+            else str(event)
+        )
+        if key not in seen_events:
+            merged.events.append(event)
+            seen_events.add(key)
+
+    merged.dispute_amount = (
+        max(
+            tenant_cf.dispute_amount or 0,
+            landlord_cf.dispute_amount or 0,
+        )
+        or None
+    )
+
+    merged.intake_complete = True
+    merged.calculate_completeness()
+
+    return merged

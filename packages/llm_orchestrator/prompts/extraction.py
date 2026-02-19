@@ -40,7 +40,7 @@ CATEGORIES TO EXTRACT:
 
 **Issues:**
 Extract each distinct issue as:
-- issue_type: cleaning, damage, rent_arrears, deposit_protection, etc.
+- issue_type: cleaning, damage, rent_arrears, deposit_protection, inventory, garden, redecoration, keys, utilities, fair_wear_and_tear, missing_items, other
 - description: Brief description of the issue
 - disputed: Whether this is disputed
 
@@ -135,21 +135,20 @@ CATEGORIES TO EXTRACT:
 - num_bedrooms: Number of bedrooms
 - furnished: Whether property was furnished (true/false)
 
-**Tenancy Details:**
+**Tenancy & Deposit Details:**
 - start_date: When tenancy began (YYYY-MM-DD)
 - end_date: When tenancy ended/ends (YYYY-MM-DD)
 - monthly_rent: Monthly rent amount (number)
 - tenancy_type: AST, periodic, etc.
-
-**Deposit Details:**
 - deposit_amount: Total deposit paid (number)
 - deposit_protected: true/false/null (null if not mentioned)
 - deposit_scheme: TDS, DPS, MyDeposits, or null
 - protection_date: When deposit was protected (YYYY-MM-DD)
 - prescribed_info_provided: true/false/null
+- prescribed_info_date: When prescribed information was provided (YYYY-MM-DD)
 
 **Issues** (list of all disputed items):
-- issue_type: One of: cleaning, damage, rent_arrears, deposit_protection, inventory_dispute, garden, decoration, fair_wear_and_tear, missing_items, utilities, other
+- issue_type: One of: cleaning, damage, rent_arrears, deposit_protection, inventory, garden, redecoration, keys, utilities, fair_wear_and_tear, missing_items, other
 - description: Brief description of the issue
 - confidence: How clearly this was stated (0.0-1.0)
 

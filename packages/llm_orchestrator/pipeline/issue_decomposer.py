@@ -13,7 +13,6 @@ from ..models.prediction_v2 import (
     IssueContext,
     IssueType,
     TimelineEvent,
-    map_dispute_issue_to_issue_type,
     map_str_to_issue_type,
 )
 
@@ -81,7 +80,7 @@ class IssueDecomposer:
             issue_contexts = self._decompose_from_case_file(case_file)
         else:
             for issue in case_file.issues:
-                mapped_issue_type = map_dispute_issue_to_issue_type(issue)
+                mapped_issue_type = map_str_to_issue_type(issue.value)
                 if mapped_issue_type in kg_issue_types:
                     continue
                 missing_issue_ctx = self._build_case_file_issue_context(
@@ -174,7 +173,7 @@ class IssueDecomposer:
     def _decompose_from_case_file(self, case_file: CaseFile) -> List[IssueContext]:
         contexts: List[IssueContext] = []
         for issue in case_file.issues:
-            issue_type = map_dispute_issue_to_issue_type(issue)
+            issue_type = map_str_to_issue_type(issue.value)
             contexts.append(
                 self._build_case_file_issue_context(
                     case_file=case_file, issue_type=issue_type
@@ -292,7 +291,7 @@ class IssueDecomposer:
         matching = [
             claim
             for claim in claims
-            if map_dispute_issue_to_issue_type(claim.issue) == issue_type
+            if map_str_to_issue_type(claim.issue.value) == issue_type
         ]
         if not matching:
             return None
@@ -370,6 +369,10 @@ class IssueDecomposer:
             scheme = getattr(lease_node, "deposit_scheme", None)
             start_date = getattr(lease_node, "start_date", None)
             protection_date = getattr(lease_node, "protection_date", None)
+            prescribed_info_provided = getattr(
+                lease_node, "prescribed_info_provided", None
+            )
+            prescribed_info_date = getattr(lease_node, "prescribed_info_date", None)
 
             if deposit_protected is False:
                 constraints.append("Deposit not protected")
@@ -383,6 +386,18 @@ class IssueDecomposer:
                 constraints.append(f"Deposit protected with {scheme}")
             elif deposit_protected is True:
                 constraints.append("Deposit protected")
+
+            if prescribed_info_provided is False:
+                constraints.append("Prescribed information not provided")
+            elif (
+                start_date
+                and prescribed_info_date
+                and (prescribed_info_date - start_date).days > 30
+            ):
+                days_late = (prescribed_info_date - start_date).days
+                constraints.append(
+                    f"Prescribed information served late ({days_late} days after tenancy start)"
+                )
 
         if issue_type == IssueType.RENT_ARREARS and lease_node is not None:
             if getattr(lease_node, "end_date", None):
@@ -422,6 +437,17 @@ class IssueDecomposer:
                 constraints.append(f"Deposit protected with {tenancy.deposit_scheme}")
             elif tenancy.deposit_protected:
                 constraints.append("Deposit protected")
+
+            if tenancy.prescribed_info_provided is False:
+                constraints.append("Prescribed information not provided")
+            elif tenancy.start_date and tenancy.prescribed_info_date:
+                days_after_start = (
+                    tenancy.prescribed_info_date - tenancy.start_date
+                ).days
+                if days_after_start > 30:
+                    constraints.append(
+                        f"Prescribed information served late ({days_after_start} days after tenancy start)"
+                    )
 
         if issue_type == IssueType.RENT_ARREARS and tenancy.end_date:
             constraints.append("Tenancy end date available for arrears calculation")
