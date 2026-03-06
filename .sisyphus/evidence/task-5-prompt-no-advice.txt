@@ -1,0 +1,12 @@
+Task 5 QA Evidence: Prompt forbidden-prescriptive-language check
+Date: 2026-03-06
+
+Check command equivalent:
+grep pattern: you should accept|you must settle|I recommend you|my advice is
+target: packages/llm_orchestrator/prompts/mediator.py
+
+Observed output:
+No matches found
+
+Result:
+- Prompt does not include prohibited advisory phrasing.

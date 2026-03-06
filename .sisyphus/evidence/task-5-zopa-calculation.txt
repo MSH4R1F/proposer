@@ -1,0 +1,12 @@
+Task 5 QA Evidence: ZOPA and counter-range calculation
+Date: 2026-03-06
+
+Command:
+cd packages && PYTHONPATH=. python3 -c "from llm_orchestrator.agents.mediator_agent import MediatorAgent; from llm_orchestrator.models.prediction_v2 import PredictionResult, OutcomeType; from llm_orchestrator.clients.claude_client import ClaudeClient; p=PredictionResult(case_id='C1', overall_outcome=OutcomeType.SPLIT, overall_confidence=0.72, predicted_settlement_range=(350.0, 900.0), key_strengths=['inventory inconsistency'], key_weaknesses=['late evidence'], retrieved_cases=['CHI/1/2022']); a=MediatorAgent(ClaudeClient(api_key='test')); z=a.calculate_zopa(p); c_tenant=a.calculate_possible_counter_range(p, 250.0, 'tenant'); c_landlord=a.calculate_possible_counter_range(p, 1100.0, 'landlord'); print({'zopa': z, 'tenant_counter': c_tenant, 'landlord_counter': c_landlord})"
+
+Observed output:
+{'zopa': {'min': 350.0, 'max': 900.0, 'center': 625.0}, 'tenant_counter': {'min': 350.0, 'max': 900.0, 'center': 625.0}, 'landlord_counter': {'min': 350.0, 'max': 900.0, 'center': 625.0}}
+
+Result:
+- ZOPA range is computed directly from prediction range.
+- Counter ranges stay within the ZOPA envelope for both roles.

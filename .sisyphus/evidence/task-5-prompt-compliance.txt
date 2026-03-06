@@ -1,0 +1,16 @@
+Task 5 QA Evidence: Prompt compliance (information framing)
+Date: 2026-03-06
+
+Check command equivalent:
+grep pattern: information|not legal advice
+target: packages/llm_orchestrator/prompts/mediator.py
+
+Matched lines:
+- line 10: 1. Include this disclaimer in opening context: "This is not legal advice. All information is based on analysis of similar tribunal cases."
+- line 16: 1. Use ZOPA (Zone of Possible Agreement) as an informational anchor when discussing offers.
+- line 49: - Clearly states this disclaimer exactly once: "This is not legal advice. All information is based on analysis of similar tribunal cases."
+- line 51: - Shares the likely settlement range as information.
+
+Result:
+- System prompt and template include explicit informational framing.
+- Required non-advice disclaimer string is present.
