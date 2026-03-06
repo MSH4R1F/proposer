@@ -359,8 +359,11 @@ class MediationService:
     async def generate_settlement_pdf(self, dispute_id: str) -> bytes:
         if dispute_id not in self._mediations:
             raise ValueError(f"Mediation session not found for dispute: {dispute_id}")
-        return b"PDF_PLACEHOLDER"
 
+        from apps.api.src.utils.pdf_generator import generate_settlement_pdf as _gen_pdf
+
+        settlement_data = await self.get_settlement(dispute_id)
+        return _gen_pdf(settlement_data)
     async def _get_party_role(self, dispute_id: str, session_id: str) -> str:
         from apps.api.src.services.dispute_service import get_dispute_service
 

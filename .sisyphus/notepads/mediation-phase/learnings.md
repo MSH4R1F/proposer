@@ -124,3 +124,15 @@
 - Initial loading gate: show loader only when `isLoading && messages.length === 0` to avoid hiding messages during polling
 - Error state: show full error UI only if `error && messages.length === 0`; inline error banner otherwise
 - TypeScript: zero errors — all 6 new files compile cleanly
+
+## [2026-03-06] Task 11: Settlement PDF Generation with reportlab
+- `apps/api/src/utils/` package created with empty `__init__.py`
+- `generate_settlement_pdf(settlement_data: dict) -> bytes` uses `reportlab.pdfgen.canvas` + `io.BytesIO`
+- reportlab pattern: `buf = BytesIO(); c = canvas.Canvas(buf, pagesize=A4); ...; c.save(); return buf.getvalue()`
+- Import reportlab inside the function body (lazy import) to avoid import errors if reportlab not installed at module load time
+- `mediation_service.generate_settlement_pdf` calls `get_settlement(dispute_id)` first (raises ValueError if not settled), then passes result to pdf util
+- Router already had correct `Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": ...})` — no router changes needed
+- Disclaimer box: use `c.rect(x, y, w, h, fill=1, stroke=1)` with red stroke + light pink fill for prominence
+- Text wrapping: manual word-wrap loop (split by words, accumulate until line exceeds char limit)
+- `reportlab>=4.0.0` added to requirements.txt under new `# PDF generation` section
+- Import verification: `PYTHONPATH=packages python3 -c "from apps.api.src.utils.pdf_generator import generate_settlement_pdf; print('OK')"` → OK

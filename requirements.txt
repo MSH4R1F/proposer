@@ -52,6 +52,8 @@ fastapi>=0.109.0
 uvicorn>=0.27.0
 python-multipart>=0.0.6
 
+# PDF generation
+reportlab>=4.0.0
 # Supabase (storage and auth)
 supabase>=2.0.0
 
