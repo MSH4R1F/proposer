@@ -1,0 +1,18 @@
+Task 4 - MediationService lifecycle validation
+Date: 2026-03-06
+
+Command:
+PYTHONPATH=packages python3 -c "from apps.api.src.services.mediation_service import MediationService, get_mediation_service; print('OK')"
+
+Output:
+2026-03-06 01:42:41 [debug    ] loading_config_from_env        debug=False has_anthropic_key=False has_openai_key=False has_supabase_url=False host=0.0.0.0 port=8000
+OK
+
+Command:
+PYTHONPATH=packages python3 -c "from apps.api.src.services.mediation_service import get_mediation_service; svc = get_mediation_service(); print(hasattr(svc, 'start_mediation') and hasattr(svc, 'add_message') and hasattr(svc, 'submit_offer') and hasattr(svc, 'settle'))"
+
+Output:
+2026-03-06 01:42:41 [debug    ] loading_config_from_env        debug=False has_anthropic_key=False has_openai_key=False has_supabase_url=False host=0.0.0.0 port=8000
+2026-03-06 01:42:41 [debug    ] initializing_mediation_service
+2026-03-06 01:42:41 [info     ] mediation_service_initialized  mediation_count=0
+True

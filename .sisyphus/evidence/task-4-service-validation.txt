@@ -1,0 +1,26 @@
+Task 4 - Service import path validation notes
+Date: 2026-03-06
+
+Attempted command from task text:
+cd packages && PYTHONPATH=. python3 -c "from apps.api.src.services.mediation_service import MediationService, get_mediation_service; print('OK')"
+
+Observed output:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'apps'
+
+Validation command that resolves imports in this repository layout:
+cd packages && PYTHONPATH=.:.. python3 -c "from apps.api.src.services.mediation_service import MediationService, get_mediation_service; print('OK')"
+
+Output:
+2026-03-06 01:42:34 [debug    ] loading_config_from_env        debug=False has_anthropic_key=False has_openai_key=False has_supabase_url=False host=0.0.0.0 port=8000
+OK
+
+Validation command for required lifecycle methods:
+cd packages && PYTHONPATH=.:.. python3 -c "from apps.api.src.services.mediation_service import get_mediation_service; svc = get_mediation_service(); print(hasattr(svc, 'start_mediation') and hasattr(svc, 'add_message') and hasattr(svc, 'submit_offer') and hasattr(svc, 'settle'))"
+
+Output:
+2026-03-06 01:42:34 [debug    ] loading_config_from_env        debug=False has_anthropic_key=False has_openai_key=False has_supabase_url=False host=0.0.0.0 port=8000
+2026-03-06 01:42:34 [debug    ] initializing_mediation_service
+2026-03-06 01:42:34 [info     ] mediation_service_initialized  mediation_count=0
+True
