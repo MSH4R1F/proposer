@@ -110,3 +110,17 @@
 - `LegalDisclaimer` was NOT reused — inline disclaimer pattern used instead to match specific copy requirements; both approaches are valid
 - TypeScript compilation: zero errors with all 5 new files
 - Evidence saved to `.sisyphus/evidence/task-10-tsc.txt`
+
+## [2026-03-06] Task 8: AI Mediator Chat Page
+- chat/page.tsx pattern: outer component uses `use(params)` + Suspense wrapper, inner component uses `useSearchParams()`
+- Role not provided by useMediationChat hook — derive from `searchParams.get('role') || ''` in page, pass as `currentRole` optional prop to MediationChat
+- `useAutoScroll` returns `RefObject<T | null>` — MediationChat types `messagesContainerRef: RefObject<HTMLDivElement | null>` which is compatible with `<div ref={...}>`
+- `() => Promise<T>` is assignable to `() => void` in TypeScript — onRefresh/onSendMessage typed as `void`-returning work fine
+- OfferCard canRespond guard: `currentRole !== offer.proposed_by_role && offer.status === 'pending'` — both conditions needed
+- Settlement detection: `offers.some(o => o.status === 'accepted')` not from messages
+- Escalation detection: check system messages containing 'escalat' (substring match covers 'escalated', 'escalation')
+- MediationMessageBubble is a pure server-friendly component (no 'use client' needed — no hooks, no events)
+- Empty state in message list: show only when `messages.length === 0 && !isLoading`
+- Initial loading gate: show loader only when `isLoading && messages.length === 0` to avoid hiding messages during polling
+- Error state: show full error UI only if `error && messages.length === 0`; inline error banner otherwise
+- TypeScript: zero errors — all 6 new files compile cleanly
