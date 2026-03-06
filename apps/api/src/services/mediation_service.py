@@ -16,12 +16,21 @@ from apps.api.src.config import config
 
 logger = structlog.get_logger()
 
+LEGAL_DISCLAIMER = (
+    "This is not legal advice. All information is based on analysis of similar "
+    "tribunal cases."
+)
+
 _mediation_service: Optional["MediationService"] = None
 
 
 class MediationService:
     def __init__(self):
         logger.debug("initializing_mediation_service")
+        from llm_orchestrator.config import LLMConfig
+
+        llm_config = LLMConfig.from_env()
+        self._mediator = self._build_mediator_agent(llm_config.anthropic_api_key)
         self._mediations: Dict[str, MediationSession] = {}
         self.mediations_dir = config.data_dir / "mediations"
         self.mediations_dir.mkdir(parents=True, exist_ok=True)
@@ -63,6 +72,136 @@ class MediationService:
             "saved_mediation_session", dispute_id=session.dispute_id, path=str(path)
         )
 
+    @staticmethod
+    def _build_mediator_agent(api_key: str) -> Any:
+        from llm_orchestrator.agents.mediator_agent import MediatorAgent
+        from llm_orchestrator.clients.claude_client import ClaudeClient
+
+        if api_key:
+            return MediatorAgent(ClaudeClient(api_key=api_key))
+        logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
+        return MediatorAgent(_DeterministicMediatorLLM())
+
+    @staticmethod
+    def _enforce_legal_disclaimer(content: str) -> str:
+        cleaned = (content or "").strip()
+        if not cleaned:
+            cleaned = (
+                "I can share neutral information based on similar tribunal outcomes to "
+                "help both parties evaluate next negotiation steps."
+            )
+
+        if LEGAL_DISCLAIMER in cleaned:
+            return cleaned
+
+        return f"{cleaned}\n\n{LEGAL_DISCLAIMER}"
+
+    def _add_ai_mediator_message(
+        self,
+        session: MediationSession,
+        content: str,
+        message_type: MessageType = MessageType.AI_MEDIATOR,
+        metadata: Optional[Dict[str, Any]] = None,
+        offer_id: Optional[str] = None,
+    ) -> Any:
+        return session.add_message(
+            sender_role="ai_mediator",
+            content=self._enforce_legal_disclaimer(content),
+            message_type=message_type,
+            metadata=metadata,
+            offer_id=offer_id,
+        )
+
+    @staticmethod
+    def _coerce_prediction_outcome(raw_outcome: Any) -> str:
+        normalized = str(raw_outcome or "uncertain").strip().lower()
+        mapping = {
+            "tenant_wins": "tenant_win",
+            "tenant_win": "tenant_win",
+            "landlord_wins": "landlord_win",
+            "landlord_win": "landlord_win",
+            "split": "split",
+            "uncertain": "uncertain",
+        }
+        return mapping.get(normalized, "uncertain")
+
+    @staticmethod
+    def _coerce_string_list(value: Any) -> List[str]:
+        if not isinstance(value, list):
+            return []
+        return [str(item) for item in value if item is not None]
+
+    @staticmethod
+    def _clamp_confidence(value: Any) -> float:
+        try:
+            confidence = float(value)
+        except (TypeError, ValueError):
+            return 0.5
+        return min(max(confidence, 0.0), 1.0)
+
+    def _build_prediction_result(
+        self,
+        prediction_data: Dict[str, Any],
+        dispute_id: str,
+    ) -> Any:
+        from llm_orchestrator.models.prediction import PredictionResult
+
+        settlement_range = prediction_data.get("predicted_settlement_range")
+        normalized_range = None
+        if isinstance(settlement_range, (list, tuple)) and len(settlement_range) >= 2:
+            try:
+                normalized_range = (
+                    float(settlement_range[0]),
+                    float(settlement_range[1]),
+                )
+            except (TypeError, ValueError):
+                normalized_range = None
+
+        payload = {
+            "case_id": str(prediction_data.get("case_id") or f"case-{dispute_id}"),
+            "prediction_id": str(
+                prediction_data.get("prediction_id") or f"pred-{dispute_id}"
+            ),
+            "timestamp": prediction_data.get("timestamp"),
+            "overall_outcome": self._coerce_prediction_outcome(
+                prediction_data.get("overall_outcome")
+            ),
+            "overall_confidence": self._clamp_confidence(
+                prediction_data.get("overall_confidence")
+            ),
+            "predicted_settlement_range": normalized_range,
+            "key_strengths": self._coerce_string_list(
+                prediction_data.get("key_strengths")
+            ),
+            "key_weaknesses": self._coerce_string_list(
+                prediction_data.get("key_weaknesses")
+            ),
+            "retrieved_cases": self._coerce_string_list(
+                prediction_data.get("retrieved_cases")
+            ),
+            "outcome_summary": str(prediction_data.get("outcome_summary") or ""),
+        }
+
+        return PredictionResult.model_validate(payload)
+
+    @staticmethod
+    def _build_expectation_payload(
+        prediction_data: Dict[str, Any], role: str
+    ) -> Dict[str, Any]:
+        analysis = get_cost_benefit_analysis(role=role, prediction_data=prediction_data)
+        return {
+            "party_role": role,
+            "analysis": analysis.model_dump(mode="json"),
+            "prediction_summary": {
+                "prediction_id": prediction_data.get("prediction_id"),
+                "overall_outcome": prediction_data.get("overall_outcome"),
+                "overall_confidence": prediction_data.get("overall_confidence"),
+                "predicted_settlement_range": prediction_data.get(
+                    "predicted_settlement_range"
+                ),
+            },
+        }
+
     async def start_mediation(self, dispute_id: str, session_id: str) -> Dict[str, Any]:
         from apps.api.src.services.dispute_service import get_dispute_service
 
@@ -89,12 +228,37 @@ class MediationService:
         dispute.start_mediation()
         dispute_service._save_dispute(dispute)
 
-        initial_content = (
-            "I am your AI mediator. Share your priorities and opening position so we can "
-            "work toward a fair settlement informed by similar tribunal outcomes."
+        prediction = self._build_prediction_result(prediction_data, dispute_id)
+        expectation_data_tenant = self._build_expectation_payload(
+            prediction_data=prediction_data,
+            role="tenant",
         )
-        initial_message = session.add_message(
-            sender_role="ai_mediator",
+        expectation_data_landlord = self._build_expectation_payload(
+            prediction_data=prediction_data,
+            role="landlord",
+        )
+
+        try:
+            initial_content = await self._mediator.generate_opening_message(
+                prediction=prediction,
+                dispute=dispute,
+                expectation_data_tenant=expectation_data_tenant,
+                expectation_data_landlord=expectation_data_landlord,
+            )
+        except Exception as e:
+            logger.error(
+                "mediator_opening_generation_failed",
+                dispute_id=dispute_id,
+                error=str(e),
+            )
+            initial_content = (
+                "I can facilitate this negotiation by sharing likely tribunal patterns, "
+                "highlighting realistic settlement ranges, and helping both parties test "
+                "offers against comparable outcomes."
+            )
+
+        initial_message = self._add_ai_mediator_message(
+            session=session,
             content=initial_content,
             message_type=MessageType.AI_MEDIATOR,
             metadata={"triggered_by": role},
@@ -139,8 +303,18 @@ class MediationService:
     async def add_message(
         self, dispute_id: str, session_id: str, content: str
     ) -> Dict[str, Any]:
+        from apps.api.src.services.dispute_service import get_dispute_service
+
         session = await self._require_active_session(dispute_id)
         role = await self._get_party_role(dispute_id, session_id)
+        prediction_data = await self._get_prediction_data(dispute_id)
+        if not prediction_data:
+            raise ValueError(f"Prediction required before mediation: {dispute_id}")
+
+        dispute_service = get_dispute_service()
+        dispute = await dispute_service.get_dispute(dispute_id)
+        if not dispute:
+            raise ValueError(f"Dispute not found: {dispute_id}")
 
         user_message = session.add_message(
             sender_role=role,
@@ -148,9 +322,33 @@ class MediationService:
             message_type=MessageType.TEXT,
         )
 
-        ai_response = session.add_message(
-            sender_role="ai_mediator",
-            content="Mediator placeholder response: acknowledge positions and suggest next move.",
+        prediction = self._build_prediction_result(prediction_data, dispute_id)
+        latest_offer = session.get_pending_offer()
+        if latest_offer is None and session.offers:
+            latest_offer = session.offers[-1]
+
+        try:
+            ai_content = await self._mediator.generate_response(
+                messages=session.messages,
+                prediction=prediction,
+                dispute=dispute,
+                latest_offer=latest_offer,
+            )
+        except Exception as e:
+            logger.error(
+                "mediator_followup_generation_failed",
+                dispute_id=dispute_id,
+                error=str(e),
+            )
+            ai_content = (
+                "Thank you for sharing your position. Based on comparable tribunal "
+                "outcomes, it may help to move toward the predicted settlement range and "
+                "focus on evidence each side can substantiate."
+            )
+
+        ai_response = self._add_ai_mediator_message(
+            session=session,
+            content=ai_content,
             message_type=MessageType.AI_MEDIATOR,
         )
 
@@ -223,8 +421,8 @@ class MediationService:
 
         if normalized_action == "reject":
             rejected_offer = session.reject_offer(offer_id, responder_role)
-            note = session.add_message(
-                sender_role="ai_mediator",
+            note = self._add_ai_mediator_message(
+                session=session,
                 content=f"Offer {offer_id} rejected. Parties can continue negotiation.",
                 message_type=MessageType.SYSTEM,
                 offer_id=offer_id,
@@ -364,6 +562,7 @@ class MediationService:
 
         settlement_data = await self.get_settlement(dispute_id)
         return _gen_pdf(settlement_data)
+
     async def _get_party_role(self, dispute_id: str, session_id: str) -> str:
         from apps.api.src.services.dispute_service import get_dispute_service
 
@@ -461,3 +660,26 @@ def get_mediation_service() -> MediationService:
     if _mediation_service is None:
         _mediation_service = MediationService()
     return _mediation_service
+
+
+class _DeterministicMediatorLLM:
+    async def generate(
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: str,
+        max_tokens: int = 4096,
+        temperature: float = 0.7,
+    ) -> str:
+        _ = (system_prompt, max_tokens, temperature)
+        prompt = messages[-1]["content"].lower() if messages else ""
+        if "opening mediation message" in prompt:
+            return (
+                "Welcome to mediation. I will share neutral information from similar "
+                "tribunal outcomes, summarize both perspectives, and help identify a "
+                "practical negotiation range."
+            )
+        return (
+            "I have noted both positions. Based on comparable tribunal outcomes, it may "
+            "be useful to test the latest offer against the likely settlement range and "
+            "focus on evidence each side can verify."
+        )

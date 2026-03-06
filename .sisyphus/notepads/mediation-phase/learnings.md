@@ -150,3 +150,11 @@
 - `mock_claude_client` fixture provides AsyncMock canned responses; no Anthropic key required for this suite
 - Test runs verified with and without `ANTHROPIC_API_KEY`, both passing 18/18
 - Evidence captured at `.sisyphus/evidence/task-12-pytest-results.txt` and `.sisyphus/evidence/task-12-no-api-key.txt`
+
+
+## [2026-03-06] Task F1: Mediator runtime integration + disclaimer enforcement
+- `MediationService` now initializes a real `MediatorAgent` and calls `generate_opening_message(...)` in `start_mediation` and `generate_response(...)` in `add_message`.
+- Added `_enforce_legal_disclaimer()` + `_add_ai_mediator_message()` helper so every stored `ai_mediator` message includes the non-advice sentence exactly once.
+- Added prediction normalization helper before mediator calls (`_build_prediction_result`) to tolerate stored outcome variants like `tenant_wins` while still producing `PredictionResult` for agent prompts.
+- Added deterministic local LLM fallback (used only when `ANTHROPIC_API_KEY` is missing) so tests and offline runs still execute mediator-agent flow without placeholder strings.
+- Reject-offer system note now also goes through disclaimer enforcement, keeping AI mediator safety copy consistent across all AI-authored messages.
