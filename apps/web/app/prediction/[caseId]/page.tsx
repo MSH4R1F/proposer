@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { usePrediction } from '@/lib/hooks/usePrediction';
 import { predictionsApi } from '@/lib/api/predictions';
@@ -9,7 +9,7 @@ import { PredictionCard } from '@/components/prediction/PredictionCard';
 import { PredictionSkeleton } from '@/components/prediction/PredictionSkeleton';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Scale, Sparkles, Brain, AlertTriangle, Info } from 'lucide-react';
+import { ArrowLeft, Scale, Sparkles, Brain, AlertTriangle, Info, Handshake } from 'lucide-react';
 import { ROUTES } from '@/lib/constants/routes';
 import type { DataQualityTier } from '@/lib/types/prediction';
 
@@ -22,6 +22,8 @@ interface PredictionPageProps {
 export default function PredictionPage({ params }: PredictionPageProps) {
   const { caseId } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get('session') || '';
   const { prediction, isLoading, error, generatePrediction, clearError } =
     usePrediction();
 
@@ -152,7 +154,23 @@ export default function PredictionPage({ params }: PredictionPageProps) {
 
           {/* Prediction results */}
           {prediction && !isLoading && (
-            <PredictionCard prediction={prediction} />
+            <div className="space-y-4">
+              <PredictionCard prediction={prediction} />
+              {/* Proceed to Mediation */}
+              <div className="flex justify-center pt-2">
+                <Button
+                  onClick={() =>
+                    router.push(
+                      ROUTES.MEDIATION_EXPECTATION(caseId) + '?session=' + sessionId
+                    )
+                  }
+                  className="gap-2"
+                >
+                  <Handshake className="h-4 w-4" />
+                  Proceed to Mediation
+                </Button>
+              </div>
+            </div>
           )}
 
           {/* Empty state */}

@@ -88,3 +88,14 @@
 - `get_messages` uses `Optional[str] = Query(None, ...)` for the `since` timestamp parameter
 - All 8 endpoints follow exact chat.py pattern: `logger.debug` on entry, `logger.info` on success mutations, `logger.warning` on expected errors, `logger.error` on unexpected exceptions
 - `response_model` not needed — returning `Dict[str, Any]` / `List[Dict[str, Any]]` is fine for complex nested service responses
+
+## [2026-03-06] Task 7: Expectation Adjustment Page + Mediation Layout
+- Mediation layout: simple server component (no 'use client'), wraps children with header + main
+- Expectation page: 'use client', splits into outer page (use(params)) + inner component (useSearchParams) wrapped in Suspense
+- Suspense is required for useSearchParams in Next.js 15 even in client components
+- ExpectationData type uses `prediction_summary` not `prediction` — always verify actual type vs task description
+- ExpectationData.prediction_summary.overall_confidence is a fraction (0-1), multiply by 100 for display
+- CostBenefitTable: cost_to_party can be number | [number, number] — use Array.isArray() to discriminate
+- AcceptancePrompt: mediationApi.startMediation is async, await before router.push to settlement
+- Prediction page: useSearchParams added with 'Proceed to Mediation' button shown when prediction is non-null
+- TypeScript: zero errors with all new files; unused Suspense import must be removed if not used
