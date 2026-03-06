@@ -1,0 +1,2 @@
+2026-03-06 01:50:43 [debug    ] loading_config_from_env        debug=False has_anthropic_key=False has_openai_key=False has_supabase_url=False host=0.0.0.0 port=8000
+OK

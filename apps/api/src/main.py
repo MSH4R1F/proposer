@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import structlog
 
 from apps.api.src.config import config
-from apps.api.src.routers import chat, evidence, predictions, cases, disputes
+from apps.api.src.routers import chat, evidence, predictions, cases, disputes, mediation
 
 # Configure logging
 structlog.configure(
@@ -87,12 +87,13 @@ app.add_middleware(
 )
 
 # Include routers
-logger.debug("registering_routers", routers=["chat", "evidence", "predictions", "cases", "disputes"])
+logger.debug("registering_routers", routers=["chat", "evidence", "predictions", "cases", "disputes", "mediation"])
 app.include_router(chat.router)
 app.include_router(evidence.router)
 app.include_router(predictions.router)
 app.include_router(cases.router)
 app.include_router(disputes.router)
+app.include_router(mediation.router)
 logger.debug("routers_registered")
 
 

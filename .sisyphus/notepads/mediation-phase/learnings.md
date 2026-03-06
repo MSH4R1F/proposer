@@ -76,3 +76,15 @@
 - Polling pattern: useRef to store interval, useEffect with cleanup function
 - TypeScript compilation: zero errors
 - All hooks exported from apps/web/lib/hooks/index.ts
+
+## [2026-03-06] Task 6: Mediation API Router (8 endpoints)
+- Router prefix: `/mediation` (NOT `/mediation/{dispute_id}`) — path param in each route, not prefix
+- `routers/__init__.py` must NOT do `from apps.api.src.routers import ...` — that causes circular import when running tests from `apps/api`; keep it to `__all__` only
+- Import verification command: `cd apps/api && PYTHONPATH=../../packages:../.. python3 -c "from src.routers.mediation import router; print('OK')"`  (both packages AND project root in PYTHONPATH)
+- ValueError → 400 for POST endpoints (bad request: invalid state, wrong party, bad amount)
+- ValueError → 404 for GET endpoints that return "not found" (expectation, settlement, PDF)
+- `submit_offer` returns `StructuredOffer` object → serialize via `.model_dump(mode="json")` before returning
+- `generate_settlement_pdf` returns raw bytes → wrap in `fastapi.Response(content=..., media_type="application/pdf")`
+- `get_messages` uses `Optional[str] = Query(None, ...)` for the `since` timestamp parameter
+- All 8 endpoints follow exact chat.py pattern: `logger.debug` on entry, `logger.info` on success mutations, `logger.warning` on expected errors, `logger.error` on unexpected exceptions
+- `response_model` not needed — returning `Dict[str, Any]` / `List[Dict[str, Any]]` is fine for complex nested service responses
