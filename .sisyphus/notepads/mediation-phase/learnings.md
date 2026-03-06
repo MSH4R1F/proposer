@@ -99,3 +99,14 @@
 - AcceptancePrompt: mediationApi.startMediation is async, await before router.push to settlement
 - Prediction page: useSearchParams added with 'Proceed to Mediation' button shown when prediction is non-null
 - TypeScript: zero errors with all new files; unused Suspense import must be removed if not used
+
+## [2026-03-06] Task 10: Settlement and Escalation Pages
+- SettlementSummary type uses `agreed_amount` (NOT `settlement_amount`) — verify actual type vs task description
+- `mediationApi.downloadSettlementPDF(disputeId)` returns a URL string synchronously — use directly as `href` in anchor tag
+- DownloadButton: uses `<a href download>` with onClick to briefly set `isDownloading=true`; reset after 2s timeout since browser handles actual download
+- Escalation page is static — no data fetching, no `use(params)` needed (params not used)
+- Next.js 15 async params: use `use(params)` pattern to unwrap Promise, consistent with prediction page
+- `SettlementSummary` component name collides with type name — import type as `SettlementSummaryType` in the component file
+- `LegalDisclaimer` was NOT reused — inline disclaimer pattern used instead to match specific copy requirements; both approaches are valid
+- TypeScript compilation: zero errors with all 5 new files
+- Evidence saved to `.sisyphus/evidence/task-10-tsc.txt`
