@@ -136,3 +136,17 @@
 - Text wrapping: manual word-wrap loop (split by words, accumulate until line exceeds char limit)
 - `reportlab>=4.0.0` added to requirements.txt under new `# PDF generation` section
 - Import verification: `PYTHONPATH=packages python3 -c "from apps.api.src.utils.pdf_generator import generate_settlement_pdf; print('OK')"` → OK
+
+## [2026-03-06T02:26:31Z] Task 12: Mediation API pytest suite
+- Added  with isolated MediationService fixture patching dispute/intake/prediction getters to prevent external dependencies and API calls
+- Added 18 async service tests in  covering start, expectation framing, messaging, offers, respond actions, polling, escalation, and guardrail failures
+-  fixture provides AsyncMock canned responses; no Anthropic key required for this suite
+- Test runs verified with and without , both passing 18/18
+- Evidence captured at  and 
+
+## [2026-03-06T02:26:39Z] Task 12: Mediation API pytest suite
+- Added `apps/api/tests/conftest.py` with isolated MediationService fixture patching dispute/intake/prediction getters to prevent external dependencies and API calls
+- Added 18 async service tests in `apps/api/tests/test_mediation.py` covering start, expectation framing, messaging, offers, respond actions, polling, escalation, and guardrail failures
+- `mock_claude_client` fixture provides AsyncMock canned responses; no Anthropic key required for this suite
+- Test runs verified with and without `ANTHROPIC_API_KEY`, both passing 18/18
+- Evidence captured at `.sisyphus/evidence/task-12-pytest-results.txt` and `.sisyphus/evidence/task-12-no-api-key.txt`
