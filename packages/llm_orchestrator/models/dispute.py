@@ -230,3 +230,26 @@ class DisputeCase(BaseModel):
                 return "Waiting for the tenant to complete their intake"
         
         return "Both parties have completed intake. Ready for prediction."
+
+    def start_mediation(self) -> None:
+        """Transition dispute to IN_MEDIATION status. IDEMPOTENT."""
+        if self.status == DisputeStatus.IN_MEDIATION:
+            return
+        if self.status not in (DisputeStatus.READY_FOR_MEDIATION, DisputeStatus.BOTH_COMPLETE):
+            raise ValueError(f"Cannot start mediation from status: {self.status.value}")
+        self.status = DisputeStatus.IN_MEDIATION
+        self.update_timestamp()
+
+    def settle(self) -> None:
+        """Transition dispute to SETTLED status."""
+        if self.status == DisputeStatus.SETTLED:
+            return
+        self.status = DisputeStatus.SETTLED
+        self.update_timestamp()
+
+    def escalate(self) -> None:
+        """Transition dispute to CLOSED status (escalated to tribunal)."""
+        if self.status == DisputeStatus.CLOSED:
+            return
+        self.status = DisputeStatus.CLOSED
+        self.update_timestamp()
