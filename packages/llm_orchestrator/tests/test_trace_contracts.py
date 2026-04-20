@@ -33,6 +33,12 @@ def test_redact_text_masks_pii_in_one_string() -> None:
     assert "SW1A 1AA" not in result
 
 
+def test_redact_text_masks_lowercase_postcode() -> None:
+    result = redact_text("lives at sw1a 1aa today")
+    assert "[postcode]" in result
+    assert "sw1a 1aa" not in result
+
+
 def test_redact_text_truncates_when_exceeds_max_chars() -> None:
     long_input = "a" * 600
     result = redact_text(long_input, max_chars=100)
