@@ -1,3 +1,4 @@
+from .context import ToolContext
 from .trace import (
     TraceLogger,
     TraceStep,
@@ -8,6 +9,7 @@ from .trace import (
 )
 
 __all__ = [
+    "ToolContext",
     "TraceStep",
     "TraceStepKind",
     "TraceSummary",
