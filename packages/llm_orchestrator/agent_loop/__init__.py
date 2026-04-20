@@ -1,4 +1,12 @@
 from .context import ToolContext
+from .tool import (
+    JSONValue,
+    Tool,
+    ToolResult,
+    ToolSet,
+    UnknownToolError,
+    tool,
+)
 from .trace import (
     TraceLogger,
     TraceStep,
@@ -16,4 +24,10 @@ __all__ = [
     "TraceTerminationReason",
     "TraceLogger",
     "redact_text",
+    "tool",
+    "Tool",
+    "ToolSet",
+    "ToolResult",
+    "UnknownToolError",
+    "JSONValue",
 ]
