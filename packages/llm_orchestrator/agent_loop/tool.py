@@ -152,8 +152,12 @@ def tool(
         # Resolve annotations — handles 'from __future__ import annotations' (PEP 563)
         try:
             hints = typing.get_type_hints(fn)
-        except Exception:
-            hints = {}
+        except Exception as exc:
+            raise TypeError(
+                f"@tool function '{fn.__name__}': could not resolve type hints. "
+                f"Ensure all annotations are importable at runtime (not TYPE_CHECKING-only). "
+                f"Original error: {exc}"
+            ) from exc
 
         first_param_name = params[0].name
         second_param_name = params[1].name
