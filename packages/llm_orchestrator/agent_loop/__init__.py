@@ -1,4 +1,10 @@
 from .context import ToolContext
+from .loop import (
+    AgentLoop,
+    AgentLoopResult,
+    AgentTurnClient,
+    AgentTurnResponse,
+)
 from .tool import (
     JSONValue,
     Tool,
@@ -30,4 +36,8 @@ __all__ = [
     "ToolResult",
     "UnknownToolError",
     "JSONValue",
+    "AgentLoop",
+    "AgentLoopResult",
+    "AgentTurnClient",
+    "AgentTurnResponse",
 ]
