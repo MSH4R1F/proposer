@@ -236,7 +236,7 @@ class AgentLoop:
                     termination=TraceTerminationReason.END_TURN,
                 )
 
-            # --- Dispatch tool_use blocks (possibly several in parallel turn) ---
+            # --- Dispatch tool_use blocks (possibly multiple in one turn — dispatched sequentially here) ---
             if tool_use_blocks:
                 tool_result_blocks: List[Dict[str, Any]] = []
                 for block in tool_use_blocks:
@@ -256,7 +256,7 @@ class AgentLoop:
                         result = ToolResult(
                             is_error=True,
                             model_payload={
-                                "error": "Unknown tool: {0}".format(tool_name)
+                                "error": f"Unknown tool: {tool_name}"
                             },
                         )
 
