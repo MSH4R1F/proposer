@@ -9,8 +9,9 @@
 pydantic>=2.5.0
 python-dotenv>=1.0.0
 
-# Logging
+# Logging / Observability
 structlog>=23.2.0
+langfuse>=2.0,<3.0
 
 # CLI
 click>=8.1.0

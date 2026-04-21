@@ -13,7 +13,7 @@ from typing import Optional
 from fastapi import Request
 
 from llm_orchestrator.agent_loop.context import ToolContext
-from llm_orchestrator.agent_loop.trace import TraceLogger
+from llm_orchestrator.agent_loop.trace import LangFuseTraceLogger, TraceLogger
 from llm_orchestrator.clients.claude_client import ClaudeClient
 
 from .config import config
@@ -23,13 +23,22 @@ def get_tool_context(request: Request) -> ToolContext:
     """Build a per-request ToolContext.
 
     Pulls an X-Request-Id header if present, otherwise generates one.
-    Step 7 uses the no-op TraceLogger; step 8 can swap in the LangFuse
-    logger when configured.
+    When LangFuse is fully configured (public key, secret key, and host all
+    set) we export traces to it; otherwise fall back to the no-op logger.
     """
     request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+    trace_logger: TraceLogger
+    if config.langfuse_configured:
+        trace_logger = LangFuseTraceLogger(
+            public_key=config.langfuse_public_key,
+            secret_key=config.langfuse_secret_key,
+            host=config.langfuse_host,
+        )
+    else:
+        trace_logger = TraceLogger.no_op()
     return ToolContext(
         request_id=request_id,
-        trace_logger=TraceLogger.no_op(),
+        trace_logger=trace_logger,
         redact_pii=True,
     )
 
