@@ -84,3 +84,96 @@ class TraceLogger:
             total_tokens_out=sum(s.tokens_out or 0 for s in self._steps),
             steps=list(self._steps),
         )
+
+
+class LangFuseTraceLogger(TraceLogger):
+    """LangFuse-backed TraceLogger that also keeps the no-op in-memory trace.
+
+    Falls back to pure in-memory behavior if langfuse isn't installed or
+    initialization fails.
+    """
+
+    def __init__(
+        self,
+        *,
+        public_key: str,
+        secret_key: str,
+        host: str,
+        session_id: Optional[str] = None,
+        user_id: Optional[str] = None,
+        dispute_id: Optional[str] = None,
+    ) -> None:
+        super().__init__()
+        self._session_id = session_id
+        self._user_id = user_id
+        self._dispute_id = dispute_id
+        self._client = None
+        self._root_trace = None
+        try:
+            from langfuse import Langfuse  # type: ignore
+
+            self._client = Langfuse(
+                public_key=public_key,
+                secret_key=secret_key,
+                host=host,
+            )
+        except Exception as exc:  # pragma: no cover - init failure is logged
+            import structlog
+
+            structlog.get_logger().warning(
+                "langfuse_init_failed",
+                error=str(exc),
+            )
+            self._client = None
+
+    def start_trace(
+        self,
+        *,
+        trace_id: Optional[str] = None,
+        tags: Optional[dict] = None,
+    ) -> None:
+        super().start_trace(trace_id=trace_id, tags=tags)
+        if self._client is None:
+            return
+        try:
+            self._root_trace = self._client.trace(
+                id=self._trace_id,
+                session_id=self._session_id,
+                user_id=self._user_id,
+                metadata={
+                    "dispute_id": self._dispute_id,
+                    **(tags or {}),
+                },
+            )
+        except Exception:  # pragma: no cover
+            self._root_trace = None
+
+    def record_step(self, step: TraceStep) -> None:
+        super().record_step(step)
+        if self._root_trace is None:
+            return
+        try:
+            self._root_trace.span(
+                name=step.name or step.kind,
+                input=step.input_preview,
+                output=step.output_preview,
+                metadata={
+                    "kind": step.kind,
+                    "duration_ms": step.duration_ms,
+                    "tokens_in": step.tokens_in,
+                    "tokens_out": step.tokens_out,
+                    "is_error": step.is_error,
+                },
+                level="ERROR" if step.is_error else "DEFAULT",
+            )
+        except Exception:  # pragma: no cover
+            pass
+
+    def end_trace(self, *, termination: TraceTerminationReason) -> TraceSummary:
+        summary = super().end_trace(termination=termination)
+        if self._client is not None:
+            try:
+                self._client.flush()
+            except Exception:  # pragma: no cover
+                pass
+        return summary
