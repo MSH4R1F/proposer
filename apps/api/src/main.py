@@ -13,12 +13,13 @@ sys.path.insert(0, str(project_root))  # Add project root for apps.* imports
 sys.path.insert(0, str(project_root / "packages"))
 
 from contextlib import asynccontextmanager
+from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import structlog
 
-from apps.api.src.config import config
+from apps.api.src.config import APIConfig, config
 from apps.api.src.routers import chat, evidence, predictions, cases, disputes, mediation
 
 # Configure logging
@@ -60,66 +61,90 @@ async def lifespan(app: FastAPI):
     logger.info("api_shutting_down")
 
 
-# Create FastAPI app
-app = FastAPI(
-    title="Legal Mediation System API",
-    description="""
-    AI-powered mediation platform for UK tenancy deposit disputes.
+def create_app(settings: Optional[APIConfig] = None) -> FastAPI:
+    """Application factory.
 
-    Features:
-    - Conversational intake agent
-    - Knowledge graph construction
-    - Outcome prediction with reasoning traces
-    - Evidence management
-    """,
-    version="0.1.0",
-    lifespan=lifespan,
-)
+    Keeps construction side-effect-free so tests can build an app with a
+    custom ``APIConfig`` (e.g. ``debug=True``/``False``). The dev router is
+    mounted lazily and only when ``settings.debug`` is true, so production
+    paths don't import the agent-loop dependencies at module load time.
+    """
+    settings = settings or config
 
-# Add CORS middleware
-logger.debug("configuring_cors", allowed_origins=config.cors_origins)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=config.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    app = FastAPI(
+        title="Legal Mediation System API",
+        description="""
+        AI-powered mediation platform for UK tenancy deposit disputes.
 
-# Include routers
-logger.debug("registering_routers", routers=["chat", "evidence", "predictions", "cases", "disputes", "mediation"])
-app.include_router(chat.router)
-app.include_router(evidence.router)
-app.include_router(predictions.router)
-app.include_router(cases.router)
-app.include_router(disputes.router)
-app.include_router(mediation.router)
-logger.debug("routers_registered")
+        Features:
+        - Conversational intake agent
+        - Knowledge graph construction
+        - Outcome prediction with reasoning traces
+        - Evidence management
+        """,
+        version="0.1.0",
+        lifespan=lifespan,
+    )
+
+    # Add CORS middleware
+    logger.debug("configuring_cors", allowed_origins=settings.cors_origins)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Include routers
+    logger.debug(
+        "registering_routers",
+        routers=["chat", "evidence", "predictions", "cases", "disputes", "mediation"],
+    )
+    app.include_router(chat.router)
+    app.include_router(evidence.router)
+    app.include_router(predictions.router)
+    app.include_router(cases.router)
+    app.include_router(disputes.router)
+    app.include_router(mediation.router)
+    logger.debug("routers_registered")
+
+    if settings.debug:
+        # Import lazily so production paths don't pull in the agent-loop
+        # dependencies (ClaudeClient, etc.) at module-load time.
+        from .routers import dev
+
+        app.include_router(dev.router)
+        logger.info("dev_router_registered")
+
+    @app.get("/")
+    async def root():
+        """Root endpoint."""
+        logger.debug("root_endpoint_accessed")
+        return {
+            "name": "Legal Mediation System API",
+            "version": "0.1.0",
+            "status": "running",
+            "docs": "/docs",
+        }
+
+    @app.get("/health")
+    async def health_check():
+        """Health check endpoint."""
+        health_status = {
+            "status": "healthy",
+            "anthropic_configured": bool(settings.anthropic_api_key),
+            "openai_configured": bool(settings.openai_api_key),
+            "supabase_configured": bool(settings.supabase_url),
+        }
+        logger.debug("health_check", **health_status)
+        return health_status
+
+    return app
 
 
-@app.get("/")
-async def root():
-    """Root endpoint."""
-    logger.debug("root_endpoint_accessed")
-    return {
-        "name": "Legal Mediation System API",
-        "version": "0.1.0",
-        "status": "running",
-        "docs": "/docs",
-    }
-
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    health_status = {
-        "status": "healthy",
-        "anthropic_configured": bool(config.anthropic_api_key),
-        "openai_configured": bool(config.openai_api_key),
-        "supabase_configured": bool(config.supabase_url),
-    }
-    logger.debug("health_check", **health_status)
-    return health_status
+# Module-level app for `uvicorn main:app` and existing test imports.
+app = create_app(config)
 
 
 if __name__ == "__main__":
