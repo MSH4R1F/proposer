@@ -1,0 +1,44 @@
+"""FastAPI dependencies for the agent-loop foundation.
+
+Intentionally thin. get_tool_context composes request metadata and the
+minimum dependencies a tool needs; get_agent_loop_client returns a cached
+ClaudeClient for the debug smoke endpoint.
+"""
+from __future__ import annotations
+
+import uuid
+from functools import lru_cache
+from typing import Optional
+
+from fastapi import Request
+
+from llm_orchestrator.agent_loop.context import ToolContext
+from llm_orchestrator.agent_loop.trace import TraceLogger
+from llm_orchestrator.clients.claude_client import ClaudeClient
+
+from .config import config
+
+
+def get_tool_context(request: Request) -> ToolContext:
+    """Build a per-request ToolContext.
+
+    Pulls an X-Request-Id header if present, otherwise generates one.
+    Step 7 uses the no-op TraceLogger; step 8 can swap in the LangFuse
+    logger when configured.
+    """
+    request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+    return ToolContext(
+        request_id=request_id,
+        trace_logger=TraceLogger.no_op(),
+        redact_pii=True,
+    )
+
+
+@lru_cache(maxsize=1)
+def _cached_agent_loop_client() -> ClaudeClient:
+    return ClaudeClient(api_key=config.anthropic_api_key)
+
+
+def get_agent_loop_client() -> ClaudeClient:
+    """Return a process-cached ClaudeClient for the agent loop smoke path."""
+    return _cached_agent_loop_client()
