@@ -1,13 +1,9 @@
-"""Scripted-client test for MediatorAgent.generate_opening_message (Step 5).
+"""Scripted-client tests for the migrated MediatorAgent flows.
 
-Drives the AgentLoop via a fake AgentTurnClient that:
-- First call: returns a tool_use block (calculate_zopa)
-- Second call: returns the final text reply
-
-Assertions:
-- final_text is a non-empty string containing the disclaimer
-- trace is a TraceSummary
-- trace.steps contains at least one tool_call step with name="calculate_zopa"
+Covers both generate_opening_message (Step 5) and generate_response (Step 6).
+Drives the AgentLoop via a fake AgentTurnClient scripted with pre-built
+AgentTurnResponse objects. Assertions check that the intended tools appear
+in the returned TraceSummary and that the final text is populated.
 - scripted client was called exactly twice
 """
 from __future__ import annotations

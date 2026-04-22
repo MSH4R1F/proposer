@@ -29,7 +29,7 @@ class MediatorAgent:
     async def generate_opening_message(
         self,
         prediction: PredictionResult,
-        dispute: Union[DisputeCase, object],
+        dispute: Union[DisputeCase, Dict[str, object]],
         expectation_data_tenant: Dict[str, object],
         expectation_data_landlord: Dict[str, object],
     ) -> Tuple[str, TraceSummary]:
@@ -70,9 +70,9 @@ class MediatorAgent:
 
     async def generate_response(
         self,
-        messages: list,
+        messages: list[MessageLike],
         prediction: PredictionResult,
-        dispute: Union[DisputeCase, object],
+        dispute: Union[DisputeCase, Dict[str, object]],
         latest_offer: Optional[StructuredOffer] = None,
     ) -> Tuple[str, TraceSummary]:
         self._stats["messages_processed"] += 1
@@ -82,12 +82,26 @@ class MediatorAgent:
         )
         ctx = ToolContext(prediction=prediction, dispute_id=dispute_id)
 
+        responder_hint = ""
+        if latest_offer is not None:
+            responder_role = (
+                "landlord" if latest_offer.proposed_by_role == "tenant" else "tenant"
+            )
+            responder_hint = (
+                f"\nThe responding party on this offer is the {responder_role}. "
+                "If you call calculate_counter_range, pass role=\""
+                f"{responder_role}\" — it is always the opposite of "
+                "latest_offer.proposed_by_role.\n"
+            )
+
         user_prompt = (
-            "Continue the mediation. Use the tools if you need numbers.\n\n"
+            "Continue the mediation with the next response. "
+            "Call the tools if you need settlement numbers or cost framing.\n\n"
             "Recent conversation:\n"
             f"{self._format_messages(messages)}\n\n"
             "Latest offer:\n"
-            f"{self._to_json(latest_offer)}\n\n"
+            f"{self._to_json(latest_offer)}"
+            f"{responder_hint}\n"
             "Dispute context:\n"
             f"{self._to_json(dispute)}\n\n"
             "Prediction (top-level info only — call tools for settlement numbers):\n"
@@ -95,8 +109,7 @@ class MediatorAgent:
             f"- Confidence: {prediction.overall_confidence:.0%}\n"
             f"- Key strengths: {self._format_list(prediction.key_strengths)}\n"
             f"- Key weaknesses: {self._format_list(prediction.key_weaknesses)}\n"
-            f"- Retrieved cases: {self._format_list(prediction.retrieved_cases)}\n\n"
-            "Continue the mediation with the next response. Use the tools if you need numbers."
+            f"- Retrieved cases: {self._format_list(prediction.retrieved_cases)}"
         )
 
         loop = AgentLoop(
