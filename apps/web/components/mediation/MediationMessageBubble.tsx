@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import type { MediationMessage } from '@/lib/types/mediation';
+import { MediatorReasoningTrail } from './MediatorReasoningTrail';
 
 interface MediationMessageBubbleProps {
   message: MediationMessage;
@@ -58,6 +59,9 @@ export function MediationMessageBubble({
       <p className="text-sm leading-relaxed whitespace-pre-wrap">
         {message.content}
       </p>
+      {message.sender_role === 'ai_mediator' && message.reasoning_trace && (
+        <MediatorReasoningTrail trace={message.reasoning_trace} />
+      )}
     </div>
   );
 }
