@@ -37,6 +37,17 @@ class APIConfig(BaseModel):
     )
     supabase_bucket: str = Field(default="evidence")
 
+    # Langfuse (observability) - all three required to enable export
+    langfuse_public_key: str = Field(
+        default_factory=lambda: os.getenv("LANGFUSE_PUBLIC_KEY", "")
+    )
+    langfuse_secret_key: str = Field(
+        default_factory=lambda: os.getenv("LANGFUSE_SECRET_KEY", "")
+    )
+    langfuse_host: str = Field(
+        default_factory=lambda: os.getenv("LANGFUSE_HOST", "")
+    )
+
     # Data paths
     data_dir: Path = Field(default=Path("./data"))
     sessions_dir: Path = Field(default=Path("./data/sessions"))
@@ -44,6 +55,15 @@ class APIConfig(BaseModel):
 
     # CORS
     cors_origins: list = Field(default=["http://localhost:3000", "http://localhost:8000"])
+
+    @property
+    def langfuse_configured(self) -> bool:
+        """True when all three LangFuse credentials are set."""
+        return bool(
+            self.langfuse_public_key
+            and self.langfuse_secret_key
+            and self.langfuse_host
+        )
 
     def ensure_directories(self) -> None:
         """Create necessary directories."""
