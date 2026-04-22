@@ -28,8 +28,9 @@ MessageLike = Union[MediationMessage, Dict[str, str], str]
 
 class MediatorAgent:
     def __init__(self, llm_client: AgentTurnClient):
-        # Typed as Any so generate_response (migrated in Step 6) can still call
-        # self.llm.generate(...) on the real ClaudeClient at runtime.
+        # TODO(step-6): tighten to AgentTurnClient once generate_response
+        # also runs via AgentLoop. For now self.llm is Any so the still-unmigrated
+        # generate_response can call self.llm.generate(...) on the real ClaudeClient.
         self.llm: Any = llm_client
         self._stats: Dict[str, int] = {"messages_processed": 0}
 
