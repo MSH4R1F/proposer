@@ -76,14 +76,14 @@ def test_wrong_first_param_type_raises_type_error() -> None:
 
 
 def test_second_param_not_basemodel_raises_type_error() -> None:
-    with pytest.raises(TypeError, match="pydantic.BaseModel subclass"):
+    with pytest.raises(TypeError, match=r"pydantic\.BaseModel subclass"):
         @tool(description="bad")
         def wrong_second(ctx: ToolContext, args: dict) -> dict:
             return {}
 
 
 def test_missing_annotation_on_second_param_raises_type_error() -> None:
-    with pytest.raises(TypeError, match="pydantic.BaseModel subclass"):
+    with pytest.raises(TypeError, match=r"pydantic\.BaseModel subclass"):
         @tool(description="bad")
         def no_annotation(ctx: ToolContext, args) -> dict:  # type: ignore[no-untyped-def]
             return {}
@@ -232,3 +232,53 @@ async def test_tool_returning_basemodel_is_dumped() -> None:
     result = await pydantic_returner.dispatch(_ctx(), {"a": 10, "b": 5})
     assert result.is_error is False
     assert result.model_payload == {"result": 15, "label": "sum"}
+
+
+# ---------------------------------------------------------------------------
+# 12. Nested BaseModel args are inlined — no $ref / $defs in schema
+#     (Anthropic's tool input_schema doesn't accept JSON-Schema refs.)
+# ---------------------------------------------------------------------------
+
+class _Address(BaseModel):
+    line1: str
+    postcode: str
+
+
+class NestedArgs(BaseModel):
+    address: _Address
+    note: Optional[str] = None
+
+
+@tool(description="Tool with nested BaseModel args.")
+def nested_tool(ctx: ToolContext, args: NestedArgs) -> dict:
+    return {"ok": True}
+
+
+def test_nested_basemodel_args_emit_inline_schema() -> None:
+    schema = nested_tool.to_anthropic_schema()
+    input_schema = schema["input_schema"]
+    assert "$defs" not in input_schema
+    serialized = str(input_schema)
+    assert "$ref" not in serialized
+    assert "$defs" not in serialized
+
+    address = input_schema["properties"]["address"]
+    assert address["type"] == "object"
+    assert set(address["properties"].keys()) == {"line1", "postcode"}
+
+
+# ---------------------------------------------------------------------------
+# 13. ToolSet rejects duplicate tool names
+# ---------------------------------------------------------------------------
+
+def test_toolset_rejects_duplicate_names() -> None:
+    @tool(name="same", description="first")
+    def first(ctx: ToolContext, args: AddArgs) -> dict:
+        return {}
+
+    @tool(name="same", description="second")
+    def second(ctx: ToolContext, args: AddArgs) -> dict:
+        return {}
+
+    with pytest.raises(ValueError, match="Duplicate tool names"):
+        ToolSet(name="clashy", tools=[first, second])

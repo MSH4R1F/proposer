@@ -1,7 +1,6 @@
 # Agent Loop Foundation
 
-Landed in April 2026 on `feat/agent-loop-foundation`. Plan:
-`~/.claude/plans/one-thing-that-i-ve-rustling-finch.md`.
+Landed in April 2026 on `feat/agent-loop-foundation`.
 
 ## What's in place
 

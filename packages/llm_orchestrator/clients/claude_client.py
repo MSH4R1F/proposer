@@ -42,8 +42,12 @@ def _serialize_content_block(block: Any) -> Dict[str, Any]:
     if hasattr(block, "model_dump"):
         try:
             return block.model_dump(mode="json")
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug(
+                "claude_content_block_model_dump_failed",
+                block_type=block_type,
+                error=str(exc),
+            )
     if isinstance(block, dict):
         return dict(block)
     return {"type": block_type if block_type is not None else "unknown"}
