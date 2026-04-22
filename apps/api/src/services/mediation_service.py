@@ -336,8 +336,11 @@ class MediationService:
         if latest_offer is None and session.offers:
             latest_offer = session.offers[-1]
 
+        # AgentLoop re-raises on MODEL_ERROR; on MAX_TURNS it returns ("", trace).
+        # Either way, the fallback message below keeps the mediation session valid.
+        trace_summary: Optional[TraceSummary] = None
         try:
-            ai_content = await self._mediator.generate_response(
+            ai_content, trace_summary = await self._mediator.generate_response(
                 messages=session.messages,
                 prediction=prediction,
                 dispute=dispute,
@@ -359,6 +362,7 @@ class MediationService:
             session=session,
             content=ai_content,
             message_type=MessageType.AI_MEDIATOR,
+            reasoning_trace=trace_summary,
         )
 
         self._save_session(session)
