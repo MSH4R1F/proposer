@@ -29,23 +29,24 @@ A smoke `ToolSet` (`tools/smoke/`: `echo`, `add`) is wired to
 
 ## What's NOT in place (deliberately)
 
-This branch is foundation only. Follow-up specs to migrate real agents:
+This branch started as foundation only. Follow-up specs to migrate real agents:
 
-1. **Mediator migration**
-   Wrap `calculate_zopa`, `calculate_possible_counter_range`, and
-   `get_cost_benefit_analysis` as tools. Replace the prompt-only
-   `MediatorAgent.generate_opening_message` path with `AgentLoop` so the
-   model chooses when to call negotiation helpers. Thread the
-   `TraceSummary` back into mediation messages so the UI can render the
-   reasoning trail.
+1. ~~**Mediator migration**~~ — **Done on `feat/mediator-migration`.** See
+   `docs/MEDIATOR_MIGRATION_PLAN.md`. `calculate_zopa`,
+   `calculate_counter_range`, and `get_cost_benefit` are now tools;
+   `MediatorAgent.generate_opening_message` and `generate_response` both
+   run through `AgentLoop` and return `(text, TraceSummary)`;
+   `MediationMessage.reasoning_trace` is persisted through
+   `MediationService` and rendered as a collapsible trail in
+   `MediationMessageBubble` on the web.
 
-2. **Prediction migration**
+2. **Prediction migration** — still ahead.
    Turn `issue_decomposer`, `issue_retrieval`, `issue_predictor`,
    `citation_verifier`, and `output_assembler` into tools. Replace the
    hardcoded Python pipeline in `PredictionEngineV2` with an `AgentLoop`
    run. The glass-box UI gets the richer per-step trace for free.
 
-3. **Streaming**
+3. **Streaming** — still ahead.
    Add SSE so `TraceStep`s stream to the frontend as the loop runs.
    Currently the HTTP endpoint blocks until `end_turn`/`max_turns`.
 
