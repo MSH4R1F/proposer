@@ -103,14 +103,18 @@ class MediationService:
         message_type: MessageType = MessageType.AI_MEDIATOR,
         metadata: Optional[Dict[str, Any]] = None,
         offer_id: Optional[str] = None,
+        reasoning_trace: Optional[Any] = None,
     ) -> Any:
-        return session.add_message(
+        msg = session.add_message(
             sender_role="ai_mediator",
             content=self._enforce_legal_disclaimer(content),
             message_type=message_type,
             metadata=metadata,
             offer_id=offer_id,
         )
+        if reasoning_trace is not None:
+            msg.reasoning_trace = reasoning_trace
+        return msg
 
     @staticmethod
     def _coerce_prediction_outcome(raw_outcome: Any) -> str:
@@ -238,8 +242,9 @@ class MediationService:
             role="landlord",
         )
 
+        trace_summary = None
         try:
-            initial_content = await self._mediator.generate_opening_message(
+            initial_content, trace_summary = await self._mediator.generate_opening_message(
                 prediction=prediction,
                 dispute=dispute,
                 expectation_data_tenant=expectation_data_tenant,
@@ -262,6 +267,7 @@ class MediationService:
             content=initial_content,
             message_type=MessageType.AI_MEDIATOR,
             metadata={"triggered_by": role},
+            reasoning_trace=trace_summary,
         )
 
         self._save_session(session)
