@@ -7,10 +7,12 @@ its method bodies with AgentLoop runs.
 """
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Literal
 
 from ...data.tribunal_costs import get_cost_benefit_analysis
 from ...models.prediction_v2 import PredictionResult
+
+Role = Literal["tenant", "landlord"]
 
 
 def compute_zopa(prediction: PredictionResult) -> Dict[str, float]:
@@ -45,9 +47,12 @@ def compute_zopa(prediction: PredictionResult) -> Dict[str, float]:
 def compute_counter_range(
     prediction: PredictionResult,
     current_offer: float,
-    role: str,
+    role: Role,
 ) -> Dict[str, float]:
     """Mirror of MediatorAgent.calculate_possible_counter_range (mediator_agent.py:122-151)."""
+    if role not in ("tenant", "landlord"):
+        raise ValueError(f"role must be 'tenant' or 'landlord', got {role!r}")
+
     zopa = compute_zopa(prediction)
     zopa_min = zopa["min"]
     zopa_max = zopa["max"]
@@ -60,7 +65,6 @@ def compute_counter_range(
             min_value = zopa_max
             max_value = zopa_max
     else:
-        # role == "landlord" — no other roles are accepted (Literal enforces this)
         min_value = zopa_min
         max_value = min(offer, zopa_max)
         if min_value > max_value:
@@ -75,8 +79,18 @@ def compute_counter_range(
     }
 
 
-def compute_cost_benefit(prediction: PredictionResult, role: str) -> Dict[str, Any]:
-    """Return role-specific CostBenefitAnalysis as a JSON-serializable dict."""
+def compute_cost_benefit(prediction: PredictionResult, role: Role) -> Dict[str, Any]:
+    """Return role-specific CostBenefitAnalysis as a JSON-serializable dict.
+
+    We always derive the settlement range from compute_zopa(prediction), even when
+    prediction.predicted_settlement_range is unset and zopa was computed from a
+    fallback branch (tenant_recovery_amount or deposit_at_stake). This keeps the
+    framing anchored on the same number calculate_zopa reports, so settlement
+    amounts presented to both parties stay numerically consistent.
+    """
+    if role not in ("tenant", "landlord"):
+        raise ValueError(f"role must be 'tenant' or 'landlord', got {role!r}")
+
     zopa = compute_zopa(prediction)
     analysis = get_cost_benefit_analysis(
         role=role,

@@ -216,6 +216,22 @@ async def test_get_cost_benefit_invalid_role_returns_error() -> None:
     assert result.is_error is True
 
 
+@pytest.mark.asyncio
+async def test_get_cost_benefit_uses_zopa_fallback_when_range_missing() -> None:
+    # Locks in the indirection in compute_cost_benefit: when predicted_settlement_range
+    # is None, framing must still reference the ZOPA derived from tenant_recovery_amount.
+    # base=200, spread=25, zopa=(175, 225), center=200 → framing should mention £200.
+    pred = _prediction(tenant_recovery_amount=200.0)
+    ctx = _ctx(pred)
+    result = await get_cost_benefit.dispatch(ctx, {"role": "tenant"})
+    assert result.is_error is False
+    payload = result.model_payload
+    assert payload["party_role"] == "tenant"
+    assert payload["settlement_range_low"] == 175.0
+    assert payload["settlement_range_high"] == 225.0
+    assert "200" in payload["party_framing"]
+
+
 # ---------------------------------------------------------------------------
 # Missing prediction error path
 # ---------------------------------------------------------------------------
