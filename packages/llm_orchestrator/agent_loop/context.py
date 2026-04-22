@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from .trace import TraceLogger
+
+if TYPE_CHECKING:
+    from ..models.prediction_v2 import PredictionResult
 
 
 @dataclass
@@ -19,3 +22,4 @@ class ToolContext:
     request_id: Optional[str] = None
     trace_logger: TraceLogger = field(default_factory=TraceLogger.no_op)
     redact_pii: bool = True
+    prediction: Optional[PredictionResult] = None
