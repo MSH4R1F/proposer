@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 import structlog
 
+from llm_orchestrator.agent_loop.trace import TraceSummary
 from llm_orchestrator.data.tribunal_costs import get_cost_benefit_analysis
 from llm_orchestrator.models.mediation import (
     MediationSession,
@@ -103,7 +104,7 @@ class MediationService:
         message_type: MessageType = MessageType.AI_MEDIATOR,
         metadata: Optional[Dict[str, Any]] = None,
         offer_id: Optional[str] = None,
-        reasoning_trace: Optional[Any] = None,
+        reasoning_trace: Optional[TraceSummary] = None,
     ) -> Any:
         msg = session.add_message(
             sender_role="ai_mediator",
@@ -242,7 +243,9 @@ class MediationService:
             role="landlord",
         )
 
-        trace_summary = None
+        # AgentLoop re-raises on MODEL_ERROR; on MAX_TURNS it returns ("", trace).
+        # Either way, the fallback message below keeps the mediation session valid.
+        trace_summary: Optional[TraceSummary] = None
         try:
             initial_content, trace_summary = await self._mediator.generate_opening_message(
                 prediction=prediction,
