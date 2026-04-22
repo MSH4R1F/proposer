@@ -12,11 +12,45 @@ import structlog
 from anthropic import AsyncAnthropic, APIError, RateLimitError
 from pydantic import BaseModel, ValidationError
 
+from ..agent_loop.loop import AgentTurnResponse
 from .base import BaseLLMClient
 
 logger = structlog.get_logger()
 
 T = TypeVar("T", bound=BaseModel)
+
+
+def _serialize_content_block(block: Any) -> Dict[str, Any]:
+    """Convert an Anthropic SDK content block into a plain dict.
+
+    Preserves the shape the agent loop expects: ``{"type": "text", "text": ...}``
+    or ``{"type": "tool_use", "id": ..., "name": ..., "input": ...}``. Falls back
+    to ``model_dump(mode="json")`` for any unknown block types so future SDK
+    additions don't silently vanish.
+    """
+    block_type = getattr(block, "type", None)
+    if block_type == "text":
+        return {"type": "text", "text": getattr(block, "text", "")}
+    if block_type == "tool_use":
+        return {
+            "type": "tool_use",
+            "id": getattr(block, "id", ""),
+            "name": getattr(block, "name", ""),
+            "input": getattr(block, "input", {}),
+        }
+    # Fallback for unknown / future block types.
+    if hasattr(block, "model_dump"):
+        try:
+            return block.model_dump(mode="json")
+        except Exception as exc:
+            logger.debug(
+                "claude_content_block_model_dump_failed",
+                block_type=block_type,
+                error=str(exc),
+            )
+    if isinstance(block, dict):
+        return dict(block)
+    return {"type": block_type if block_type is not None else "unknown"}
 
 
 class ClaudeClient(BaseLLMClient):
@@ -281,6 +315,100 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
                 }
 
         return result
+
+    async def run_agent_turn(
+        self,
+        *,
+        system_prompt: str,
+        messages: List[Dict[str, Any]],
+        tool_schemas: List[Dict[str, Any]],
+        model: Optional[str] = None,
+        max_tokens: int = 1024,
+    ) -> AgentTurnResponse:
+        """
+        Run a single turn of the AgentLoop against the Anthropic API.
+
+        Mirrors the retry + fallback behavior of :meth:`generate`:
+        - On ``RateLimitError`` swap to the fallback model and retry.
+        - On ``APIError`` bump error count and retry up to ``max_retries``.
+
+        Unlike ``generate_with_tools``, every content block returned by the
+        model is preserved in order (multiple ``tool_use`` blocks are each
+        surfaced as separate entries), and the result is a typed
+        :class:`AgentTurnResponse` shared with the agent loop.
+
+        Args:
+            system_prompt: System prompt to guide the model.
+            messages: Conversation history (may contain ``tool_result`` blocks).
+            tool_schemas: Anthropic-format tool schemas to expose this turn.
+            model: Optional per-call model override (falls back to ``self.model``).
+            max_tokens: Maximum tokens in response.
+
+        Returns:
+            An :class:`AgentTurnResponse` with the ordered content blocks,
+            ``stop_reason``, token usage, and the model actually used.
+        """
+        self._stats["calls"] += 1
+        current_model = model or self.model
+
+        for attempt in range(self.max_retries):
+            try:
+                response = await self.client.messages.create(
+                    model=current_model,
+                    max_tokens=max_tokens,
+                    system=system_prompt,
+                    messages=messages,
+                    tools=tool_schemas,
+                )
+
+                self._stats["tokens_in"] += response.usage.input_tokens
+                self._stats["tokens_out"] += response.usage.output_tokens
+
+                content_blocks = [
+                    _serialize_content_block(block)
+                    for block in (response.content or [])
+                ]
+
+                logger.debug(
+                    "claude_run_agent_turn_success",
+                    model=current_model,
+                    stop_reason=response.stop_reason,
+                    block_count=len(content_blocks),
+                    tokens_in=response.usage.input_tokens,
+                    tokens_out=response.usage.output_tokens,
+                )
+
+                return AgentTurnResponse(
+                    content_blocks=content_blocks,
+                    stop_reason=response.stop_reason,
+                    tokens_in=response.usage.input_tokens,
+                    tokens_out=response.usage.output_tokens,
+                    model_used=current_model,
+                )
+
+            except RateLimitError:
+                logger.warning(
+                    "claude_run_agent_turn_rate_limit",
+                    model=current_model,
+                    attempt=attempt + 1,
+                )
+                if current_model != self.fallback_model:
+                    current_model = self.fallback_model
+                    self._stats["fallback_uses"] += 1
+                    continue
+                raise
+
+            except APIError as e:
+                self._stats["errors"] += 1
+                logger.error(
+                    "claude_run_agent_turn_api_error",
+                    error=str(e),
+                    attempt=attempt + 1,
+                )
+                if attempt == self.max_retries - 1:
+                    raise
+
+        raise RuntimeError("Max retries exceeded")
 
     def get_stats(self) -> Dict[str, Any]:
         """Get usage statistics."""
