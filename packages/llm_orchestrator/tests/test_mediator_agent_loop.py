@@ -198,3 +198,105 @@ async def test_generate_opening_message_returns_empty_str_on_max_turns() -> None
     assert final_text == "", "MAX_TURNS path should return empty string"
     assert isinstance(trace, TraceSummary)
     assert looping.call_count == 6  # max_turns=6
+
+
+# ---------------------------------------------------------------------------
+# generate_response tests (Step 6)
+# ---------------------------------------------------------------------------
+
+_RESPONSE_TEXT = "Based on similar cases, a settlement in the £300-£500 range seems reasonable."
+
+
+def _make_response_scripted_client() -> _ScriptedClient:
+    """Three-turn script: calculate_counter_range → get_cost_benefit → final text."""
+    call_1 = AgentTurnResponse(
+        content_blocks=[
+            {
+                "type": "tool_use",
+                "id": "r1",
+                "name": "calculate_counter_range",
+                "input": {"current_offer": 400, "role": "tenant"},
+            }
+        ],
+        stop_reason="tool_use",
+        tokens_in=100,
+        tokens_out=20,
+        model_used="fake-model",
+    )
+    call_2 = AgentTurnResponse(
+        content_blocks=[
+            {
+                "type": "tool_use",
+                "id": "r2",
+                "name": "get_cost_benefit",
+                "input": {"role": "tenant"},
+            }
+        ],
+        stop_reason="tool_use",
+        tokens_in=120,
+        tokens_out=20,
+        model_used="fake-model",
+    )
+    call_3 = AgentTurnResponse(
+        content_blocks=[{"type": "text", "text": _RESPONSE_TEXT}],
+        stop_reason="end_turn",
+        tokens_in=140,
+        tokens_out=60,
+        model_used="fake-model",
+    )
+    return _ScriptedClient(responses=[call_1, call_2, call_3])
+
+
+@pytest.mark.asyncio
+async def test_generate_response_calls_counter_range_and_cost_benefit() -> None:
+    """generate_response invokes calculate_counter_range and get_cost_benefit then returns text + trace."""
+    scripted = _make_response_scripted_client()
+    agent = MediatorAgent(llm_client=scripted)
+
+    prediction = _make_prediction()
+    dispute: Dict[str, Any] = {
+        "dispute_id": "DISP-TEST02",
+        "deposit_amount": 800.0,
+        "property_address": "20 Example Road, London",
+    }
+    messages: List[Dict[str, Any]] = [
+        {"sender_role": "tenant", "content": "I want my full deposit back."},
+        {"sender_role": "landlord", "content": "There was damage - I'll return £400."},
+    ]
+
+    from ..models.mediation import StructuredOffer
+
+    latest_offer = StructuredOffer(
+        proposed_by_role="landlord",
+        amount=400.0,
+    )
+
+    final_text, trace = await agent.generate_response(
+        messages=messages,
+        prediction=prediction,
+        dispute=dispute,
+        latest_offer=latest_offer,
+    )
+
+    # --- return types ---
+    assert isinstance(final_text, str), "final_text must be a str"
+    assert len(final_text) > 0, "final_text must be non-empty"
+    assert isinstance(trace, TraceSummary), "trace must be a TraceSummary"
+
+    # --- trace contains expected tool_call steps ---
+    tool_call_steps = [s for s in trace.steps if s.kind == "tool_call"]
+    tool_names = [s.name for s in tool_call_steps]
+    assert "calculate_counter_range" in tool_names, (
+        f"trace must contain calculate_counter_range step; got {tool_names}"
+    )
+    assert "get_cost_benefit" in tool_names, (
+        f"trace must contain get_cost_benefit step; got {tool_names}"
+    )
+
+    # --- scripted client was called exactly 3 times ---
+    assert len(scripted.calls) == 3, (
+        f"Expected 3 LLM calls, got {len(scripted.calls)}"
+    )
+
+    # --- stats are incremented ---
+    assert agent.get_stats()["messages_processed"] == 1
