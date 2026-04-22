@@ -1,3 +1,4 @@
+import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -226,3 +227,34 @@ async def test_get_settlement_after_settle(mediation_service):
 
     assert settlement["status"] == "settled"
     assert settlement["settlement_amount"] == 500
+
+
+@pytest.mark.asyncio
+async def test_reasoning_trace_round_trips_through_session_json(mediation_service):
+    """Start mediation, confirm the opener's trace survives save + reload from disk."""
+    from llm_orchestrator.models.mediation import MediationSession
+
+    await _start(mediation_service)
+
+    session = mediation_service._mediations[DISPUTE_ID]
+    opener = next(m for m in session.messages if m.sender_role == "ai_mediator")
+    # The deterministic fallback does not call tools, so the trace has no
+    # tool_call steps — but it DOES have a model_turn step and a terminated
+    # summary. That's enough to exercise the persistence round-trip.
+    assert opener.reasoning_trace is not None
+    assert len(opener.reasoning_trace.steps) >= 1
+
+    # Force a save then rehydrate the session from disk.
+    mediation_service._save_session(session)
+    mediation_path = mediation_service.mediations_dir / f"mediation_{DISPUTE_ID}.json"
+    with open(mediation_path) as f:
+        data = json.load(f)
+    reloaded = MediationSession.model_validate(data)
+
+    reloaded_opener = next(
+        m for m in reloaded.messages if m.sender_role == "ai_mediator"
+    )
+    assert reloaded_opener.reasoning_trace is not None
+    assert reloaded_opener.reasoning_trace.model_dump(mode="json") == (
+        opener.reasoning_trace.model_dump(mode="json")
+    )

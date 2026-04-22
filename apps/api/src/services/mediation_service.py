@@ -676,23 +676,50 @@ def get_mediation_service() -> MediationService:
 
 
 class _DeterministicMediatorLLM:
-    async def generate(
+    """AgentTurnClient stand-in used when ANTHROPIC_API_KEY is missing.
+
+    Returns a single text block per turn with stop_reason="end_turn" — the
+    fallback never exercises the tool-calling path, which is the right
+    behaviour for an offline local-dev mode (no numbers = no fake numbers).
+    """
+
+    async def run_agent_turn(
         self,
-        messages: List[Dict[str, str]],
+        *,
         system_prompt: str,
-        max_tokens: int = 4096,
-        temperature: float = 0.7,
-    ) -> str:
-        _ = (system_prompt, max_tokens, temperature)
-        prompt = messages[-1]["content"].lower() if messages else ""
-        if "opening mediation message" in prompt:
-            return (
-                "Welcome to mediation. I will share neutral information from similar "
-                "tribunal outcomes, summarize both perspectives, and help identify a "
+        messages: List[Dict[str, Any]],
+        tool_schemas: List[Dict[str, Any]],
+        model: Optional[str] = None,
+        max_tokens: int = 1024,
+    ) -> Any:
+        from llm_orchestrator.agent_loop.loop import AgentTurnResponse
+
+        _ = (system_prompt, tool_schemas, model, max_tokens)
+        prompt = ""
+        if messages:
+            last = messages[-1]
+            content = last.get("content") if isinstance(last, dict) else ""
+            if isinstance(content, str):
+                prompt = content.lower()
+
+        if "new mediation session is starting" in prompt:
+            text = (
+                "This is not legal advice. All information is based on analysis of similar "
+                "tribunal cases. Welcome to mediation — I will share neutral information from "
+                "comparable outcomes, summarise both perspectives, and help identify a "
                 "practical negotiation range."
             )
-        return (
-            "I have noted both positions. Based on comparable tribunal outcomes, it may "
-            "be useful to test the latest offer against the likely settlement range and "
-            "focus on evidence each side can verify."
+        else:
+            text = (
+                "I have noted both positions. Based on comparable tribunal outcomes, it may "
+                "be useful to test the latest offer against the likely settlement range and "
+                "focus on evidence each side can verify."
+            )
+
+        return AgentTurnResponse(
+            content_blocks=[{"type": "text", "text": text}],
+            stop_reason="end_turn",
+            tokens_in=0,
+            tokens_out=0,
+            model_used="deterministic-fallback",
         )
