@@ -305,10 +305,34 @@ class AgentLoop:
                 # Loop back for the next model turn.
                 continue
 
-            # No tool_use blocks but stop_reason wasn't end_turn. Treat this as
-            # a stuck state and let max_turns handle termination rather than
-            # spinning — we simply re-enter the loop and will hit the bound.
-            continue
+            # No tool_use blocks and stop_reason wasn't end_turn (e.g.
+            # max_tokens, pause_turn). Looping would resend an
+            # assistant-terminated message list — Anthropic rejects that and we
+            # would mislabel a benign stop as MODEL_ERROR. Terminate now and
+            # surface whatever text the model produced.
+            final_text = _extract_text(response.content_blocks)
+            term_started_at = _now()
+            ctx.trace_logger.record_step(
+                TraceStep(
+                    index=step_index,
+                    kind="termination",
+                    name=f"stop_{response.stop_reason}",
+                    started_at=term_started_at,
+                    duration_ms=0,
+                    output_preview=_preview(
+                        final_text or "", redact=ctx.redact_pii
+                    ),
+                )
+            )
+            step_index += 1
+            summary = ctx.trace_logger.end_trace(
+                termination=TraceTerminationReason.END_TURN
+            )
+            return AgentLoopResult(
+                final_text=final_text,
+                trace=summary,
+                termination=TraceTerminationReason.END_TURN,
+            )
 
         # --- Max turns reached ---
         term_started_at = _now()

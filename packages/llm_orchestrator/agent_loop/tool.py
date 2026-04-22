@@ -12,6 +12,41 @@ from .context import ToolContext
 
 JSONValue = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
 
+_REF_PREFIX = "#/$defs/"
+
+
+def _inline_refs(
+    node: Any,
+    defs: Dict[str, Any],
+    _seen: Optional[frozenset] = None,
+) -> Any:
+    """Recursively replace JSON-Schema ``$ref``s against ``$defs`` with inline definitions.
+
+    Anthropic's tool ``input_schema`` does not accept ``$ref`` / ``$defs``; Pydantic
+    emits them for nested BaseModel fields. We walk the tree and substitute each
+    ref with a copy of its definition, guarding against cycles.
+    """
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str) and ref.startswith(_REF_PREFIX):
+            key = ref[len(_REF_PREFIX):]
+            seen = _seen or frozenset()
+            if key in seen or key not in defs:
+                # Cyclic or dangling ref — strip the $ref rather than emit an invalid schema.
+                return {k: v for k, v in node.items() if k != "$ref"}
+            resolved = _inline_refs(defs[key], defs, seen | {key})
+            # Merge sibling keys (e.g. description) onto the resolved definition.
+            merged = dict(resolved) if isinstance(resolved, dict) else {}
+            for k, v in node.items():
+                if k == "$ref":
+                    continue
+                merged[k] = _inline_refs(v, defs, _seen)
+            return merged
+        return {k: _inline_refs(v, defs, _seen) for k, v in node.items() if k != "$defs"}
+    if isinstance(node, list):
+        return [_inline_refs(item, defs, _seen) for item in node]
+    return node
+
 
 class ToolResult(BaseModel):
     model_payload: JSONValue
@@ -45,11 +80,14 @@ class Tool:
 
     def to_anthropic_schema(self) -> Dict[str, Any]:
         raw_schema = self.args_model.model_json_schema()
+        defs = raw_schema.get("$defs", {}) or {}
 
-        # Normalize: keep type, properties, required only; ensure type == "object"
+        # Normalize: keep type, properties, required only; ensure type == "object".
+        # Anthropic's input_schema doesn't accept $ref/$defs, so inline any refs
+        # that nested BaseModel fields emit.
         input_schema: Dict[str, Any] = {"type": "object"}
         if "properties" in raw_schema:
-            input_schema["properties"] = raw_schema["properties"]
+            input_schema["properties"] = _inline_refs(raw_schema["properties"], defs)
         if "required" in raw_schema:
             input_schema["required"] = raw_schema["required"]
 
@@ -93,10 +131,11 @@ class Tool:
                 model_payload={"error": "Tool returned non-JSON-serializable value"},
             )
 
-        # 4. Check size
+        # 4. Check size. No default= fallback — tools must return JSON-native
+        # values. Silent str-coercion would hide real bugs.
         try:
-            serialized = json.dumps(normalized, ensure_ascii=True, default=str)
-        except Exception:
+            serialized = json.dumps(normalized, ensure_ascii=True, allow_nan=False)
+        except (TypeError, ValueError):
             return ToolResult(
                 is_error=True,
                 model_payload={"error": "Tool returned non-JSON-serializable value"},
@@ -121,6 +160,19 @@ class ToolSet:
     def __init__(self, *, name: str, tools: Sequence[Tool]) -> None:
         self.name = name
         self.tools: Sequence[Tool] = tuple(tools)
+        seen: Dict[str, int] = {}
+        duplicates: List[str] = []
+        for t in self.tools:
+            if t.name in seen:
+                if seen[t.name] == 1:
+                    duplicates.append(t.name)
+                seen[t.name] += 1
+            else:
+                seen[t.name] = 1
+        if duplicates:
+            raise ValueError(
+                f"Duplicate tool names in ToolSet '{name}': {sorted(duplicates)}"
+            )
         self._by_name: Dict[str, Tool] = {t.name: t for t in self.tools}
 
     def anthropic_schemas(self) -> List[Dict[str, Any]]:
