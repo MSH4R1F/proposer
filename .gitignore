@@ -271,3 +271,13 @@ docker-volumes/
 *.orig
 
 data/
+
+# ===================================
+# Multi-window orchestration
+# ===================================
+# Parallel worktrees (see docs/ORCHESTRATION.md)
+worktrees/
+.worktrees/
+
+# Sisyphus orchestration scratch (boulders, evidence, plans, notepads)
+.sisyphus/
