@@ -1,10 +1,19 @@
 """Tests for the gold-case schema (packages/eval/schema.py)."""
 from __future__ import annotations
 
+import json
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
+
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+def _load_minimal() -> dict:
+    return json.loads((FIXTURES_DIR / "gold_case_minimal.json").read_text())
 
 
 class TestEnums:
@@ -133,3 +142,94 @@ class TestGroundTruthOutcome:
             ],
         )
         assert gto.total_awarded_gbp == Decimal("110")
+
+
+class TestGoldCaseRoundTrip:
+    def test_minimal_fixture_validates(self):
+        from eval.schema import GoldCase
+        gc = GoldCase.model_validate(_load_minimal())
+        assert gc.case_id == "SYNTH-2023-0001"
+
+    def test_round_trip_json_stable(self):
+        from eval.schema import GoldCase
+        gc = GoldCase.model_validate(_load_minimal())
+        again = GoldCase.model_validate(json.loads(gc.model_dump_json()))
+        assert again == gc
+
+
+class TestGoldCaseInvariants:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_inv1_decision_date_too_early(self):
+        from eval.schema import GoldCase
+        bad = self._base() | {"decision_date": "2018-12-31"}
+        with pytest.raises(ValidationError, match="decision_date"):
+            GoldCase.model_validate(bad)
+
+    def test_inv1_decision_date_too_late(self):
+        from eval.schema import GoldCase
+        bad = self._base() | {"decision_date": "2025-01-01"}
+        with pytest.raises(ValidationError, match="decision_date"):
+            GoldCase.model_validate(bad)
+
+    def test_inv2_requires_tenant_and_landlord(self):
+        from eval.schema import GoldCase
+        bad = self._base() | {"parties": [{"role": "tenant", "represented": False}]}
+        with pytest.raises(ValidationError, match="tenant.*landlord|parties"):
+            GoldCase.model_validate(bad)
+
+    def test_inv3_ocr_confidence_above_unit_interval(self):
+        from eval.schema import GoldCase
+        bad = self._base() | {"ocr_confidence": 1.5}
+        with pytest.raises(ValidationError, match="ocr_confidence"):
+            GoldCase.model_validate(bad)
+
+    def test_inv3_ocr_confidence_below_unit_interval(self):
+        from eval.schema import GoldCase
+        bad = self._base() | {"ocr_confidence": -0.01}
+        with pytest.raises(ValidationError, match="ocr_confidence"):
+            GoldCase.model_validate(bad)
+
+    def test_inv3_ocr_confidence_none_permitted(self):
+        from eval.schema import GoldCase
+        ok = self._base() | {"ocr_confidence": None}
+        gc = GoldCase.model_validate(ok)
+        assert gc.ocr_confidence is None
+
+    def test_inv4_pdf_sha256_format(self):
+        from eval.schema import GoldCase
+        bad = self._base() | {"source_pdf_sha256": "ZZZ"}
+        with pytest.raises(ValidationError, match="source_pdf_sha256"):
+            GoldCase.model_validate(bad)
+
+    def test_inv5_per_issue_must_match_claimed(self):
+        from eval.schema import GoldCase
+        case = self._base()
+        case["ground_truth_outcome"]["per_issue"][0]["issue"] = "ghost_issue"
+        with pytest.raises(ValidationError, match="ghost_issue"):
+            GoldCase.model_validate(case)
+
+    def test_inv7_case_size_inconsistent_small(self):
+        from eval.schema import GoldCase
+        # claimed total is 400 GBP -> should be small; declaring large is wrong
+        bad = self._base() | {"case_size": "large"}
+        with pytest.raises(ValidationError, match="case_size"):
+            GoldCase.model_validate(bad)
+
+    def test_inv7_case_size_inconsistent_large(self):
+        from eval.schema import GoldCase
+        case = self._base()
+        case["claimed_amounts"][0]["amount_gbp"] = "1600.00"
+        # ground_truth_outcome.per_issue.issue still matches; total/awarded stay 220.00
+        # case_size is still "small" but claimed total is now 1600 GBP -> mismatch
+        with pytest.raises(ValidationError, match="case_size"):
+            GoldCase.model_validate(case)
+
+    def test_inv7_case_size_boundary_exactly_1500_is_small(self):
+        from eval.schema import GoldCase
+        case = self._base()
+        case["claimed_amounts"][0]["amount_gbp"] = "1500.00"
+        case["case_size"] = "small"
+        gc = GoldCase.model_validate(case)
+        assert gc.case_size.value == "small"

@@ -1,0 +1,25 @@
+tests/test_schema.py::TestGroundTruthOutcome::test_total_must_match_sum_of_per_issue PASSED [ 50%]
+tests/test_schema.py::TestGroundTruthOutcome::test_total_matches_sum_ok PASSED [ 53%]
+tests/test_schema.py::TestGoldCaseRoundTrip::test_minimal_fixture_validates PASSED [ 57%]
+tests/test_schema.py::TestGoldCaseRoundTrip::test_round_trip_json_stable PASSED [ 60%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv1_decision_date_too_early PASSED [ 64%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv1_decision_date_too_late PASSED [ 67%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv2_requires_tenant_and_landlord PASSED [ 71%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv3_ocr_confidence_above_unit_interval PASSED [ 75%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv3_ocr_confidence_below_unit_interval PASSED [ 78%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv3_ocr_confidence_none_permitted PASSED [ 82%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv4_pdf_sha256_format PASSED [ 85%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv5_per_issue_must_match_claimed PASSED [ 89%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv7_case_size_inconsistent_small PASSED [ 92%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv7_case_size_inconsistent_large PASSED [ 96%]
+tests/test_schema.py::TestGoldCaseInvariants::test_inv7_case_size_boundary_exactly_1500_is_small PASSED [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.9.6-final-0 ________________
+
+Name        Stmts   Miss  Cover   Missing
+-----------------------------------------
+schema.py      96      1    99%   136
+-----------------------------------------
+TOTAL          96      1    99%
+============================== 28 passed in 0.03s ==============================
