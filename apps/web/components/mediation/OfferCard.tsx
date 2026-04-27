@@ -79,7 +79,7 @@ export function OfferCard({ offer, currentRole, onRespond }: OfferCardProps) {
           <p className="text-xs text-muted-foreground capitalize">
             Proposed by {offer.proposed_by_role}
           </p>
-          {offer.counter_amount !== undefined && (
+          {offer.counter_amount != null && (
             <p className="text-sm text-muted-foreground mt-1">
               Counter:{' '}
               <span className="font-medium">
