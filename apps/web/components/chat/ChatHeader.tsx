@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,10 +15,21 @@ interface ChatHeaderProps {
   completeness: number;
   sessionId?: string | null;
   caseId?: string | null;
+  disputeId?: string | null;
 }
 
-export function ChatHeader({ stage, completeness, sessionId, caseId }: ChatHeaderProps) {
+export function ChatHeader({ stage, completeness, sessionId, caseId, disputeId }: ChatHeaderProps) {
+  const searchParams = useSearchParams();
   const percentage = Math.round(completeness * 100);
+  
+  const buildPredictionUrl = () => {
+    if (!caseId) return '';
+    const params = new URLSearchParams();
+    if (sessionId) params.set('session', sessionId);
+    if (disputeId) params.set('dispute', disputeId);
+    const queryString = params.toString();
+    return ROUTES.PREDICTION(caseId) + (queryString ? '?' + queryString : '');
+  };
   
   return (
     <div className="shrink-0 border-b border-border/40 bg-background/50 backdrop-blur-sm">
@@ -46,7 +58,7 @@ export function ChatHeader({ stage, completeness, sessionId, caseId }: ChatHeade
         <div className="flex items-center gap-3">
           {caseId && (
             <Button asChild variant="outline" size="sm" className="gap-1.5 h-7 text-xs">
-              <Link href={ROUTES.PREDICTION(caseId)}>
+              <Link href={buildPredictionUrl()}>
                 <Sparkles className="h-3 w-3" />
                 View Prediction
               </Link>

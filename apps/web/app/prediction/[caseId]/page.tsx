@@ -24,6 +24,7 @@ export default function PredictionPage({ params }: PredictionPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session') || '';
+  const disputeId = searchParams.get('dispute') || '';
   const { prediction, isLoading, error, generatePrediction, clearError } =
     usePrediction();
 
@@ -157,18 +158,34 @@ export default function PredictionPage({ params }: PredictionPageProps) {
             <div className="space-y-4">
               <PredictionCard prediction={prediction} />
               {/* Proceed to Mediation */}
-              <div className="flex justify-center pt-2">
-                <Button
-                  onClick={() =>
-                    router.push(
-                      ROUTES.MEDIATION_EXPECTATION(caseId) + '?session=' + sessionId
-                    )
-                  }
-                  className="gap-2"
-                >
-                  <Handshake className="h-4 w-4" />
-                  Proceed to Mediation
-                </Button>
+              <div className="flex flex-col items-center gap-3 pt-2">
+                {!disputeId || !sessionId ? (
+                  <div className="w-full max-w-sm">
+                    <Button
+                      disabled
+                      className="w-full gap-2"
+                      title="Session or dispute context missing"
+                    >
+                      <Handshake className="h-4 w-4" />
+                      Proceed to Mediation
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      Context missing — return to chat to preserve session
+                    </p>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() =>
+                      router.push(
+                        ROUTES.MEDIATION_EXPECTATION(disputeId) + '?session=' + sessionId
+                      )
+                    }
+                    className="gap-2"
+                  >
+                    <Handshake className="h-4 w-4" />
+                    Proceed to Mediation
+                  </Button>
+                )}
               </div>
             </div>
           )}

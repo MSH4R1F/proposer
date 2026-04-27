@@ -30,16 +30,32 @@ export function useMediationChat(disputeId: string, sessionId: string) {
     state.messages,
   ]);
 
-  // Fetch initial messages on mount
+  // Fetch messages and offers from the API
   const fetchMessages = useCallback(async (since?: string) => {
     try {
-      const messages = await mediationApi.getMessages(disputeId, since);
-      setState((prev) => ({
-        ...prev,
-        messages,
-        lastUpdated: new Date().toISOString(),
-        error: null,
-      }));
+      const { messages, offers } = await mediationApi.getMessages(disputeId, since);
+      setState((prev) => {
+        // If polling (since provided), append new messages and dedupe by id
+        if (since) {
+          const existingIds = new Set(prev.messages.map((m) => m.id));
+          const newMessages = messages.filter((m) => !existingIds.has(m.id));
+          return {
+            ...prev,
+            messages: [...prev.messages, ...newMessages],
+            offers,
+            lastUpdated: new Date().toISOString(),
+            error: null,
+          };
+        }
+        // If initial load or manual refresh, replace full history
+        return {
+          ...prev,
+          messages,
+          offers,
+          lastUpdated: new Date().toISOString(),
+          error: null,
+        };
+      });
       return messages;
     } catch (error) {
       const errorMessage =
@@ -52,14 +68,23 @@ export function useMediationChat(disputeId: string, sessionId: string) {
     }
   }, [disputeId]);
 
-  // Initialize messages on mount
+  // Initialize mediation session and load messages on mount.
+  // startMediation is idempotent for existing sessions (no duplicate messages).
   useEffect(() => {
-    if (disputeId && sessionId) {
-      setState((prev) => ({ ...prev, isLoading: true }));
-      fetchMessages().then(() => {
-        setState((prev) => ({ ...prev, isLoading: false }));
+    if (!disputeId || !sessionId) return;
+
+    setState((prev) => ({ ...prev, isLoading: true }));
+
+    mediationApi
+      .startMediation(disputeId, sessionId)
+      .catch(() => {
+        // Session may already exist or prediction missing — continue to fetch messages anyway
+      })
+      .finally(() => {
+        fetchMessages().then(() => {
+          setState((prev) => ({ ...prev, isLoading: false }));
+        });
       });
-    }
   }, [disputeId, sessionId, fetchMessages]);
 
   // Polling for new messages every 10 seconds
