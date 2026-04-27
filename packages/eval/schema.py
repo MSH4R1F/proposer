@@ -10,7 +10,7 @@ from decimal import Decimal  # noqa: F401  -- referenced by sub-models
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class SchemaVersion(str, Enum):
@@ -74,3 +74,19 @@ class IssueOutcome(BaseModel):
 class ReasoningQuote(BaseModel):
     text: str = Field(min_length=1)
     paragraph_ref: str = Field(min_length=1)
+
+
+class GroundTruthOutcome(BaseModel):
+    overall_winner: Winner
+    total_awarded_gbp: Decimal = Field(ge=0)
+    per_issue: list[IssueOutcome] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _total_matches_sum(self) -> "GroundTruthOutcome":
+        s = sum((io.awarded_gbp for io in self.per_issue), start=Decimal("0"))
+        if s != self.total_awarded_gbp:
+            raise ValueError(
+                f"total_awarded_gbp ({self.total_awarded_gbp}) "
+                f"!= sum(per_issue.awarded_gbp) ({s})"
+            )
+        return self

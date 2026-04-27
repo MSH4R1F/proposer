@@ -82,3 +82,54 @@ class TestReasoningQuote:
         from eval.schema import ReasoningQuote
         with pytest.raises(ValidationError):
             ReasoningQuote(text="", paragraph_ref="para 1")
+
+
+class TestGroundTruthOutcome:
+    def test_per_issue_must_be_non_empty(self):
+        from eval.schema import GroundTruthOutcome, Winner
+        with pytest.raises(ValidationError):
+            GroundTruthOutcome(
+                overall_winner=Winner.TENANT,
+                total_awarded_gbp=Decimal("0"),
+                per_issue=[],
+            )
+
+    def test_total_must_match_sum_of_per_issue(self):
+        from eval.schema import GroundTruthOutcome, IssueOutcome, Winner
+        with pytest.raises(ValidationError):
+            GroundTruthOutcome(
+                overall_winner=Winner.TENANT,
+                total_awarded_gbp=Decimal("100"),
+                per_issue=[
+                    IssueOutcome(
+                        issue="cleaning",
+                        winner=Winner.TENANT,
+                        awarded_gbp=Decimal("60"),
+                    ),
+                    IssueOutcome(
+                        issue="damages",
+                        winner=Winner.TENANT,
+                        awarded_gbp=Decimal("50"),
+                    ),
+                ],
+            )
+
+    def test_total_matches_sum_ok(self):
+        from eval.schema import GroundTruthOutcome, IssueOutcome, Winner
+        gto = GroundTruthOutcome(
+            overall_winner=Winner.TENANT,
+            total_awarded_gbp=Decimal("110"),
+            per_issue=[
+                IssueOutcome(
+                    issue="cleaning",
+                    winner=Winner.TENANT,
+                    awarded_gbp=Decimal("60"),
+                ),
+                IssueOutcome(
+                    issue="damages",
+                    winner=Winner.TENANT,
+                    awarded_gbp=Decimal("50"),
+                ),
+            ],
+        )
+        assert gto.total_awarded_gbp == Decimal("110")
