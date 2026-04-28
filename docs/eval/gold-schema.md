@@ -33,7 +33,8 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `case_id` | string, non-empty | Stable identifier across regenerations (e.g. `"FTT-PR-2023-0042"`). |
 | `decision_date` | ISO date | Must fall in `2019-01-01 .. 2024-12-31` (PILOT window). |
 | `region` | string | Free text region label, e.g. `"London"`, `"North West"`, `"Wales"`. Used for the 30/70 stratification audit. |
-| `case_size` | enum `CaseSize` | `"small"` if total claimed ≤ £1500, otherwise `"large"`. Cross-validated against `claimed_amounts`. |
+| `case_size` | enum `CaseSize` | `"small"` if `disputed_amount_gbp` ≤ £1500, else `"large"`. Cross-validated against `disputed_amount_gbp` (INV-7), not against summed `claimed_amounts` (which can double-count mirrored claim/counterclaim entries). |
+| `disputed_amount_gbp` | `Decimal`, ≥0 | Canonical dispute value, independent of any one party's claim. Drives stratification — see [SHA-91](https://linear.app/sharifbuilders/issue/SHA-91) for why this is independent of `claimed_amounts`. |
 | `claim_types` | list of enum `ClaimType`, ≥1 | One or more of `cleaning`, `damages`, `deposit_non_protection`, `disrepair`, `end_of_tenancy`. Multi-type cases are common (a single decision can hit cleaning + damages + disrepair). Stratification target ("≥5 cases per claim type") is computed as: for each type `t`, `t in case.claim_types` for ≥5 cases. See [SHA-92](https://linear.app/sharifbuilders/issue/SHA-92). |
 | `source_pdf_sha256` | string | 64-char lowercase hex — SHA-256 of the source tribunal PDF. Lets reviewers re-fetch and re-OCR independently. |
 | `ocr_confidence` | float ∈ [0,1] or `null` | OCR confidence of the source extraction; `null` when source is text-native. |
@@ -98,11 +99,17 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 
 ### `GroundTruthOutcome`
 
+Two paths are permitted:
+
+* **Apportioned** (default, `unapportioned_reason is None`): tribunal broke the award down per issue. INV-6 enforces `total_awarded_gbp == sum(per_issue.awarded_gbp)` exactly.
+* **Unapportioned** (`unapportioned_reason` is a non-empty string): tribunal gave a global figure with no per-issue breakdown. `per_issue` MUST be empty; INV-5 (per-issue/claimed-amounts label match) is vacuously satisfied; the annotator must record *why* the decision is unapportioned. See [SHA-91](https://linear.app/sharifbuilders/issue/SHA-91).
+
 | Field | Type | Notes |
 |---|---|---|
 | `overall_winner` | `tenant` / `landlord` / `split` | The headline outcome. |
-| `total_awarded_gbp` | `Decimal`, ≥0 | **Must equal** `sum(per_issue[].awarded_gbp)` exactly (Decimal). |
-| `per_issue` | list, ≥1 | Per-issue decomposition. |
+| `total_awarded_gbp` | `Decimal`, ≥0 | Apportioned: must equal `sum(per_issue[].awarded_gbp)` exactly (INV-6). Unapportioned: authoritative figure as given by the tribunal. |
+| `per_issue` | list of `IssueOutcome`, default `[]` | Apportioned: ≥1. Unapportioned: must be `[]`. |
+| `unapportioned_reason` | string or `null` | Set iff the case is unapportioned. Records *why* the tribunal declined to break the award down. |
 
 ### `ReasoningQuote`
 
@@ -121,10 +128,10 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
 | INV-2 | `parties` includes ≥1 `tenant` and ≥1 `landlord` | `GoldCase` | A deposit-dispute case without both parties is an annotation error. |
 | INV-3 | `ocr_confidence` ∈ `[0,1]` when set; `null` allowed | `Field(ge=0, le=1)` on `GoldCase` | Sanity check on OCR pipeline output; `null` lets text-native PDFs bypass. |
 | INV-4 | `source_pdf_sha256` matches `^[0-9a-f]{64}$` | `GoldCase` | Stops typos and accidental UPPERCASE; reviewer can recompute and confirm. |
-| INV-5 | Every `ground_truth_outcome.per_issue[].issue` appears in `claimed_amounts[].issue` | `GoldCase` | The judge cannot decide an issue that no party claimed; mismatch is an annotation drift between the two lists. |
-| INV-6 | `ground_truth_outcome.total_awarded_gbp` == `sum(per_issue[].awarded_gbp)` (Decimal exact) | `GroundTruthOutcome` | Catches arithmetic typos at annotation time. |
-| INV-7 | `case_size == small` iff `sum(claimed_amounts[].amount_gbp) <= £1500` | `GoldCase` | The 30/70 stratification audit is run from the corpus alone. If `case_size` lies, the audit silently breaks. |
-| INV-8 | `Decimal` amounts never negative | `Field(ge=0)` on `ClaimedAmount`, `IssueOutcome`, `GroundTruthOutcome` | Tribunal awards cannot be negative; negative values are sign errors. |
+| INV-5 | Every `ground_truth_outcome.per_issue[].issue` appears in `claimed_amounts[].issue` (apportioned path only; vacuously satisfied when unapportioned) | `GoldCase` | The judge cannot decide an issue that no party claimed; mismatch is an annotation drift between the two lists. |
+| INV-6 | `ground_truth_outcome.total_awarded_gbp == sum(per_issue[].awarded_gbp)` exactly, when `unapportioned_reason is None`. When `unapportioned_reason` is set, `per_issue` must be empty and INV-6 is bypassed. | `GroundTruthOutcome` | Catches arithmetic typos at annotation time on the apportioned path; lets unapportioned global awards into the corpus. |
+| INV-7 | `case_size == small` iff `disputed_amount_gbp <= £1500` | `GoldCase` | The 30/70 stratification audit is run from the corpus alone. Defined against the canonical dispute value rather than `sum(claimed_amounts)`, which can double-count mirrored claims. |
+| INV-8 | `Decimal` amounts never negative | `Field(ge=0)` on `ClaimedAmount`, `IssueOutcome`, `GroundTruthOutcome`, `GoldCase.disputed_amount_gbp` | Tribunal awards cannot be negative; negative values are sign errors. |
 
 ## Canonical example
 
@@ -135,6 +142,7 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
   "decision_date": "2023-06-15",
   "region": "London",
   "case_size": "small",
+  "disputed_amount_gbp": "400.00",
   "claim_types": ["cleaning"],
   "source_pdf_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
   "ocr_confidence": 0.92,

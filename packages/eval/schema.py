@@ -99,12 +99,39 @@ class ReasoningQuote(BaseModel):
 
 
 class GroundTruthOutcome(BaseModel):
+    """Ground-truth outcome of a tribunal decision.
+
+    Two paths are permitted:
+
+    * **Apportioned** (default): `per_issue` is non-empty, INV-6 enforces
+      `total_awarded_gbp == sum(per_issue.awarded_gbp)` exactly.
+    * **Unapportioned**: when `unapportioned_reason` is set, the tribunal
+      gave a global figure with no per-issue breakdown. `per_issue` MUST
+      be empty in this case; `total_awarded_gbp` is the only authoritative
+      number; INV-5 (per-issue/claimed-amounts label match) is vacuously
+      satisfied. Annotators must record *why* the decision is unapportioned
+      so reviewers can re-check the source.
+    """
+
     overall_winner: Winner
     total_awarded_gbp: Decimal = Field(ge=0)
-    per_issue: list[IssueOutcome] = Field(min_length=1)
+    per_issue: list[IssueOutcome] = Field(default_factory=list)
+    unapportioned_reason: Optional[str] = None
 
     @model_validator(mode="after")
-    def _total_matches_sum(self) -> "GroundTruthOutcome":
+    def _validate_apportionment(self) -> "GroundTruthOutcome":
+        if self.unapportioned_reason is not None:
+            if self.per_issue:
+                raise ValueError(
+                    "unapportioned_reason is set but per_issue is non-empty; "
+                    "an unapportioned outcome must have per_issue=[]"
+                )
+            return self
+        # Apportioned path
+        if not self.per_issue:
+            raise ValueError(
+                "per_issue must contain >=1 item when unapportioned_reason is None"
+            )
         s = sum((io.awarded_gbp for io in self.per_issue), start=Decimal("0"))
         if s != self.total_awarded_gbp:
             raise ValueError(
@@ -127,6 +154,7 @@ class GoldCase(BaseModel):
     decision_date: date
     region: str = Field(min_length=1)
     case_size: CaseSize
+    disputed_amount_gbp: Decimal = Field(ge=0)
     claim_types: list[ClaimType] = Field(min_length=1)
     source_pdf_sha256: str
     ocr_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
@@ -161,6 +189,7 @@ class GoldCase(BaseModel):
                 f"got {self.source_pdf_sha256!r}"
             )
         # INV-5: every per_issue.issue must appear in claimed_amounts
+        # (vacuously satisfied when per_issue is empty under an unapportioned outcome)
         claimed_issues = {ca.issue for ca in self.claimed_amounts}
         for io in self.ground_truth_outcome.per_issue:
             if io.issue not in claimed_issues:
@@ -168,18 +197,17 @@ class GoldCase(BaseModel):
                     f"ground_truth_outcome refers to issue {io.issue!r} "
                     f"not present in claimed_amounts {sorted(claimed_issues)}"
                 )
-        # INV-7: case_size consistent with sum of claimed amounts
-        total_claimed = sum(
-            (ca.amount_gbp for ca in self.claimed_amounts), start=Decimal("0")
-        )
+        # INV-7: case_size consistent with the canonical disputed amount
+        # (independent of mirrored claim/counterclaim entries in claimed_amounts)
         expected_size = (
             CaseSize.SMALL
-            if total_claimed <= _SMALL_CASE_THRESHOLD_GBP
+            if self.disputed_amount_gbp <= _SMALL_CASE_THRESHOLD_GBP
             else CaseSize.LARGE
         )
         if self.case_size != expected_size:
             raise ValueError(
                 f"case_size {self.case_size.value!r} inconsistent with "
-                f"total_claimed=GBP{total_claimed} (expected {expected_size.value!r})"
+                f"disputed_amount_gbp=GBP{self.disputed_amount_gbp} "
+                f"(expected {expected_size.value!r})"
             )
         return self

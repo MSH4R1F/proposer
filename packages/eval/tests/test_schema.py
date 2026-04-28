@@ -16,6 +16,10 @@ def _load_minimal() -> dict:
     return json.loads((FIXTURES_DIR / "gold_case_minimal.json").read_text())
 
 
+def _load_unapportioned() -> dict:
+    return json.loads((FIXTURES_DIR / "gold_case_unapportioned.json").read_text())
+
+
 class TestEnums:
     def test_claim_type_values(self):
         from eval.schema import ClaimType
@@ -212,27 +216,122 @@ class TestGoldCaseInvariants:
 
     def test_inv7_case_size_inconsistent_small(self):
         from eval.schema import GoldCase
-        # claimed total is 400 GBP -> should be small; declaring large is wrong
+        # disputed_amount = 400 GBP -> should be small; declaring large is wrong
         bad = self._base() | {"case_size": "large"}
         with pytest.raises(ValidationError, match="case_size"):
             GoldCase.model_validate(bad)
 
     def test_inv7_case_size_inconsistent_large(self):
         from eval.schema import GoldCase
-        case = self._base()
-        case["claimed_amounts"][0]["amount_gbp"] = "1600.00"
-        # ground_truth_outcome.per_issue.issue still matches; total/awarded stay 220.00
-        # case_size is still "small" but claimed total is now 1600 GBP -> mismatch
+        # disputed_amount > 1500 GBP must yield case_size=large
+        case = self._base() | {"disputed_amount_gbp": "1600.00"}
         with pytest.raises(ValidationError, match="case_size"):
             GoldCase.model_validate(case)
 
     def test_inv7_case_size_boundary_exactly_1500_is_small(self):
         from eval.schema import GoldCase
+        case = self._base() | {"disputed_amount_gbp": "1500.00", "case_size": "small"}
+        gc = GoldCase.model_validate(case)
+        assert gc.case_size.value == "small"
+
+
+class TestDisputedAmount:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_disputed_amount_required(self):
+        from eval.schema import GoldCase
         case = self._base()
-        case["claimed_amounts"][0]["amount_gbp"] = "1500.00"
+        del case["disputed_amount_gbp"]
+        with pytest.raises(ValidationError, match="disputed_amount_gbp"):
+            GoldCase.model_validate(case)
+
+    def test_disputed_amount_negative_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"disputed_amount_gbp": "-1"}
+        with pytest.raises(ValidationError, match="disputed_amount_gbp"):
+            GoldCase.model_validate(case)
+
+    def test_inv7_independent_of_claimed_amounts_sum(self):
+        from eval.schema import GoldCase
+        # Mirror the dispute: tenant claims 400 back, landlord claims 400 from deposit.
+        # Naive sum would say 800 GBP and label it small; disputed_amount_gbp=400 is canonical.
+        case = self._base()
+        case["claimed_amounts"] = [
+            {"issue": "carpet_cleaning", "amount_gbp": "400.00", "by_party": "landlord"},
+            {"issue": "carpet_cleaning", "amount_gbp": "400.00", "by_party": "tenant"},
+        ]
+        case["disputed_amount_gbp"] = "400.00"
         case["case_size"] = "small"
         gc = GoldCase.model_validate(case)
         assert gc.case_size.value == "small"
+
+
+class TestUnapportionedOutcome:
+    def test_unapportioned_fixture_validates(self):
+        from eval.schema import GoldCase
+        gc = GoldCase.model_validate(_load_unapportioned())
+        assert gc.ground_truth_outcome.unapportioned_reason is not None
+        assert gc.ground_truth_outcome.per_issue == []
+        assert gc.ground_truth_outcome.total_awarded_gbp == Decimal("1100.00")
+
+    def test_unapportioned_round_trip(self):
+        from eval.schema import GoldCase
+        gc = GoldCase.model_validate(_load_unapportioned())
+        again = GoldCase.model_validate(json.loads(gc.model_dump_json()))
+        assert again == gc
+
+    def test_apportioned_path_still_requires_sum_match(self):
+        # Regression: when unapportioned_reason is None, INV-6 still applies
+        from eval.schema import GroundTruthOutcome, IssueOutcome, Winner
+        with pytest.raises(ValidationError):
+            GroundTruthOutcome(
+                overall_winner=Winner.TENANT,
+                total_awarded_gbp=Decimal("100"),
+                per_issue=[
+                    IssueOutcome(
+                        issue="cleaning",
+                        winner=Winner.TENANT,
+                        awarded_gbp=Decimal("60"),
+                    ),
+                ],
+            )
+
+    def test_apportioned_path_requires_non_empty_per_issue(self):
+        # When unapportioned_reason is None, per_issue must be >=1
+        from eval.schema import GroundTruthOutcome, Winner
+        with pytest.raises(ValidationError):
+            GroundTruthOutcome(
+                overall_winner=Winner.TENANT,
+                total_awarded_gbp=Decimal("0"),
+                per_issue=[],
+            )
+
+    def test_unapportioned_with_per_issue_rejected(self):
+        # If you provide an unapportioned_reason you should NOT also provide per_issue
+        from eval.schema import GroundTruthOutcome, IssueOutcome, Winner
+        with pytest.raises(ValidationError, match="unapportioned"):
+            GroundTruthOutcome(
+                overall_winner=Winner.SPLIT,
+                total_awarded_gbp=Decimal("100"),
+                per_issue=[
+                    IssueOutcome(
+                        issue="cleaning",
+                        winner=Winner.TENANT,
+                        awarded_gbp=Decimal("60"),
+                    ),
+                ],
+                unapportioned_reason="Judge declined to break it down.",
+            )
+
+    def test_unapportioned_bypasses_inv5_per_issue_match(self):
+        # When unapportioned, per_issue is empty so INV-5 is vacuously satisfied
+        from eval.schema import GoldCase
+        case = _load_unapportioned()
+        # claimed_amounts has issues that don't appear in per_issue (empty), should still validate
+        gc = GoldCase.model_validate(case)
+        assert len(gc.claimed_amounts) == 2
+        assert gc.ground_truth_outcome.per_issue == []
 
 
 class TestClaimTypesIsList:
