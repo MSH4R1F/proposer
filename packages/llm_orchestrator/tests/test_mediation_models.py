@@ -4,12 +4,12 @@ Tests for the optional reasoning_trace field on MediationMessage.
 
 from datetime import datetime
 
-from packages.llm_orchestrator.agent_loop.trace import (
+from ..agent_loop.trace import (
     TraceStep,
     TraceSummary,
     TraceTerminationReason,
 )
-from packages.llm_orchestrator.models.mediation import MediationMessage
+from ..models.mediation import MediationMessage
 
 
 def _make_trace_summary() -> TraceSummary:

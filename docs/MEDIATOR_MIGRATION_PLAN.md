@@ -13,7 +13,7 @@ Goal order (same as foundation): transparency > autonomy > maintainability.
 **In scope**
 - `MEDIATOR_TOOLS` tool set wrapping `calculate_zopa`, `calculate_counter_range`, `get_cost_benefit` as `@tool` decorators. Pure Python, no LLM calls inside tools.
 - Replace both `MediatorAgent.generate_opening_message(...)` and `MediatorAgent.generate_response(...)` with `AgentLoop.run(...)` calls.
-- Extend `ToolContext` with the per-mediation fields the tools need (`prediction`, `cost_benefit_cache`) so tools pull deterministic facts from context, not from model args.
+- Extend `ToolContext` with the per-mediation fields the tools need (`prediction`) so tools pull deterministic facts from context, not from model args.
 - Extend `MediationMessage` with an optional `reasoning_trace: Optional[TraceSummary]` field. Persisted in the session JSON file alongside the message. Round-trips via the existing `GET /api/mediation/{dispute_id}/messages` endpoint.
 - Frontend: new `MediatorReasoningTrail.tsx` collapsible component, rendered under each `ai_mediator` message bubble.
 - Tests: scripted `AgentTurnClient` drives the new paths; a round-trip test for trace persistence; existing `test_mediation.py` continues to pass (adjusted expectations where trace fields appear).
@@ -40,7 +40,7 @@ Goal order (same as foundation): transparency > autonomy > maintainability.
 
 ## Architecture
 
-```
+```text
 MediationService.start_mediation(...)
     │
     ▼
@@ -139,7 +139,7 @@ The existing `GET /api/mediation/{dispute_id}/messages` returns `MediationMessag
 - `packages/llm_orchestrator/models/mediation.py` — add optional `reasoning_trace` to `MediationMessage`
 - `apps/api/src/services/mediation_service.py` — thread trace into the persisted message
 - `apps/web/lib/types/mediation.ts` — add `reasoning_trace` to message type
-- `apps/web/components/chat/ChatContainer.tsx` (or wherever mediator bubbles render) — render the reasoning trail component
+- `apps/web/components/mediation/MediationMessageBubble.tsx` (where mediator bubbles render) — render the reasoning trail component
 
 **Reused (no change)**
 - `packages/llm_orchestrator/agent_loop/loop.py`, `tool.py`, `trace.py`
@@ -215,7 +215,7 @@ Regression-test the existing `test_mediation.py` suite — any assertion that lo
 - `apps/web/lib/types/trace.ts` — TypeScript mirrors of `TraceStep` / `TraceSummary`.
 - `apps/web/lib/types/mediation.ts` — extend `MediationMessage` with optional `reasoning_trace`.
 - `apps/web/components/mediation/MediatorReasoningTrail.tsx` — collapsible `<details>` panel showing step index, kind, name, duration. Hidden by default.
-- Wire the component into the existing chat bubble renderer (likely `ChatContainer.tsx` or a new `MediatorMessage.tsx`).
+- Wire the component into the existing chat bubble renderer (`apps/web/components/mediation/MediationMessageBubble.tsx`).
 
 Type-check must pass; no new runtime dependencies.
 

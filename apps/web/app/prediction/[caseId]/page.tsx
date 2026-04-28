@@ -177,18 +177,36 @@ export default function PredictionPage({ params }: PredictionPageProps) {
                       console.error('Missing session id; cannot start mediation');
                       return;
                     }
-                    const dispute = await api.get<{
-                      dispute_id: string;
-                      tenant_session_id?: string | null;
-                      landlord_session_id?: string | null;
-                    }>(`/disputes/by-session/${sessionId}`);
-                    const role =
-                      dispute.tenant_session_id === sessionId
-                        ? 'tenant'
-                        : 'landlord';
-                    router.push(
-                      `${ROUTES.MEDIATION_CHAT(dispute.dispute_id)}?session=${sessionId}&role=${role}`
-                    );
+                    try {
+                      const dispute = await api.get<{
+                        dispute_id: string;
+                        tenant_session_id?: string | null;
+                        landlord_session_id?: string | null;
+                      } | null>(`/disputes/by-session/${sessionId}`);
+                      if (!dispute || !dispute.dispute_id) {
+                        console.error(
+                          'No dispute found for session; cannot start mediation'
+                        );
+                        return;
+                      }
+                      let role: 'tenant' | 'landlord' | null = null;
+                      if (dispute.tenant_session_id === sessionId) {
+                        role = 'tenant';
+                      } else if (dispute.landlord_session_id === sessionId) {
+                        role = 'landlord';
+                      }
+                      if (!role) {
+                        console.error(
+                          'Session id matches neither tenant nor landlord on the dispute'
+                        );
+                        return;
+                      }
+                      router.push(
+                        `${ROUTES.MEDIATION_CHAT(dispute.dispute_id)}?session=${sessionId}&role=${role}`
+                      );
+                    } catch (err) {
+                      console.error('Failed to start mediation', err);
+                    }
                   }}
                   className="gap-2"
                 >

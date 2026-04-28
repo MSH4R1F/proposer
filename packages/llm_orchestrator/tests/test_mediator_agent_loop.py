@@ -194,6 +194,10 @@ async def test_generate_opening_message_returns_empty_str_on_max_turns() -> None
     assert final_text == "", "MAX_TURNS path should return empty string"
     assert isinstance(trace, TraceSummary)
     assert looping.call_count == 6  # max_turns=6
+    assert trace.steps, "MAX_TURNS trace should still record the steps it took"
+    assert any(
+        step.name == "calculate_zopa" for step in trace.steps
+    ), "MAX_TURNS trace should record the looping tool dispatch"
 
 
 # ---------------------------------------------------------------------------
