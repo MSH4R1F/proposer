@@ -182,6 +182,7 @@ class PipelineMetadata(BaseModel):
     issues_decomposed: int = 0
     issues_with_sufficient_cases: int = 0
     fallbacks_used: List[str] = Field(default_factory=list)
+    mode: str = "hybrid"  # PredictionMode value — surfaced in trace for SHA-68
 
 
 class PredictionResult(BaseModel):
