@@ -334,6 +334,102 @@ class TestUnapportionedOutcome:
         assert gc.ground_truth_outcome.per_issue == []
 
 
+class TestInv9OverallWinnerConsistency:
+    """INV-9: overall_winner must agree with the per_issue.winner aggregate.
+
+    Skipped on the unapportioned path — there is no per_issue to aggregate.
+    """
+
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def _with_per_issue(self, base: dict, issues: list[dict]) -> dict:
+        case = base.copy()
+        case["claimed_amounts"] = [
+            {"issue": i["issue"], "amount_gbp": "100.00", "by_party": "landlord"}
+            for i in issues
+        ]
+        case["ground_truth_outcome"] = {
+            "overall_winner": case["ground_truth_outcome"]["overall_winner"],
+            "total_awarded_gbp": str(sum(int(i["awarded_gbp"]) for i in issues)) + ".00",
+            "per_issue": issues,
+        }
+        return case
+
+    def test_inv9_all_tenant_implies_overall_tenant_ok(self):
+        from eval.schema import GoldCase
+        case = self._with_per_issue(
+            self._base() | {"ground_truth_outcome": {"overall_winner": "tenant"}},
+            [
+                {"issue": "a", "winner": "tenant", "awarded_gbp": "0"},
+                {"issue": "b", "winner": "tenant", "awarded_gbp": "0"},
+            ],
+        )
+        case["disputed_amount_gbp"] = "200.00"
+        gc = GoldCase.model_validate(case)
+        assert gc.ground_truth_outcome.overall_winner.value == "tenant"
+
+    def test_inv9_all_tenant_but_overall_landlord_rejected(self):
+        from eval.schema import GoldCase
+        case = self._with_per_issue(
+            self._base() | {"ground_truth_outcome": {"overall_winner": "landlord"}},
+            [
+                {"issue": "a", "winner": "tenant", "awarded_gbp": "0"},
+                {"issue": "b", "winner": "tenant", "awarded_gbp": "0"},
+            ],
+        )
+        case["disputed_amount_gbp"] = "200.00"
+        with pytest.raises(ValidationError, match="overall_winner"):
+            GoldCase.model_validate(case)
+
+    def test_inv9_mixed_tenant_landlord_implies_split_ok(self):
+        from eval.schema import GoldCase
+        case = self._with_per_issue(
+            self._base() | {"ground_truth_outcome": {"overall_winner": "split"}},
+            [
+                {"issue": "a", "winner": "tenant", "awarded_gbp": "60"},
+                {"issue": "b", "winner": "landlord", "awarded_gbp": "60"},
+            ],
+        )
+        case["disputed_amount_gbp"] = "200.00"
+        gc = GoldCase.model_validate(case)
+        assert gc.ground_truth_outcome.overall_winner.value == "split"
+
+    def test_inv9_mixed_tenant_landlord_but_overall_tenant_rejected(self):
+        from eval.schema import GoldCase
+        case = self._with_per_issue(
+            self._base() | {"ground_truth_outcome": {"overall_winner": "tenant"}},
+            [
+                {"issue": "a", "winner": "tenant", "awarded_gbp": "60"},
+                {"issue": "b", "winner": "landlord", "awarded_gbp": "60"},
+            ],
+        )
+        case["disputed_amount_gbp"] = "200.00"
+        with pytest.raises(ValidationError, match="overall_winner"):
+            GoldCase.model_validate(case)
+
+    def test_inv9_all_split_implies_overall_split_ok(self):
+        from eval.schema import GoldCase
+        case = self._with_per_issue(
+            self._base() | {"ground_truth_outcome": {"overall_winner": "split"}},
+            [
+                {"issue": "a", "winner": "split", "awarded_gbp": "60"},
+                {"issue": "b", "winner": "split", "awarded_gbp": "60"},
+            ],
+        )
+        case["disputed_amount_gbp"] = "200.00"
+        gc = GoldCase.model_validate(case)
+        assert gc.ground_truth_outcome.overall_winner.value == "split"
+
+    def test_inv9_skipped_on_unapportioned_path(self):
+        # In the unapportioned fixture, overall_winner=split with per_issue=[].
+        # INV-9 is skipped — annotator asserts overall_winner directly.
+        from eval.schema import GoldCase
+        gc = GoldCase.model_validate(_load_unapportioned())
+        assert gc.ground_truth_outcome.overall_winner.value == "split"
+        assert gc.ground_truth_outcome.per_issue == []
+
+
 class TestClaimTypesIsList:
     def _base(self) -> dict:
         return _load_minimal()

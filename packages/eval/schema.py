@@ -197,6 +197,21 @@ class GoldCase(BaseModel):
                     f"ground_truth_outcome refers to issue {io.issue!r} "
                     f"not present in claimed_amounts {sorted(claimed_issues)}"
                 )
+        # INV-9: overall_winner consistent with the per_issue.winner aggregate.
+        # Skipped when the outcome is unapportioned (no per_issue to aggregate against —
+        # the annotator is asserting overall_winner directly, citing unapportioned_reason).
+        if self.ground_truth_outcome.unapportioned_reason is None:
+            winners = {io.winner for io in self.ground_truth_outcome.per_issue}
+            expected_overall = (
+                next(iter(winners)) if len(winners) == 1 else Winner.SPLIT
+            )
+            if self.ground_truth_outcome.overall_winner != expected_overall:
+                raise ValueError(
+                    f"overall_winner {self.ground_truth_outcome.overall_winner.value!r} "
+                    f"inconsistent with per_issue winners "
+                    f"{sorted(w.value for w in winners)} "
+                    f"(expected {expected_overall.value!r})"
+                )
         # INV-7: case_size consistent with the canonical disputed amount
         # (independent of mirrored claim/counterclaim entries in claimed_amounts)
         expected_size = (

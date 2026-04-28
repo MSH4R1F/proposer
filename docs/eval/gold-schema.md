@@ -132,6 +132,7 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
 | INV-6 | `ground_truth_outcome.total_awarded_gbp == sum(per_issue[].awarded_gbp)` exactly, when `unapportioned_reason is None`. When `unapportioned_reason` is set, `per_issue` must be empty and INV-6 is bypassed. | `GroundTruthOutcome` | Catches arithmetic typos at annotation time on the apportioned path; lets unapportioned global awards into the corpus. |
 | INV-7 | `case_size == small` iff `disputed_amount_gbp <= £1500` | `GoldCase` | The 30/70 stratification audit is run from the corpus alone. Defined against the canonical dispute value rather than `sum(claimed_amounts)`, which can double-count mirrored claims. |
 | INV-8 | `Decimal` amounts never negative | `Field(ge=0)` on `ClaimedAmount`, `IssueOutcome`, `GroundTruthOutcome`, `GoldCase.disputed_amount_gbp` | Tribunal awards cannot be negative; negative values are sign errors. |
+| INV-9 | `overall_winner` agrees with the `per_issue.winner` aggregate (apportioned path only). Aggregation rule: if every per-issue winner is the same value V, then `overall_winner == V`; otherwise `overall_winner == split`. Skipped when `unapportioned_reason` is set. | `GoldCase` | Without this, a `winner=tenant` case can validate while every per-issue outcome favours landlord, silently corrupting the headline accuracy label. See [SHA-93](https://linear.app/sharifbuilders/issue/SHA-93). |
 
 ## Canonical example
 
