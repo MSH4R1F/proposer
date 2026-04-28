@@ -37,6 +37,7 @@ class IssuePredictor:
     def __init__(self, llm_client: BaseLLMClient, case_file: Any = None):
         self.llm = llm_client
         self._case_file = case_file
+        self._kg_facts_by_issue: Dict[Any, Any] = {}
 
     async def predict_all(
         self,
@@ -197,6 +198,10 @@ class IssuePredictor:
         evidence_conflicts = self._format_evidence_conflicts(issue)
         timeline_summary = self._format_timeline(issue)
 
+        kg_fact_card = self._format_kg_fact_card(
+            self._kg_facts_by_issue.get(issue.issue_type)
+        )
+
         prompt_kwargs = {
             "issue_type": issue.issue_type.value,
             "issue_description": issue.issue_description,
@@ -212,6 +217,7 @@ class IssuePredictor:
             "kg_constraints": "\n".join(f"- {c}" for c in issue.kg_constraints)
             if issue.kg_constraints
             else "None identified",
+            "kg_fact_card": kg_fact_card,
             "evidence_summary": evidence_summary,
             "evidence_conflicts": evidence_conflicts,
             "timeline_summary": timeline_summary,
@@ -532,6 +538,40 @@ class IssuePredictor:
             return None
         text = str(value).strip()
         return text if text else None
+
+    @staticmethod
+    def _format_kg_fact_card(kg_facts: Any) -> str:
+        """Render the typed KG fact card for the IRAC prompt (SHA-33).
+
+        Returns empty string when kg_facts is None or all-unknown so the
+        prompt is byte-identical to today's for cases without KG signal.
+        """
+        if kg_facts is None:
+            return ""
+        try:
+            if kg_facts.is_empty():
+                return ""
+        except AttributeError:
+            return ""
+
+        lines = ["", "KEY KG FACTS (typed):"]
+        if kg_facts.deposit_protection_status != "unknown":
+            line = f"- deposit_protection_status: {kg_facts.deposit_protection_status}"
+            if getattr(kg_facts, "deposit_scheme", None):
+                line += f" (scheme: {kg_facts.deposit_scheme})"
+            if getattr(kg_facts, "deposit_late_by_days", None) is not None:
+                line += f" (late by {kg_facts.deposit_late_by_days} days)"
+            lines.append(line)
+        if kg_facts.prescribed_information_status != "unknown":
+            line = f"- prescribed_information_status: {kg_facts.prescribed_information_status}"
+            if getattr(kg_facts, "prescribed_late_by_days", None) is not None:
+                line += f" (late by {kg_facts.prescribed_late_by_days} days)"
+            lines.append(line)
+        if kg_facts.check_in_inventory_baseline != "unknown":
+            lines.append(
+                f"- check_in_inventory_baseline: {kg_facts.check_in_inventory_baseline}"
+            )
+        return "\n".join(lines) + "\n"
 
     @staticmethod
     def _build_deposit_protection_summary(tenancy: Any) -> str:

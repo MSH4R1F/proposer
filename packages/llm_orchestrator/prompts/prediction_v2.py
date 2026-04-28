@@ -62,7 +62,7 @@ EVIDENCE CONFLICTS:
 
 KEY FACTS FROM CASE ANALYSIS:
 {kg_constraints}
-
+{kg_fact_card}
 EVIDENCE AVAILABLE:
 {evidence_summary}
 
