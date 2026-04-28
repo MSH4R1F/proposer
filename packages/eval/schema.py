@@ -65,6 +65,22 @@ class StatutoryReference(BaseModel):
     paragraph_ref: Optional[str] = None
 
 
+class Authority(BaseModel):
+    """A case-law authority cited by the tribunal in this decision.
+
+    `cited_date` is the decision date of the *cited* authority (e.g. when
+    the Supreme Court handed down `Howard de Walden Estates Ltd v Aggio`),
+    not the date of the *current* case. The temporal-leakage audit
+    (Phase 2 `dataset.audit()`) consumes this field: a training-set case
+    must not cite any authority dated after the train-window cutoff.
+    """
+
+    name: str = Field(min_length=1)
+    court: Optional[str] = None
+    cited_date: date
+    paragraph_ref: Optional[str] = None
+
+
 class ClaimedAmount(BaseModel):
     issue: str = Field(min_length=1)
     amount_gbp: Decimal = Field(ge=0)
@@ -118,6 +134,7 @@ class GoldCase(BaseModel):
     facts: str = Field(min_length=50)
     evidence: list[Evidence]
     statutory_basis: list[StatutoryReference]
+    cited_authorities: list[Authority] = Field(default_factory=list)
     claimed_amounts: list[ClaimedAmount] = Field(min_length=1)
     ground_truth_outcome: GroundTruthOutcome
     key_reasoning_quotes: list[ReasoningQuote] = Field(min_length=1)

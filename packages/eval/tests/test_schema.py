@@ -261,3 +261,67 @@ class TestClaimTypesIsList:
         case = self._base() | {"claim_types": ["arson"]}
         with pytest.raises(ValidationError, match="claim_types"):
             GoldCase.model_validate(case)
+
+
+class TestAuthority:
+    def test_valid_authority(self):
+        from eval.schema import Authority
+        from datetime import date as _date
+        a = Authority(
+            name="Howard de Walden Estates Ltd v Aggio",
+            court="UKSC",
+            cited_date=_date(2008, 6, 25),
+            paragraph_ref="para 12",
+        )
+        assert a.name.startswith("Howard")
+        assert a.court == "UKSC"
+        assert a.cited_date.year == 2008
+
+    def test_optional_fields_default(self):
+        from eval.schema import Authority
+        from datetime import date as _date
+        a = Authority(name="Anon v Anon", cited_date=_date(2021, 1, 1))
+        assert a.court is None and a.paragraph_ref is None
+
+    def test_empty_name_rejected(self):
+        from eval.schema import Authority
+        from datetime import date as _date
+        with pytest.raises(ValidationError):
+            Authority(name="", cited_date=_date(2021, 1, 1))
+
+
+class TestGoldCaseAuthorities:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_default_cited_authorities_is_empty_list(self):
+        from eval.schema import GoldCase
+        gc = GoldCase.model_validate(self._base())
+        assert gc.cited_authorities == []
+
+    def test_accepts_cited_authorities(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "cited_authorities": [
+                {
+                    "name": "Howard de Walden Estates Ltd v Aggio",
+                    "court": "UKSC",
+                    "cited_date": "2008-06-25",
+                    "paragraph_ref": "para 12",
+                }
+            ]
+        }
+        gc = GoldCase.model_validate(case)
+        assert len(gc.cited_authorities) == 1
+        assert gc.cited_authorities[0].name.startswith("Howard")
+
+    def test_round_trip_with_authorities(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "cited_authorities": [
+                {"name": "Anon v Anon", "cited_date": "2020-03-15"}
+            ]
+        }
+        gc = GoldCase.model_validate(case)
+        again = GoldCase.model_validate(json.loads(gc.model_dump_json()))
+        assert again == gc

@@ -1,5 +1,6 @@
 """Evaluation harness package: gold-set schema, metrics, ablation runner."""
 from eval.schema import (
+    Authority,
     CaseSize,
     ClaimType,
     ClaimedAmount,
@@ -16,6 +17,7 @@ from eval.schema import (
 )
 
 __all__ = [
+    "Authority",
     "CaseSize",
     "ClaimType",
     "ClaimedAmount",
