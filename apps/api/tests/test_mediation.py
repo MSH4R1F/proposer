@@ -152,14 +152,17 @@ async def test_counter_offer(mediation_service):
 @pytest.mark.asyncio
 async def test_get_messages_polling(mediation_service):
     await _start(mediation_service)
-    all_messages = await mediation_service.get_messages(DISPUTE_ID)
-    since_timestamp = all_messages[0]["timestamp"]
+    all_payload = await mediation_service.get_messages(DISPUTE_ID)
+    since_timestamp = all_payload["messages"][0]["timestamp"]
 
     await mediation_service.add_message(DISPUTE_ID, TENANT_SESSION, "Follow-up")
 
     filtered = await mediation_service.get_messages(DISPUTE_ID, since_timestamp)
-    assert len(filtered) >= 1
-    assert all(message["timestamp"] > since_timestamp for message in filtered)
+    assert len(filtered["messages"]) >= 1
+    assert all(
+        message["timestamp"] > since_timestamp for message in filtered["messages"]
+    )
+    assert "offers" in filtered
 
 
 @pytest.mark.asyncio

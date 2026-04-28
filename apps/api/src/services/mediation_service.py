@@ -221,6 +221,7 @@ class MediationService:
             raise ValueError(f"Prediction required before mediation: {dispute_id}")
 
         session = self._mediations.get(dispute_id)
+        is_new_session = session is None
         if not session:
             session = MediationSession(
                 dispute_id=dispute_id, status=MediationStatus.ACTIVE_NEGOTIATION
@@ -233,45 +234,88 @@ class MediationService:
         dispute.start_mediation()
         dispute_service._save_dispute(dispute)
 
-        prediction = self._build_prediction_result(prediction_data, dispute_id)
-        expectation_data_tenant = self._build_expectation_payload(
-            prediction_data=prediction_data,
-            role="tenant",
-        )
-        expectation_data_landlord = self._build_expectation_payload(
-            prediction_data=prediction_data,
-            role="landlord",
-        )
+        # Only generate an opening message for brand-new sessions to avoid
+        # duplicate messages when a party re-opens the chat page.
+        initial_message = None
+        if is_new_session or not session.messages:
+            # Add tenant's position as the first message so the conversation
+            # starts from their perspective before the mediator responds.
+            from apps.api.src.services.intake_service import get_intake_service
+            intake_service = get_intake_service()
+            if dispute.tenant_session_id:
+                tenant_case_file = await intake_service.get_case_file_by_session(
+                    dispute.tenant_session_id
+                )
+                if tenant_case_file:
+                    issues_raw = getattr(tenant_case_file, "issues", None) or []
+                    issues = [
+                        i.issue_type if hasattr(i, "issue_type") else str(i)
+                        for i in issues_raw
+                    ]
+                    tenancy = getattr(tenant_case_file, "tenancy", None)
+                    deposit_amount = getattr(tenancy, "deposit_amount", None) if tenancy else None
+                    deposit = f"£{deposit_amount:.0f}" if deposit_amount else "my deposit"
+                    property_obj = getattr(tenant_case_file, "property", None)
+                    address_value = (
+                        getattr(property_obj, "address", None) if property_obj else None
+                    )
+                    address = address_value or "the property"
+                    issues_str = (
+                        ", ".join(issues) if issues else "deductions from my deposit"
+                    )
+                    tenant_opening = (
+                        f"I want to resolve a dispute over {deposit} for {address}. "
+                        f"The main issues are {issues_str}."
+                    )
+                    session.add_message(
+                        sender_role="tenant",
+                        content=tenant_opening,
+                        message_type=MessageType.TEXT,
+                        metadata={"source": "intake_summary"},
+                    )
 
-        # AgentLoop re-raises on MODEL_ERROR; on MAX_TURNS it returns ("", trace).
-        # Either way, the fallback message below keeps the mediation session valid.
-        trace_summary: Optional[TraceSummary] = None
-        try:
-            initial_content, trace_summary = await self._mediator.generate_opening_message(
-                prediction=prediction,
-                dispute=dispute,
-                expectation_data_tenant=expectation_data_tenant,
-                expectation_data_landlord=expectation_data_landlord,
+        if is_new_session or not session.messages or len(session.messages) <= 1:
+            prediction = self._build_prediction_result(prediction_data, dispute_id)
+            expectation_data_tenant = self._build_expectation_payload(
+                prediction_data=prediction_data,
+                role="tenant",
             )
-        except Exception as e:
-            logger.error(
-                "mediator_opening_generation_failed",
-                dispute_id=dispute_id,
-                error=str(e),
-            )
-            initial_content = (
-                "I can facilitate this negotiation by sharing likely tribunal patterns, "
-                "highlighting realistic settlement ranges, and helping both parties test "
-                "offers against comparable outcomes."
+            expectation_data_landlord = self._build_expectation_payload(
+                prediction_data=prediction_data,
+                role="landlord",
             )
 
-        initial_message = self._add_ai_mediator_message(
-            session=session,
-            content=initial_content,
-            message_type=MessageType.AI_MEDIATOR,
-            metadata={"triggered_by": role},
-            reasoning_trace=trace_summary,
-        )
+            # AgentLoop re-raises on MODEL_ERROR; on MAX_TURNS it returns ("", trace).
+            # Either way, the fallback below keeps the mediation session valid.
+            trace_summary: Optional[TraceSummary] = None
+            try:
+                initial_content, trace_summary = await self._mediator.generate_opening_message(
+                    prediction=prediction,
+                    dispute=dispute,
+                    expectation_data_tenant=expectation_data_tenant,
+                    expectation_data_landlord=expectation_data_landlord,
+                )
+                if not initial_content:
+                    raise RuntimeError("Mediator returned empty opening (likely MAX_TURNS)")
+            except Exception as e:
+                logger.error(
+                    "mediator_opening_generation_failed",
+                    dispute_id=dispute_id,
+                    error=str(e),
+                )
+                initial_content = (
+                    "I can facilitate this negotiation by sharing likely tribunal patterns, "
+                    "highlighting realistic settlement ranges, and helping both parties test "
+                    "offers against comparable outcomes."
+                )
+
+            initial_message = self._add_ai_mediator_message(
+                session=session,
+                content=initial_content,
+                message_type=MessageType.AI_MEDIATOR,
+                metadata={"triggered_by": role},
+                reasoning_trace=trace_summary,
+            )
 
         self._save_session(session)
 
@@ -281,7 +325,7 @@ class MediationService:
             "mediation_id": session.mediation_id,
             "dispute_id": dispute_id,
             "status": session.status.value,
-            "initial_message": initial_message.model_dump(mode="json"),
+            "initial_message": initial_message.model_dump(mode="json") if initial_message else None,
         }
 
     async def get_expectation_data(
@@ -476,16 +520,19 @@ class MediationService:
         self,
         dispute_id: str,
         since_timestamp: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+    ) -> Dict[str, Any]:
         session = self._mediations.get(dispute_id)
         if not session:
-            return []
+            return {"messages": [], "offers": []}
 
         messages = session.messages
         if since_timestamp:
             messages = [m for m in messages if m.timestamp > since_timestamp]
 
-        return [message.model_dump(mode="json") for message in messages]
+        return {
+            "messages": [message.model_dump(mode="json") for message in messages],
+            "offers": [offer.model_dump(mode="json") for offer in session.offers],
+        }
 
     async def settle(self, dispute_id: str, amount: float) -> Dict[str, Any]:
         from apps.api.src.services.dispute_service import get_dispute_service

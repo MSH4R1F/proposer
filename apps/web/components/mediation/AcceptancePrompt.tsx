@@ -11,9 +11,10 @@ import { Handshake, MessageSquare, Loader2 } from 'lucide-react';
 interface AcceptancePromptProps {
   disputeId: string;
   sessionId: string;
+  role: string;
 }
 
-export function AcceptancePrompt({ disputeId, sessionId }: AcceptancePromptProps) {
+export function AcceptancePrompt({ disputeId, sessionId, role }: AcceptancePromptProps) {
   const router = useRouter();
   const [isSettling, setIsSettling] = useState(false);
   const [settleError, setSettleError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export function AcceptancePrompt({ disputeId, sessionId }: AcceptancePromptProps
   };
 
   const handleNegotiate = () => {
-    router.push(ROUTES.MEDIATION_CHAT(disputeId) + '?session=' + sessionId);
+    router.push(ROUTES.MEDIATION_CHAT(disputeId) + '?session=' + sessionId + '&role=' + role);
   };
 
   return (
