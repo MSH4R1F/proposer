@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { usePrediction } from '@/lib/hooks/usePrediction';
 import { predictionsApi } from '@/lib/api/predictions';
+import { api } from '@/lib/api/client';
 import { PredictionCard } from '@/components/prediction/PredictionCard';
 import { PredictionSkeleton } from '@/components/prediction/PredictionSkeleton';
-import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Scale, Sparkles, Brain, AlertTriangle, Info, Handshake } from 'lucide-react';
 import { ROUTES } from '@/lib/constants/routes';
@@ -23,12 +23,25 @@ export default function PredictionPage({ params }: PredictionPageProps) {
   const { caseId } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session') || '';
+  const urlSessionId = searchParams.get('session') || '';
+  const [sessionId, setSessionId] = useState(urlSessionId);
   const { prediction, isLoading, error, generatePrediction, clearError } =
     usePrediction();
 
   const [qualityTier, setQualityTier] = useState<DataQualityTier | null>(null);
   const [missingRecommended, setMissingRecommended] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const key = `proposer:session-for-case:${caseId}`;
+    if (urlSessionId) {
+      window.localStorage.setItem(key, urlSessionId);
+      setSessionId(urlSessionId);
+    } else {
+      const stored = window.localStorage.getItem(key);
+      if (stored) setSessionId(stored);
+    }
+  }, [caseId, urlSessionId]);
 
   useEffect(() => {
     if (caseId && !prediction && !isLoading) {
@@ -159,11 +172,42 @@ export default function PredictionPage({ params }: PredictionPageProps) {
               {/* Proceed to Mediation */}
               <div className="flex justify-center pt-2">
                 <Button
-                  onClick={() =>
-                    router.push(
-                      ROUTES.MEDIATION_EXPECTATION(caseId) + '?session=' + sessionId
-                    )
-                  }
+                  onClick={async () => {
+                    if (!sessionId) {
+                      console.error('Missing session id; cannot start mediation');
+                      return;
+                    }
+                    try {
+                      const dispute = await api.get<{
+                        dispute_id: string;
+                        tenant_session_id?: string | null;
+                        landlord_session_id?: string | null;
+                      } | null>(`/disputes/by-session/${sessionId}`);
+                      if (!dispute || !dispute.dispute_id) {
+                        console.error(
+                          'No dispute found for session; cannot start mediation'
+                        );
+                        return;
+                      }
+                      let role: 'tenant' | 'landlord' | null = null;
+                      if (dispute.tenant_session_id === sessionId) {
+                        role = 'tenant';
+                      } else if (dispute.landlord_session_id === sessionId) {
+                        role = 'landlord';
+                      }
+                      if (!role) {
+                        console.error(
+                          'Session id matches neither tenant nor landlord on the dispute'
+                        );
+                        return;
+                      }
+                      router.push(
+                        `${ROUTES.MEDIATION_CHAT(dispute.dispute_id)}?session=${sessionId}&role=${role}`
+                      );
+                    } catch (err) {
+                      console.error('Failed to start mediation', err);
+                    }
+                  }}
                   className="gap-2"
                 >
                   <Handshake className="h-4 w-4" />

@@ -46,7 +46,12 @@ export function ChatHeader({ stage, completeness, sessionId, caseId }: ChatHeade
         <div className="flex items-center gap-3">
           {caseId && (
             <Button asChild variant="outline" size="sm" className="gap-1.5 h-7 text-xs">
-              <Link href={ROUTES.PREDICTION(caseId)}>
+              <Link
+                href={
+                  ROUTES.PREDICTION(caseId) +
+                  (sessionId ? `?session=${sessionId}` : '')
+                }
+              >
                 <Sparkles className="h-3 w-3" />
                 View Prediction
               </Link>

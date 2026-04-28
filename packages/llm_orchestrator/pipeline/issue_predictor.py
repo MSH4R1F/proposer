@@ -176,23 +176,17 @@ class IssuePredictor:
                 elif getattr(prop, "postcode", None):
                     region = f"postcode {prop.postcode}"
 
-        tenant_claim_text = "Not provided"
-        if issue.tenant_claim:
-            parts = [issue.tenant_claim.description]
-            if issue.tenant_claim.claimed_amount is not None:
-                parts.append(
-                    f"Amount claimed: £{issue.tenant_claim.claimed_amount:.2f}"
-                )
-            tenant_claim_text = "\n".join(parts)
+        tenant_narrative = getattr(cf, "tenant_narrative", None) if cf else None
+        landlord_narrative = getattr(cf, "landlord_narrative", None) if cf else None
 
-        landlord_claim_text = "Not provided"
-        if issue.landlord_claim:
-            parts = [issue.landlord_claim.description]
-            if issue.landlord_claim.claimed_amount is not None:
-                parts.append(
-                    f"Amount claimed: £{issue.landlord_claim.claimed_amount:.2f}"
-                )
-            landlord_claim_text = "\n".join(parts)
+        tenant_claim_text = self._format_party_position(
+            claim=issue.tenant_claim,
+            narrative=tenant_narrative,
+        )
+        landlord_claim_text = self._format_party_position(
+            claim=issue.landlord_claim,
+            narrative=landlord_narrative,
+        )
 
         evidence_conflicts = self._format_evidence_conflicts(issue)
         timeline_summary = self._format_timeline(issue)
@@ -497,6 +491,26 @@ class IssuePredictor:
             rows.append(f"{idx}. [{ev_type}] {str(description)[:300]}{conf_text}")
 
         return "\n".join(rows)
+
+    @staticmethod
+    def _format_party_position(
+        claim: Optional[Any],
+        narrative: Optional[str],
+    ) -> str:
+        parts: List[str] = []
+        if claim is not None:
+            description = getattr(claim, "description", "") or ""
+            if description:
+                parts.append(description)
+            claimed_amount = getattr(claim, "claimed_amount", None)
+            if claimed_amount is not None:
+                parts.append(f"Amount claimed: £{claimed_amount:.2f}")
+        if narrative:
+            trimmed = narrative.strip()
+            if trimmed:
+                label = "Narrative" if parts else "Party narrative (no structured claim filed)"
+                parts.append(f"{label}: {trimmed[:1200]}")
+        return "\n".join(parts) if parts else "Not provided"
 
     @staticmethod
     def _get_value(obj: Any, key: str, default: Any = None) -> Any:
