@@ -132,6 +132,7 @@ class PredictionService:
         self,
         case_id: str,
         include_reasoning: bool = True,
+        mode_override: Optional[PredictionMode] = None,
     ) -> PredictionResult:
         """
         Generate a prediction for a case.
@@ -171,11 +172,24 @@ class PredictionService:
                 # Re-hydrate into PredictionResult
                 return PredictionResult.model_validate(cached)
 
+        # Resolve default mode from config; per-call mode_override beats env var.
+        if mode_override is not None:
+            default_mode = mode_override
+        else:
+            try:
+                default_mode = PredictionMode(config.prediction_mode)
+            except ValueError:
+                logger.warning(
+                    "invalid_prediction_mode_env_falling_back_to_hybrid",
+                    configured=config.prediction_mode,
+                )
+                default_mode = PredictionMode.HYBRID
+
         # Build knowledge graph from (merged or single) case file.
         # No silent fallbacks: if KG construction throws, log structured
         # event and degrade explicitly to RAG_ONLY for this case.
         kg = None
-        mode = PredictionMode.HYBRID
+        mode = default_mode
         try:
             kg = self.graph_builder.build(merged_case_file)
             self.kg_store.save(kg)
