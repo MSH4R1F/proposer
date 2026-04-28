@@ -143,6 +143,7 @@ class PredictionEngineV2:
 
         # ── Step 3: Per-Issue Prediction (parallel LLM calls) ──
         self.issue_predictor._case_file = case_file
+        self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
         issue_predictions = await self.issue_predictor.predict_all(
             issues, retrieval_results
         )
