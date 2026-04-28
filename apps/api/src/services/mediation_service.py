@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 import structlog
 
+from llm_orchestrator.agent_loop.trace import TraceSummary
 from llm_orchestrator.data.tribunal_costs import get_cost_benefit_analysis
 from llm_orchestrator.models.mediation import (
     MediationSession,
@@ -103,14 +104,18 @@ class MediationService:
         message_type: MessageType = MessageType.AI_MEDIATOR,
         metadata: Optional[Dict[str, Any]] = None,
         offer_id: Optional[str] = None,
+        reasoning_trace: Optional[TraceSummary] = None,
     ) -> Any:
-        return session.add_message(
+        msg = session.add_message(
             sender_role="ai_mediator",
             content=self._enforce_legal_disclaimer(content),
             message_type=message_type,
             metadata=metadata,
             offer_id=offer_id,
         )
+        if reasoning_trace is not None:
+            msg.reasoning_trace = reasoning_trace
+        return msg
 
     @staticmethod
     def _coerce_prediction_outcome(raw_outcome: Any) -> str:
@@ -242,20 +247,19 @@ class MediationService:
                     dispute.tenant_session_id
                 )
                 if tenant_case_file:
+                    issues_raw = getattr(tenant_case_file, "issues", None) or []
                     issues = [
                         i.issue_type if hasattr(i, "issue_type") else str(i)
-                        for i in (tenant_case_file.issues or [])
+                        for i in issues_raw
                     ]
-                    deposit = (
-                        f"£{tenant_case_file.tenancy.deposit_amount:.0f}"
-                        if tenant_case_file.tenancy and tenant_case_file.tenancy.deposit_amount
-                        else "my deposit"
+                    tenancy = getattr(tenant_case_file, "tenancy", None)
+                    deposit_amount = getattr(tenancy, "deposit_amount", None) if tenancy else None
+                    deposit = f"£{deposit_amount:.0f}" if deposit_amount else "my deposit"
+                    property_obj = getattr(tenant_case_file, "property", None)
+                    address_value = (
+                        getattr(property_obj, "address", None) if property_obj else None
                     )
-                    address = (
-                        tenant_case_file.property.address
-                        if tenant_case_file.property and tenant_case_file.property.address
-                        else "the property"
-                    )
+                    address = address_value or "the property"
                     issues_str = (
                         ", ".join(issues) if issues else "deductions from my deposit"
                     )
@@ -269,6 +273,7 @@ class MediationService:
                         message_type=MessageType.TEXT,
                         metadata={"source": "intake_summary"},
                     )
+
         if is_new_session or not session.messages or len(session.messages) <= 1:
             prediction = self._build_prediction_result(prediction_data, dispute_id)
             expectation_data_tenant = self._build_expectation_payload(
@@ -280,13 +285,18 @@ class MediationService:
                 role="landlord",
             )
 
+            # AgentLoop re-raises on MODEL_ERROR; on MAX_TURNS it returns ("", trace).
+            # Either way, the fallback below keeps the mediation session valid.
+            trace_summary: Optional[TraceSummary] = None
             try:
-                initial_content = await self._mediator.generate_opening_message(
+                initial_content, trace_summary = await self._mediator.generate_opening_message(
                     prediction=prediction,
                     dispute=dispute,
                     expectation_data_tenant=expectation_data_tenant,
                     expectation_data_landlord=expectation_data_landlord,
                 )
+                if not initial_content:
+                    raise RuntimeError("Mediator returned empty opening (likely MAX_TURNS)")
             except Exception as e:
                 logger.error(
                     "mediator_opening_generation_failed",
@@ -304,6 +314,7 @@ class MediationService:
                 content=initial_content,
                 message_type=MessageType.AI_MEDIATOR,
                 metadata={"triggered_by": role},
+                reasoning_trace=trace_summary,
             )
 
         self._save_session(session)
@@ -369,8 +380,11 @@ class MediationService:
         if latest_offer is None and session.offers:
             latest_offer = session.offers[-1]
 
+        # AgentLoop re-raises on MODEL_ERROR; on MAX_TURNS it returns ("", trace).
+        # Either way, the fallback message below keeps the mediation session valid.
+        trace_summary: Optional[TraceSummary] = None
         try:
-            ai_content = await self._mediator.generate_response(
+            ai_content, trace_summary = await self._mediator.generate_response(
                 messages=session.messages,
                 prediction=prediction,
                 dispute=dispute,
@@ -392,6 +406,7 @@ class MediationService:
             session=session,
             content=ai_content,
             message_type=MessageType.AI_MEDIATOR,
+            reasoning_trace=trace_summary,
         )
 
         self._save_session(session)
@@ -708,23 +723,50 @@ def get_mediation_service() -> MediationService:
 
 
 class _DeterministicMediatorLLM:
-    async def generate(
+    """AgentTurnClient stand-in used when ANTHROPIC_API_KEY is missing.
+
+    Returns a single text block per turn with stop_reason="end_turn" — the
+    fallback never exercises the tool-calling path, which is the right
+    behaviour for an offline local-dev mode (no numbers = no fake numbers).
+    """
+
+    async def run_agent_turn(
         self,
-        messages: List[Dict[str, str]],
+        *,
         system_prompt: str,
-        max_tokens: int = 4096,
-        temperature: float = 0.7,
-    ) -> str:
-        _ = (system_prompt, max_tokens, temperature)
-        prompt = messages[-1]["content"].lower() if messages else ""
-        if "opening mediation message" in prompt:
-            return (
-                "Welcome to mediation. I will share neutral information from similar "
-                "tribunal outcomes, summarize both perspectives, and help identify a "
+        messages: List[Dict[str, Any]],
+        tool_schemas: List[Dict[str, Any]],
+        model: Optional[str] = None,
+        max_tokens: int = 1024,
+    ) -> Any:
+        from llm_orchestrator.agent_loop.loop import AgentTurnResponse
+
+        _ = (system_prompt, tool_schemas, model, max_tokens)
+        prompt = ""
+        if messages:
+            last = messages[-1]
+            content = last.get("content") if isinstance(last, dict) else ""
+            if isinstance(content, str):
+                prompt = content.lower()
+
+        if "new mediation session is starting" in prompt:
+            text = (
+                "This is not legal advice. All information is based on analysis of similar "
+                "tribunal cases. Welcome to mediation — I will share neutral information from "
+                "comparable outcomes, summarise both perspectives, and help identify a "
                 "practical negotiation range."
             )
-        return (
-            "I have noted both positions. Based on comparable tribunal outcomes, it may "
-            "be useful to test the latest offer against the likely settlement range and "
-            "focus on evidence each side can verify."
+        else:
+            text = (
+                "I have noted both positions. Based on comparable tribunal outcomes, it may "
+                "be useful to test the latest offer against the likely settlement range and "
+                "focus on evidence each side can verify."
+            )
+
+        return AgentTurnResponse(
+            content_blocks=[{"type": "text", "text": text}],
+            stop_reason="end_turn",
+            tokens_in=0,
+            tokens_out=0,
+            model_used="deterministic-fallback",
         )

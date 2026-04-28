@@ -14,7 +14,9 @@ interface ChatPageProps {
 function ChatContent({ disputeId }: { disputeId: string }) {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session') || '';
-  const currentRole = searchParams.get('role') || '';
+  const rawRole = searchParams.get('role');
+  const currentRole =
+    rawRole === 'tenant' || rawRole === 'landlord' ? rawRole : '';
 
   const {
     messages,
@@ -28,7 +30,7 @@ function ChatContent({ disputeId }: { disputeId: string }) {
     respondToOffer,
     refresh,
     clearError,
-  } = useMediationChat(disputeId, sessionId);
+  } = useMediationChat(disputeId, sessionId, currentRole);
 
   if (isLoading && messages.length === 0) {
     return (

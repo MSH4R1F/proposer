@@ -1,5 +1,6 @@
 from ..agent_loop.context import ToolContext
 from ..agent_loop.trace import TraceLogger
+from ..models.prediction_v2 import OutcomeType, PredictionResult
 
 
 def test_default_construction_has_none_fields() -> None:
@@ -11,6 +12,7 @@ def test_default_construction_has_none_fields() -> None:
     assert ctx.user_id is None
     assert ctx.session_id is None
     assert ctx.request_id is None
+    assert ctx.prediction is None
 
 
 def test_trace_logger_is_trace_logger_instance() -> None:
@@ -40,3 +42,18 @@ def test_override_fields_hold_values_and_rest_stay_defaulted() -> None:
     assert ctx.request_id is None
     assert ctx.redact_pii is True
     assert isinstance(ctx.trace_logger, TraceLogger)
+    assert ctx.prediction is None
+
+
+def test_prediction_field_holds_value_and_default_is_none() -> None:
+    fake_prediction = PredictionResult(
+        case_id="test-case-001",
+        overall_outcome=OutcomeType.TENANT_WIN,
+        overall_confidence=0.75,
+    )
+
+    ctx_with_pred = ToolContext(prediction=fake_prediction)
+    assert ctx_with_pred.prediction is fake_prediction
+
+    ctx_default = ToolContext()
+    assert ctx_default.prediction is None
