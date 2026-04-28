@@ -23,6 +23,21 @@ class OutcomeType(str, Enum):
     UNCERTAIN = "uncertain"
 
 
+class PredictionMode(str, Enum):
+    """Ablation mode for PredictionEngineV2 (SHA-33).
+
+    HYBRID — KG-aware retrieval + KG fact card in prompt (default production).
+    RAG_ONLY — IssueDecomposer ignores KG; retrieval has no KG filter; no fact card.
+    KG_ONLY — Skip RAG; LLM reasons from KG fact card + kg_constraints alone.
+    LLM_ONLY — Skip both KG and RAG; bare CaseFile prompt (control baseline for SHA-68).
+    """
+
+    RAG_ONLY = "rag_only"
+    KG_ONLY = "kg_only"
+    HYBRID = "hybrid"
+    LLM_ONLY = "llm_only"
+
+
 IssueType = DisputeIssue
 
 
