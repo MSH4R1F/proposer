@@ -146,6 +146,48 @@ async def test_kg_filter_noop_when_kg_facts_empty():
 
 
 @pytest.mark.asyncio
+async def test_empty_kg_hybrid_byte_identical_to_rag_only():
+    """Regression guard: when KGFacts is all-unknown (empty/missing KG),
+    HYBRID mode produces results identical to RAG_ONLY for the same case."""
+    rag_calls = []
+
+    async def fake_retrieve(query, top_k, query_region):
+        rag_calls.append(query)
+        return {
+            "results": _make_results(
+                ("X", 0.8, "some precedent"),
+                ("Y", 0.6, "another precedent"),
+            ),
+            "confidence": 0.7,
+        }
+
+    rag = AsyncMock()
+    rag.retrieve = fake_retrieve
+    retriever = IssueRetriever(rag, min_cases_required=1)
+
+    issue = IssueContext(
+        issue_type=IssueType.DAMAGE,
+        issue_description="damage",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+
+    hybrid = await retriever._retrieve_for_issue(
+        issue, _stub_case_file(), top_k=2,
+        kg_facts=KGFacts(), mode=PredictionMode.HYBRID,
+    )
+    rag_only = await retriever._retrieve_for_issue(
+        issue, _stub_case_file(), top_k=2,
+        kg_facts=KGFacts(), mode=PredictionMode.RAG_ONLY,
+    )
+
+    assert [r["case_reference"] for r in hybrid.results] == \
+           [r["case_reference"] for r in rag_only.results]
+    # No kg_filter_penalty key written when filter is a no-op
+    assert "kg_filter_penalty" not in hybrid.results[0]
+
+
+@pytest.mark.asyncio
 async def test_kg_filter_demotes_inventory_present_chunks_when_baseline_absent():
     """KG says no check-in inventory → precedents praising inventory get demoted."""
     rag = AsyncMock()
