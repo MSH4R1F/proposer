@@ -6,7 +6,7 @@ Wires together: Issue Decomposer → Per-Issue Retrieval → Per-Issue Predictor
 """
 
 import time
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import structlog
 
@@ -22,6 +22,7 @@ from .citation_verifier import CitationVerifier
 from .issue_decomposer import IssueDecomposer
 from .issue_predictor import IssuePredictor
 from .issue_retrieval import IssueRetriever
+from .kg_facts import KGFacts, derive_kg_facts
 from .output_assembler import OutputAssembler
 
 logger = structlog.get_logger()
@@ -106,8 +107,22 @@ class PredictionEngineV2:
                 reason="RAG pipeline not available.",
             )
 
+        # Derive typed KG facts per issue for both retrieval reranking
+        # and (Task 3a) the prompt-side fact card.
+        kg_facts_by_issue: Dict[Any, KGFacts] = {}
+        if (
+            mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
+            and knowledge_graph is not None
+        ):
+            for issue in issues:
+                kg_facts_by_issue[issue.issue_type] = derive_kg_facts(
+                    knowledge_graph, issue.issue_type
+                )
+
         retrieval_results = await self.issue_retriever.retrieve_all(
-            issues, case_file, top_k
+            issues, case_file, top_k,
+            kg_facts_by_issue=kg_facts_by_issue,
+            mode=mode,
         )
         sufficient_count = sum(1 for r in retrieval_results.values() if r.is_sufficient)
         metadata.issues_with_sufficient_cases = sufficient_count
