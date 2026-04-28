@@ -15,6 +15,7 @@ from ..models.case_file import CaseFile
 from ..models.prediction_v2 import (
     IssueOutcome,
     PipelineMetadata,
+    PredictionMode,
     PredictionResult,
 )
 from .citation_verifier import CitationVerifier
@@ -61,17 +62,26 @@ class PredictionEngineV2:
         case_file: CaseFile,
         knowledge_graph: Optional[Any] = None,
         top_k: int = 10,
+        mode: PredictionMode = PredictionMode.HYBRID,
     ) -> PredictionResult:
         start_time = time.time()
-        metadata = PipelineMetadata()
+        metadata = PipelineMetadata(mode=mode.value)
 
         logger.info(
             "prediction_v2_starting",
             case_id=case_file.case_id,
+            mode=mode.value,
+        )
+
+        # KG visibility per mode: only HYBRID and KG_ONLY pass the graph downstream.
+        kg_for_decomposer = (
+            knowledge_graph
+            if mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
+            else None
         )
 
         # ── Step 1: Issue Decomposition (deterministic) ──
-        issues = self.issue_decomposer.decompose(case_file, knowledge_graph)
+        issues = self.issue_decomposer.decompose(case_file, kg_for_decomposer)
         metadata.issues_decomposed = len(issues)
         metadata.steps_executed.append("issue_decomposition")
 
