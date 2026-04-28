@@ -24,6 +24,10 @@ IRAC_JSON_SCHEMA = getattr(_prediction_v2_prompts, "IRAC_JSON_SCHEMA")
 IRAC_SYSTEM_PROMPT = getattr(_prediction_v2_prompts, "IRAC_SYSTEM_PROMPT")
 IRAC_USER_PROMPT = getattr(_prediction_v2_prompts, "IRAC_USER_PROMPT")
 
+_llm_only_prompts = importlib.import_module("llm_orchestrator.prompts.llm_only")
+LLM_ONLY_SYSTEM_PROMPT = getattr(_llm_only_prompts, "LLM_ONLY_SYSTEM_PROMPT")
+LLM_ONLY_USER_PROMPT = getattr(_llm_only_prompts, "LLM_ONLY_USER_PROMPT")
+
 # Optional import for CaseFile — used for richer context if available
 try:
     from ..models.case_file import CaseFile as _CaseFile
@@ -37,6 +41,155 @@ class IssuePredictor:
     def __init__(self, llm_client: BaseLLMClient, case_file: Any = None):
         self.llm = llm_client
         self._case_file = case_file
+        self._kg_facts_by_issue: Dict[Any, Any] = {}
+
+    async def predict_no_rag(
+        self,
+        issues: List[IssueContext],
+        prompt_mode: str = "llm_only",
+    ) -> List[IssuePrediction]:
+        """Predict each issue without RAG (for LLM_ONLY and KG_ONLY modes).
+
+        prompt_mode:
+          - "llm_only": uses LLM_ONLY prompt templates (no precedents, no KG fact card)
+          - "kg_only": uses IRAC prompt with empty retrieved_cases but full KG fact card
+        """
+        results = await asyncio.gather(
+            *[self._predict_issue_no_rag(issue, prompt_mode) for issue in issues],
+            return_exceptions=True,
+        )
+        out: List[IssuePrediction] = []
+        for issue, r in zip(issues, results):
+            if isinstance(r, IssuePrediction):
+                out.append(r)
+            else:
+                out.append(
+                    self._uncertain_prediction(
+                        issue=issue,
+                        reason=f"{prompt_mode} prediction failed: {r!r}",
+                        evidence_strength=self._assess_evidence_strength(issue),
+                        data_impact="LLM call failed in no-RAG mode.",
+                    )
+                )
+        return out
+
+    async def _predict_issue_no_rag(
+        self,
+        issue: IssueContext,
+        prompt_mode: str,
+    ) -> IssuePrediction:
+        """Single-issue predict for LLM_ONLY / KG_ONLY paths."""
+        cf = self._case_file
+        deposit_amount = "unknown"
+        tenancy_duration = "unknown"
+        tenancy_type = "unknown"
+        region = "unknown"
+        if cf is not None:
+            tenancy = getattr(cf, "tenancy", None)
+            prop = getattr(cf, "property", None)
+            if tenancy is not None:
+                if getattr(tenancy, "deposit_amount", None) is not None:
+                    deposit_amount = f"{tenancy.deposit_amount:.2f}"
+                if getattr(tenancy, "start_date", None) and getattr(
+                    tenancy, "end_date", None
+                ):
+                    days = (tenancy.end_date - tenancy.start_date).days
+                    months = round(days / 30.44)
+                    tenancy_duration = f"{months} months ({days} days)"
+                if getattr(tenancy, "tenancy_type", None):
+                    tenancy_type = tenancy.tenancy_type
+            if prop is not None:
+                if getattr(prop, "region", None):
+                    region = prop.region
+
+        claimed_amount = issue.claimed_amount
+        if claimed_amount is None:
+            if issue.landlord_claim and issue.landlord_claim.claimed_amount is not None:
+                claimed_amount = issue.landlord_claim.claimed_amount
+            elif issue.tenant_claim and issue.tenant_claim.claimed_amount is not None:
+                claimed_amount = issue.tenant_claim.claimed_amount
+
+        tenant_claim_text = (
+            issue.tenant_claim.description if issue.tenant_claim else "Not provided"
+        )
+        landlord_claim_text = (
+            issue.landlord_claim.description if issue.landlord_claim else "Not provided"
+        )
+
+        if prompt_mode == "llm_only":
+            user_prompt = LLM_ONLY_USER_PROMPT.format(
+                issue_type=issue.issue_type.value,
+                issue_description=issue.issue_description,
+                deposit_amount=deposit_amount,
+                claimed_amount=f"{claimed_amount:.2f}"
+                if claimed_amount is not None
+                else "unknown",
+                tenancy_duration=tenancy_duration,
+                tenancy_type=tenancy_type,
+                region=region,
+                tenant_claim=tenant_claim_text,
+                landlord_claim=landlord_claim_text,
+            )
+            system_prompt = f"{LLM_ONLY_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+        else:  # kg_only — IRAC prompt with empty retrieved_cases + fact card
+            kg_fact_card = self._format_kg_fact_card(
+                self._kg_facts_by_issue.get(issue.issue_type)
+            )
+            user_prompt = IRAC_USER_PROMPT.format(
+                issue_type=issue.issue_type.value,
+                issue_description=issue.issue_description,
+                deposit_amount=deposit_amount,
+                claimed_amount=f"{claimed_amount:.2f}"
+                if claimed_amount is not None
+                else "unknown",
+                tenancy_duration=tenancy_duration,
+                tenancy_type=tenancy_type,
+                region=region,
+                data_completeness=issue.data_completeness,
+                deposit_protection_summary="See KG fact card below."
+                if kg_fact_card
+                else "No deposit protection details available.",
+                kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
+                if issue.kg_constraints
+                else "None identified",
+                kg_fact_card=kg_fact_card,
+                evidence_summary=self._format_evidence_summary(issue),
+                evidence_conflicts=self._format_evidence_conflicts(issue),
+                timeline_summary=self._format_timeline(issue),
+                retrieved_cases="No retrieved cases in KG_ONLY mode.",
+                num_retrieved_cases=0,
+                tenant_claim=tenant_claim_text,
+                landlord_claim=landlord_claim_text,
+            )
+            system_prompt = f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+
+        try:
+            response = await self.llm.generate(
+                messages=[{"role": "user", "content": user_prompt}],
+                system_prompt=system_prompt,
+                max_tokens=2000,
+                temperature=0.2,
+            )
+            prediction = self._parse_prediction_response(response, issue)
+            # Force-empty citations: no retrieval ran, model must not invent.
+            prediction.supporting_cases = []
+            prediction.issue_type = issue.issue_type
+            if not prediction.issue_description:
+                prediction.issue_description = issue.issue_description
+            return prediction
+        except Exception as exc:
+            logger.error(
+                "no_rag_prediction_llm_error",
+                issue_type=issue.issue_type.value,
+                prompt_mode=prompt_mode,
+                error=str(exc),
+            )
+            return self._uncertain_prediction(
+                issue=issue,
+                reason=f"{prompt_mode} mode LLM call failed.",
+                evidence_strength=self._assess_evidence_strength(issue),
+                data_impact="No-RAG path could not complete model call.",
+            )
 
     async def predict_all(
         self,
@@ -191,6 +344,10 @@ class IssuePredictor:
         evidence_conflicts = self._format_evidence_conflicts(issue)
         timeline_summary = self._format_timeline(issue)
 
+        kg_fact_card = self._format_kg_fact_card(
+            self._kg_facts_by_issue.get(issue.issue_type)
+        )
+
         prompt_kwargs = {
             "issue_type": issue.issue_type.value,
             "issue_description": issue.issue_description,
@@ -206,6 +363,7 @@ class IssuePredictor:
             "kg_constraints": "\n".join(f"- {c}" for c in issue.kg_constraints)
             if issue.kg_constraints
             else "None identified",
+            "kg_fact_card": kg_fact_card,
             "evidence_summary": evidence_summary,
             "evidence_conflicts": evidence_conflicts,
             "timeline_summary": timeline_summary,
@@ -546,6 +704,40 @@ class IssuePredictor:
             return None
         text = str(value).strip()
         return text if text else None
+
+    @staticmethod
+    def _format_kg_fact_card(kg_facts: Any) -> str:
+        """Render the typed KG fact card for the IRAC prompt (SHA-33).
+
+        Returns empty string when kg_facts is None or all-unknown so the
+        prompt is byte-identical to today's for cases without KG signal.
+        """
+        if kg_facts is None:
+            return ""
+        try:
+            if kg_facts.is_empty():
+                return ""
+        except AttributeError:
+            return ""
+
+        lines = ["", "KEY KG FACTS (typed):"]
+        if kg_facts.deposit_protection_status != "unknown":
+            line = f"- deposit_protection_status: {kg_facts.deposit_protection_status}"
+            if getattr(kg_facts, "deposit_scheme", None):
+                line += f" (scheme: {kg_facts.deposit_scheme})"
+            if getattr(kg_facts, "deposit_late_by_days", None) is not None:
+                line += f" (late by {kg_facts.deposit_late_by_days} days)"
+            lines.append(line)
+        if kg_facts.prescribed_information_status != "unknown":
+            line = f"- prescribed_information_status: {kg_facts.prescribed_information_status}"
+            if getattr(kg_facts, "prescribed_late_by_days", None) is not None:
+                line += f" (late by {kg_facts.prescribed_late_by_days} days)"
+            lines.append(line)
+        if kg_facts.check_in_inventory_baseline != "unknown":
+            lines.append(
+                f"- check_in_inventory_baseline: {kg_facts.check_in_inventory_baseline}"
+            )
+        return "\n".join(lines) + "\n"
 
     @staticmethod
     def _build_deposit_protection_summary(tenancy: Any) -> str:

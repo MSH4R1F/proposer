@@ -31,6 +31,21 @@ def normalize_case_ref(ref: str) -> str:
 
 
 class CitationVerifier:
+    @staticmethod
+    def empty_verification() -> VerificationResult:
+        """Vacuously-valid result for modes that don't run retrieval (LLM_ONLY, KG_ONLY).
+
+        Used by SHA-33 ablation paths where there are no retrieved cases to verify
+        citations against, and the prompt forces an empty supporting_cases list.
+        """
+        return VerificationResult(
+            verified_citations=[],
+            removed_citations=[],
+            removal_rate=0.0,
+            needs_reprediction=False,
+            all_citations_valid=True,
+        )
+
     def verify(
         self,
         issue_predictions: List[IssuePrediction],
