@@ -4,7 +4,7 @@
   "decision_date": "2023-06-15",
   "region": "London",
   "case_size": "small",
-  "claim_type": "cleaning",
+  "claim_types": ["cleaning"],
   "source_pdf_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
   "ocr_confidence": 0.92,
   "parties": [

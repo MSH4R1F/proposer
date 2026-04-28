@@ -34,7 +34,7 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `decision_date` | ISO date | Must fall in `2019-01-01 .. 2024-12-31` (PILOT window). |
 | `region` | string | Free text region label, e.g. `"London"`, `"North West"`, `"Wales"`. Used for the 30/70 stratification audit. |
 | `case_size` | enum `CaseSize` | `"small"` if total claimed ≤ £1500, otherwise `"large"`. Cross-validated against `claimed_amounts`. |
-| `claim_type` | enum `ClaimType` | One of `cleaning`, `damages`, `deposit_non_protection`, `disrepair`, `end_of_tenancy`. ≥5 cases per type required at corpus level. |
+| `claim_types` | list of enum `ClaimType`, ≥1 | One or more of `cleaning`, `damages`, `deposit_non_protection`, `disrepair`, `end_of_tenancy`. Multi-type cases are common (a single decision can hit cleaning + damages + disrepair). Stratification target ("≥5 cases per claim type") is computed as: for each type `t`, `t in case.claim_types` for ≥5 cases. See [SHA-92](https://linear.app/sharifbuilders/issue/SHA-92). |
 | `source_pdf_sha256` | string | 64-char lowercase hex — SHA-256 of the source tribunal PDF. Lets reviewers re-fetch and re-OCR independently. |
 | `ocr_confidence` | float ∈ [0,1] or `null` | OCR confidence of the source extraction; `null` when source is text-native. |
 | `parties` | list of `Party` | At least one `tenant` and one `landlord`. `agent` permitted as third role. |
@@ -125,7 +125,7 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
   "decision_date": "2023-06-15",
   "region": "London",
   "case_size": "small",
-  "claim_type": "cleaning",
+  "claim_types": ["cleaning"],
   "source_pdf_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
   "ocr_confidence": 0.92,
   "parties": [
@@ -170,7 +170,7 @@ This is the same JSON committed at `packages/eval/tests/fixtures/gold_case_minim
 ## Known limitations / future work
 
 - `region` is free text. Once we have ≥30 cases we should normalise to a closed enum.
-- `claim_type` is single-valued; a real case can hit multiple types. Phase 4+ may need `list[ClaimType]`.
+<!-- (former `claim_type` single-valued limitation resolved in SHA-92) -->
 - `evidence.kind` is free text — same closed-enum question as `region`.
 - Per-party representation captured as a single bool; reviewer noted that "self-represented but with paid McKenzie friend" is a real category. Defer until corpus shows ≥5 such cases.
 

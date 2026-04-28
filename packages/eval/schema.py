@@ -111,7 +111,7 @@ class GoldCase(BaseModel):
     decision_date: date
     region: str = Field(min_length=1)
     case_size: CaseSize
-    claim_type: ClaimType
+    claim_types: list[ClaimType] = Field(min_length=1)
     source_pdf_sha256: str
     ocr_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
     parties: list[Party] = Field(min_length=2)
