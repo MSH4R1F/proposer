@@ -28,7 +28,7 @@ function ChatContent({ disputeId }: { disputeId: string }) {
     respondToOffer,
     refresh,
     clearError,
-  } = useMediationChat(disputeId, sessionId);
+  } = useMediationChat(disputeId, sessionId, currentRole);
 
   if (isLoading && messages.length === 0) {
     return (
