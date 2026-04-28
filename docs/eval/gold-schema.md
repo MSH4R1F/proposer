@@ -41,6 +41,7 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `facts` | string, ≥50 chars | Plain-English summary of the dispute. |
 | `evidence` | list of `Evidence` | Discrete pieces of evidence relied on by the tribunal. |
 | `statutory_basis` | list of `StatutoryReference` | Statutes cited by the decision. |
+| `cited_authorities` | list of `Authority`, default `[]` | Case-law authorities cited by the tribunal. Empty list permitted (some decisions cite none). Phase 2 `dataset.audit()` uses this for the temporal-leakage check: a training case must not cite an authority decided after the train-window cutoff. See [SHA-90](https://linear.app/sharifbuilders/issue/SHA-90). |
 | `claimed_amounts` | list of `ClaimedAmount`, ≥1 | Each is `(issue, amount_gbp, by_party)`. The `issue` field is a free-text label that **must match** the `issue` on every `IssueOutcome` in `ground_truth_outcome.per_issue` (INV-5). |
 | `ground_truth_outcome` | `GroundTruthOutcome` | The judge's actual decision. |
 | `key_reasoning_quotes` | list of `ReasoningQuote`, ≥1 | Quotes lifted from the decision text. Every quote must carry a `paragraph_ref` so reviewers can locate it in the source PDF. |
@@ -69,6 +70,15 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `statute` | e.g. `"Housing Act 2004"` |
 | `section` | e.g. `"s.213"` |
 | `paragraph_ref` | optional |
+
+### `Authority`
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string, non-empty | e.g. `"Howard de Walden Estates Ltd v Aggio"`. |
+| `court` | string or `null` | e.g. `"UKSC"`, `"EWCA Civ"`, `"FTT(PC)"`. |
+| `cited_date` | ISO date | Decision date of the **cited** authority (not of the current case). Used by the temporal-leakage audit. |
+| `paragraph_ref` | string or `null` | Where in the *current* decision this authority is cited. |
 
 ### `ClaimedAmount`
 
