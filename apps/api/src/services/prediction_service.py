@@ -17,6 +17,7 @@ from llm_orchestrator.config import LLMConfig
 from llm_orchestrator.clients.claude_client import ClaudeClient
 from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
 from llm_orchestrator.models.prediction import PredictionResult
+from llm_orchestrator.models.prediction_v2 import PredictionMode
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
 
 from kg_builder.builders.graph_builder import GraphBuilder
@@ -131,6 +132,7 @@ class PredictionService:
         self,
         case_id: str,
         include_reasoning: bool = True,
+        mode_override: Optional[PredictionMode] = None,
     ) -> PredictionResult:
         """
         Generate a prediction for a case.
@@ -170,23 +172,53 @@ class PredictionService:
                 # Re-hydrate into PredictionResult
                 return PredictionResult.model_validate(cached)
 
-        # Build knowledge graph from (merged or single) case file
-        kg = self.graph_builder.build(merged_case_file)
-        self.kg_store.save(kg)
+        # Resolve default mode from config; per-call mode_override beats env var.
+        if mode_override is not None:
+            default_mode = mode_override
+        else:
+            try:
+                default_mode = PredictionMode(config.prediction_mode)
+            except ValueError:
+                logger.warning(
+                    "invalid_prediction_mode_env_falling_back_to_hybrid",
+                    configured=config.prediction_mode,
+                )
+                default_mode = PredictionMode.HYBRID
+
+        # Build knowledge graph from (merged or single) case file.
+        # No silent fallbacks: if KG construction throws, log structured
+        # event and degrade explicitly to RAG_ONLY for this case.
+        kg = None
+        mode = default_mode
+        try:
+            kg = self.graph_builder.build(merged_case_file)
+            self.kg_store.save(kg)
+        except Exception as e:
+            logger.error(
+                "kg_build_failed_degrading_to_rag_only",
+                case_id=case_id,
+                dispute_id=dispute_id,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
+            mode = PredictionMode.RAG_ONLY
+            kg = None
 
         logger.info(
             "generating_prediction",
             case_id=case_id,
             dispute_id=dispute_id,
             is_merged=dispute_id is not None,
-            kg_nodes=len(kg.nodes),
-            kg_edges=len(kg.edges),
+            mode=mode.value,
+            kg_nodes=len(kg.nodes) if kg else 0,
+            kg_edges=len(kg.edges) if kg else 0,
         )
 
         # Generate prediction
         prediction = await self.prediction_engine.predict(
             case_file=merged_case_file,
             knowledge_graph=kg,
+            mode=mode,
         )
 
         # Tag with dispute metadata so both parties can find it

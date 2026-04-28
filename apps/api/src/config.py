@@ -68,6 +68,12 @@ class APIConfig(BaseModel):
         )
     )
 
+    # Prediction mode (SHA-33 ablation seam — consumed by SHA-32 harness)
+    # Valid values: rag_only / kg_only / hybrid / llm_only
+    prediction_mode: str = Field(
+        default_factory=lambda: os.getenv("PREDICTION_MODE", "hybrid").lower()
+    )
+
     @property
     def langfuse_configured(self) -> bool:
         """True when all three LangFuse credentials are set."""
