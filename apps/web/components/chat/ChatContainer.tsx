@@ -157,8 +157,11 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
   };
 
   const handleGeneratePrediction = () => {
-    if (caseFile?.case_id) {
-      router.push(ROUTES.PREDICTION(caseFile.case_id));
+    if (caseFile?.case_id && dispute?.dispute_id) {
+      const params = new URLSearchParams();
+      params.set('session', currentSessionId || '');
+      params.set('dispute', dispute.dispute_id);
+      router.push(ROUTES.PREDICTION(caseFile.case_id) + '?' + params.toString());
     }
   };
 
@@ -187,6 +190,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
         completeness={completeness}
         sessionId={currentSessionId}
         caseId={caseFile?.case_id}
+        disputeId={dispute?.dispute_id}
       />
 
       {error && (

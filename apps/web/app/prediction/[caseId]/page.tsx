@@ -24,7 +24,9 @@ export default function PredictionPage({ params }: PredictionPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlSessionId = searchParams.get('session') || '';
+  const urlDisputeId = searchParams.get('dispute') || '';
   const [sessionId, setSessionId] = useState(urlSessionId);
+  const [disputeId, setDisputeId] = useState(urlDisputeId);
   const { prediction, isLoading, error, generatePrediction, clearError } =
     usePrediction();
 
@@ -41,7 +43,15 @@ export default function PredictionPage({ params }: PredictionPageProps) {
       const stored = window.localStorage.getItem(key);
       if (stored) setSessionId(stored);
     }
-  }, [caseId, urlSessionId]);
+    const disputeKey = `proposer:dispute-for-case:${caseId}`;
+    if (urlDisputeId) {
+      window.localStorage.setItem(disputeKey, urlDisputeId);
+      setDisputeId(urlDisputeId);
+    } else {
+      const storedDispute = window.localStorage.getItem(disputeKey);
+      if (storedDispute) setDisputeId(storedDispute);
+    }
+  }, [caseId, urlSessionId, urlDisputeId]);
 
   useEffect(() => {
     if (caseId && !prediction && !isLoading) {
@@ -170,49 +180,51 @@ export default function PredictionPage({ params }: PredictionPageProps) {
             <div className="space-y-4">
               <PredictionCard prediction={prediction} />
               {/* Proceed to Mediation */}
-              <div className="flex justify-center pt-2">
-                <Button
-                  onClick={async () => {
-                    if (!sessionId) {
-                      console.error('Missing session id; cannot start mediation');
-                      return;
-                    }
-                    try {
-                      const dispute = await api.get<{
-                        dispute_id: string;
-                        tenant_session_id?: string | null;
-                        landlord_session_id?: string | null;
-                      } | null>(`/disputes/by-session/${sessionId}`);
-                      if (!dispute || !dispute.dispute_id) {
-                        console.error(
-                          'No dispute found for session; cannot start mediation'
+              <div className="flex flex-col items-center gap-3 pt-2">
+                {!sessionId ? (
+                  <div className="w-full max-w-sm">
+                    <Button
+                      disabled
+                      className="w-full gap-2"
+                      title="Session context missing"
+                    >
+                      <Handshake className="h-4 w-4" />
+                      Proceed to Mediation
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      Context missing — return to chat to preserve session
+                    </p>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={async () => {
+                      try {
+                        let resolvedDisputeId = disputeId;
+                        if (!resolvedDisputeId) {
+                          const dispute = await api.get<{
+                            dispute_id: string;
+                          } | null>(`/disputes/by-session/${sessionId}`);
+                          if (!dispute || !dispute.dispute_id) {
+                            console.error(
+                              'No dispute found for session; cannot start mediation'
+                            );
+                            return;
+                          }
+                          resolvedDisputeId = dispute.dispute_id;
+                        }
+                        router.push(
+                          `${ROUTES.MEDIATION_EXPECTATION(resolvedDisputeId)}?session=${sessionId}`
                         );
-                        return;
+                      } catch (err) {
+                        console.error('Failed to start mediation', err);
                       }
-                      let role: 'tenant' | 'landlord' | null = null;
-                      if (dispute.tenant_session_id === sessionId) {
-                        role = 'tenant';
-                      } else if (dispute.landlord_session_id === sessionId) {
-                        role = 'landlord';
-                      }
-                      if (!role) {
-                        console.error(
-                          'Session id matches neither tenant nor landlord on the dispute'
-                        );
-                        return;
-                      }
-                      router.push(
-                        `${ROUTES.MEDIATION_CHAT(dispute.dispute_id)}?session=${sessionId}&role=${role}`
-                      );
-                    } catch (err) {
-                      console.error('Failed to start mediation', err);
-                    }
-                  }}
-                  className="gap-2"
-                >
-                  <Handshake className="h-4 w-4" />
-                  Proceed to Mediation
-                </Button>
+                    }}
+                    className="gap-2"
+                  >
+                    <Handshake className="h-4 w-4" />
+                    Proceed to Mediation
+                  </Button>
+                )}
               </div>
             </div>
           )}

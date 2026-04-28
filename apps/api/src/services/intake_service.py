@@ -449,6 +449,10 @@ class IntakeService:
                 }
             )
 
+        # Ensure missing_info and completeness are up to date before returning
+        conversation.case_file.calculate_completeness()
+        conversation.case_file.get_missing_required_info()
+
         return {
             "session_id": session_id,
             "stage": conversation.current_stage.value,

@@ -34,33 +34,39 @@ export function useMediationChat(
     state.messages,
   ]);
 
-  // Fetch messages. Without `since`, replaces the list (initial load).
-  // With `since`, merges any new messages into the existing list (polling).
+  // Fetch messages and offers. Without `since`, replaces both lists
+  // (initial load / refresh). With `since`, merges any new messages into
+  // the existing list and refreshes the offers list.
   const fetchMessages = useCallback(async (since?: string) => {
     try {
-      const fetched = await mediationApi.getMessages(disputeId, since);
+      const { messages, offers } = await mediationApi.getMessages(
+        disputeId,
+        since
+      );
       setState((prev) => {
         if (since === undefined) {
           return {
             ...prev,
-            messages: fetched,
+            messages,
+            offers,
             lastUpdated: new Date().toISOString(),
             error: null,
           };
         }
         const existingIds = new Set(prev.messages.map((m) => m.id));
-        const additions = fetched.filter((m) => !existingIds.has(m.id));
+        const additions = messages.filter((m) => !existingIds.has(m.id));
         if (additions.length === 0) {
-          return { ...prev, error: null };
+          return { ...prev, offers, error: null };
         }
         return {
           ...prev,
           messages: [...prev.messages, ...additions],
+          offers,
           lastUpdated: new Date().toISOString(),
           error: null,
         };
       });
-      return fetched;
+      return messages;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to fetch messages';
@@ -72,9 +78,12 @@ export function useMediationChat(
     }
   }, [disputeId]);
 
-  // Initialize messages and offers on mount via the session endpoint so that
-  // both arrays are authoritative — message-only fetches lose the offers list
-  // on page reload.
+  // Initialize mediation session and load messages + offers on mount.
+  // startMediation is idempotent for existing sessions, so calling it here
+  // covers the case where the user lands on the chat page before the
+  // expectation step has explicitly started mediation. Then we read the
+  // authoritative state via getSession so both messages and offers arrive
+  // together (message-only fetches lose offers on page reload).
   useEffect(() => {
     if (!disputeId || !sessionId) return;
 
@@ -82,9 +91,13 @@ export function useMediationChat(
     setState((prev) => ({ ...prev, isLoading: true }));
 
     mediationApi
-      .getSession(disputeId)
+      .startMediation(disputeId, sessionId)
+      .catch(() => {
+        // Session may already exist or prediction missing — continue to load anyway
+      })
+      .then(() => mediationApi.getSession(disputeId))
       .then((session) => {
-        if (cancelled) return;
+        if (cancelled || !session) return;
         setState((prev) => ({
           ...prev,
           messages: session.messages ?? [],

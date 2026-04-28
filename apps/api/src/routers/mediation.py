@@ -166,22 +166,23 @@ async def get_messages(
         None, description="ISO timestamp — only return messages after this point"
     ),
     svc: MediationService = Depends(get_mediation_service),
-) -> List[Dict[str, Any]]:
+) -> Dict[str, Any]:
     """
-    Get messages for a mediation session.
+    Get messages and offers for a mediation session.
 
-    Optionally filter by ISO timestamp via the `since` query parameter
-    to poll for new messages only.
+    Optionally filter messages by ISO timestamp via the `since` query parameter
+    to poll for new messages only. Offers are always returned in full.
     """
     logger.debug("get_messages_request", dispute_id=dispute_id, since=since)
     try:
-        messages = await svc.get_messages(dispute_id, since)
+        result = await svc.get_messages(dispute_id, since)
         logger.debug(
             "get_messages_success",
             dispute_id=dispute_id,
-            message_count=len(messages),
+            message_count=len(result["messages"]),
+            offer_count=len(result["offers"]),
         )
-        return messages
+        return result
     except HTTPException:
         raise
     except Exception as e:
