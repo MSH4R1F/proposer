@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,6 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ stage, completeness, sessionId, caseId, disputeId }: ChatHeaderProps) {
-  const searchParams = useSearchParams();
   const percentage = Math.round(completeness * 100);
   
   const buildPredictionUrl = () => {

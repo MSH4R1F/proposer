@@ -64,3 +64,34 @@ def test_parse_prediction_response_falls_back_to_uncertain_on_invalid_payload() 
     assert parsed.outcome == IssueOutcome.UNCERTAIN
     assert parsed.data_completeness_impact == "parse_error"
     assert "Unable to parse" in parsed.reasoning
+
+
+def test_format_party_position_uses_narrative_when_no_structured_claim() -> None:
+    text = IssuePredictor._format_party_position(
+        claim=None,
+        narrative="Tenant rented a 1-bedroom flat in London for 14 months and disputes the cleaning deduction.",
+    )
+
+    assert "Party narrative (no structured claim filed)" in text
+    assert "1-bedroom flat" in text
+
+
+def test_format_party_position_returns_not_provided_when_both_missing() -> None:
+    assert IssuePredictor._format_party_position(claim=None, narrative=None) == "Not provided"
+    assert IssuePredictor._format_party_position(claim=None, narrative="   ") == "Not provided"
+
+
+def test_format_party_position_combines_claim_and_narrative() -> None:
+    class _Claim:
+        description = "Cleaning charge of £250 disputed"
+        claimed_amount = 250.0
+
+    text = IssuePredictor._format_party_position(
+        claim=_Claim(),
+        narrative="Tenant left the property professionally cleaned with receipts.",
+    )
+
+    assert "Cleaning charge of £250 disputed" in text
+    assert "Amount claimed: £250.00" in text
+    assert "Narrative:" in text
+    assert "professionally cleaned" in text

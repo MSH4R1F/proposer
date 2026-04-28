@@ -11,6 +11,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from ..agent_loop.trace import TraceSummary
+
 
 class MediationStatus(str, Enum):
     """Status of the mediation session."""
@@ -50,6 +52,7 @@ class MediationMessage(BaseModel):
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
     metadata: Dict[str, Any] = Field(default_factory=dict)
     offer_id: Optional[str] = None
+    reasoning_trace: Optional[TraceSummary] = None
 
 
 class StructuredOffer(BaseModel):
@@ -94,6 +97,7 @@ class MediationSession(BaseModel):
         message_type: MessageType = MessageType.TEXT,
         offer_id: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        reasoning_trace: Optional[TraceSummary] = None,
     ) -> MediationMessage:
         """Add a message to the session and return it."""
         message = MediationMessage(
@@ -102,6 +106,7 @@ class MediationSession(BaseModel):
             message_type=message_type,
             offer_id=offer_id,
             metadata=metadata or {},
+            reasoning_trace=reasoning_trace,
         )
         self.messages.append(message)
         self.update_timestamp()
