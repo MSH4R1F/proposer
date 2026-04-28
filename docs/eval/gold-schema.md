@@ -1,6 +1,11 @@
 # Gold-Case Schema (`housing_v1`)
 
-> **Status:** Frozen as `v1` once the first reviewer-signed-off case is committed to `data/gold_standard/housing_v1.jsonl`. Any field change after that point requires a `v2` bump and a fresh JSONL file alongside the old one.
+> **Status:** `v1` is **mutable** until both conditions are met:
+>
+> 1. The full Phase 3 pilot batch (10 reviewer-signed-off cases) is committed to `data/gold_standard/housing_v1.jsonl`, AND
+> 2. Every HIGH-severity Codex sparring action item in `.sisyphus/codex/sha-28-schema-2026-04-27.md` is resolved (accepted-and-implemented, or rejected with recorded rationale).
+>
+> Until both conditions hold, `v1` may be edited in place — including breaking field changes — without bumping the version. Once frozen, any field change requires a `v2` bump and a fresh JSONL file alongside the old one. See [SHA-95](https://linear.app/sharifbuilders/issue/SHA-95).
 
 This document describes the Pydantic schema in `packages/eval/schema.py` that backs every gold-standard case used by the evaluation harness. Each annotated case is a single JSON object conforming to `GoldCase`; the corpus is stored as JSONL (one case per line) at `data/gold_standard/housing_v1.jsonl`.
 
@@ -154,8 +159,8 @@ This is the same JSON committed at `packages/eval/tests/fixtures/gold_case_minim
 
 ## Versioning policy
 
-- `v1` is **frozen** the moment the first reviewer-signed-off case is committed to `data/gold_standard/housing_v1.jsonl`.
-- Any field addition, removal, type change, or invariant change after that point requires:
+- `v1` is **mutable until** (a) the full Phase 3 pilot batch (10 cases) is reviewer-signed-off and (b) every HIGH-severity item in `.sisyphus/codex/sha-28-schema-2026-04-27.md` is resolved. Either condition unmet → `v1` may be edited in place without a version bump. See [SHA-95](https://linear.app/sharifbuilders/issue/SHA-95).
+- Once both conditions are met, `v1` is **frozen**. Any field addition, removal, type change, or invariant change after that point requires:
   1. Bump `SchemaVersion` to `v2`, leaving `v1` enum value present for backward-compatible reads.
   2. Create `data/gold_standard/housing_v2.jsonl` (new file; do not mutate `housing_v1.jsonl`).
   3. Provide a migration script under `scripts/eval/migrate_v1_to_v2.py` if the change is mechanical.
