@@ -233,3 +233,31 @@ class TestGoldCaseInvariants:
         case["case_size"] = "small"
         gc = GoldCase.model_validate(case)
         assert gc.case_size.value == "small"
+
+
+class TestClaimTypesIsList:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_claim_types_is_a_list_field(self):
+        from eval.schema import GoldCase, ClaimType
+        gc = GoldCase.model_validate(self._base())
+        assert gc.claim_types == [ClaimType.CLEANING]
+
+    def test_claim_types_accepts_multiple(self):
+        from eval.schema import GoldCase, ClaimType
+        case = self._base() | {"claim_types": ["cleaning", "damages"]}
+        gc = GoldCase.model_validate(case)
+        assert set(gc.claim_types) == {ClaimType.CLEANING, ClaimType.DAMAGES}
+
+    def test_claim_types_rejects_empty_list(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"claim_types": []}
+        with pytest.raises(ValidationError, match="claim_types"):
+            GoldCase.model_validate(case)
+
+    def test_claim_types_rejects_unknown_value(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"claim_types": ["arson"]}
+        with pytest.raises(ValidationError, match="claim_types"):
+            GoldCase.model_validate(case)
