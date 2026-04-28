@@ -97,6 +97,7 @@ class MediationSession(BaseModel):
         message_type: MessageType = MessageType.TEXT,
         offer_id: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        reasoning_trace: Optional[TraceSummary] = None,
     ) -> MediationMessage:
         """Add a message to the session and return it."""
         message = MediationMessage(
@@ -105,6 +106,7 @@ class MediationSession(BaseModel):
             message_type=message_type,
             offer_id=offer_id,
             metadata=metadata or {},
+            reasoning_trace=reasoning_trace,
         )
         self.messages.append(message)
         self.update_timestamp()

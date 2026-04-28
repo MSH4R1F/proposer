@@ -129,11 +129,18 @@ export function useMediationChat(
   const sendMessage = useCallback(
     async (content: string) => {
       if (!disputeId || !sessionId || !content.trim()) return;
+      if (!currentRole) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Cannot send message without a known role.',
+        }));
+        return null;
+      }
 
       const optimisticId = `optimistic-${Date.now()}`;
       const optimisticMessage: MediationMessage = {
         id: optimisticId,
-        sender_role: currentRole || 'tenant',
+        sender_role: currentRole,
         content,
         message_type: 'text',
         timestamp: new Date().toISOString(),
@@ -181,11 +188,18 @@ export function useMediationChat(
   const submitOffer = useCallback(
     async (amount: number) => {
       if (!disputeId || !sessionId) return;
+      if (!currentRole) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Cannot submit offer without a known role.',
+        }));
+        return null;
+      }
 
       const stamp = Date.now();
       const optimisticOfferId = `optimistic-offer-${stamp}`;
       const optimisticMessageId = `optimistic-msg-${stamp}`;
-      const role = currentRole || 'tenant';
+      const role = currentRole;
       const optimisticOffer: StructuredOffer = {
         id: optimisticOfferId,
         amount,
@@ -230,15 +244,19 @@ export function useMediationChat(
         }));
 
         // Pull authoritative messages and offers so the optimistic placeholders
-        // are replaced by the real server records (which carry the real ids and
-        // any AI follow-up).
-        const fresh = await mediationApi.getSession(disputeId);
-        setState((prev) => ({
-          ...prev,
-          messages: fresh.messages ?? [],
-          offers: fresh.offers ?? [],
-          lastUpdated: new Date().toISOString(),
-        }));
+        // are replaced by the real server records. Failures here must NOT
+        // revert the offer that already succeeded — keep the confirmed state.
+        try {
+          const fresh = await mediationApi.getSession(disputeId);
+          setState((prev) => ({
+            ...prev,
+            messages: fresh.messages ?? [],
+            offers: fresh.offers ?? [],
+            lastUpdated: new Date().toISOString(),
+          }));
+        } catch {
+          // Reconciliation failed; the next poll will catch up.
+        }
 
         return offer;
       } catch (error) {

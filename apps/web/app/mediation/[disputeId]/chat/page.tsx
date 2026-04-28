@@ -14,7 +14,9 @@ interface ChatPageProps {
 function ChatContent({ disputeId }: { disputeId: string }) {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session') || '';
-  const currentRole = searchParams.get('role') || '';
+  const rawRole = searchParams.get('role');
+  const currentRole =
+    rawRole === 'tenant' || rawRole === 'landlord' ? rawRole : '';
 
   const {
     messages,

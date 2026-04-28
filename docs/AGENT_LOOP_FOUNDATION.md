@@ -21,8 +21,8 @@ A reusable multi-turn tool-calling loop sits beside the existing
 
 `ClaudeClient.run_agent_turn(...)` is the Anthropic adapter for the loop.
 The existing `generate` / `generate_structured` / `generate_with_tools`
-methods are untouched — nothing in production calls into the agent loop
-yet.
+methods are still in place for non-loop callers; the mediator path now
+goes through `run_agent_turn(...)` (see `feat/mediator-migration`).
 
 A smoke `ToolSet` (`tools/smoke/`: `echo`, `add`) is wired to
 `POST /api/dev/agent-smoke`, mounted only when `config.debug` is true.
