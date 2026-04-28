@@ -100,15 +100,8 @@ class PredictionEngineV2:
             types=[i.issue_type.value for i in issues],
         )
 
-        # ── Step 2: Per-Issue Retrieval (parallel RAG calls) ──
-        if not self.rag:
-            return PredictionResult.create_uncertain(
-                case_id=case_file.case_id,
-                reason="RAG pipeline not available.",
-            )
-
-        # Derive typed KG facts per issue for both retrieval reranking
-        # and (Task 3a) the prompt-side fact card.
+        # Derive typed KG facts per issue (used by both retrieval reranker and
+        # the prompt-side fact card). Empty when KG hidden by mode.
         kg_facts_by_issue: Dict[Any, KGFacts] = {}
         if (
             mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
@@ -118,6 +111,37 @@ class PredictionEngineV2:
                 kg_facts_by_issue[issue.issue_type] = derive_kg_facts(
                     knowledge_graph, issue.issue_type
                 )
+
+        # ── Modes that skip retrieval entirely (LLM_ONLY, KG_ONLY) ──
+        if mode in (PredictionMode.LLM_ONLY, PredictionMode.KG_ONLY):
+            self.issue_predictor._case_file = case_file
+            self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
+            prompt_mode = "llm_only" if mode == PredictionMode.LLM_ONLY else "kg_only"
+            metadata.steps_executed.append(f"{prompt_mode}_path")
+            issue_predictions = await self.issue_predictor.predict_no_rag(
+                issues, prompt_mode=prompt_mode,
+            )
+            metadata.total_llm_calls = sum(
+                1 for ip in issue_predictions
+                if ip.outcome != IssueOutcome.UNCERTAIN
+            )
+            metadata.total_latency_ms = int((time.time() - start_time) * 1000)
+            metadata.steps_executed.append("output_assembly")
+            return self.output_assembler.assemble(
+                case_file=case_file,
+                issues=issues,
+                issue_predictions=issue_predictions,
+                retrieval_results={},
+                verification=CitationVerifier.empty_verification(),
+                pipeline_metadata=metadata,
+            )
+
+        # ── Step 2: Per-Issue Retrieval (parallel RAG calls) ──
+        if not self.rag:
+            return PredictionResult.create_uncertain(
+                case_id=case_file.case_id,
+                reason="RAG pipeline not available.",
+            )
 
         retrieval_results = await self.issue_retriever.retrieve_all(
             issues, case_file, top_k,
