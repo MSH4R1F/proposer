@@ -1,0 +1,71 @@
+{
+  "counts": {
+    "sessions": 240,
+    "disputes": 22,
+    "predictions": 42,
+    "dispute_predictions": 7,
+    "knowledge_graphs": 16,
+    "mediations": 4,
+    "evidence_metadata": 0
+  },
+  "validation_errors": [],
+  "orphans": [],
+  "synthetic_case_ids": [
+    {
+      "file": "predictions/prediction_cf7edfd1-99f.json",
+      "case_id": "merged-7f62e31f-2b1-19bda209-fe1"
+    },
+    {
+      "file": "predictions/prediction_65cb2f77-667.json",
+      "case_id": "merged-8ce0fdec-477-6ae2c487-5b9"
+    },
+    {
+      "file": "predictions/prediction_8bf91c6d-4ad.json",
+      "case_id": "merged-9b767c31-4bc-99eddfaa-d1d"
+    },
+    {
+      "file": "predictions/prediction_85982ab4-f5e.json",
+      "case_id": "merged-3c428321-3f6-42500575-0fc"
+    },
+    {
+      "file": "predictions/prediction_dfad87e2-aeb.json",
+      "case_id": "merged-7f62e31f-2b1-19bda209-fe1"
+    },
+    {
+      "file": "predictions/prediction_56f00405-ec3.json",
+      "case_id": "merged-7cb9f014-35a-43a9271a-f84"
+    },
+    {
+      "file": "predictions/prediction_f3871046-d84.json",
+      "case_id": "merged-4b94d85d-bb6-ce30aa70-49b"
+    },
+    {
+      "file": "predictions/prediction_832d91c3-f62.json",
+      "case_id": "merged-9b767c31-4bc-99eddfaa-d1d"
+    },
+    {
+      "file": "predictions/prediction_bd30d5fc-254.json",
+      "case_id": "merged-3c428321-3f6-42500575-0fc"
+    },
+    {
+      "file": "predictions/prediction_e8afd94e-122.json",
+      "case_id": "merged-8ce0fdec-477-6ae2c487-5b9"
+    },
+    {
+      "file": "predictions/prediction_e6e6b607-ed4.json",
+      "case_id": "merged-9b767c31-4bc-99eddfaa-d1d"
+    },
+    {
+      "file": "predictions/prediction_b5ebdb01-37c.json",
+      "case_id": "merged-7cb9f014-35a-43a9271a-f84"
+    },
+    {
+      "file": "predictions/prediction_85f3a3e3-c97.json",
+      "case_id": "merged-9b767c31-4bc-99eddfaa-d1d"
+    },
+    {
+      "file": "predictions/prediction_a1b3658e-bb6.json",
+      "case_id": "merged-4b94d85d-bb6-ce30aa70-49b"
+    }
+  ]
+}
