@@ -267,6 +267,184 @@ async def commit(
     return counts
 
 
+async def verify(
+    data_dir: Path,
+    sessionmaker: Any,
+    *,
+    report_path: Optional[Path] = None,
+) -> dict[str, Any]:
+    """Read every JSON file and assert round-trip identity vs DB."""
+    report_path = report_path or (data_dir / "_verify_report.jsonl")
+    verified: dict[str, int] = {k: 0 for k in (
+        "sessions", "predictions", "disputes", "dispute_predictions",
+        "knowledge_graphs", "mediations", "evidence_metadata",
+    )}
+    mismatches: list[dict[str, Any]] = []
+
+    from apps.api.src.db.repositories import (
+        DisputesRepo,
+        EvidenceRepo,
+        KnowledgeGraphRepo,
+        MediationsRepo,
+        PredictionsRepo,
+        SessionsRepo,
+    )
+    from apps.api.src.db.models.disputes import DisputeRow
+
+    def _glob(dirname: str) -> list[Path]:
+        sub = data_dir / dirname
+        return sorted(sub.glob("*.json")) if sub.is_dir() else []
+
+    async with sessionmaker() as session:
+        sessions_repo = SessionsRepo(session)
+        predictions_repo = PredictionsRepo(session)
+        disputes_repo = DisputesRepo(session)
+        kg_repo = KnowledgeGraphRepo(session)
+        mediations_repo = MediationsRepo(session)
+        evidence_repo = EvidenceRepo(session)
+
+        def _compare(
+            *,
+            dir_name: str,
+            file_name: str,
+            key: str,
+            src_model: Any,
+            loaded_model: Any,
+        ) -> bool:
+            """Return True and increment verified count when models match.
+
+            Returns False and appends a mismatch entry when they differ.
+            A None loaded_model means the row is missing in the DB.
+            A string loaded_model is treated as a "diff" kind (used to surface
+            deserialization errors from the repo layer without raw PII).
+            """
+            if loaded_model is None:
+                mismatches.append({"dir": dir_name, "file": file_name, "key": key, "kind": "missing"})
+                return False
+            if isinstance(loaded_model, str):
+                # Sentinel: repo raised an exception; string holds kind
+                mismatches.append({"dir": dir_name, "file": file_name, "key": key, "kind": loaded_model})
+                return False
+            if loaded_model.model_dump(mode="json") != src_model.model_dump(mode="json"):
+                mismatches.append({"dir": dir_name, "file": file_name, "key": key, "kind": "diff"})
+                return False
+            return True
+
+        # 1) sessions
+        for f in _glob("sessions"):
+            src = ConversationState.model_validate(_read_json(f))
+            try:
+                loaded = await sessions_repo.get(src.session_id)
+            except Exception:
+                loaded = "diff"  # repo deserialization failed — treat as mismatch
+            if _compare(dir_name="sessions", file_name=f.name, key=src.session_id,
+                        src_model=src, loaded_model=loaded):
+                verified["sessions"] += 1
+                _log_event(report_path, dir="sessions", file=f.name, status="ok", id=src.session_id)
+
+        # 2) predictions
+        for f in _glob("predictions"):
+            src = PredictionResult.model_validate(_read_json(f))
+            try:
+                loaded = await predictions_repo.get(src.prediction_id)
+            except Exception:
+                loaded = "diff"
+            if _compare(dir_name="predictions", file_name=f.name, key=src.prediction_id,
+                        src_model=src, loaded_model=loaded):
+                verified["predictions"] += 1
+                _log_event(report_path, dir="predictions", file=f.name, status="ok", id=src.prediction_id)
+
+        # 3) disputes
+        for f in _glob("disputes"):
+            src = DisputeCase.model_validate(_read_json(f))
+            try:
+                loaded = await disputes_repo.get(src.dispute_id)
+            except Exception:
+                loaded = "diff"
+            if _compare(dir_name="disputes", file_name=f.name, key=src.dispute_id,
+                        src_model=src, loaded_model=loaded):
+                verified["disputes"] += 1
+                _log_event(report_path, dir="disputes", file=f.name, status="ok", id=src.dispute_id)
+
+        # 4) dispute_predictions: check dispute.cached_prediction_id matches mapping
+        for f in _glob("dispute_predictions"):
+            mapping = _read_json(f)
+            did = mapping["dispute_id"]
+            expected_pid = mapping.get("prediction_id")
+            row = await session.get(DisputeRow, did)
+            if row is None:
+                mismatches.append({
+                    "dir": "dispute_predictions", "file": f.name,
+                    "key": did, "kind": "missing_dispute",
+                })
+            elif row.cached_prediction_id != expected_pid:
+                mismatches.append({
+                    "dir": "dispute_predictions", "file": f.name,
+                    "key": did, "kind": "cached_prediction_id_diff",
+                })
+            else:
+                verified["dispute_predictions"] += 1
+                _log_event(report_path, dir="dispute_predictions", file=f.name, status="ok", dispute_id=did)
+
+        # 5) knowledge_graphs
+        for f in _glob("knowledge_graphs"):
+            src_data = _read_json(f)
+            src_kg = deserialize_knowledge_graph(src_data)
+            try:
+                loaded = await kg_repo.get(src_kg.case_id)
+            except Exception:
+                loaded = "diff"
+            if _compare(dir_name="knowledge_graphs", file_name=f.name, key=src_kg.case_id,
+                        src_model=src_kg, loaded_model=loaded):
+                verified["knowledge_graphs"] += 1
+                _log_event(report_path, dir="knowledge_graphs", file=f.name, status="ok", case_id=src_kg.case_id)
+
+        # 6) mediations
+        for f in _glob("mediations"):
+            src = MediationSession.model_validate(_read_json(f))
+            try:
+                loaded = await mediations_repo.get(src.mediation_id)
+            except Exception:
+                loaded = "diff"
+            if _compare(dir_name="mediations", file_name=f.name, key=src.mediation_id,
+                        src_model=src, loaded_model=loaded):
+                verified["mediations"] += 1
+                _log_event(report_path, dir="mediations", file=f.name, status="ok", id=src.mediation_id)
+
+        # 7) evidence_metadata (nested per case_id directory)
+        ev_dir = data_dir / "evidence_metadata"
+        if ev_dir.is_dir():
+            for f in sorted(ev_dir.rglob("*.json")):
+                data = _read_json(f)
+                if "case_id" not in data:
+                    data["case_id"] = f.parent.name
+                if "evidence_id" not in data:
+                    data["evidence_id"] = f.stem
+                src = EvidenceMetadata.model_validate(data)
+                try:
+                    loaded = await evidence_repo.get(src.case_id, src.evidence_id)
+                except Exception:
+                    loaded = "diff"
+                key = f"{src.case_id}/{src.evidence_id}"
+                if _compare(
+                    dir_name="evidence_metadata",
+                    file_name=str(f.relative_to(data_dir)),
+                    key=key,
+                    src_model=src,
+                    loaded_model=loaded,
+                ):
+                    verified["evidence_metadata"] += 1
+                    _log_event(
+                        report_path,
+                        dir="evidence_metadata",
+                        file=str(f.relative_to(data_dir)),
+                        status="ok",
+                        key=key,
+                    )
+
+    return {"verified": verified, "mismatches": mismatches}
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--data-dir", type=Path, required=True)
@@ -305,7 +483,26 @@ def main() -> None:
             asyncio.run(engine.dispose())
         return
 
-    raise NotImplementedError("--verify / --archive-json land in 4.3 / 11.3")
+    if args.verify:
+        import os
+
+        from sqlalchemy.ext.asyncio import async_sessionmaker
+        from apps.api.src.db.engine import create_engine_from_url
+
+        url = args.database_url or os.getenv("DATABASE_URL")
+        if not url:
+            raise SystemExit("--verify requires DATABASE_URL or --database-url")
+        engine = create_engine_from_url(url)
+        sm = async_sessionmaker(engine, expire_on_commit=False)
+        try:
+            report = asyncio.run(verify(args.data_dir, sm))
+            print(json.dumps(report, indent=2))
+            sys.exit(1 if report["mismatches"] else 0)
+        finally:
+            asyncio.run(engine.dispose())
+        return
+
+    raise NotImplementedError("--archive-json lands in 11.3")
 
 
 if __name__ == "__main__":
