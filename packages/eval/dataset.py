@@ -178,4 +178,40 @@ def test(cases: list) -> list:
 
 
 def audit(cases: list) -> AuditReport:
-    raise NotImplementedError
+    """Compute leakage + stratification + region/case-size distribution. Pure.
+
+    No I/O, no side effects — callers decide what to do with the report.
+    `AuditReport.is_clean` is True iff there are no leakage violations and
+    every `ClaimType` has at least `STRATIFICATION_FLOOR` cases (multi-type
+    cases count toward each of their types, per SHA-92).
+    """
+    train_cases = [c for c in cases if c.decision_date <= TRAIN_CUTOFF]
+    test_cases = [c for c in cases if c.decision_date >= TEST_START]
+
+    leakage = _leakage_violations(train_cases)
+
+    type_counts: Counter = Counter()
+    for case in cases:
+        for t in case.claim_types:
+            type_counts[t] += 1
+    understratified = {
+        t: type_counts.get(t, 0)
+        for t in ClaimType
+        if type_counts.get(t, 0) < STRATIFICATION_FLOOR
+    }
+
+    region_dist: dict = {}
+    size_dist: dict = {}
+    for case in cases:
+        region_dist[case.region] = region_dist.get(case.region, 0) + 1
+        size_dist[case.case_size] = size_dist.get(case.case_size, 0) + 1
+
+    return AuditReport(
+        n_cases=len(cases),
+        train_count=len(train_cases),
+        test_count=len(test_cases),
+        leakage_violations=leakage,
+        understratified_types=understratified,
+        region_distribution=region_dist,
+        case_size_distribution=size_dist,
+    )

@@ -229,3 +229,114 @@ class TestSplits:
         # train() returns only train cases (none here); no exception expected
         result = train(cases, strict=True)
         assert result == []
+
+
+class TestAudit:
+    def _build(self, dicts):
+        from eval.schema import GoldCase
+        return [GoldCase.model_validate(d) for d in dicts]
+
+    def test_audit_counts(self):
+        from eval.dataset import audit
+        cases = self._build([
+            gold_case_dict(case_id="A", decision_date="2020-05-01"),
+            gold_case_dict(case_id="B", decision_date="2022-12-31"),
+            gold_case_dict(case_id="C", decision_date="2023-01-01"),
+        ])
+        report = audit(cases)
+        assert report.n_cases == 3
+        assert report.train_count == 2
+        assert report.test_count == 1
+
+    def test_audit_no_leakage_on_clean_corpus(self):
+        from eval.dataset import audit
+        cases = self._build([
+            gold_case_dict(
+                case_id="A",
+                decision_date="2020-05-01",
+                cited_authorities=[
+                    {"name": "Howard v Aggio", "cited_date": "2008-06-25"},
+                ],
+            ),
+        ])
+        assert audit(cases).leakage_violations == []
+
+    def test_audit_reports_leakage(self):
+        from eval.dataset import audit
+        cases = self._build([
+            gold_case_dict(
+                case_id="LEAK",
+                decision_date="2021-04-01",
+                cited_authorities=[
+                    {"name": "Future v Past", "cited_date": "2024-03-01"},
+                ],
+            ),
+        ])
+        report = audit(cases)
+        assert len(report.leakage_violations) == 1
+        v = report.leakage_violations[0]
+        assert v.case_id == "LEAK"
+        assert v.authority_name == "Future v Past"
+
+    def test_audit_understratified_types(self):
+        # 4 cleaning cases; floor is 5 -> cleaning is under-stratified
+        from eval.dataset import audit
+        from eval.schema import ClaimType
+        cases = self._build([
+            gold_case_dict(case_id=f"C{i}", claim_types=["cleaning"])
+            for i in range(4)
+        ])
+        report = audit(cases)
+        assert ClaimType.CLEANING in report.understratified_types
+        assert report.understratified_types[ClaimType.CLEANING] == 4
+        # Other types absent => count 0 => below floor => present too
+        assert ClaimType.DAMAGES in report.understratified_types
+        assert report.understratified_types[ClaimType.DAMAGES] == 0
+
+    def test_audit_multi_type_case_counts_toward_each(self):
+        # 5 cases each tagged [cleaning, damages] -> both at 5; under floor for the rest
+        from eval.dataset import audit
+        from eval.schema import ClaimType
+        cases = self._build([
+            gold_case_dict(case_id=f"M{i}", claim_types=["cleaning", "damages"])
+            for i in range(5)
+        ])
+        report = audit(cases)
+        assert ClaimType.CLEANING not in report.understratified_types
+        assert ClaimType.DAMAGES not in report.understratified_types
+        assert ClaimType.DISREPAIR in report.understratified_types
+
+    def test_audit_distributions(self):
+        from eval.dataset import audit
+        from eval.schema import CaseSize
+        cases = self._build([
+            gold_case_dict(case_id="L1", region="London"),
+            gold_case_dict(case_id="L2", region="London"),
+            gold_case_dict(case_id="W1", region="Wales"),
+        ])
+        report = audit(cases)
+        assert report.region_distribution == {"London": 2, "Wales": 1}
+        assert report.case_size_distribution[CaseSize.SMALL] == 3
+
+    def test_audit_is_clean_when_all_types_at_floor(self):
+        from eval.dataset import audit
+        from eval.schema import ClaimType
+        cases = self._build([
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType
+            for i in range(5)
+        ])
+        report = audit(cases)
+        # Every type has exactly 5; STRATIFICATION_FLOOR is inclusive.
+        assert report.is_clean is True
+
+    def test_audit_empty_corpus(self):
+        from eval.dataset import audit
+        from eval.schema import ClaimType
+        report = audit([])
+        assert report.n_cases == 0
+        assert report.train_count == 0
+        assert report.test_count == 0
+        # Every claim type is "0 cases" — all five are under-stratified.
+        assert set(report.understratified_types) == set(ClaimType)
+        assert report.is_clean is False
