@@ -55,6 +55,25 @@ async def test_prediction_roundtrip_with_children(db_session: AsyncSession) -> N
     loaded = await repo.get(p.prediction_id)
     assert loaded is not None
     assert loaded.model_dump(mode="json") == p.model_dump(mode="json")
+    assert await repo.projection_mismatches(p.prediction_id) == []
+
+
+@pytest.mark.asyncio
+async def test_projection_mismatch_detects_missing_children(db_session: AsyncSession) -> None:
+    from sqlalchemy import delete
+    from apps.api.src.db.models import PredictionIssueRow
+
+    repo = PredictionsRepo(db_session)
+    p = _make_prediction()
+    await repo.save(p)
+    await db_session.commit()
+
+    await db_session.execute(
+        delete(PredictionIssueRow).where(PredictionIssueRow.prediction_id == p.prediction_id)
+    )
+    await db_session.commit()
+
+    assert "prediction_issues" in await repo.projection_mismatches(p.prediction_id)
 
 
 @pytest.mark.asyncio

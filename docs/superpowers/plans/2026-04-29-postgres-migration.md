@@ -41,6 +41,31 @@ These gates must be completed before service cutover begins:
 - API contract: existing case-id-only prediction generation, two-party merged prediction caching, and legal disclaimer/citation behavior remain unchanged.
 - Cutover runbook: write freeze, JSON snapshot, DB snapshot/PITR note, staging rehearsal, verification, rollback drill, and post-cutover reconciliation are explicit stop/go gates.
 
+## Foundation Hardening Addendum - 2026-04-29
+
+The Phase 1-4 implementation was hardened before starting Phase 5-9 runtime cutover work. The foundation now includes:
+
+- Migration CLIs run from a clean shell with direct script execution: `backfill_json_to_postgres.py`, `audit_json_stores.py`, and `dump_postgres_to_json.py`.
+- Backfill is fail-closed: it refuses invalid JSON, FK-orphaned dispute prediction mappings, duplicate source IDs, non-empty target DBs unless `--force-overwrite` is explicit, and writes reports only after commit succeeds.
+- Verify is stronger than payload round-trip: it detects extra DB rows, missing rows, dispute prediction cache drift, prediction cache key drift, and normalized prediction child-table projection drift.
+- Rollback dump writes JSON-store-compatible filenames (`session_*`, `dispute_*`, `prediction_*`, `mediation_<dispute_id>`, `kg_*`) and refuses unsafe path components or non-empty output dirs unless forced.
+- Prediction, KG, mediation, evidence, and dispute-cache projections have schema constraints, FK checks, ordinal preservation, and targeted repository tests.
+- App bootstrap now has a request-scoped `UnitOfWork`, DB-aware `/readyz`, production DB/debug config guards, and a deterministic pytest-postgresql fixture.
+- Frontend prediction display accepts backend `tenant_win`/`landlord_win` outcome aliases everywhere touched by the prediction UI.
+
+Current verification baseline after hardening:
+
+```bash
+make test-api
+make test-db
+python3 -m compileall apps/api/src scripts/migrations packages/llm_orchestrator packages/kg_builder -q
+npm --prefix apps/web run build
+python3 scripts/migrations/backfill_json_to_postgres.py --help
+python3 scripts/migrations/audit_json_stores.py --help
+python3 scripts/migrations/dump_postgres_to_json.py --help
+git diff --check
+```
+
 ---
 
 ## File Layout (locked in this plan)

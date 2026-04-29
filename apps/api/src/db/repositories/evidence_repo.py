@@ -19,8 +19,13 @@ class EvidenceRepo:
         values = dict(
             case_id=metadata.case_id,
             evidence_id=metadata.evidence_id,
-            evidence_type=metadata.evidence_type,
+            evidence_type=(
+                metadata.evidence_type.value
+                if hasattr(metadata.evidence_type, "value")
+                else metadata.evidence_type
+            ),
             file_url=metadata.file_url,
+            storage_path=metadata.storage_path,
             file_name=metadata.file_name,
             file_type=metadata.file_type,
             description=metadata.description,

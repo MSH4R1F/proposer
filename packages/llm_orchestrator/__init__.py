@@ -8,7 +8,14 @@ for the legal mediation system.
 from .config import LLMConfig
 from .models.case_file import CaseFile, PartyRole, DisputeIssue
 from .models.prediction import PredictionResult, OutcomeType, IssueType, IssueOutcome
-from .pipeline.prediction_engine_v2 import PredictionEngineV2
+
+
+def __getattr__(name: str):
+    if name == "PredictionEngineV2":
+        from .pipeline.prediction_engine_v2 import PredictionEngineV2
+
+        return PredictionEngineV2
+    raise AttributeError(name)
 
 __all__ = [
     "LLMConfig",

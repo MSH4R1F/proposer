@@ -1,4 +1,10 @@
-export type OutcomeType = 'tenant_favored' | 'landlord_favored' | 'split' | 'uncertain';
+export type OutcomeType =
+  | 'tenant_win'
+  | 'landlord_win'
+  | 'tenant_favored'
+  | 'landlord_favored'
+  | 'split'
+  | 'uncertain';
 
 export interface Citation {
   case_reference: string;
@@ -8,6 +14,7 @@ export interface Citation {
   quote: string;
   relevance: string;
   similarity_score: number;
+  verified?: boolean;
 }
 
 export interface ReasoningStep {
@@ -22,13 +29,23 @@ export interface ReasoningStep {
 export interface IssuePrediction {
   issue_type: string;
   issue_description?: string;
+  outcome?: 'tenant_wins' | 'landlord_wins' | 'split' | 'uncertain';
   predicted_outcome: OutcomeType;
+  raw_confidence?: number;
   predicted_amount?: number;
   amount_range?: [number, number];
   confidence: number;
   reasoning: string;
   key_factors: string[];
   supporting_cases?: Citation[];
+}
+
+export interface CitationVerification {
+  verified_citations: Citation[];
+  removed_citations: Citation[];
+  removal_rate: number;
+  needs_reprediction: boolean;
+  all_citations_valid: boolean;
 }
 
 export interface PredictionResult {
@@ -54,6 +71,7 @@ export interface PredictionResult {
   model_version?: string;
   rag_confidence?: number;
   retrieval_quality?: string;
+  citation_verification?: CitationVerification;
   disclaimer: string;
 }
 

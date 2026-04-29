@@ -47,3 +47,15 @@ def test_production_requires_tls_database_url(monkeypatch) -> None:
 
     with pytest.raises(ValueError, match="sslmode"):
         APIConfig.from_env()
+
+
+def test_production_rejects_debug(monkeypatch) -> None:
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("DEBUG", "true")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://u:p@db.example.com:5432/proposer?sslmode=require",
+    )
+
+    with pytest.raises(ValueError, match="DEBUG"):
+        APIConfig.from_env()

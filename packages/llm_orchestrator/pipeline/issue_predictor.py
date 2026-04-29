@@ -1,5 +1,4 @@
 import asyncio
-import importlib
 import json
 import math
 import structlog
@@ -16,13 +15,11 @@ from ..models.prediction_v2 import (
     IssueRetrievalResult,
     IssueType,
 )
-
-_prediction_v2_prompts = importlib.import_module(
-    "llm_orchestrator.prompts.prediction_v2"
+from ..prompts.prediction_v2 import (
+    IRAC_JSON_SCHEMA,
+    IRAC_SYSTEM_PROMPT,
+    IRAC_USER_PROMPT,
 )
-IRAC_JSON_SCHEMA = getattr(_prediction_v2_prompts, "IRAC_JSON_SCHEMA")
-IRAC_SYSTEM_PROMPT = getattr(_prediction_v2_prompts, "IRAC_SYSTEM_PROMPT")
-IRAC_USER_PROMPT = getattr(_prediction_v2_prompts, "IRAC_USER_PROMPT")
 
 # Optional import for CaseFile — used for richer context if available
 try:
@@ -42,6 +39,8 @@ class IssuePredictor:
         self,
         issues: List[IssueContext],
         retrieval_results: Dict[IssueType, IssueRetrievalResult],
+        *,
+        case_file: Any = None,
     ) -> List[IssuePrediction]:
         sufficient_issues: List[IssueContext] = []
         uncertain_by_issue: Dict[IssueType, IssuePrediction] = {}
@@ -66,6 +65,12 @@ class IssuePredictor:
             llm_results = await asyncio.gather(
                 *[
                     self._predict_issue(issue, retrieval_results[issue.issue_type])
+                    if case_file is None
+                    else self._predict_issue(
+                        issue,
+                        retrieval_results[issue.issue_type],
+                        case_file=case_file,
+                    )
                     for issue in sufficient_issues
                 ],
                 return_exceptions=True,
@@ -108,6 +113,8 @@ class IssuePredictor:
         self,
         issue: IssueContext,
         retrieval: IssueRetrievalResult,
+        *,
+        case_file: Any = None,
     ) -> IssuePrediction:
         formatted_cases = []
         for i, result in enumerate(retrieval.results[:8], 1):
@@ -144,7 +151,7 @@ class IssuePredictor:
                 else None
             )
 
-        cf = self._case_file
+        cf = case_file if case_file is not None else self._case_file
         deposit_amount = "unknown"
         tenancy_duration = "unknown"
         tenancy_type = "unknown"

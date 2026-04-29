@@ -11,8 +11,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-# Add packages directory to path for when this is run as a module
+# Add repo root and packages directory so direct script execution works.
 _project_root = Path(__file__).parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
 if str(_project_root / "packages") not in sys.path:
     sys.path.insert(0, str(_project_root / "packages"))
 
@@ -37,16 +39,57 @@ VALIDATORS: dict[str, Any] = {
 }
 
 
-def _validate_kg_payload(data: dict[str, Any]) -> None:
+def _validate_kg_payload(data: dict[str, Any]) -> Any:
     kg = deserialize_knowledge_graph(data)
     serialized = serialize_knowledge_graph(kg)
     if len(serialized.get("nodes", [])) != len(data.get("nodes", [])):
         raise ValueError("KG node count changed during polymorphic round-trip")
+    if len(serialized.get("edges", [])) != len(data.get("edges", [])):
+        raise ValueError("KG edge count changed during polymorphic round-trip")
+    return kg
+
+
+def _safe_error(exc: Exception) -> str:
+    """Avoid writing PII-bearing Pydantic input values into migration reports."""
+    return type(exc).__name__
+
+
+def _prepare_evidence_payload(raw: dict[str, Any], path: Path) -> dict[str, Any]:
+    data = dict(raw)
+    path_case_id = path.parent.name
+    path_evidence_id = path.stem
+    if "case_id" not in data:
+        data["case_id"] = path_case_id
+    elif data["case_id"] != path_case_id:
+        raise ValueError("evidence case_id does not match path")
+    if "evidence_id" not in data:
+        data["evidence_id"] = path_evidence_id
+    elif data["evidence_id"] != path_evidence_id:
+        raise ValueError("evidence evidence_id does not match path")
+    return data
 
 
 def dry_run(data_dir: Path) -> dict[str, Any]:
     planned: dict[str, int] = {}
     invalid: list[dict[str, Any]] = []
+    seen: dict[str, dict[str, str]] = {}
+
+    def _track_unique(kind: str, key: Any, file: Path) -> None:
+        if key in (None, ""):
+            return
+        key_str = str(key)
+        bucket = seen.setdefault(kind, {})
+        if key_str in bucket:
+            invalid.append({
+                "dir": "duplicates",
+                "file": str(file),
+                "error": "DuplicateSourceKey",
+                "kind": kind,
+                "key": key_str,
+                "first_file": bucket[key_str],
+            })
+        else:
+            bucket[key_str] = str(file)
 
     def _json_files(dirname: str) -> list[Path]:
         sub = data_dir / dirname
@@ -62,26 +105,66 @@ def dry_run(data_dir: Path) -> dict[str, Any]:
         for f in files:
             try:
                 raw = json.loads(f.read_text())
-                # Derive missing fields for evidence_metadata before validation
                 if d == "evidence_metadata":
-                    if "case_id" not in raw:
-                        raw["case_id"] = f.parent.name
-                    if "evidence_id" not in raw:
-                        raw["evidence_id"] = f.stem
-                model.model_validate(raw)
+                    raw = _prepare_evidence_payload(raw, f)
+                obj = model.model_validate(raw)
+                if d == "sessions":
+                    _track_unique("session_id", obj.session_id, f)
+                    _track_unique("session_case_id", obj.case_file.case_id, f)
+                elif d == "disputes":
+                    _track_unique("dispute_id", obj.dispute_id, f)
+                    _track_unique("invite_code", obj.invite_code, f)
+                elif d == "predictions":
+                    _track_unique("prediction_id", obj.prediction_id, f)
+                elif d == "mediations":
+                    _track_unique("mediation_id", obj.mediation_id, f)
+                    _track_unique("mediation_dispute_id", obj.dispute_id, f)
+                elif d == "evidence_metadata":
+                    _track_unique("evidence_metadata_key", f"{obj.case_id}/{obj.evidence_id}", f)
                 planned[d] += 1
             except Exception as exc:
-                invalid.append({"dir": d, "file": str(f), "error": repr(exc)[:300]})
+                invalid.append({"dir": d, "file": str(f), "error": _safe_error(exc)})
 
     planned["knowledge_graphs"] = 0
     for f in _json_files("knowledge_graphs"):
         try:
-            _validate_kg_payload(json.loads(f.read_text()))
+            kg = _validate_kg_payload(json.loads(f.read_text()))
+            _track_unique("knowledge_graph_case_id", kg.case_id, f)
+            _track_unique("knowledge_graph_graph_id", kg.graph_id, f)
             planned["knowledge_graphs"] += 1
         except Exception as exc:
-            invalid.append({"dir": "knowledge_graphs", "file": str(f), "error": repr(exc)[:300]})
+            invalid.append({"dir": "knowledge_graphs", "file": str(f), "error": _safe_error(exc)})
 
-    planned["dispute_predictions"] = len(_json_files("dispute_predictions"))
+    planned["dispute_predictions"] = 0
+    dispute_ids: set[str] = set()
+    prediction_ids: set[str] = set()
+    for f in _json_files("disputes"):
+        try:
+            did = _read_json(f).get("dispute_id")
+            if did:
+                dispute_ids.add(did)
+        except Exception:
+            pass
+    for f in _json_files("predictions"):
+        try:
+            pid = _read_json(f).get("prediction_id")
+            if pid:
+                prediction_ids.add(pid)
+        except Exception:
+            pass
+    for f in _json_files("dispute_predictions"):
+        try:
+            mapping = _read_json(f)
+            did = mapping["dispute_id"]
+            pid = mapping["prediction_id"]
+            if did not in dispute_ids:
+                raise ValueError("mapping references missing dispute")
+            if pid not in prediction_ids:
+                raise ValueError("mapping references missing prediction")
+            _track_unique("dispute_prediction_dispute_id", did, f)
+            planned["dispute_predictions"] += 1
+        except Exception as exc:
+            invalid.append({"dir": "dispute_predictions", "file": str(f), "error": _safe_error(exc)})
 
     return {"planned": planned, "invalid": invalid}
 
@@ -106,6 +189,7 @@ async def commit(
     sessionmaker: Any,
     *,
     report_path: Optional[Path] = None,
+    allow_overwrite: bool = False,
 ) -> dict[str, int]:
     """Load all JSON entities into Postgres in FK-correct order.
 
@@ -121,6 +205,7 @@ async def commit(
         )
 
     report_path = report_path or (data_dir / "_backfill_report.jsonl")
+    report_events: list[dict[str, Any]] = []
     counts: dict[str, int] = {k: 0 for k in (
         "sessions", "predictions", "disputes", "dispute_predictions",
         "knowledge_graphs", "mediations", "evidence_metadata",
@@ -136,12 +221,38 @@ async def commit(
         PredictionsRepo,
         SessionsRepo,
     )
+    from apps.api.src.db.models import (
+        DisputeRow,
+        EvidenceMetadataRow,
+        KnowledgeGraphRow,
+        MediationSessionRow,
+        PredictionRow,
+        IntakeSessionRow,
+    )
+    from sqlalchemy import func, select
 
     def _glob(dirname: str) -> list[Path]:
         sub = data_dir / dirname
         return sorted(sub.glob("*.json")) if sub.is_dir() else []
 
     async with sessionmaker() as session:
+        if not allow_overwrite:
+            row_classes = (
+                IntakeSessionRow,
+                PredictionRow,
+                DisputeRow,
+                KnowledgeGraphRow,
+                MediationSessionRow,
+                EvidenceMetadataRow,
+            )
+            for row_class in row_classes:
+                count = await session.scalar(select(func.count()).select_from(row_class))
+                if count:
+                    raise BackfillError(
+                        "Target database is not empty; rerun with --force-overwrite "
+                        "only after verifying the source JSON is authoritative"
+                    )
+
         sessions_repo = SessionsRepo(session)
         predictions_repo = PredictionsRepo(session)
         disputes_repo = DisputesRepo(session)
@@ -154,13 +265,12 @@ async def commit(
             state = ConversationState.model_validate(_read_json(f))
             await sessions_repo.save(state)
             counts["sessions"] += 1
-            _log_event(
-                report_path,
+            report_events.append(dict(
                 dir="sessions",
                 file=f.name,
                 status="saved",
                 id=state.session_id,
-            )
+            ))
             log.debug("session saved: %s", state.session_id)
 
         # 2) predictions (with children)
@@ -168,13 +278,12 @@ async def commit(
             p = PredictionResult.model_validate(_read_json(f))
             await predictions_repo.save(p)
             counts["predictions"] += 1
-            _log_event(
-                report_path,
+            report_events.append(dict(
                 dir="predictions",
                 file=f.name,
                 status="saved",
                 id=p.prediction_id,
-            )
+            ))
             log.debug("prediction saved: %s", p.prediction_id)
 
         # 3) disputes (without cached_prediction_id — FK safe)
@@ -182,31 +291,29 @@ async def commit(
             d = DisputeCase.model_validate(_read_json(f))
             await disputes_repo.save(d)
             counts["disputes"] += 1
-            _log_event(
-                report_path,
+            report_events.append(dict(
                 dir="disputes",
                 file=f.name,
                 status="saved",
                 id=d.dispute_id,
-            )
+            ))
             log.debug("dispute saved: %s", d.dispute_id)
 
         # 4) dispute_predictions mappings
         for f in _glob("dispute_predictions"):
             mapping = _read_json(f)
             did = mapping["dispute_id"]
-            pid = mapping.get("prediction_id")
+            pid = mapping["prediction_id"]
             cache_key = mapping.get("cache_key")
             await disputes_repo.set_cached_prediction_id(did, pid, cache_key=cache_key)
             counts["dispute_predictions"] += 1
-            _log_event(
-                report_path,
+            report_events.append(dict(
                 dir="dispute_predictions",
                 file=f.name,
                 status="mapped",
                 dispute_id=did,
                 prediction_id=pid,
-            )
+            ))
             log.debug("dispute_prediction mapped: %s -> %s", did, pid)
 
         # 5) knowledge_graphs
@@ -215,13 +322,12 @@ async def commit(
             kg = deserialize_knowledge_graph(data)
             await kg_repo.save(kg)
             counts["knowledge_graphs"] += 1
-            _log_event(
-                report_path,
+            report_events.append(dict(
                 dir="knowledge_graphs",
                 file=f.name,
                 status="saved",
                 case_id=kg.case_id,
-            )
+            ))
             log.debug("knowledge_graph saved: %s", kg.case_id)
 
         # 6) mediations
@@ -229,41 +335,36 @@ async def commit(
             m = MediationSession.model_validate(_read_json(f))
             await mediations_repo.save(m)
             counts["mediations"] += 1
-            _log_event(
-                report_path,
+            report_events.append(dict(
                 dir="mediations",
                 file=f.name,
                 status="saved",
                 id=m.mediation_id,
-            )
+            ))
             log.debug("mediation saved: %s", m.mediation_id)
 
         # 7) evidence_metadata (nested per case_id)
         ev_dir = data_dir / "evidence_metadata"
         if ev_dir.is_dir():
             for f in sorted(ev_dir.rglob("*.json")):
-                data = _read_json(f)
-                # Derive case_id from parent dir name if absent in the JSON
-                if "case_id" not in data:
-                    data["case_id"] = f.parent.name
-                # Derive evidence_id from filename stem if absent
-                if "evidence_id" not in data:
-                    data["evidence_id"] = f.stem
+                data = _prepare_evidence_payload(_read_json(f), f)
                 em = EvidenceMetadata.model_validate(data)
                 await evidence_repo.save(em)
                 counts["evidence_metadata"] += 1
-                _log_event(
-                    report_path,
+                report_events.append(dict(
                     dir="evidence_metadata",
                     file=str(f.relative_to(data_dir)),
                     status="saved",
                     case_id=em.case_id,
                     evidence_id=em.evidence_id,
-                )
+                ))
                 log.debug("evidence saved: %s/%s", em.case_id, em.evidence_id)
 
         await session.commit()
 
+    for event in report_events:
+        _log_event(report_path, **event)
+    _log_event(report_path, status="committed", counts=counts)
     return counts
 
 
@@ -289,7 +390,15 @@ async def verify(
         PredictionsRepo,
         SessionsRepo,
     )
-    from apps.api.src.db.models.disputes import DisputeRow
+    from apps.api.src.db.models import (
+        DisputeRow,
+        EvidenceMetadataRow,
+        IntakeSessionRow,
+        KnowledgeGraphRow,
+        MediationSessionRow,
+        PredictionRow,
+    )
+    from sqlalchemy import select
 
     def _glob(dirname: str) -> list[Path]:
         sub = data_dir / dirname
@@ -302,6 +411,13 @@ async def verify(
         kg_repo = KnowledgeGraphRepo(session)
         mediations_repo = MediationsRepo(session)
         evidence_repo = EvidenceRepo(session)
+        expected_sessions: set[str] = set()
+        expected_predictions: set[str] = set()
+        expected_disputes: set[str] = set()
+        expected_kgs: set[str] = set()
+        expected_mediations: set[str] = set()
+        expected_evidence: set[tuple[str, str]] = set()
+        expected_dispute_predictions: dict[str, tuple[Optional[str], Optional[str]]] = {}
 
         def _compare(
             *,
@@ -327,12 +443,6 @@ async def verify(
                 return False
             src_dump = src_model.model_dump(mode="json")
             loaded_dump = loaded_model.model_dump(mode="json")
-            if dir_name == "knowledge_graphs":
-                # Postgres has no ORDER BY guarantee; the repo sorts on read but
-                # source JSON files were written before that convention. Normalize
-                # both sides for KG comparison.
-                src_dump = {**src_dump, "nodes": sorted(src_dump.get("nodes") or [], key=lambda n: n.get("node_id", "")), "edges": sorted(src_dump.get("edges") or [], key=lambda e: e.get("edge_id", ""))}
-                loaded_dump = {**loaded_dump, "nodes": sorted(loaded_dump.get("nodes") or [], key=lambda n: n.get("node_id", "")), "edges": sorted(loaded_dump.get("edges") or [], key=lambda e: e.get("edge_id", ""))}
             if loaded_dump != src_dump:
                 mismatches.append({"dir": dir_name, "file": file_name, "key": key, "kind": "diff"})
                 return False
@@ -341,6 +451,7 @@ async def verify(
         # 1) sessions
         for f in _glob("sessions"):
             src = ConversationState.model_validate(_read_json(f))
+            expected_sessions.add(src.session_id)
             try:
                 loaded = await sessions_repo.get(src.session_id)
             except Exception:
@@ -353,18 +464,35 @@ async def verify(
         # 2) predictions
         for f in _glob("predictions"):
             src = PredictionResult.model_validate(_read_json(f))
+            expected_predictions.add(src.prediction_id)
             try:
                 loaded = await predictions_repo.get(src.prediction_id)
             except Exception:
                 loaded = "diff"
-            if _compare(dir_name="predictions", file_name=f.name, key=src.prediction_id,
-                        src_model=src, loaded_model=loaded):
+            if _compare(
+                dir_name="predictions",
+                file_name=f.name,
+                key=src.prediction_id,
+                src_model=src,
+                loaded_model=loaded,
+            ):
+                projection_diffs = await predictions_repo.projection_mismatches(src.prediction_id)
+                if projection_diffs:
+                    mismatches.append({
+                        "dir": "predictions",
+                        "file": f.name,
+                        "key": src.prediction_id,
+                        "kind": "projection_diff",
+                        "projections": projection_diffs,
+                    })
+                    continue
                 verified["predictions"] += 1
                 _log_event(report_path, dir="predictions", file=f.name, status="ok", id=src.prediction_id)
 
         # 3) disputes
         for f in _glob("disputes"):
             src = DisputeCase.model_validate(_read_json(f))
+            expected_disputes.add(src.dispute_id)
             try:
                 loaded = await disputes_repo.get(src.dispute_id)
             except Exception:
@@ -378,7 +506,9 @@ async def verify(
         for f in _glob("dispute_predictions"):
             mapping = _read_json(f)
             did = mapping["dispute_id"]
-            expected_pid = mapping.get("prediction_id")
+            expected_pid = mapping["prediction_id"]
+            expected_cache_key = mapping.get("cache_key")
+            expected_dispute_predictions[did] = (expected_pid, expected_cache_key)
             row = await session.get(DisputeRow, did)
             if row is None:
                 mismatches.append({
@@ -390,6 +520,11 @@ async def verify(
                     "dir": "dispute_predictions", "file": f.name,
                     "key": did, "kind": "cached_prediction_id_diff",
                 })
+            elif row.prediction_cache_key != expected_cache_key:
+                mismatches.append({
+                    "dir": "dispute_predictions", "file": f.name,
+                    "key": did, "kind": "prediction_cache_key_diff",
+                })
             else:
                 verified["dispute_predictions"] += 1
                 _log_event(report_path, dir="dispute_predictions", file=f.name, status="ok", dispute_id=did)
@@ -398,6 +533,7 @@ async def verify(
         for f in _glob("knowledge_graphs"):
             src_data = _read_json(f)
             src_kg = deserialize_knowledge_graph(src_data)
+            expected_kgs.add(src_kg.case_id)
             try:
                 loaded = await kg_repo.get(src_kg.case_id)
             except Exception:
@@ -410,6 +546,7 @@ async def verify(
         # 6) mediations
         for f in _glob("mediations"):
             src = MediationSession.model_validate(_read_json(f))
+            expected_mediations.add(src.mediation_id)
             try:
                 loaded = await mediations_repo.get(src.mediation_id)
             except Exception:
@@ -423,12 +560,9 @@ async def verify(
         ev_dir = data_dir / "evidence_metadata"
         if ev_dir.is_dir():
             for f in sorted(ev_dir.rglob("*.json")):
-                data = _read_json(f)
-                if "case_id" not in data:
-                    data["case_id"] = f.parent.name
-                if "evidence_id" not in data:
-                    data["evidence_id"] = f.stem
+                data = _prepare_evidence_payload(_read_json(f), f)
                 src = EvidenceMetadata.model_validate(data)
+                expected_evidence.add((src.case_id, src.evidence_id))
                 try:
                     loaded = await evidence_repo.get(src.case_id, src.evidence_id)
                 except Exception:
@@ -450,6 +584,54 @@ async def verify(
                         key=key,
                     )
 
+        async def _scalar_set(column: Any) -> set[str]:
+            result = await session.execute(select(column))
+            return {value for (value,) in result.all()}
+
+        extra_checks = [
+            ("sessions", expected_sessions, await _scalar_set(IntakeSessionRow.session_id)),
+            ("predictions", expected_predictions, await _scalar_set(PredictionRow.prediction_id)),
+            ("disputes", expected_disputes, await _scalar_set(DisputeRow.dispute_id)),
+            ("knowledge_graphs", expected_kgs, await _scalar_set(KnowledgeGraphRow.case_id)),
+            ("mediations", expected_mediations, await _scalar_set(MediationSessionRow.mediation_id)),
+        ]
+        for dir_name, source_keys, db_keys in extra_checks:
+            for key in sorted(db_keys - source_keys):
+                mismatches.append({"dir": dir_name, "key": key, "kind": "extra_db_row"})
+
+        evidence_rows = await session.execute(
+            select(EvidenceMetadataRow.case_id, EvidenceMetadataRow.evidence_id)
+        )
+        db_evidence = {(case_id, evidence_id) for case_id, evidence_id in evidence_rows.all()}
+        for case_id, evidence_id in sorted(db_evidence - expected_evidence):
+            mismatches.append({
+                "dir": "evidence_metadata",
+                "key": f"{case_id}/{evidence_id}",
+                "kind": "extra_db_row",
+            })
+
+        cached_rows = await session.execute(
+            select(
+                DisputeRow.dispute_id,
+                DisputeRow.cached_prediction_id,
+                DisputeRow.prediction_cache_key,
+            ).where(DisputeRow.cached_prediction_id.is_not(None))
+        )
+        for dispute_id, prediction_id, cache_key in cached_rows.all():
+            expected = expected_dispute_predictions.get(dispute_id)
+            if expected is None:
+                mismatches.append({
+                    "dir": "dispute_predictions",
+                    "key": dispute_id,
+                    "kind": "extra_db_row",
+                })
+            elif expected != (prediction_id, cache_key):
+                mismatches.append({
+                    "dir": "dispute_predictions",
+                    "key": dispute_id,
+                    "kind": "cache_projection_diff",
+                })
+
     return {"verified": verified, "mismatches": mismatches}
 
 
@@ -461,16 +643,26 @@ def main() -> None:
     p.add_argument("--verify", action="store_true")
     p.add_argument("--archive-json", action="store_true")
     p.add_argument(
+        "--force-overwrite",
+        action="store_true",
+        help="allow commit into a non-empty target DB after manual verification",
+    )
+    p.add_argument(
         "--database-url",
         type=str,
         default=None,
         help="override DATABASE_URL env var",
     )
     args = p.parse_args()
+    modes = [args.dry_run, args.commit, args.verify, args.archive_json]
+    if sum(bool(m) for m in modes) != 1:
+        raise SystemExit("choose exactly one of --dry-run, --commit, --verify, --archive-json")
 
     if args.dry_run:
         report = dry_run(args.data_dir)
         print(json.dumps(report, indent=2))
+        if report["invalid"]:
+            sys.exit(1)
         return
 
     if args.commit:
@@ -485,7 +677,9 @@ def main() -> None:
         engine = create_engine_from_url(url)
         sm = async_sessionmaker(engine, expire_on_commit=False)
         try:
-            counts = asyncio.run(commit(args.data_dir, sm))
+            counts = asyncio.run(
+                commit(args.data_dir, sm, allow_overwrite=args.force_overwrite)
+            )
             print(json.dumps({"committed": counts}, indent=2))
         finally:
             asyncio.run(engine.dispose())
@@ -510,7 +704,7 @@ def main() -> None:
             asyncio.run(engine.dispose())
         return
 
-    raise NotImplementedError("--archive-json lands in 11.3")
+    raise SystemExit("--archive-json is intentionally disabled until post-verify archival lands")
 
 
 if __name__ == "__main__":

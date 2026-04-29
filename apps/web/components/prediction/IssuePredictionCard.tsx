@@ -4,19 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatIssueType, formatOutcome, formatCurrency } from '@/lib/utils/formatters';
 import { ConfidenceGauge } from './ConfidenceGauge';
 import { CitationCard } from './CitationCard';
-import type { IssuePrediction } from '@/lib/types/prediction';
+import type { IssuePrediction, OutcomeType } from '@/lib/types/prediction';
 
 interface IssuePredictionCardProps {
   prediction: IssuePrediction;
   className?: string;
 }
 
-const outcomeColors = {
+const outcomeColors: Record<OutcomeType, string> = {
+  tenant_win: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
   tenant_favored: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
+  landlord_win: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
   landlord_favored: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
   split: 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950',
   uncertain: 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950',
 };
+
+const isTenantFavored = (outcome: OutcomeType) =>
+  outcome === 'tenant_favored' || outcome === 'tenant_win';
+
+const isLandlordFavored = (outcome: OutcomeType) =>
+  outcome === 'landlord_favored' || outcome === 'landlord_win';
 
 export function IssuePredictionCard({
   prediction,
@@ -43,9 +51,9 @@ export function IssuePredictionCard({
         <div className="flex items-center justify-between">
           <Badge
             variant={
-              prediction.predicted_outcome === 'tenant_favored'
+              isTenantFavored(prediction.predicted_outcome)
                 ? 'success'
-                : prediction.predicted_outcome === 'landlord_favored'
+                : isLandlordFavored(prediction.predicted_outcome)
                 ? 'destructive'
                 : 'secondary'
             }

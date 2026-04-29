@@ -84,12 +84,13 @@ class KnowledgeGraphRepo:
         await self._s.execute(delete(KGEdgeRow).where(KGEdgeRow.case_id == kg.case_id))
         await self._s.execute(delete(KGNodeRow).where(KGNodeRow.case_id == kg.case_id))
 
-        for node in kg.nodes:
+        for i, node in enumerate(kg.nodes):
             d = serialize_node(node)
             type_str = node.node_type.value if hasattr(node.node_type, "value") else node.node_type
             self._s.add(KGNodeRow(
                 case_id=kg.case_id,
                 node_id=node.node_id,
+                ordinal=i,
                 node_type=type_str,
                 confidence=float(node.confidence),
                 source=node.source,
@@ -104,11 +105,12 @@ class KnowledgeGraphRepo:
         # Flush nodes before inserting edges so FK constraints are satisfied.
         await self._s.flush()
 
-        for edge in kg.edges:
+        for i, edge in enumerate(kg.edges):
             d = edge.model_dump(mode="json")
             self._s.add(KGEdgeRow(
                 case_id=kg.case_id,
                 edge_id=edge.edge_id,
+                ordinal=i,
                 edge_type=edge.edge_type.value,
                 source_node_id=edge.source_node_id,
                 target_node_id=edge.target_node_id,
@@ -129,9 +131,8 @@ class KnowledgeGraphRepo:
         edges_q = await self._s.execute(
             select(KGEdgeRow).where(KGEdgeRow.case_id == case_id)
         )
-        # Sort by ID for deterministic round-trip ordering.
-        node_rows = sorted(nodes_q.scalars(), key=lambda n: n.node_id)
-        edge_rows = sorted(edges_q.scalars(), key=lambda e: e.edge_id)
+        node_rows = sorted(nodes_q.scalars(), key=lambda n: n.ordinal)
+        edge_rows = sorted(edges_q.scalars(), key=lambda e: e.ordinal)
         kg_dict = dict(row.payload)
         kg_dict["nodes"] = [n.node_data for n in node_rows]
         kg_dict["edges"] = [e.payload for e in edge_rows]

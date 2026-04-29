@@ -17,6 +17,7 @@ class EvidenceMetadataRow(Base):
     evidence_id: Mapped[str] = mapped_column(String, primary_key=True)
     evidence_type: Mapped[str] = mapped_column(evidence_type_enum, nullable=False)
     file_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    storage_path: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     file_name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     file_type: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

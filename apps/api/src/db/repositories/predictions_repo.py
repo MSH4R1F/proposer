@@ -89,7 +89,7 @@ class PredictionsRepo:
                 cd = c.model_dump(mode="json")
                 self._s.add(PredictionCitationRow(
                     prediction_id=p.prediction_id, reasoning_step_id=None,
-                    citation_source="issue_supporting_case", ordinal=j,
+                    issue_ordinal=i, citation_source="issue_supporting_case", ordinal=j,
                     case_reference=c.case_reference, year=c.year, region=c.region,
                     paragraph=c.paragraph, quote=c.quote, relevance=c.relevance,
                     similarity_score=c.similarity_score, verified=c.verified,
@@ -120,7 +120,7 @@ class PredictionsRepo:
         verified = (payload.get("citation_verification") or {}).get("verified_citations") or []
         for j, vc in enumerate(verified):
             self._s.add(PredictionCitationRow(
-                prediction_id=p.prediction_id, reasoning_step_id=None,
+                prediction_id=p.prediction_id, reasoning_step_id=None, issue_ordinal=None,
                 citation_source="verified", ordinal=j,
                 case_reference=vc.get("case_reference"), year=vc.get("year"),
                 region=vc.get("region"), paragraph=vc.get("paragraph"),
@@ -128,6 +128,18 @@ class PredictionsRepo:
                 similarity_score=vc.get("similarity_score"),
                 verified=vc.get("verified", True),
                 payload=vc,
+            ))
+        removed = (payload.get("citation_verification") or {}).get("removed_citations") or []
+        for j, rc in enumerate(removed):
+            self._s.add(PredictionCitationRow(
+                prediction_id=p.prediction_id, reasoning_step_id=None, issue_ordinal=None,
+                citation_source="removed", ordinal=j,
+                case_reference=rc.get("case_reference"), year=rc.get("year"),
+                region=rc.get("region"), paragraph=rc.get("paragraph"),
+                quote=rc.get("quote"), relevance=rc.get("relevance"),
+                similarity_score=rc.get("similarity_score"),
+                verified=rc.get("verified", False),
+                payload=rc,
             ))
 
     async def get(self, prediction_id: str) -> Optional[PredictionResult]:
@@ -139,6 +151,80 @@ class PredictionsRepo:
             select(PredictionRow).where(PredictionRow.case_id == case_id)
         )
         return [PredictionResult.model_validate(r.payload) for r in result.scalars()]
+
+    async def projection_mismatches(self, prediction_id: str) -> list[str]:
+        """Return projection mismatches against the canonical prediction payload."""
+        row = await self._s.get(PredictionRow, prediction_id)
+        if row is None:
+            return ["missing_prediction"]
+        prediction = PredictionResult.model_validate(row.payload)
+        mismatches: list[str] = []
+
+        issues_q = await self._s.execute(
+            select(PredictionIssueRow)
+            .where(PredictionIssueRow.prediction_id == prediction_id)
+            .order_by(PredictionIssueRow.ordinal)
+        )
+        issue_rows = list(issues_q.scalars())
+        expected_issues = [i.model_dump(mode="json") for i in prediction.issue_predictions]
+        if [r.payload for r in issue_rows] != expected_issues:
+            mismatches.append("prediction_issues")
+
+        steps_q = await self._s.execute(
+            select(PredictionReasoningStepRow)
+            .where(PredictionReasoningStepRow.prediction_id == prediction_id)
+            .order_by(PredictionReasoningStepRow.ordinal)
+        )
+        step_rows = list(steps_q.scalars())
+        step_ordinal_by_id = {r.id: r.ordinal for r in step_rows}
+        expected_steps = [s.model_dump(mode="json") for s in prediction.reasoning_trace]
+        if [r.payload for r in step_rows] != expected_steps:
+            mismatches.append("prediction_reasoning_steps")
+
+        citations_q = await self._s.execute(
+            select(PredictionCitationRow)
+            .where(PredictionCitationRow.prediction_id == prediction_id)
+            .order_by(
+                PredictionCitationRow.citation_source,
+                PredictionCitationRow.issue_ordinal,
+                PredictionCitationRow.ordinal,
+            )
+        )
+        citation_rows = list(citations_q.scalars())
+        expected: list[tuple[str, Optional[int], int, dict]] = []
+        for i, issue in enumerate(prediction.issue_predictions):
+            for j, citation in enumerate(issue.supporting_cases or []):
+                expected.append((
+                    "issue_supporting_case",
+                    i,
+                    j,
+                    citation.model_dump(mode="json"),
+                ))
+        for i, step in enumerate(prediction.reasoning_trace):
+            for j, citation in enumerate(step.citations or []):
+                expected.append(("reasoning", i, j, citation.model_dump(mode="json")))
+        verification = prediction.citation_verification
+        if verification is not None:
+            for j, citation in enumerate(verification.verified_citations or []):
+                expected.append(("verified", None, j, citation.model_dump(mode="json")))
+            for j, citation in enumerate(verification.removed_citations or []):
+                expected.append(("removed", None, j, citation.model_dump(mode="json")))
+        actual = [
+            (
+                r.citation_source,
+                step_ordinal_by_id.get(r.reasoning_step_id)
+                if r.citation_source == "reasoning"
+                else r.issue_ordinal,
+                r.ordinal,
+                r.payload,
+            )
+            for r in citation_rows
+        ]
+        if sorted(actual, key=lambda x: (x[0], x[1] if x[1] is not None else -1, x[2])) != sorted(
+            expected, key=lambda x: (x[0], x[1] if x[1] is not None else -1, x[2])
+        ):
+            mismatches.append("prediction_citations")
+        return mismatches
 
     async def delete(self, prediction_id: str) -> None:
         row = await self._s.get(PredictionRow, prediction_id)

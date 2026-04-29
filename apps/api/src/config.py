@@ -70,8 +70,13 @@ class APIConfig(BaseModel):
     def validate_database_url_for_environment(self) -> "APIConfig":
         if self.app_env != "production":
             return self
-        raw = os.getenv("DATABASE_URL")
-        if not raw:
+        if self.debug:
+            raise ValueError("DEBUG must be false in production")
+        raw = os.getenv("DATABASE_URL") or self.database_url
+        if (
+            not os.getenv("DATABASE_URL")
+            and raw == "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer"
+        ):
             raise ValueError("DATABASE_URL is required in production")
         host = (urlparse(raw).hostname or "").lower()
         if host in {"localhost", "127.0.0.1", "::1", "0.0.0.0"} or "proposer-dev" in raw:
