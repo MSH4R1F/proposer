@@ -107,3 +107,82 @@ async def async_client():
     async_client_cls = cast(Any, AsyncClient)
     async with async_client_cls(app=app, base_url="http://test") as client:
         yield client
+
+
+# --- DB fixtures (Task 3.0) ---
+import subprocess
+import os
+import uuid
+from typing import AsyncIterator
+
+from pytest_postgresql import factories
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
+
+# Use a session-scoped Postgres process started by pytest-postgresql.
+postgresql_proc = factories.postgresql_proc(port=None, unixsocketdir="/tmp")
+
+
+def _admin_url(postgresql_proc) -> str:
+    return (
+        f"postgresql://{postgresql_proc.user}:@"
+        f"{postgresql_proc.host}:{postgresql_proc.port}/postgres"
+    )
+
+
+def _async_url_for_db(postgresql_proc, db_name: str) -> str:
+    return (
+        f"postgresql+asyncpg://{postgresql_proc.user}:@"
+        f"{postgresql_proc.host}:{postgresql_proc.port}/{db_name}"
+    )
+
+
+@pytest.fixture(scope="session")
+def _migrated_template(postgresql_proc):
+    """Create a template DB and run Alembic against it once per session."""
+    import psycopg
+
+    template_name = f"proposer_template_{uuid.uuid4().hex[:8]}"
+    admin_url = _admin_url(postgresql_proc)
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"DROP DATABASE IF EXISTS {template_name}")
+        conn.execute(f"CREATE DATABASE {template_name}")
+
+    template_url = _async_url_for_db(postgresql_proc, template_name)
+    env = {**os.environ, "DATABASE_URL": template_url}
+    # parents[3] is repo root: this conftest lives at apps/api/tests/conftest.py
+    # so parents[0]=tests, [1]=api, [2]=apps, [3]=repo root.
+    subprocess.run(
+        ["alembic", "-c", "alembic.ini", "upgrade", "head"],
+        check=True, env=env, cwd=Path(__file__).resolve().parents[3],
+    )
+    yield template_name
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"DROP DATABASE IF EXISTS {template_name} WITH (FORCE)")
+
+
+@pytest_asyncio.fixture
+async def db_sessionmaker(postgresql_proc, _migrated_template):
+    """One isolated migrated database/sessionmaker per test."""
+    import psycopg
+
+    db_name = f"proposer_test_{uuid.uuid4().hex[:12]}"
+    admin_url = _admin_url(postgresql_proc)
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"CREATE DATABASE {db_name} TEMPLATE {_migrated_template}")
+
+    url = _async_url_for_db(postgresql_proc, db_name)
+    engine = create_async_engine(url, poolclass=NullPool, future=True)
+    sm = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    yield sm
+    await engine.dispose()
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"DROP DATABASE IF EXISTS {db_name} WITH (FORCE)")
+
+
+@pytest_asyncio.fixture
+async def db_session(db_sessionmaker) -> AsyncIterator[AsyncSession]:
+    """One AsyncSession from the per-test DB."""
+    async with db_sessionmaker() as session:
+        yield session
+        await session.rollback()
