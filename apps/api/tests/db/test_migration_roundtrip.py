@@ -33,11 +33,11 @@ def test_alembic_upgrade_then_downgrade_is_clean(postgresql_proc) -> None:
         conn.execute(f"CREATE DATABASE {db_name}")
 
     env = {**os.environ, "DATABASE_URL": _async_url_for_db(postgresql_proc, db_name)}
-    cwd = Path(__file__).resolve().parents[3]
+    cwd = Path(__file__).resolve().parents[4]
     try:
         subprocess.run(["alembic", "-c", "alembic.ini", "upgrade", "head"],
                        check=True, env=env, cwd=cwd)
-        with psycopg.connect(admin_url.replace("/postgres", f"/{db_name}")) as conn:
+        with psycopg.connect(admin_url.rsplit("/", 1)[0] + "/" + db_name) as conn:
             constraint = conn.execute(
                 "SELECT conname FROM pg_constraint WHERE conname = 'ck_kg_nodes_confidence_range'"
             ).fetchone()
