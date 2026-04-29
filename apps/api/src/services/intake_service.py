@@ -8,6 +8,7 @@ Persistence is routed through a UnitOfWork backed by Postgres (Phase 6.1).
 from typing import Any, Dict, List, Optional
 
 import structlog
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from llm_orchestrator.config import LLMConfig
@@ -15,6 +16,7 @@ from llm_orchestrator.clients.claude_client import ClaudeClient
 from llm_orchestrator.agents.intake_agent import IntakeAgent
 from llm_orchestrator.models.case_file import CaseFile, PartyRole
 from llm_orchestrator.models.conversation import ConversationState
+from llm_orchestrator.models.dispute import DisputeCase, DisputeStatus, generate_invite_code
 
 from apps.api.src.db.uow import UnitOfWork
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
@@ -114,6 +116,150 @@ class IntakeService:
         )
 
         return greeting, conversation.session_id, conversation.current_stage.value
+
+    async def start_session_with_dispute(
+        self,
+        *,
+        role: str,
+        invite_code: Optional[str] = None,
+        create_dispute: bool = False,
+        property_address: Optional[str] = None,
+        property_postcode: Optional[str] = None,
+        deposit_amount: Optional[float] = None,
+    ) -> "tuple[str, ConversationState, Optional[DisputeCase]]":
+        """Start a session AND create/join its dispute in one transaction.
+
+        Returns (greeting, conversation_state, dispute_or_none).
+
+        Atomic: if the dispute write fails, the session write is rolled back too.
+        The LLM call happens BEFORE the transaction; inside the transaction we do
+        only DB work.
+
+        When invite_code is provided and the join fails (code not found, or slot
+        taken), the session write is still committed and (greeting, state, None)
+        is returned — the caller decides how to surface the failure.
+        """
+        logger.debug(
+            "starting_session_with_dispute",
+            role=role,
+            has_invite_code=bool(invite_code),
+            create_dispute=create_dispute,
+        )
+
+        user_role = PartyRole(role) if role else None
+
+        # LLM call — OUTSIDE any transaction
+        greeting, conversation = await self.agent.start_conversation(user_role=user_role)
+        session_id = conversation.session_id
+
+        if invite_code:
+            # ---- join path ------------------------------------------------
+            # Attempt to join inside a single UoW so the session save and the
+            # dispute update are either both committed or both rolled back.
+            normalized = invite_code.upper().strip()
+            async with UnitOfWork(self._sm) as uow:
+                await uow.sessions.save(conversation)
+
+                dispute = await uow.disputes.get_by_invite_code(normalized)
+                if dispute is None:
+                    logger.warning("invite_code_not_found", invite_code=invite_code)
+                    # Session committed; dispute not found — return cleanly.
+                    return greeting, conversation, None
+
+                if role == "tenant":
+                    if dispute.tenant_session_id and dispute.tenant_session_id != session_id:
+                        logger.warning(
+                            "tenant_slot_taken", dispute_id=dispute.dispute_id
+                        )
+                        return greeting, conversation, None
+                    dispute.link_tenant_session(session_id)
+                elif role == "landlord":
+                    if dispute.landlord_session_id and dispute.landlord_session_id != session_id:
+                        logger.warning(
+                            "landlord_slot_taken", dispute_id=dispute.dispute_id
+                        )
+                        return greeting, conversation, None
+                    dispute.link_landlord_session(session_id)
+
+                await uow.disputes.save(dispute)
+
+            logger.info(
+                "session_joined_dispute_atomically",
+                session_id=session_id,
+                dispute_id=dispute.dispute_id,
+            )
+            return greeting, conversation, dispute
+
+        elif create_dispute:
+            # ---- create path ----------------------------------------------
+            # Build the dispute *outside* the loop; regenerate only invite_code
+            # on each retry (mirrors DisputeService.create_dispute).
+            dispute_obj: Optional[DisputeCase] = DisputeCase(
+                created_by_role=role,
+                property_address=property_address,
+                property_postcode=property_postcode,
+                deposit_amount=deposit_amount,
+            )
+            if role == "tenant":
+                dispute_obj.link_tenant_session(session_id)
+            else:
+                dispute_obj.link_landlord_session(session_id)
+
+            _MAX_RETRIES = 5
+            for attempt in range(_MAX_RETRIES):
+                dispute_obj.invite_code = generate_invite_code()
+                try:
+                    async with UnitOfWork(self._sm) as uow:
+                        await uow.sessions.save(conversation)
+
+                        existing = await uow.disputes.get_by_invite_code(dispute_obj.invite_code)
+                        if existing is not None:
+                            logger.debug(
+                                "invite_code_collision_precheck",
+                                code=dispute_obj.invite_code,
+                                attempt=attempt,
+                            )
+                            continue
+
+                        await uow.disputes.save(dispute_obj)
+                    # UoW committed — both rows are durable.
+                    break
+                except IntegrityError:
+                    # Race with another writer; regenerate and retry.
+                    logger.debug(
+                        "invite_code_integrity_error_retry",
+                        code=dispute_obj.invite_code,
+                        attempt=attempt,
+                    )
+                    continue
+            else:
+                raise RuntimeError(
+                    "Could not generate a unique invite code after "
+                    f"{_MAX_RETRIES} attempts"
+                )
+
+            logger.info(
+                "dispute_created_with_session_atomically",
+                session_id=session_id,
+                dispute_id=dispute_obj.dispute_id,
+                invite_code=dispute_obj.invite_code,
+            )
+            return greeting, conversation, dispute_obj
+
+        else:
+            # ---- standalone (no dispute) path ----------------------------
+            # This path should not normally be reached via this method — the
+            # router should call start_session() instead — but we support it
+            # for completeness.
+            async with UnitOfWork(self._sm) as uow:
+                await uow.sessions.save(conversation)
+
+            logger.info(
+                "intake_session_started_no_dispute",
+                session_id=session_id,
+                role=role,
+            )
+            return greeting, conversation, None
 
     async def process_message(
         self,
