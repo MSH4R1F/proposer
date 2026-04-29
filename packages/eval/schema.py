@@ -9,7 +9,7 @@ import re
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
+from typing import Optional, Tuple
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -70,6 +70,20 @@ class RegionUK(str, Enum):
     NORTHERN_IRELAND = "northern_ireland"
 
 
+class Provenance(BaseModel):
+    """Structured location of a quote, evidence item, or authority within
+    the source PDF. Replaces the unstructured `paragraph_ref` strings that
+    were unverifiable under noisy OCR (Codex finding [12] / SHA-100).
+
+    `text_span` is `(char_start, char_end)` in the page's normalised text,
+    optional because not every reference has a precise span.
+    """
+
+    page: int = Field(ge=1)
+    paragraph: int = Field(ge=1)
+    text_span: Optional[Tuple[int, int]] = None
+
+
 class Party(BaseModel):
     role: PartyRole
     represented: bool
@@ -78,13 +92,13 @@ class Party(BaseModel):
 class Evidence(BaseModel):
     kind: str = Field(min_length=1)
     description: str = Field(min_length=1)
-    paragraph_ref: Optional[str] = None
+    provenance: Optional[Provenance] = None
 
 
 class StatutoryReference(BaseModel):
     statute: str = Field(min_length=1)
     section: str = Field(min_length=1)
-    paragraph_ref: Optional[str] = None
+    provenance: Optional[Provenance] = None
 
 
 class Authority(BaseModel):
@@ -100,7 +114,7 @@ class Authority(BaseModel):
     name: str = Field(min_length=1)
     court: Optional[str] = None
     cited_date: date
-    paragraph_ref: Optional[str] = None
+    provenance: Optional[Provenance] = None
 
 
 class ClaimedAmount(BaseModel):
@@ -117,7 +131,7 @@ class IssueOutcome(BaseModel):
 
 class ReasoningQuote(BaseModel):
     text: str = Field(min_length=1)
-    paragraph_ref: str = Field(min_length=1)
+    provenance: Provenance
 
 
 class GroundTruthOutcome(BaseModel):

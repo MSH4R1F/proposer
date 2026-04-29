@@ -15,8 +15,8 @@
   ],
   "facts": "Tenant occupied two-bed terrace from 2022-09-01 to 2024-01-15; landlord retained the full 2400 GBP deposit citing combined damages and end-of-tenancy cleaning. Tribunal found a partial deduction was reasonable but did not apportion the award to specific items.",
   "evidence": [
-    {"kind": "photo", "description": "Move-in photographs", "paragraph_ref": "para 4"},
-    {"kind": "invoice", "description": "End-of-tenancy clean invoice for 320 GBP", "paragraph_ref": "para 9"}
+    {"kind": "photo", "description": "Move-in photographs", "provenance": {"page": 1, "paragraph": 4}},
+    {"kind": "invoice", "description": "End-of-tenancy clean invoice for 320 GBP", "provenance": {"page": 2, "paragraph": 9}}
   ],
   "statutory_basis": [
     {"statute": "Housing Act 2004", "section": "s.213"}
@@ -33,6 +33,6 @@
     "unapportioned_reason": "Tribunal found a partial deduction was reasonable but did not apportion the award to specific issues; reasoning at para 22 declines to break the figure down."
   },
   "key_reasoning_quotes": [
-    {"text": "It is unnecessary on the present facts to apportion the award between the items claimed.", "paragraph_ref": "para 22"}
+    {"text": "It is unnecessary on the present facts to apportion the award between the items claimed.", "provenance": {"page": 3, "paragraph": 22}}
   ]
 }
