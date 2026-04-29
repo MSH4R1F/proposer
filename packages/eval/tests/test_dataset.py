@@ -428,3 +428,105 @@ class TestCli:
         assert evidence_dir.exists()
         files = list(evidence_dir.glob("audit_*.json"))
         assert len(files) == 1, f"expected exactly one audit_<date>.json file, got {files}"
+
+
+class TestCliInProcess:
+    """In-process unit tests for the CLI internals — covers _format_report,
+    _report_to_dict, and _cli_main without paying the subprocess cost.
+    Pairs with TestCli (subprocess-based) for full coverage."""
+
+    def _build(self, dicts):
+        from eval.schema import GoldCase
+        return [GoldCase.model_validate(d) for d in dicts]
+
+    def test_format_report_clean(self):
+        from eval.dataset import _format_report, audit
+        from eval.schema import ClaimType
+        cases = self._build([
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType for i in range(5)
+        ])
+        report = audit(cases)
+        text = _format_report(report)
+        assert "n_cases: 25" in text
+        assert "stratification: all types at or above floor" in text
+        assert "leakage violations: none" in text
+        assert "is_clean: True" in text
+
+    def test_format_report_with_leakage(self):
+        from eval.dataset import _format_report, audit
+        cases = self._build([
+            gold_case_dict(
+                case_id="LEAK",
+                decision_date="2021-04-01",
+                cited_authorities=[
+                    {"name": "Future v Past", "cited_date": "2024-03-01"}
+                ],
+            ),
+        ])
+        text = _format_report(audit(cases))
+        assert "leakage violations (1)" in text
+        assert "LEAK" in text
+        assert "Future v Past" in text
+
+    def test_report_to_dict_round_trips_through_json(self):
+        from eval.dataset import _report_to_dict, audit
+        cases = self._build([
+            gold_case_dict(
+                case_id="LEAK",
+                decision_date="2021-04-01",
+                cited_authorities=[
+                    {"name": "Future v Past", "cited_date": "2024-03-01"}
+                ],
+            ),
+        ])
+        d = _report_to_dict(audit(cases))
+        # All values must be JSON-serialisable
+        s = json.dumps(d)
+        again = json.loads(s)
+        assert again["n_cases"] == 1
+        assert again["leakage_violations"][0]["case_id"] == "LEAK"
+        assert again["leakage_violations"][0]["authority_cited_date"] == "2024-03-01"
+        assert again["case_size_distribution"]["small"] == 1
+
+    def test_cli_main_audit_clean_returns_zero(self, tmp_path):
+        from eval.dataset import _cli_main
+        path = tmp_path / "housing_v1.jsonl"
+        from eval.schema import ClaimType
+        write_jsonl(path, [
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType for i in range(5)
+        ])
+        rc = _cli_main(["audit", str(path)])
+        assert rc == 0
+
+    def test_cli_main_audit_strict_dirty_returns_one(self, tmp_path):
+        from eval.dataset import _cli_main
+        path = tmp_path / "housing_v1.jsonl"
+        write_jsonl(path, [gold_case_dict()])
+        rc = _cli_main(["audit", str(path), "--strict"])
+        assert rc == 1
+
+    def test_cli_main_audit_writes_json_and_evidence(self, tmp_path, monkeypatch):
+        from eval.dataset import _cli_main
+        path = tmp_path / "housing_v1.jsonl"
+        write_jsonl(path, [gold_case_dict()])
+        out_json = tmp_path / "audit.json"
+        monkeypatch.chdir(tmp_path)
+        rc = _cli_main(["audit", str(path), "--json", str(out_json), "--evidence"])
+        assert rc == 0
+        assert out_json.exists()
+        evidence_files = list((tmp_path / ".sisyphus" / "evidence" / "eval").glob("audit_*.json"))
+        assert len(evidence_files) == 1
+
+    def test_cli_main_audit_surfaces_load_errors_on_stderr(self, tmp_path, capsys):
+        from eval.dataset import _cli_main
+        path = tmp_path / "housing_v1.jsonl"
+        path.write_text(
+            json.dumps(gold_case_dict(case_id="OK")) + "\n"
+            + "{not json\n"
+        )
+        rc = _cli_main(["audit", str(path)])
+        captured = capsys.readouterr()
+        assert "Load errors (1)" in captured.err
+        assert rc == 0  # lenient default doesn't fail on parse errors

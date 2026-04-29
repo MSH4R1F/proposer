@@ -1,4 +1,17 @@
-"""Evaluation harness package: gold-set schema, metrics, ablation runner."""
+"""Evaluation harness package: gold-set schema, dataset loader/audit, metrics."""
+from eval.dataset import (
+    STRATIFICATION_FLOOR,
+    TEST_START,
+    TRAIN_CUTOFF,
+    AuditReport,
+    LeakageViolation,
+    LoadError,
+    LoadResult,
+    audit,
+    load,
+    test,
+    train,
+)
 from eval.schema import (
     Authority,
     CaseSize,
@@ -17,6 +30,7 @@ from eval.schema import (
 )
 
 __all__ = [
+    # schema
     "Authority",
     "CaseSize",
     "ClaimType",
@@ -31,4 +45,16 @@ __all__ = [
     "SchemaVersion",
     "StatutoryReference",
     "Winner",
+    # dataset
+    "AuditReport",
+    "LeakageViolation",
+    "LoadError",
+    "LoadResult",
+    "STRATIFICATION_FLOOR",
+    "TEST_START",
+    "TRAIN_CUTOFF",
+    "audit",
+    "load",
+    "test",
+    "train",
 ]
