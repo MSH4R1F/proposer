@@ -340,3 +340,91 @@ class TestAudit:
         # Every claim type is "0 cases" — all five are under-stratified.
         assert set(report.understratified_types) == set(ClaimType)
         assert report.is_clean is False
+
+
+class TestCli:
+    """End-to-end CLI tests via subprocess. Exercises the real entry point
+    (`python -m eval.dataset audit ...`) rather than mocking argparse."""
+
+    REPO_ROOT = Path(__file__).resolve().parents[3]
+    VENV_PY = "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/bin/python"
+
+    @classmethod
+    def _run(cls, *args, cwd=None):
+        import os
+        import subprocess
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(cls.REPO_ROOT / "packages")
+        return subprocess.run(
+            [cls.VENV_PY, "-m", "eval.dataset", *args],
+            cwd=str(cwd) if cwd else None,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+
+    def _write_corpus(self, path: Path, cases: list):
+        from eval.tests.conftest import write_jsonl  # type: ignore
+        write_jsonl(path, cases)
+
+    def test_cli_audit_clean_corpus_exit_zero(self, tmp_path):
+        from eval.schema import ClaimType
+        path = tmp_path / "housing_v1.jsonl"
+        cases = [
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType
+            for i in range(5)
+        ]
+        self._write_corpus(path, cases)
+        proc = self._run("audit", str(path))
+        assert proc.returncode == 0, proc.stderr
+        assert "n_cases: 25" in proc.stdout
+        assert "is_clean: True" in proc.stdout
+
+    def test_cli_audit_dirty_lenient_exit_zero(self, tmp_path):
+        path = tmp_path / "housing_v1.jsonl"
+        self._write_corpus(path, [gold_case_dict()])
+        proc = self._run("audit", str(path))
+        # Default mode reports but does not fail
+        assert proc.returncode == 0
+        assert "understratified" in proc.stdout.lower()
+        assert "is_clean: False" in proc.stdout
+
+    def test_cli_audit_dirty_strict_exit_one(self, tmp_path):
+        path = tmp_path / "housing_v1.jsonl"
+        self._write_corpus(path, [gold_case_dict()])
+        proc = self._run("audit", str(path), "--strict")
+        assert proc.returncode == 1
+
+    def test_cli_audit_clean_strict_exit_zero(self, tmp_path):
+        from eval.schema import ClaimType
+        path = tmp_path / "housing_v1.jsonl"
+        cases = [
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType
+            for i in range(5)
+        ]
+        self._write_corpus(path, cases)
+        proc = self._run("audit", str(path), "--strict")
+        assert proc.returncode == 0, proc.stderr
+
+    def test_cli_audit_json_output(self, tmp_path):
+        path = tmp_path / "housing_v1.jsonl"
+        self._write_corpus(path, [gold_case_dict()])
+        out_json = tmp_path / "audit.json"
+        proc = self._run("audit", str(path), "--json", str(out_json))
+        assert proc.returncode == 0
+        assert out_json.exists()
+        payload = json.loads(out_json.read_text())
+        assert payload["n_cases"] == 1
+        assert payload["is_clean"] is False
+
+    def test_cli_audit_evidence_flag(self, tmp_path):
+        path = tmp_path / "housing_v1.jsonl"
+        self._write_corpus(path, [gold_case_dict()])
+        proc = self._run("audit", str(path), "--evidence", cwd=tmp_path)
+        assert proc.returncode == 0
+        evidence_dir = tmp_path / ".sisyphus" / "evidence" / "eval"
+        assert evidence_dir.exists()
+        files = list(evidence_dir.glob("audit_*.json"))
+        assert len(files) == 1, f"expected exactly one audit_<date>.json file, got {files}"

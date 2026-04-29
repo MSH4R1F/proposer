@@ -215,3 +215,124 @@ def audit(cases: list) -> AuditReport:
         region_distribution=region_dist,
         case_size_distribution=size_dist,
     )
+
+
+# -- CLI -----------------------------------------------------------------------
+
+
+def _format_report(report: AuditReport) -> str:
+    lines = [
+        f"n_cases: {report.n_cases}",
+        f"train_count (decision_date <= {TRAIN_CUTOFF}): {report.train_count}",
+        f"test_count  (decision_date >= {TEST_START}): {report.test_count}",
+    ]
+    if report.leakage_violations:
+        lines.append(f"\nleakage violations ({len(report.leakage_violations)}):")
+        for v in report.leakage_violations:
+            lines.append(
+                f"  - {v.case_id}: cites {v.authority_name!r} dated "
+                f"{v.authority_cited_date} (cutoff {v.cutoff})"
+            )
+    else:
+        lines.append("\nleakage violations: none")
+    if report.understratified_types:
+        lines.append(f"\nunderstratified types (floor {STRATIFICATION_FLOOR}):")
+        for t, n in sorted(
+            report.understratified_types.items(), key=lambda x: x[0].value
+        ):
+            lines.append(f"  - {t.value}: {n}")
+    else:
+        lines.append("\nstratification: all types at or above floor")
+    lines.append(f"\nregion_distribution: {report.region_distribution}")
+    lines.append(
+        "case_size_distribution: "
+        + str({k.value: v for k, v in report.case_size_distribution.items()})
+    )
+    lines.append(f"\nis_clean: {report.is_clean}")
+    return "\n".join(lines)
+
+
+def _report_to_dict(report: AuditReport) -> dict:
+    return {
+        "n_cases": report.n_cases,
+        "train_count": report.train_count,
+        "test_count": report.test_count,
+        "leakage_violations": [
+            {
+                "case_id": v.case_id,
+                "authority_name": v.authority_name,
+                "authority_cited_date": v.authority_cited_date.isoformat(),
+                "cutoff": v.cutoff.isoformat(),
+            }
+            for v in report.leakage_violations
+        ],
+        "understratified_types": {
+            t.value: n for t, n in report.understratified_types.items()
+        },
+        "region_distribution": dict(report.region_distribution),
+        "case_size_distribution": {
+            k.value: v for k, v in report.case_size_distribution.items()
+        },
+        "is_clean": report.is_clean,
+    }
+
+
+def _cli_main(argv=None) -> int:
+    import argparse
+    import sys
+    from datetime import datetime
+
+    parser = argparse.ArgumentParser(prog="python -m eval.dataset")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    audit_p = sub.add_parser("audit", help="Audit a gold-set JSONL file")
+    audit_p.add_argument("path", type=Path, help="Path to <version>.jsonl")
+    audit_p.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit non-zero if the corpus is not clean",
+    )
+    audit_p.add_argument(
+        "--json",
+        type=Path,
+        default=None,
+        dest="json_out",
+        help="Write the audit report as JSON to PATH",
+    )
+    audit_p.add_argument(
+        "--evidence",
+        action="store_true",
+        help=(
+            "Also write the audit report into "
+            ".sisyphus/evidence/eval/audit_<date>.json (cwd-relative)"
+        ),
+    )
+
+    args = parser.parse_args(argv)
+
+    if args.cmd == "audit":
+        version = args.path.stem
+        result = load(version, base_dir=args.path.parent)
+        if result.errors:
+            print(f"Load errors ({len(result.errors)}):", file=sys.stderr)
+            for err in result.errors:
+                print(f"  line {err.line_number}: {err.error}", file=sys.stderr)
+        report = audit(result.cases)
+        print(_format_report(report))
+        if args.json_out is not None:
+            args.json_out.parent.mkdir(parents=True, exist_ok=True)
+            args.json_out.write_text(json.dumps(_report_to_dict(report), indent=2))
+        if args.evidence:
+            today = datetime.now().strftime("%Y-%m-%d")
+            evidence_path = (
+                Path.cwd() / ".sisyphus" / "evidence" / "eval" / f"audit_{today}.json"
+            )
+            evidence_path.parent.mkdir(parents=True, exist_ok=True)
+            evidence_path.write_text(json.dumps(_report_to_dict(report), indent=2))
+        return 1 if (args.strict and not report.is_clean) else 0
+
+    return 2  # unreachable
+
+
+if __name__ == "__main__":
+    raise SystemExit(_cli_main())
