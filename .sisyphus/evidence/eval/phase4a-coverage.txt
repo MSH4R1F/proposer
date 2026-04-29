@@ -1,0 +1,15 @@
+metrics/uncertainty.py                 26      0   100%
+run.py                                 70     10    86%
+schema.py                             142      1    99%
+tests/__init__.py                       0      0   100%
+tests/conftest.py                      19      0   100%
+tests/test_annotate_cli.py            167      4    98%
+tests/test_dataset.py                 331      0   100%
+tests/test_metrics_accuracy.py         94      0   100%
+tests/test_metrics_calibration.py     111      0   100%
+tests/test_metrics_uncertainty.py      75      0   100%
+tests/test_run_cli.py                 111      0   100%
+tests/test_schema.py                  396      0   100%
+-------------------------------------------------------
+TOTAL                                1879     25    99%
+============================= 181 passed in 4.76s ==============================
