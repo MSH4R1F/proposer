@@ -466,6 +466,58 @@ class TestRegionUK:
         assert {r.value for r in RegionUK} == expected
 
 
+class TestInv10EvidenceStatutoryAvailability:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_empty_evidence_without_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"evidence": []}
+        with pytest.raises(ValidationError, match="evidence"):
+            GoldCase.model_validate(case)
+
+    def test_empty_evidence_with_reason_ok(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "evidence": [],
+            "evidence_unavailable_reason": "Tribunal heard the case on submissions only; no evidence catalogue published.",
+        }
+        gc = GoldCase.model_validate(case)
+        assert gc.evidence == []
+        assert gc.evidence_unavailable_reason is not None
+
+    def test_empty_statutory_basis_without_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"statutory_basis": []}
+        with pytest.raises(ValidationError, match="statutory_basis"):
+            GoldCase.model_validate(case)
+
+    def test_empty_statutory_basis_with_reason_ok(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "statutory_basis": [],
+            "statutory_basis_unavailable_reason": "Decision turned on common-law principles only.",
+        }
+        gc = GoldCase.model_validate(case)
+        assert gc.statutory_basis == []
+
+    def test_non_empty_evidence_with_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "evidence_unavailable_reason": "Should not be set when evidence is non-empty",
+        }
+        with pytest.raises(ValidationError, match="evidence"):
+            GoldCase.model_validate(case)
+
+    def test_non_empty_statute_with_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "statutory_basis_unavailable_reason": "Should not be set when statutory_basis is non-empty",
+        }
+        with pytest.raises(ValidationError, match="statutory_basis"):
+            GoldCase.model_validate(case)
+
+
 class TestClaimTypesIsList:
     def _base(self) -> dict:
         return _load_minimal()
