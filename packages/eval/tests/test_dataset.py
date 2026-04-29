@@ -342,6 +342,41 @@ class TestAudit:
         assert report.is_clean is False
 
 
+class TestSyntheticCorpus10:
+    """The 10-case fixture is the seed corpus every metric module
+    develops against. Loading must be clean."""
+
+    def test_loads_without_errors(self):
+        from eval.dataset import load
+        result = load(
+            "synthetic_corpus_10",
+            base_dir=Path(__file__).parent / "fixtures",
+        )
+        assert result.is_clean
+        assert len(result.cases) == 10
+
+    def test_every_claim_type_represented(self):
+        from eval.dataset import load
+        from eval.schema import ClaimType
+        result = load(
+            "synthetic_corpus_10",
+            base_dir=Path(__file__).parent / "fixtures",
+        )
+        types_seen = set()
+        for c in result.cases:
+            types_seen.update(c.claim_types)
+        assert types_seen == set(ClaimType)
+
+    def test_train_test_split_is_meaningful(self):
+        from eval.dataset import load, train, test as test_split
+        result = load(
+            "synthetic_corpus_10",
+            base_dir=Path(__file__).parent / "fixtures",
+        )
+        assert len(train(result.cases)) >= 4
+        assert len(test_split(result.cases)) >= 3
+
+
 class TestCli:
     """End-to-end CLI tests via subprocess. Exercises the real entry point
     (`python -m eval.dataset audit ...`) rather than mocking argparse."""
