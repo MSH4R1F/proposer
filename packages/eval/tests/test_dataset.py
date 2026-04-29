@@ -131,3 +131,101 @@ class TestLoad:
         result = load("housing_v1", base_dir=tmp_path)
         assert len(result.cases) == 1
         assert result.errors == []
+
+
+class TestSplits:
+    def _build(self, dicts):
+        from eval.schema import GoldCase
+        return [GoldCase.model_validate(d) for d in dicts]
+
+    def test_train_filters_by_cutoff(self):
+        from eval.dataset import train
+        cases = self._build([
+            gold_case_dict(case_id="X-2020", decision_date="2020-05-01"),
+            gold_case_dict(case_id="X-2022-edge", decision_date="2022-12-31"),
+            gold_case_dict(case_id="X-2023-edge", decision_date="2023-01-01"),
+            gold_case_dict(case_id="X-2024", decision_date="2024-06-15"),
+        ])
+        result = train(cases)
+        assert {c.case_id for c in result} == {"X-2020", "X-2022-edge"}
+
+    def test_test_split_filters_by_start(self):
+        from eval.dataset import test as test_split
+        cases = self._build([
+            gold_case_dict(case_id="X-2022", decision_date="2022-12-31"),
+            gold_case_dict(case_id="X-2023", decision_date="2023-01-01"),
+            gold_case_dict(case_id="X-2024", decision_date="2024-06-15"),
+        ])
+        result = test_split(cases)
+        assert {c.case_id for c in result} == {"X-2023", "X-2024"}
+
+    def test_train_lenient_returns_cases_despite_leakage(self, caplog):
+        import logging
+        from eval.dataset import train
+        cases = self._build([
+            gold_case_dict(
+                case_id="LEAK",
+                decision_date="2021-04-01",
+                cited_authorities=[
+                    {"name": "Future v Past", "cited_date": "2024-03-01"}
+                ],
+            ),
+            gold_case_dict(case_id="OK", decision_date="2020-05-01"),
+        ])
+        with caplog.at_level(logging.WARNING, logger="eval.dataset"):
+            result = train(cases)
+        assert {c.case_id for c in result} == {"LEAK", "OK"}
+        assert any("LEAK" in record.message for record in caplog.records)
+
+    def test_train_strict_raises_on_leakage(self):
+        from eval.dataset import train
+        cases = self._build([
+            gold_case_dict(
+                case_id="LEAK",
+                decision_date="2021-04-01",
+                cited_authorities=[
+                    {"name": "Future v Past", "cited_date": "2024-03-01"}
+                ],
+            ),
+        ])
+        with pytest.raises(ValueError, match="LEAK"):
+            train(cases, strict=True)
+
+    def test_train_strict_clean_corpus_returns_cases(self):
+        from eval.dataset import train
+        cases = self._build([
+            gold_case_dict(case_id="OK", decision_date="2020-05-01"),
+        ])
+        result = train(cases, strict=True)
+        assert len(result) == 1
+
+    def test_train_authority_dated_exactly_at_cutoff_is_ok(self):
+        from eval.dataset import train
+        cases = self._build([
+            gold_case_dict(
+                case_id="EDGE",
+                decision_date="2020-05-01",
+                cited_authorities=[
+                    {"name": "Edge v Case", "cited_date": "2022-12-31"}
+                ],
+            ),
+        ])
+        result = train(cases, strict=True)
+        assert len(result) == 1
+
+    def test_train_ignores_test_case_authority_dates(self):
+        # A test case (2024) citing a 2024 authority is NOT leakage —
+        # leakage only applies to train cases.
+        from eval.dataset import train
+        cases = self._build([
+            gold_case_dict(
+                case_id="TEST-OK",
+                decision_date="2024-03-01",
+                cited_authorities=[
+                    {"name": "2024 Auth", "cited_date": "2024-01-01"}
+                ],
+            ),
+        ])
+        # train() returns only train cases (none here); no exception expected
+        result = train(cases, strict=True)
+        assert result == []
