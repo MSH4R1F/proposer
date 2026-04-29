@@ -73,8 +73,6 @@ async def get_uow(request: Request) -> AsyncIterator[UnitOfWork]:
 # the legacy process-singleton; the UoW just rides along on the request so
 # /readyz and downstream rewrites see a live transactional boundary.
 
-from fastapi import Depends  # noqa: E402
-
 from apps.api.src.services.dispute_service import (  # noqa: E402
     DisputeService,
     get_dispute_service as _legacy_get_dispute_service,
@@ -138,9 +136,18 @@ def get_storage_service(request: Request) -> StorageService:
     return StorageService(sessionmaker=sm)
 
 
-def get_mediation_service(
-    uow: UnitOfWork = Depends(get_uow),
-) -> MediationService:
-    """Per-request MediationService. Phase 9.1 will swap to a UoW-aware ctor."""
-    del uow
-    return _legacy_get_mediation_service()
+@lru_cache(maxsize=1)
+def _cached_mediator_agent() -> Any:
+    """Process-level cache for the heavy LLM mediator agent."""
+    from llm_orchestrator.agents.mediator_agent import MediatorAgent
+    from llm_orchestrator.clients.claude_client import ClaudeClient
+    from llm_orchestrator.config import LLMConfig
+
+    cfg = LLMConfig.from_env()
+    return MediatorAgent(ClaudeClient(api_key=cfg.anthropic_api_key))
+
+
+def get_mediation_service(request: Request) -> MediationService:
+    """Per-request MediationService backed by the request-scoped Postgres sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return MediationService(sessionmaker=sm, mediator_agent=_cached_mediator_agent())
