@@ -15,10 +15,10 @@
   ],
   "facts": "Tenant occupied flat from 2022-01-01 to 2023-05-31; landlord retained 400 GBP of the 1200 GBP deposit citing carpet cleaning and disputed the deduction.",
   "evidence": [
-    {"kind": "invoice", "description": "Carpet cleaning invoice for 180 GBP", "paragraph_ref": "para 7"}
+    {"kind": "invoice", "description": "Carpet cleaning invoice for 180 GBP", "provenance": {"page": 1, "paragraph": 7}}
   ],
   "statutory_basis": [
-    {"statute": "Housing Act 2004", "section": "s.213", "paragraph_ref": "para 12"}
+    {"statute": "Housing Act 2004", "section": "s.213", "provenance": {"page": 1, "paragraph": 12}}
   ],
   "claimed_amounts": [
     {"issue": "carpet_cleaning", "amount_gbp": "400.00", "by_party": "landlord"}
@@ -31,6 +31,6 @@
     ]
   },
   "key_reasoning_quotes": [
-    {"text": "The landlord adduced no evidence beyond a single invoice.", "paragraph_ref": "para 14"}
+    {"text": "The landlord adduced no evidence beyond a single invoice.", "provenance": {"page": 2, "paragraph": 14}}
   ]
 }

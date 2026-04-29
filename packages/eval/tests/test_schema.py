@@ -82,19 +82,22 @@ class TestClaimedAmount:
 
 class TestReasoningQuote:
     def test_valid(self):
-        from eval.schema import ReasoningQuote
-        q = ReasoningQuote(text="The deposit was not protected.", paragraph_ref="para 14")
-        assert q.paragraph_ref == "para 14"
+        from eval.schema import Provenance, ReasoningQuote
+        q = ReasoningQuote(
+            text="The deposit was not protected.",
+            provenance=Provenance(page=1, paragraph=14),
+        )
+        assert q.provenance.paragraph == 14
 
-    def test_paragraph_ref_required(self):
+    def test_provenance_required(self):
         from eval.schema import ReasoningQuote
         with pytest.raises(ValidationError):
-            ReasoningQuote(text="x", paragraph_ref=None)  # type: ignore[arg-type]
+            ReasoningQuote(text="x")  # provenance required
 
     def test_empty_text_rejected(self):
-        from eval.schema import ReasoningQuote
+        from eval.schema import Provenance, ReasoningQuote
         with pytest.raises(ValidationError):
-            ReasoningQuote(text="", paragraph_ref="para 1")
+            ReasoningQuote(text="", provenance=Provenance(page=1, paragraph=1))
 
 
 class TestGroundTruthOutcome:
@@ -518,6 +521,76 @@ class TestInv10EvidenceStatutoryAvailability:
             GoldCase.model_validate(case)
 
 
+class TestProvenance:
+    def test_valid_provenance(self):
+        from eval.schema import Provenance
+        p = Provenance(page=1, paragraph=14)
+        assert p.page == 1 and p.paragraph == 14
+        assert p.text_span is None
+
+    def test_text_span_optional(self):
+        from eval.schema import Provenance
+        p = Provenance(page=2, paragraph=3, text_span=(120, 240))
+        assert p.text_span == (120, 240)
+
+    def test_page_min_1(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError):
+            Provenance(page=0, paragraph=1)
+
+    def test_paragraph_min_1(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError):
+            Provenance(page=1, paragraph=0)
+
+
+class TestProvenanceMigration:
+    """Verify Evidence, StatutoryReference, Authority, ReasoningQuote all
+    use Provenance instead of bare paragraph_ref."""
+
+    def test_evidence_uses_provenance(self):
+        from eval.schema import Evidence, Provenance
+        e = Evidence(
+            kind="invoice",
+            description="Cleaning invoice",
+            provenance=Provenance(page=1, paragraph=7),
+        )
+        assert e.provenance.paragraph == 7
+
+    def test_evidence_provenance_optional(self):
+        from eval.schema import Evidence
+        Evidence(kind="invoice", description="Cleaning invoice")  # no provenance is fine
+
+    def test_reasoning_quote_requires_provenance(self):
+        from eval.schema import ReasoningQuote, Provenance
+        rq = ReasoningQuote(text="Quote.", provenance=Provenance(page=1, paragraph=1))
+        assert rq.provenance.page == 1
+
+    def test_reasoning_quote_provenance_required(self):
+        from eval.schema import ReasoningQuote
+        with pytest.raises(ValidationError):
+            ReasoningQuote(text="Quote.")  # provenance required
+
+    def test_authority_uses_provenance(self):
+        from eval.schema import Authority, Provenance
+        from datetime import date as _date
+        a = Authority(
+            name="Howard v Aggio",
+            cited_date=_date(2008, 6, 25),
+            provenance=Provenance(page=2, paragraph=12),
+        )
+        assert a.provenance.page == 2
+
+    def test_statutory_reference_uses_provenance(self):
+        from eval.schema import StatutoryReference, Provenance
+        s = StatutoryReference(
+            statute="Housing Act 2004",
+            section="s.213",
+            provenance=Provenance(page=1, paragraph=12),
+        )
+        assert s.provenance.paragraph == 12
+
+
 class TestClaimTypesIsList:
     def _base(self) -> dict:
         return _load_minimal()
@@ -564,7 +637,7 @@ class TestAuthority:
         from eval.schema import Authority
         from datetime import date as _date
         a = Authority(name="Anon v Anon", cited_date=_date(2021, 1, 1))
-        assert a.court is None and a.paragraph_ref is None
+        assert a.court is None and a.provenance is None
 
     def test_empty_name_rejected(self):
         from eval.schema import Authority
