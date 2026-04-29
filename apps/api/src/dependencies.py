@@ -81,8 +81,9 @@ from apps.api.src.services.dispute_service import (  # noqa: E402
 )
 from apps.api.src.services.intake_service import (  # noqa: E402
     IntakeService,
-    get_intake_service as _legacy_get_intake_service,
+    get_intake_service as _legacy_get_intake_service,  # kept for rollback
 )
+from llm_orchestrator.agents.intake_agent import IntakeAgent  # noqa: E402
 from apps.api.src.services.mediation_service import (  # noqa: E402
     MediationService,
     get_mediation_service as _legacy_get_mediation_service,
@@ -97,12 +98,20 @@ from apps.api.src.services.storage_service import (  # noqa: E402
 )
 
 
-def get_intake_service(
-    uow: UnitOfWork = Depends(get_uow),
-) -> IntakeService:
-    """Per-request IntakeService. Phase 6.1 will swap to a UoW-aware ctor."""
-    del uow
-    return _legacy_get_intake_service()
+@lru_cache(maxsize=1)
+def _cached_intake_agent() -> IntakeAgent:
+    """Process-level cache for the heavy LLM agent (avoids per-request client construction)."""
+    from llm_orchestrator.clients.claude_client import ClaudeClient
+    from llm_orchestrator.config import LLMConfig
+
+    cfg = LLMConfig.from_env()
+    return IntakeAgent(ClaudeClient(api_key=cfg.anthropic_api_key))
+
+
+def get_intake_service(request: Request) -> IntakeService:
+    """Per-request IntakeService backed by the request-scoped Postgres sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return IntakeService(sessionmaker=sm, agent=_cached_intake_agent())
 
 
 def get_dispute_service(
