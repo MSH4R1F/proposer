@@ -23,6 +23,12 @@ from ..models.nodes import (
     ClaimedAmountNode,
 )
 from ..models.edges import Edge, EdgeType
+from .graph_serialization import (
+    deserialize_knowledge_graph as _deserialize_graph_helper,
+    deserialize_node as _deserialize_node_helper,
+    serialize_knowledge_graph as _serialize_graph_helper,
+    serialize_node as _serialize_node_helper,
+)
 
 logger = structlog.get_logger()
 
@@ -153,98 +159,16 @@ class JSONGraphStore:
 
     def _serialize_graph(self, kg: KnowledgeGraph) -> Dict:
         """Convert KnowledgeGraph to serializable dict."""
-        return {
-            "graph_id": kg.graph_id,
-            "case_id": kg.case_id,
-            "created_at": kg.created_at,
-            "updated_at": kg.updated_at,
-            "nodes": [self._serialize_node(n) for n in kg.nodes],
-            "edges": [e.model_dump() for e in kg.edges],
-            "validation_errors": kg.validation_errors,
-            "validation_warnings": kg.validation_warnings,
-            "is_consistent": kg.is_consistent,
-            "metadata": kg.metadata,
-        }
+        return _serialize_graph_helper(kg)
 
     def _serialize_node(self, node: BaseNode) -> Dict:
         """Serialize a node with its type."""
-        data = node.model_dump()
-        data["_node_class"] = node.__class__.__name__
-        return data
+        return _serialize_node_helper(node)
 
     def _deserialize_graph(self, data: Dict) -> KnowledgeGraph:
         """Reconstruct KnowledgeGraph from dict."""
-        # Deserialize nodes
-        nodes = []
-        for node_data in data.get("nodes", []):
-            node = self._deserialize_node(node_data)
-            if node:
-                nodes.append(node)
-
-        # Deserialize edges
-        edges = []
-        for edge_data in data.get("edges", []):
-            try:
-                edge = Edge.model_validate(edge_data)
-                edges.append(edge)
-            except Exception as e:
-                logger.warning("edge_deserialize_failed", error=str(e))
-
-        return KnowledgeGraph(
-            graph_id=data.get("graph_id", ""),
-            case_id=data.get("case_id", ""),
-            created_at=data.get("created_at", ""),
-            updated_at=data.get("updated_at", ""),
-            nodes=nodes,
-            edges=edges,
-            validation_errors=data.get("validation_errors", []),
-            validation_warnings=data.get("validation_warnings", []),
-            is_consistent=data.get("is_consistent", True),
-            metadata=data.get("metadata", {}),
-        )
+        return _deserialize_graph_helper(data)
 
     def _deserialize_node(self, data: Dict) -> Optional[BaseNode]:
         """Deserialize a node based on its class."""
-        node_class_name = data.pop("_node_class", None)
-        node_type = data.get("node_type")
-
-        # Map class names to classes
-        class_map = {
-            "PartyNode": PartyNode,
-            "PropertyNode": PropertyNode,
-            "LeaseNode": LeaseNode,
-            "EvidenceNode": EvidenceNode,
-            "EventNode": EventNode,
-            "IssueNode": IssueNode,
-            "ClaimedAmountNode": ClaimedAmountNode,
-        }
-
-        # Map node types to classes
-        type_map = {
-            "party": PartyNode,
-            "property": PropertyNode,
-            "lease": LeaseNode,
-            "evidence": EvidenceNode,
-            "event": EventNode,
-            "issue": IssueNode,
-            "claimed_amount": ClaimedAmountNode,
-        }
-
-        # Try class name first, then type
-        node_class = class_map.get(node_class_name)
-        if not node_class and node_type:
-            node_class = type_map.get(node_type)
-
-        if not node_class:
-            logger.warning(
-                "unknown_node_type",
-                class_name=node_class_name,
-                node_type=node_type,
-            )
-            return None
-
-        try:
-            return node_class.model_validate(data)
-        except Exception as e:
-            logger.warning("node_deserialize_failed", error=str(e))
-            return None
+        return _deserialize_node_helper(data)
