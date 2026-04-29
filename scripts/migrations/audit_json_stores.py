@@ -10,7 +10,10 @@ from packages.llm_orchestrator.models.conversation import ConversationState
 from packages.llm_orchestrator.models.dispute import DisputeCase
 from packages.llm_orchestrator.models.mediation import MediationSession
 from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
-from packages.kg_builder.storage.json_store import JSONGraphStore
+from packages.kg_builder.storage.graph_serialization import (
+    deserialize_knowledge_graph,
+    serialize_knowledge_graph,
+)
 
 DIRS: tuple[str, ...] = (
     "sessions",
@@ -29,14 +32,10 @@ MODEL_FOR_DIR = {
     "mediations": MediationSession,
 }
 
-# Module-level singleton; storage_dir unused because we only call _serialize_graph
-# / _deserialize_graph on already-loaded data, never read from / write to disk.
-_KG_STORE_FOR_AUDIT = JSONGraphStore(storage_dir=Path("/tmp/audit-kg-unused"))
-
 
 def _validate_kg_payload(data: dict[str, Any]) -> None:
-    kg = _KG_STORE_FOR_AUDIT._deserialize_graph(data)  # noqa: SLF001
-    serialized = _KG_STORE_FOR_AUDIT._serialize_graph(kg)  # noqa: SLF001
+    kg = deserialize_knowledge_graph(data)
+    serialized = serialize_knowledge_graph(kg)
     if len(serialized.get("nodes", [])) != len(data.get("nodes", [])):
         raise ValueError("KG node count changed during polymorphic round-trip")
 
