@@ -10,10 +10,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 import structlog
 
-from apps.api.src.services.prediction_service import (
-    PredictionService,
-    get_prediction_service,
-)
+from apps.api.src.dependencies import get_prediction_service
+from apps.api.src.services.prediction_service import PredictionService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/predictions", tags=["predictions"])

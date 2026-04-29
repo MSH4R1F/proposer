@@ -10,7 +10,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 import structlog
 
-from apps.api.src.services.dispute_service import DisputeService, get_dispute_service
+from apps.api.src.dependencies import get_dispute_service
+from apps.api.src.services.dispute_service import DisputeService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/disputes", tags=["disputes"])

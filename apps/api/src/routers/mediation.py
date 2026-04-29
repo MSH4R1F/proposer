@@ -11,10 +11,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from pydantic import BaseModel, Field
 import structlog
 
-from apps.api.src.services.mediation_service import (
-    MediationService,
-    get_mediation_service,
-)
+from apps.api.src.dependencies import get_mediation_service
+from apps.api.src.services.mediation_service import MediationService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/mediation", tags=["mediation"])
