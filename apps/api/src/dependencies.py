@@ -93,10 +93,7 @@ from apps.api.src.services.prediction_service import (  # noqa: E402
     _build_prediction_engine,
     get_prediction_service as _legacy_get_prediction_service,
 )
-from apps.api.src.services.storage_service import (  # noqa: E402
-    StorageService,
-    get_storage_service as _legacy_get_storage_service,
-)
+from apps.api.src.services.storage_service import StorageService  # noqa: E402
 
 
 @lru_cache(maxsize=1)
@@ -135,12 +132,10 @@ def get_prediction_service(request: Request) -> PredictionService:
     return PredictionService(sessionmaker=sm)
 
 
-def get_storage_service(
-    uow: UnitOfWork = Depends(get_uow),
-) -> StorageService:
-    """Per-request StorageService. Phase 8.1 will swap to a UoW-aware ctor."""
-    del uow
-    return _legacy_get_storage_service()
+def get_storage_service(request: Request) -> StorageService:
+    """Per-request StorageService backed by the request-scoped sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return StorageService(sessionmaker=sm)
 
 
 def get_mediation_service(
