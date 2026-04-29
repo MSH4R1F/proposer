@@ -308,14 +308,14 @@ class TestAudit:
 
     def test_audit_distributions(self):
         from eval.dataset import audit
-        from eval.schema import CaseSize
+        from eval.schema import CaseSize, RegionUK
         cases = self._build([
-            gold_case_dict(case_id="L1", region="London"),
-            gold_case_dict(case_id="L2", region="London"),
-            gold_case_dict(case_id="W1", region="Wales"),
+            gold_case_dict(case_id="L1", region="london", region_source="London"),
+            gold_case_dict(case_id="L2", region="london", region_source="London"),
+            gold_case_dict(case_id="W1", region="wales", region_source="Wales"),
         ])
         report = audit(cases)
-        assert report.region_distribution == {"London": 2, "Wales": 1}
+        assert report.region_distribution == {RegionUK.LONDON: 2, RegionUK.WALES: 1}
         assert report.case_size_distribution[CaseSize.SMALL] == 3
 
     def test_audit_is_clean_when_all_types_at_floor(self):

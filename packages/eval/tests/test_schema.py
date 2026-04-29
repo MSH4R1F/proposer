@@ -430,6 +430,42 @@ class TestInv9OverallWinnerConsistency:
         assert gc.ground_truth_outcome.per_issue == []
 
 
+class TestRegionUK:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_region_is_enum(self):
+        from eval.schema import GoldCase, RegionUK
+        case = self._base() | {"region": "london"}
+        gc = GoldCase.model_validate(case)
+        assert gc.region == RegionUK.LONDON
+
+    def test_region_source_preserved(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"region": "london", "region_source": "Greater London"}
+        gc = GoldCase.model_validate(case)
+        assert gc.region_source == "Greater London"
+
+    def test_region_unknown_value_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"region": "atlantis"}
+        with pytest.raises(ValidationError, match="region"):
+            GoldCase.model_validate(case)
+
+    def test_region_uk_has_12_values(self):
+        from eval.schema import RegionUK
+        assert len(list(RegionUK)) == 12
+
+    def test_region_uk_values_match_uk_standard_regions(self):
+        from eval.schema import RegionUK
+        expected = {
+            "london", "south_east", "south_west", "east_of_england",
+            "east_midlands", "west_midlands", "north_west", "north_east",
+            "yorkshire_and_humber", "wales", "scotland", "northern_ireland",
+        }
+        assert {r.value for r in RegionUK} == expected
+
+
 class TestClaimTypesIsList:
     def _base(self) -> dict:
         return _load_minimal()

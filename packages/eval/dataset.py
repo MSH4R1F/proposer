@@ -243,7 +243,10 @@ def _format_report(report: AuditReport) -> str:
             lines.append(f"  - {t.value}: {n}")
     else:
         lines.append("\nstratification: all types at or above floor")
-    lines.append(f"\nregion_distribution: {report.region_distribution}")
+    lines.append(
+        "\nregion_distribution: "
+        + str({k.value: v for k, v in report.region_distribution.items()})
+    )
     lines.append(
         "case_size_distribution: "
         + str({k.value: v for k, v in report.case_size_distribution.items()})
@@ -269,7 +272,7 @@ def _report_to_dict(report: AuditReport) -> dict:
         "understratified_types": {
             t.value: n for t, n in report.understratified_types.items()
         },
-        "region_distribution": dict(report.region_distribution),
+        "region_distribution": {k.value: v for k, v in report.region_distribution.items()},
         "case_size_distribution": {
             k.value: v for k, v in report.case_size_distribution.items()
         },
