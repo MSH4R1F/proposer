@@ -9,7 +9,7 @@ from __future__ import annotations
 import uuid
 from functools import lru_cache
 from collections.abc import AsyncIterator
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Request
 
@@ -90,6 +90,7 @@ from apps.api.src.services.mediation_service import (  # noqa: E402
 )
 from apps.api.src.services.prediction_service import (  # noqa: E402
     PredictionService,
+    _build_prediction_engine,
     get_prediction_service as _legacy_get_prediction_service,
 )
 from apps.api.src.services.storage_service import (  # noqa: E402
@@ -120,12 +121,18 @@ def get_dispute_service(request: Request) -> DisputeService:
     return DisputeService(sessionmaker=sm)
 
 
-def get_prediction_service(
-    uow: UnitOfWork = Depends(get_uow),
-) -> PredictionService:
-    """Per-request PredictionService. Phase 7.1 will swap to a UoW-aware ctor."""
-    del uow
-    return _legacy_get_prediction_service()
+@lru_cache(maxsize=1)
+def _cached_prediction_engine() -> Any:
+    """Process-level cache for the heavy prediction engine + RAG pipeline."""
+    return _build_prediction_engine()
+
+
+def get_prediction_service(request: Request) -> PredictionService:
+    """Per-request PredictionService backed by the request-scoped sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    # Engine/graph_builder/RAG are constructed lazily inside PredictionService
+    # via internal helpers; we don't need to inject them at this layer.
+    return PredictionService(sessionmaker=sm)
 
 
 def get_storage_service(
