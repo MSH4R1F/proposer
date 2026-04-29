@@ -16,3 +16,17 @@ def test_audit_counts_files_per_dir(tmp_path: Path) -> None:
     assert report["counts"]["sessions"] == 2
     assert report["counts"]["disputes"] == 1
     assert report["counts"].get("predictions", 0) == 0
+
+
+def test_audit_reports_pydantic_validation_errors(tmp_path: Path) -> None:
+    (tmp_path / "sessions").mkdir()
+    (tmp_path / "sessions" / "session_bad.json").write_text(
+        '{"session_id": "x"}'  # missing required fields
+    )
+
+    report = audit(tmp_path)
+
+    assert any(
+        e["dir"] == "sessions" and e["file"].endswith("session_bad.json")
+        for e in report["validation_errors"]
+    )
