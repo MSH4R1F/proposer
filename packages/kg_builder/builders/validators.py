@@ -2,6 +2,11 @@
 Knowledge Graph validators.
 
 Validates temporal logic, evidence chains, and consistency.
+
+SHA-35: hard logic contradictions (impossible temporal orderings) raise
+KGValidationError when raise_on_error=True (the default). Soft data-quality
+issues (late protection, missing inventory, claim without support) stay as
+warnings and never raise.
 """
 
 from datetime import date, timedelta
@@ -16,25 +21,54 @@ from ..models.graph import KnowledgeGraph
 logger = structlog.get_logger()
 
 
+class KGValidationError(ValueError):
+    """Raised when the KG contains hard logic contradictions (SHA-35).
+
+    Used for impossibilities (end_date < start_date, damage event before
+    tenancy started, deposit protected before tenancy started). NOT used for
+    soft data-quality issues like late protection or missing inventory —
+    those continue to populate `kg.validation_warnings`.
+
+    Carries the list of error strings so callers (PredictionService's
+    kg_build_failed_degrading_to_rag_only branch) can log each individually.
+    """
+
+    def __init__(self, errors: List[str], case_id: Optional[str] = None):
+        self.errors = list(errors)
+        self.case_id = case_id
+        message = (
+            f"KG for case {case_id!r} failed hard validation: "
+            + "; ".join(errors)
+        )
+        super().__init__(message)
+
+
 class KGValidator:
     """
     Validates Knowledge Graph consistency.
 
     Checks for:
-    - Temporal logic (events in valid order)
+    - Temporal logic (events in valid order) — hard-fails on impossibilities
+    - Deposit protection chain (legal timing)
     - Evidence chain validity
     - Required relationships
     - Data completeness
     """
 
-    def __init__(self, strict: bool = False):
+    def __init__(self, strict: bool = False, raise_on_error: bool = True):
         """
         Initialize the validator.
 
         Args:
-            strict: If True, mark graph as inconsistent on warnings
+            strict: If True, also mark the graph inconsistent on warnings
+                (legacy behaviour — does NOT cause raises by itself).
+            raise_on_error: If True (default, SHA-35), raise KGValidationError
+                when any hard-logic violation is detected. Set False for
+                read-only inspection (admin dashboards, tests that want to
+                inspect the violations list directly).
         """
         self.strict = strict
+        self.raise_on_error = raise_on_error
 
     def validate(self, kg: KnowledgeGraph) -> KnowledgeGraph:
         """
@@ -44,7 +78,11 @@ class KGValidator:
             kg: The graph to validate
 
         Returns:
-            The same graph with validation results populated
+            The same graph with validation results populated.
+
+        Raises:
+            KGValidationError: when raise_on_error=True and hard-logic
+                violations are present (impossible temporal orderings).
         """
         kg.validation_errors = []
         kg.validation_warnings = []
@@ -68,6 +106,17 @@ class KGValidator:
             warnings=len(kg.validation_warnings),
             is_consistent=kg.is_consistent,
         )
+
+        if self.raise_on_error and kg.validation_errors:
+            logger.error(
+                "kg_validation_failed_fast",
+                case_id=kg.case_id,
+                errors=kg.validation_errors,
+            )
+            raise KGValidationError(
+                errors=list(kg.validation_errors),
+                case_id=kg.case_id,
+            )
 
         return kg
 
@@ -95,27 +144,48 @@ class KGValidator:
                 )
 
         # Check deposit protection timing
+        # Impossible: protected before tenancy started → ERROR (raises)
+        # Late but possible: > 30 days → WARNING (data-quality flag, not raised)
         if lease.protection_date and lease.start_date:
             days_to_protect = (lease.protection_date - lease.start_date).days
 
             if days_to_protect < 0:
-                kg.validation_warnings.append(
-                    "Deposit appears to be protected before tenancy started"
+                kg.validation_errors.append(
+                    "Deposit protected before tenancy start date "
+                    f"(protection_date={lease.protection_date}, "
+                    f"tenancy_start={lease.start_date})"
                 )
             elif days_to_protect > 30:
                 kg.validation_warnings.append(
                     f"Deposit protected {days_to_protect} days after tenancy start (> 30 day limit)"
                 )
 
-        # Check events are within tenancy period
+        # Same impossibility check for prescribed_info_date
+        if lease.prescribed_info_date and lease.start_date:
+            pi_days = (lease.prescribed_info_date - lease.start_date).days
+            if pi_days < 0:
+                kg.validation_errors.append(
+                    "Prescribed information date is before tenancy start date "
+                    f"(prescribed_info_date={lease.prescribed_info_date}, "
+                    f"tenancy_start={lease.start_date})"
+                )
+
+        # Check events are within tenancy period.
+        # An event with a real type (damage, inspection, etc.) cannot occur
+        # before the tenancy started — that's a hard logic contradiction.
+        # tenancy_start and deposit_protected are exempt because they may
+        # legitimately predate the lease start (preliminary deposit, lease
+        # signed with deferred start).
         for event in event_nodes:
             if not event.event_date:
                 continue
 
             if lease.start_date and event.event_date < lease.start_date:
                 if event.event_type not in ["tenancy_start", "deposit_protected"]:
-                    kg.validation_warnings.append(
-                        f"Event '{event.event_type}' occurred before tenancy started"
+                    kg.validation_errors.append(
+                        f"Event '{event.event_type}' occurred before tenancy started "
+                        f"(event_date={event.event_date}, "
+                        f"tenancy_start={lease.start_date})"
                     )
 
     def _validate_deposit_protection(self, kg: KnowledgeGraph) -> None:
