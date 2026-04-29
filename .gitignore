@@ -270,7 +270,10 @@ docker-volumes/
 # Backup files
 *.orig
 
-data/
+# All user-facing data dirs (sessions/predictions/etc) are ignored, but the
+# gold-standard evaluation set must be tracked (see SHA-28).
+data/*
+!data/gold_standard/
 
 # ===================================
 # Multi-window orchestration
