@@ -184,7 +184,9 @@ class GoldCase(BaseModel):
     parties: list[Party] = Field(min_length=2)
     facts: str = Field(min_length=50)
     evidence: list[Evidence]
+    evidence_unavailable_reason: Optional[str] = None
     statutory_basis: list[StatutoryReference]
+    statutory_basis_unavailable_reason: Optional[str] = None
     cited_authorities: list[Authority] = Field(default_factory=list)
     claimed_amounts: list[ClaimedAmount] = Field(min_length=1)
     ground_truth_outcome: GroundTruthOutcome
@@ -210,6 +212,32 @@ class GoldCase(BaseModel):
             raise ValueError(
                 "source_pdf_sha256 must be 64 lowercase hex chars; "
                 f"got {self.source_pdf_sha256!r}"
+            )
+        # INV-10: evidence and statutory_basis must each be non-empty OR carry
+        # an explicit unavailability reason. Empty WITHOUT a reason is rejected
+        # (silent omission risk per Codex finding [11] / SHA-99). Reason WITH
+        # non-empty list is also rejected — reason is for empty lists only.
+        if self.evidence and self.evidence_unavailable_reason is not None:
+            raise ValueError(
+                "evidence is non-empty but evidence_unavailable_reason is set; "
+                "the reason field is for empty lists only"
+            )
+        if not self.evidence and self.evidence_unavailable_reason is None:
+            raise ValueError(
+                "evidence is empty and no evidence_unavailable_reason given; "
+                "annotators must record why evidence was not captured"
+            )
+        if self.statutory_basis and self.statutory_basis_unavailable_reason is not None:
+            raise ValueError(
+                "statutory_basis is non-empty but "
+                "statutory_basis_unavailable_reason is set; "
+                "the reason field is for empty lists only"
+            )
+        if not self.statutory_basis and self.statutory_basis_unavailable_reason is None:
+            raise ValueError(
+                "statutory_basis is empty and no "
+                "statutory_basis_unavailable_reason given; annotators must "
+                "record why statutes were not captured"
             )
         # INV-5: every per_issue.issue must appear in claimed_amounts
         # (vacuously satisfied when per_issue is empty under an unapportioned outcome)
