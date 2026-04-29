@@ -10,8 +10,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 import structlog
 
-from apps.api.src.services.intake_service import IntakeService, get_intake_service
-from apps.api.src.services.dispute_service import DisputeService, get_dispute_service
+from apps.api.src.dependencies import get_dispute_service, get_intake_service
+from apps.api.src.services.dispute_service import DisputeService
+from apps.api.src.services.intake_service import IntakeService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/chat", tags=["chat"])
