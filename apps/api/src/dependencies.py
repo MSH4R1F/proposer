@@ -114,12 +114,10 @@ def get_intake_service(request: Request) -> IntakeService:
     return IntakeService(sessionmaker=sm, agent=_cached_intake_agent())
 
 
-def get_dispute_service(
-    uow: UnitOfWork = Depends(get_uow),
-) -> DisputeService:
-    """Per-request DisputeService. Phase 6.2 will swap to a UoW-aware ctor."""
-    del uow
-    return _legacy_get_dispute_service()
+def get_dispute_service(request: Request) -> DisputeService:
+    """Per-request DisputeService backed by the request-scoped Postgres sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return DisputeService(sessionmaker=sm)
 
 
 def get_prediction_service(

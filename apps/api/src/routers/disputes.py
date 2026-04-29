@@ -417,20 +417,19 @@ async def fix_dispute_by_session(
     # If both parties have joined, force the status to ready
     if dispute.has_both_parties:
         from llm_orchestrator.models.dispute import DisputeStatus
-        
+
         old_status = dispute.status.value
         dispute.status = DisputeStatus.READY_FOR_MEDIATION
         dispute.update_timestamp()
-        
-        # Save the dispute
-        dispute_service._disputes[dispute.dispute_id] = dispute
-        dispute_service._save_dispute(dispute)
-        
+
+        # Persist via the public save shim (Postgres-backed)
+        await dispute_service.save_dispute(dispute)
+
         logger.info("dispute_status_forced_to_ready",
                    dispute_id=dispute.dispute_id,
                    old_status=old_status,
                    new_status=dispute.status.value)
-        
+
         return {
             "dispute_id": dispute.dispute_id,
             "old_status": old_status,
