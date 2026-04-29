@@ -1,0 +1,15 @@
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.9.6-final-0 ________________
+
+Name                    Stmts   Miss  Cover   Missing
+-----------------------------------------------------
+__init__.py                 3      0   100%
+dataset.py                157      2    99%   334, 338
+schema.py                 114      1    99%   181
+tests/__init__.py           0      0   100%
+tests/conftest.py          19      0   100%
+tests/test_dataset.py     312      0   100%
+tests/test_schema.py      294      0   100%
+-----------------------------------------------------
+TOTAL                     899      3    99%
+============================== 93 passed in 0.69s ==============================
