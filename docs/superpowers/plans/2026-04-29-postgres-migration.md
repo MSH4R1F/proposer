@@ -14,6 +14,8 @@
 
 **Branch:** `feature/sha-102-migrate-user-facing-storage-from-json-files-to-postgres`
 
+**Revision status:** Amended after multi-agent review on 2026-04-29. The plan is executable only after the safety gates below are implemented and passing.
+
 ---
 
 ## Conventions
@@ -21,7 +23,23 @@
 - All commands assume CWD = repo root: `/Users/msharif/Documents/Projects/proposer/legal-mediation-system`.
 - Every code task is TDD: write the failing test, run it red, write the minimal code, run it green, commit. Each commit is one task. The conventional-commit prefix matches the spec's phase (`infra`, `feat`, `refactor`, `test`, `docs`).
 - `make db-up` and `alembic upgrade head` are prereqs for any test that hits the DB. Local dev DB URL: `postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer`.
-- Test DB is provided by `pytest-postgresql` via the `db_session` fixture defined in Phase 3, Task 3.0. Until that fixture exists, DB tests don't run.
+- Test DB is provided by `pytest-postgresql` via the `db_session` fixture defined in Phase 3, Task 3.0. The fixture must create isolated databases from `postgresql_proc`; do not drop or recreate a DB that an active `postgresql` fixture is connected to.
+- Production must never fall back to the local dev database URL. `APP_ENV=production` requires an explicit secret-managed `DATABASE_URL`, a non-localhost host, no dev password, and SSL/TLS-capable connection settings.
+- Migration artifacts that may contain PII (`data/_migration_audit_report.json`, backfill reports, golden API responses, JSON snapshots) must either be redacted/synthetic before commit or kept out of git.
+
+## Safety Gates Added By Review
+
+These gates must be completed before service cutover begins:
+
+- Enum alignment: DB enum values are generated from, or tested against, the canonical Python enums in `packages/llm_orchestrator/models` and `packages/kg_builder/models`.
+- Import smoke test: every migration script imports its Pydantic models from the real package paths.
+- Data integrity: validation errors, FK orphans, enum drift, duplicate IDs, and unhandled KG/evidence shapes fail the migration unless listed in an explicit quarantine file with a remediation note.
+- Projection parity: every JSONB payload field projected into SQL columns is checked against the stored projection after repository save and after backfill.
+- Lost-update prevention: hot read-modify-write aggregates use optimistic `version` columns, or a row lock when the transaction is short enough to avoid holding it across LLM/blob work.
+- KG polymorphism: KG serialization/deserialization preserves node subclass fields such as party role, property address, event dates, and claimed amounts.
+- Evidence metadata: audit, backfill, verify, and rollback handle the current nested shape `data/evidence_metadata/<case_id>/<evidence_id>.json`.
+- API contract: existing case-id-only prediction generation, two-party merged prediction caching, and legal disclaimer/citation behavior remain unchanged.
+- Cutover runbook: write freeze, JSON snapshot, DB snapshot/PITR note, staging rehearsal, verification, rollback drill, and post-cutover reconciliation are explicit stop/go gates.
 
 ---
 
@@ -89,6 +107,8 @@ scripts/migrations/                      ← NEW
   backfill_json_to_postgres.py
   dump_postgres_to_json.py
   check_model_alignment.py
+  print_db_target.py                     ← NEW safe cutover preflight, prints host/db/user without password
+  quarantine.yml                         ← NEW optional allowlist for signed-off bad source records
 
 alembic.ini                              ← NEW (root)
 docker-compose.yml                       ← NEW (root, sibling of langfuse compose)
@@ -170,9 +190,12 @@ def audit(data_dir: Path) -> dict[str, Any]:
     counts: dict[str, int] = {}
     for d in DIRS:
         sub = data_dir / d
-        counts[d] = (
-            len(list(sub.glob("*.json"))) if sub.exists() and sub.is_dir() else 0
-        )
+        if not sub.exists() or not sub.is_dir():
+            counts[d] = 0
+        elif d == "evidence_metadata":
+            counts[d] = len(list(sub.rglob("*.json")))
+        else:
+            counts[d] = len(list(sub.glob("*.json")))
     return {"counts": counts}
 
 
@@ -248,16 +271,25 @@ Expected: `KeyError: 'validation_errors'` or AssertionError.
 from packages.llm_orchestrator.models.conversation import ConversationState
 from packages.llm_orchestrator.models.dispute import DisputeCase
 from packages.llm_orchestrator.models.mediation import MediationSession
-from apps.api.src.services.prediction_v2 import PredictionResult
-from packages.kg_builder.models.graph import KnowledgeGraph
+from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
+from packages.kg_builder.storage.graph_serialization import (
+    deserialize_knowledge_graph,
+    serialize_knowledge_graph,
+)
 
 MODEL_FOR_DIR = {
     "sessions": ConversationState,
     "disputes": DisputeCase,
     "predictions": PredictionResult,
-    "knowledge_graphs": KnowledgeGraph,
     "mediations": MediationSession,
 }
+
+
+def _validate_kg_payload(data: dict[str, Any]) -> None:
+    kg = deserialize_knowledge_graph(data)
+    serialized = serialize_knowledge_graph(kg)
+    if len(serialized.get("nodes", [])) != len(data.get("nodes", [])):
+        raise ValueError("KG node count changed during polymorphic round-trip")
 
 
 def audit(data_dir: Path) -> dict[str, Any]:
@@ -269,16 +301,19 @@ def audit(data_dir: Path) -> dict[str, Any]:
         if not sub.exists() or not sub.is_dir():
             counts[d] = 0
             continue
-        files = sorted(sub.glob("*.json"))
+        files = sorted(sub.rglob("*.json") if d == "evidence_metadata" else sub.glob("*.json"))
         counts[d] = len(files)
 
         model = MODEL_FOR_DIR.get(d)
-        if model is None:
+        if model is None and d != "knowledge_graphs":
             continue
         for f in files:
             try:
                 data = json.loads(f.read_text())
-                model.model_validate(data)
+                if d == "knowledge_graphs":
+                    _validate_kg_payload(data)
+                else:
+                    model.model_validate(data)
             except Exception as exc:
                 validation_errors.append(
                     {"dir": d, "file": str(f), "error": repr(exc)[:500]}
@@ -417,10 +452,16 @@ def audit(data_dir: Path) -> dict[str, Any]:
         except Exception:
             return None
 
+    def _json_files(dirname: str) -> list[Path]:
+        sub = data_dir / dirname
+        if not sub.is_dir():
+            return []
+        if dirname == "evidence_metadata":
+            return sorted(sub.rglob("*.json"))
+        return sorted(sub.glob("*.json"))
+
     for d in DIRS:
-        sub = data_dir / d
-        files = sorted(sub.glob("*.json")) if sub.is_dir() else []
-        counts[d] = len(files)
+        counts[d] = len(_json_files(d))
 
     sessions_dir = data_dir / "sessions"
     if sessions_dir.is_dir():
@@ -506,15 +547,18 @@ def audit(data_dir: Path) -> dict[str, Any]:
         if not sub.is_dir():
             continue
         model = MODEL_FOR_DIR.get(d)
-        if model is None:
+        if model is None and d != "knowledge_graphs":
             continue
-        for f in sorted(sub.glob("*.json")):
+        for f in _json_files(d):
             data = _read_json(f)
             if data is None:
                 validation_errors.append({"dir": d, "file": str(f), "error": "unreadable"})
                 continue
             try:
-                model.model_validate(data)
+                if d == "knowledge_graphs":
+                    _validate_kg_payload(data)
+                else:
+                    model.model_validate(data)
             except Exception as exc:
                 validation_errors.append({"dir": d, "file": str(f), "error": repr(exc)[:500]})
 
@@ -554,14 +598,16 @@ cat data/_migration_audit_report.json
 
 Confirm counts match the spec audit table (240 sessions, 42 predictions, 16 KGs, 22 disputes, 4 mediations, 7 dispute_predictions). Note any orphans, validation errors, or merged case IDs in the commit message.
 
-- [ ] **Step 3: Commit the report**
+- [ ] **Step 3: Commit the report only if redacted**
 
 ```bash
 git add data/_migration_audit_report.json
 git commit -m "chore(audit): capture pre-migration JSON store audit report"
 ```
 
-If the report shows fixable validation errors, do *not* fix them in this task — file them as follow-up issues and proceed. The backfill is designed to skip-with-warning rather than crash.
+The report must not contain raw addresses, names, messages, evidence descriptions, or other PII. If it does, commit only a redacted/synthetic summary and keep the full report local.
+
+If the report shows validation errors, FK orphans, enum drift, duplicate IDs, synthetic-case surprises, or unhandled evidence/KG shapes, stop and either fix the source data or add an explicit entry to `scripts/migrations/quarantine.yml` with the file path, reason, impact, and planned remediation. Backfill fails closed by default; no skip-with-warning cutover.
 
 ---
 
@@ -621,6 +667,8 @@ git commit -m "infra(deps): add sqlalchemy/asyncpg/alembic and test deps"
 # apps/api/tests/test_config.py — add test
 import os
 
+import pytest
+
 from apps.api.src.config import APIConfig
 
 
@@ -636,6 +684,36 @@ def test_database_url_reads_env(monkeypatch) -> None:
     monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://u:p@h:1/d")
     cfg = APIConfig.from_env()
     assert cfg.database_url == "postgresql+asyncpg://u:p@h:1/d"
+
+
+def test_production_requires_explicit_non_dev_database_url(monkeypatch) -> None:
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+
+    with pytest.raises(ValueError, match="DATABASE_URL"):
+        APIConfig.from_env()
+
+
+def test_production_rejects_local_dev_database_url(monkeypatch) -> None:
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
+    )
+
+    with pytest.raises(ValueError, match="dev database"):
+        APIConfig.from_env()
+
+
+def test_production_requires_tls_database_url(monkeypatch) -> None:
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://u:p@db.example.com:5432/proposer",
+    )
+
+    with pytest.raises(ValueError, match="sslmode"):
+        APIConfig.from_env()
 ```
 
 - [ ] **Step 2: Run and verify failure**
@@ -650,17 +728,35 @@ Expected: `AttributeError: 'APIConfig' object has no attribute 'database_url'`.
 
 ```python
 # apps/api/src/config.py — inside APIConfig
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 import os
+from urllib.parse import parse_qs, urlparse
 
 class APIConfig(BaseModel):
     # ... existing fields ...
+    app_env: str = Field(default_factory=lambda: os.getenv("APP_ENV", "local"))
     database_url: str = Field(
         default_factory=lambda: os.getenv(
             "DATABASE_URL",
             "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
         )
     )
+
+    @model_validator(mode="after")
+    def validate_database_url_for_environment(self) -> "APIConfig":
+        if self.app_env != "production":
+            return self
+        raw = os.getenv("DATABASE_URL")
+        if not raw:
+            raise ValueError("DATABASE_URL is required in production")
+        host = (urlparse(raw).hostname or "").lower()
+        if host in {"localhost", "127.0.0.1", "::1", "0.0.0.0"} or "proposer-dev" in raw:
+            raise ValueError("production must not use the local dev database")
+        qs = parse_qs(urlparse(raw).query)
+        sslmode = (qs.get("sslmode") or [""])[0]
+        if sslmode not in {"require", "verify-ca", "verify-full"}:
+            raise ValueError("production DATABASE_URL must set sslmode=require or stronger")
+        return self
 ```
 
 - [ ] **Step 4: Run and verify pass**
@@ -675,7 +771,7 @@ Expected: PASS.
 
 ```bash
 git add apps/api/src/config.py apps/api/tests/test_config.py
-git commit -m "infra(config): add DATABASE_URL to APIConfig with asyncpg default"
+git commit -m "infra(config): add DATABASE_URL with production safety gate"
 ```
 
 ### Task 1.3 — `db.base` and `db.engine`
@@ -758,12 +854,14 @@ def create_engine_from_url(
     *,
     pool_size: int = 10,
     max_overflow: int = 5,
+    pool_timeout: int = 10,
     pool_pre_ping: bool = True,
 ) -> AsyncEngine:
     return create_async_engine(
         url,
         pool_size=pool_size,
         max_overflow=max_overflow,
+        pool_timeout=pool_timeout,
         pool_pre_ping=pool_pre_ping,
         future=True,
     )
@@ -1039,6 +1137,7 @@ db-down:
 	docker compose down
 
 db-reset:
+	@test "$${APP_ENV:-local}" = "local" || (echo "db-reset is local-only; refusing for APP_ENV=$${APP_ENV}" && exit 1)
 	docker compose down -v
 	$(MAKE) db-up
 	$(MAKE) migrate
@@ -1110,18 +1209,19 @@ intake_stage_enum = ENUM(
     name="intake_stage", create_type=False,
 )
 dispute_status_enum = ENUM(
-    "draft", "waiting_for_tenant", "waiting_for_landlord", "both_in_progress",
-    "ready_for_mediation", "in_mediation", "settled", "escalated", "closed",
+    "waiting_for_tenant", "waiting_for_landlord",
+    "tenant_in_progress", "landlord_in_progress", "both_in_progress",
     "tenant_complete", "landlord_complete", "both_complete",
+    "ready_for_mediation", "in_mediation", "settled", "closed",
     name="dispute_status", create_type=False,
 )
 party_role_enum = ENUM("tenant", "landlord", name="party_role", create_type=False)
 outcome_type_enum = ENUM(
-    "tenant_wins", "landlord_wins", "split", "uncertain",
+    "tenant_win", "landlord_win", "split", "uncertain",
     name="outcome_type", create_type=False,
 )
 issue_outcome_enum = ENUM(
-    "tenant_favoured", "landlord_favoured", "split", "uncertain",
+    "tenant_wins", "landlord_wins", "split", "uncertain",
     name="issue_outcome", create_type=False,
 )
 issue_type_enum = ENUM(
@@ -1131,7 +1231,7 @@ issue_type_enum = ENUM(
     name="issue_type", create_type=False,
 )
 evidence_strength_enum = ENUM(
-    "strong", "moderate", "weak", "none",
+    "strong", "moderate", "weak", "insufficient",
     name="evidence_strength", create_type=False,
 )
 evidence_type_enum = ENUM(
@@ -1141,15 +1241,15 @@ evidence_type_enum = ENUM(
     name="evidence_type", create_type=False,
 )
 mediation_status_enum = ENUM(
-    "active", "settled", "escalated", "closed",
+    "expectation_adjustment", "active_negotiation", "settled", "escalated",
     name="mediation_status", create_type=False,
 )
 message_type_enum = ENUM(
-    "user_message", "ai_message", "offer", "system",
+    "text", "offer", "system", "ai_mediator",
     name="message_type", create_type=False,
 )
 offer_status_enum = ENUM(
-    "pending", "accepted", "rejected", "countered", "withdrawn",
+    "pending", "accepted", "rejected", "countered", "expired",
     name="offer_status", create_type=False,
 )
 node_type_enum = ENUM(
@@ -1178,7 +1278,7 @@ ALL_ENUMS = (
 )
 ```
 
-> Note: every enum uses `create_type=False`. The Alembic migration explicitly creates the types once (Task 2.9) so models attaching to columns won't try to create-then-fail.
+> Note: every enum uses `create_type=False`. The Alembic migration explicitly creates the types once (Task 2.8) so models attaching to columns won't try to create-then-fail.
 
 - [ ] **Step 2: Smoke import**
 
@@ -1195,6 +1295,46 @@ git add apps/api/src/db/models/_enums.py
 git commit -m "feat(db): define Postgres enums for all domain types"
 ```
 
+### Task 2.1a — Enum alignment safety test
+
+**Files:**
+- Create: `apps/api/tests/db/test_enum_alignment.py`
+
+- [ ] **Step 1: Add a failing alignment test**
+
+The test imports `ALL_ENUMS` from `apps.api.src.db.models._enums` and compares each enum's value set with the canonical Python enums:
+
+- `PartyRole`
+- `IntakeStage`
+- `DisputeStatus`
+- `OutcomeType`
+- `IssueOutcome`
+- `DisputeIssue` / `IssueType`
+- `EvidenceStrength`
+- `EvidenceType`
+- `MediationStatus`
+- `MessageType`
+- `OfferStatus`
+- `NodeType`
+- `EdgeType`
+
+`sender_role` for mediation messages is intentionally `String`, not `party_role_enum`, because current messages may use `ai_mediator`. The test must also compare the Alembic migration's `ENUMS` dict against `apps.api.src.db.models._enums.ALL_ENUMS`, so the ORM enum file and hand-written migration cannot drift independently.
+
+- [ ] **Step 2: Run**
+
+```
+pytest apps/api/tests/db/test_enum_alignment.py -v
+```
+
+Expected: PASS before writing the migration. Any enum mismatch is a blocker.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add apps/api/tests/db/test_enum_alignment.py
+git commit -m "test(db): assert postgres enums match canonical pydantic enums"
+```
+
 ### Task 2.2 — `intake_sessions` model
 
 **Files:**
@@ -1209,7 +1349,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import Boolean, Numeric, String, Text
+from sqlalchemy import Boolean, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -1229,6 +1369,7 @@ class IntakeSessionRow(Base):
     intake_complete: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     completeness_score: Mapped[float] = mapped_column(Numeric, nullable=False, default=0.0)
     role_explicitly_set: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 ```
 
@@ -1270,7 +1411,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import ForeignKey, Numeric, String, Text
+from sqlalchemy import ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -1299,6 +1440,8 @@ class DisputeRow(Base):
     cached_prediction_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("predictions.prediction_id", ondelete="SET NULL"), nullable=True,
     )
+    prediction_cache_key: Mapped[str | None] = mapped_column(String, nullable=True)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 ```
 
@@ -1591,6 +1734,7 @@ class MediationSessionRow(Base):
     settled_at: Mapped[str | None] = mapped_column(Text, nullable=True)
     settlement_amount: Mapped[float | None] = mapped_column(Numeric, nullable=True)
     escalated_at: Mapped[str | None] = mapped_column(Text, nullable=True)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
 
@@ -1603,7 +1747,8 @@ class MediationMessageRow(Base):
     )
     message_id: Mapped[str] = mapped_column(String, nullable=False)
     ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
-    sender_role: Mapped[str | None] = mapped_column(party_role_enum, nullable=True)
+    # May be "tenant", "landlord", or "ai_mediator"; keep as String, not party_role_enum.
+    sender_role: Mapped[str | None] = mapped_column(String, nullable=True)
     content: Mapped[str | None] = mapped_column(Text, nullable=True)
     message_type: Mapped[str] = mapped_column(message_type_enum, nullable=False)
     timestamp: Mapped[str] = mapped_column(Text, nullable=False)
@@ -1673,13 +1818,15 @@ from apps.api.src.db.models._enums import evidence_type_enum
 class EvidenceMetadataRow(Base):
     __tablename__ = "evidence_metadata"
 
+    case_id: Mapped[str] = mapped_column(String, primary_key=True)
     evidence_id: Mapped[str] = mapped_column(String, primary_key=True)
-    case_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     evidence_type: Mapped[str] = mapped_column(evidence_type_enum, nullable=False)
     file_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     file_name: Mapped[str | None] = mapped_column(Text, nullable=True)
     file_type: Mapped[str | None] = mapped_column(String, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    extracted_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    image_description: Mapped[str | None] = mapped_column(Text, nullable=True)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 ```
 
@@ -1737,27 +1884,28 @@ ENUMS = {
         "claim_amounts", "narrative", "confirmation", "complete",
     ),
     "dispute_status": (
-        "draft", "waiting_for_tenant", "waiting_for_landlord", "both_in_progress",
-        "ready_for_mediation", "in_mediation", "settled", "escalated", "closed",
+        "waiting_for_tenant", "waiting_for_landlord",
+        "tenant_in_progress", "landlord_in_progress", "both_in_progress",
         "tenant_complete", "landlord_complete", "both_complete",
+        "ready_for_mediation", "in_mediation", "settled", "closed",
     ),
     "party_role": ("tenant", "landlord"),
-    "outcome_type": ("tenant_wins", "landlord_wins", "split", "uncertain"),
-    "issue_outcome": ("tenant_favoured", "landlord_favoured", "split", "uncertain"),
+    "outcome_type": ("tenant_win", "landlord_win", "split", "uncertain"),
+    "issue_outcome": ("tenant_wins", "landlord_wins", "split", "uncertain"),
     "issue_type": (
         "cleaning", "damage", "rent_arrears", "deposit_protection", "inventory",
         "garden", "redecoration", "keys", "fair_wear_and_tear", "missing_items",
         "utilities", "other",
     ),
-    "evidence_strength": ("strong", "moderate", "weak", "none"),
+    "evidence_strength": ("strong", "moderate", "weak", "insufficient"),
     "evidence_type": (
         "inventory_checkin", "inventory_checkout", "photos_before", "photos_after",
         "receipts", "invoices", "correspondence", "tenancy_agreement",
         "deposit_certificate", "witness_statement", "other",
     ),
-    "mediation_status": ("active", "settled", "escalated", "closed"),
-    "message_type": ("user_message", "ai_message", "offer", "system"),
-    "offer_status": ("pending", "accepted", "rejected", "countered", "withdrawn"),
+    "mediation_status": ("expectation_adjustment", "active_negotiation", "settled", "escalated"),
+    "message_type": ("text", "offer", "system", "ai_mediator"),
+    "offer_status": ("pending", "accepted", "rejected", "countered", "expired"),
     "node_type": ("party", "property", "lease", "evidence", "event", "issue", "claimed_amount"),
     "edge_type": (
         "evidence_supports", "evidence_refutes", "evidence_relates_to",
@@ -1786,6 +1934,7 @@ def upgrade() -> None:
         sa.Column("intake_complete", sa.Boolean, nullable=False, server_default=sa.false()),
         sa.Column("completeness_score", sa.Numeric, nullable=False, server_default="0"),
         sa.Column("role_explicitly_set", sa.Boolean, nullable=False, server_default=sa.false()),
+        sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("payload", JSONB, nullable=False),
     )
     op.create_index("ix_intake_sessions_user_role", "intake_sessions", ["user_role"])
@@ -1794,7 +1943,7 @@ def upgrade() -> None:
     op.create_table(
         "predictions",
         sa.Column("prediction_id", sa.String, primary_key=True),
-        sa.Column("case_id", sa.String, nullable=False, index=True),
+        sa.Column("case_id", sa.String, nullable=False),
         sa.Column("created_at", sa.Text, nullable=False),
         sa.Column("overall_outcome", sa.Enum(name="outcome_type", create_type=False), nullable=False),
         sa.Column("overall_confidence", sa.Numeric, nullable=False),
@@ -1808,7 +1957,10 @@ def upgrade() -> None:
         sa.Column("citation_verification", JSONB, nullable=True),
         sa.Column("metadata", JSONB, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
+        sa.CheckConstraint("overall_confidence >= 0 AND overall_confidence <= 1",
+                           name="ck_predictions_overall_confidence_range"),
     )
+    op.create_index("ix_predictions_case_id", "predictions", ["case_id"])
     op.create_index("ix_predictions_created_at", "predictions", ["created_at"])
     op.create_index("ix_predictions_pipeline_version", "predictions", ["pipeline_version"])
 
@@ -1829,7 +1981,11 @@ def upgrade() -> None:
         sa.Column("deposit_amount", sa.Numeric, nullable=True),
         sa.Column("cached_prediction_id", sa.String,
                   sa.ForeignKey("predictions.prediction_id", ondelete="SET NULL"), nullable=True),
+        sa.Column("prediction_cache_key", sa.String, nullable=True),
+        sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("payload", JSONB, nullable=False),
+        sa.CheckConstraint("deposit_amount IS NULL OR deposit_amount >= 0",
+                           name="ck_disputes_deposit_amount_nonnegative"),
     )
     op.create_index("ix_disputes_tenant_session_id", "disputes", ["tenant_session_id"])
     op.create_index("ix_disputes_landlord_session_id", "disputes", ["landlord_session_id"])
@@ -1856,6 +2012,9 @@ def upgrade() -> None:
         sa.Column("evidence_strength", sa.Enum(name="evidence_strength", create_type=False), nullable=True),
         sa.Column("data_completeness_impact", sa.Text, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
+        sa.UniqueConstraint("prediction_id", "ordinal", name="uq_prediction_issues_pred_ordinal"),
+        sa.CheckConstraint("raw_confidence >= 0 AND raw_confidence <= 1",
+                           name="ck_prediction_issues_raw_confidence_range"),
     )
     op.create_index("ix_prediction_issues_pred_ordinal", "prediction_issues", ["prediction_id", "ordinal"])
     op.create_index("ix_prediction_issues_issue_type", "prediction_issues", ["issue_type"])
@@ -1872,6 +2031,9 @@ def upgrade() -> None:
         sa.Column("content", sa.Text, nullable=True),
         sa.Column("confidence", sa.Numeric, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
+        sa.UniqueConstraint("prediction_id", "ordinal", name="uq_prediction_reasoning_pred_ordinal"),
+        sa.CheckConstraint("confidence IS NULL OR (confidence >= 0 AND confidence <= 1)",
+                           name="ck_prediction_reasoning_confidence_range"),
     )
     op.create_index("ix_prediction_reasoning_pred_ordinal",
                     "prediction_reasoning_steps", ["prediction_id", "ordinal"])
@@ -1929,6 +2091,8 @@ def upgrade() -> None:
         sa.Column("amount", sa.Numeric, nullable=True),
         sa.Column("node_data", JSONB, nullable=False),
         sa.Column("metadata", JSONB, nullable=True),
+        sa.CheckConstraint("confidence >= 0 AND confidence <= 1",
+                           name="ck_kg_nodes_confidence_range"),
     )
     op.create_index("ix_kg_nodes_case_type", "kg_nodes", ["case_id", "node_type"])
     op.execute(
@@ -1962,6 +2126,8 @@ def upgrade() -> None:
             ["kg_nodes.case_id", "kg_nodes.node_id"],
             ondelete="CASCADE",
         ),
+        sa.CheckConstraint("confidence >= 0 AND confidence <= 1",
+                           name="ck_kg_edges_confidence_range"),
     )
     op.create_index("ix_kg_edges_src", "kg_edges", ["case_id", "source_node_id", "edge_type"])
     op.create_index("ix_kg_edges_tgt", "kg_edges", ["case_id", "target_node_id", "edge_type"])
@@ -1978,6 +2144,7 @@ def upgrade() -> None:
         sa.Column("settled_at", sa.Text, nullable=True),
         sa.Column("settlement_amount", sa.Numeric, nullable=True),
         sa.Column("escalated_at", sa.Text, nullable=True),
+        sa.Column("version", sa.Integer, nullable=False, server_default="1"),
         sa.Column("payload", JSONB, nullable=False),
     )
 
@@ -1988,13 +2155,16 @@ def upgrade() -> None:
                   sa.ForeignKey("mediations.mediation_id", ondelete="CASCADE"), nullable=False),
         sa.Column("message_id", sa.String, nullable=False),
         sa.Column("ordinal", sa.Integer, nullable=False),
-        sa.Column("sender_role", sa.Enum(name="party_role", create_type=False), nullable=True),
+        # May be "tenant", "landlord", or "ai_mediator"; keep as String, not party_role enum.
+        sa.Column("sender_role", sa.String, nullable=True),
         sa.Column("content", sa.Text, nullable=True),
         sa.Column("message_type", sa.Enum(name="message_type", create_type=False), nullable=False),
         sa.Column("timestamp", sa.Text, nullable=False),
         sa.Column("offer_id", sa.String, nullable=True),
         sa.Column("metadata", JSONB, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
+        sa.UniqueConstraint("mediation_id", "message_id", name="uq_mediation_messages_message_id"),
+        sa.UniqueConstraint("mediation_id", "ordinal", name="uq_mediation_messages_med_ordinal"),
     )
     op.create_index("ix_mediation_messages_med_ordinal", "mediation_messages", ["mediation_id", "ordinal"])
     op.create_index("ix_mediation_messages_med_ts", "mediation_messages", ["mediation_id", "timestamp"])
@@ -2014,21 +2184,27 @@ def upgrade() -> None:
         sa.Column("responded_at", sa.Text, nullable=True),
         sa.Column("counter_amount", sa.Numeric, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
+        sa.UniqueConstraint("mediation_id", "offer_id", name="uq_structured_offers_offer_id"),
+        sa.UniqueConstraint("mediation_id", "ordinal", name="uq_structured_offers_med_ordinal"),
+        sa.CheckConstraint("amount >= 0", name="ck_structured_offers_amount_nonnegative"),
     )
     op.create_index("ix_offers_med_ordinal", "structured_offers", ["mediation_id", "ordinal"])
     op.create_index("ix_offers_med_status", "structured_offers", ["mediation_id", "status"])
 
     op.create_table(
         "evidence_metadata",
+        sa.Column("case_id", sa.String, primary_key=True),
         sa.Column("evidence_id", sa.String, primary_key=True),
-        sa.Column("case_id", sa.String, nullable=False, index=True),
         sa.Column("evidence_type", sa.Enum(name="evidence_type", create_type=False), nullable=False),
         sa.Column("file_url", sa.Text, nullable=True),
         sa.Column("file_name", sa.Text, nullable=True),
         sa.Column("file_type", sa.String, nullable=True),
         sa.Column("description", sa.Text, nullable=True),
+        sa.Column("extracted_text", sa.Text, nullable=True),
+        sa.Column("image_description", sa.Text, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
     )
+    op.create_index("ix_evidence_metadata_case_id", "evidence_metadata", ["case_id"])
     op.create_index("ix_evidence_metadata_type", "evidence_metadata", ["evidence_type"])
 
 
@@ -2084,15 +2260,57 @@ git commit -m "feat(db): initial Alembic migration covering 13 tables and enums"
 
 ```python
 # apps/api/tests/db/test_migration_roundtrip.py
-"""Verifies upgrade head + downgrade base both succeed cleanly."""
+"""Verifies upgrade head + downgrade base both succeed cleanly on an ephemeral DB."""
 
+import os
 import subprocess
+import uuid
+from pathlib import Path
+
+from pytest_postgresql import factories
+
+postgresql_proc = factories.postgresql_proc(port=None, unixsocketdir="/tmp")
 
 
-def test_alembic_upgrade_then_downgrade_is_clean() -> None:
-    # `make db-reset` already runs upgrade head; verify downgrade doesn't error.
-    subprocess.run(["alembic", "-c", "alembic.ini", "downgrade", "base"], check=True)
-    subprocess.run(["alembic", "-c", "alembic.ini", "upgrade", "head"], check=True)
+def _admin_url(postgresql_proc) -> str:
+    return (
+        f"postgresql://{postgresql_proc.user}:@"
+        f"{postgresql_proc.host}:{postgresql_proc.port}/postgres"
+    )
+
+
+def _async_url_for_db(postgresql_proc, db_name: str) -> str:
+    return (
+        f"postgresql+asyncpg://{postgresql_proc.user}:@"
+        f"{postgresql_proc.host}:{postgresql_proc.port}/{db_name}"
+    )
+
+
+def test_alembic_upgrade_then_downgrade_is_clean(postgresql_proc) -> None:
+    import psycopg
+
+    db_name = f"proposer_migration_{uuid.uuid4().hex[:12]}"
+    admin_url = _admin_url(postgresql_proc)
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"CREATE DATABASE {db_name}")
+
+    env = {**os.environ, "DATABASE_URL": _async_url_for_db(postgresql_proc, db_name)}
+    cwd = Path(__file__).resolve().parents[3]
+    try:
+        subprocess.run(["alembic", "-c", "alembic.ini", "upgrade", "head"],
+                       check=True, env=env, cwd=cwd)
+        with psycopg.connect(admin_url.replace("/postgres", f"/{db_name}")) as conn:
+            constraint = conn.execute(
+                "SELECT conname FROM pg_constraint WHERE conname = 'ck_kg_nodes_confidence_range'"
+            ).fetchone()
+            assert constraint is not None
+        subprocess.run(["alembic", "-c", "alembic.ini", "downgrade", "base"],
+                       check=True, env=env, cwd=cwd)
+        subprocess.run(["alembic", "-c", "alembic.ini", "upgrade", "head"],
+                       check=True, env=env, cwd=cwd)
+    finally:
+        with psycopg.connect(admin_url, autocommit=True) as conn:
+            conn.execute(f"DROP DATABASE IF EXISTS {db_name} WITH (FORCE)")
 ```
 
 - [ ] **Step 2: Run**
@@ -2126,27 +2344,33 @@ Goal: every repository converts between Pydantic domain models and ORM rows. Rep
 Append to `apps/api/tests/conftest.py`:
 
 ```python
-import os
 import subprocess
+import os
+import uuid
 from pathlib import Path
 from typing import AsyncIterator
 
 import pytest
 import pytest_asyncio
 from pytest_postgresql import factories
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
 # Use a session-scoped Postgres process started by pytest-postgresql.
 postgresql_proc = factories.postgresql_proc(port=None, unixsocketdir="/tmp")
-postgresql = factories.postgresql("postgresql_proc")
 
 
-def _async_url(pg_conn) -> str:
+def _admin_url(postgresql_proc) -> str:
     return (
-        f"postgresql+asyncpg://{pg_conn.info.user}:@"
-        f"{pg_conn.info.host}:{pg_conn.info.port}/{pg_conn.info.dbname}"
+        f"postgresql://{postgresql_proc.user}:@"
+        f"{postgresql_proc.host}:{postgresql_proc.port}/postgres"
+    )
+
+
+def _async_url_for_db(postgresql_proc, db_name: str) -> str:
+    return (
+        f"postgresql+asyncpg://{postgresql_proc.user}:@"
+        f"{postgresql_proc.host}:{postgresql_proc.port}/{db_name}"
     )
 
 
@@ -2155,57 +2379,51 @@ def _migrated_template(postgresql_proc):
     """Create a template DB and run Alembic against it once per session."""
     import psycopg
 
-    template_name = "proposer_template"
-    admin_url = (
-        f"postgresql://{postgresql_proc.user}@"
-        f"{postgresql_proc.host}:{postgresql_proc.port}/postgres"
-    )
+    template_name = f"proposer_template_{uuid.uuid4().hex[:8]}"
+    admin_url = _admin_url(postgresql_proc)
     with psycopg.connect(admin_url, autocommit=True) as conn:
         conn.execute(f"DROP DATABASE IF EXISTS {template_name}")
         conn.execute(f"CREATE DATABASE {template_name}")
 
-    template_url = (
-        f"postgresql+asyncpg://{postgresql_proc.user}:@"
-        f"{postgresql_proc.host}:{postgresql_proc.port}/{template_name}"
-    )
+    template_url = _async_url_for_db(postgresql_proc, template_name)
     env = {**os.environ, "DATABASE_URL": template_url}
     subprocess.run(
         ["alembic", "-c", "alembic.ini", "upgrade", "head"],
         check=True, env=env, cwd=Path(__file__).resolve().parents[3],
     )
-    return template_name
+    yield template_name
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"DROP DATABASE IF EXISTS {template_name} WITH (FORCE)")
 
 
 @pytest_asyncio.fixture
-async def db_session(postgresql, _migrated_template) -> AsyncIterator[AsyncSession]:
-    """One AsyncSession per test, transactional rollback at end."""
-    url = _async_url(postgresql)
-    engine = create_async_engine(url, poolclass=NullPool, future=True)
-    sessionmaker = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-
-    # Snapshot template into the per-test DB by COPY.
-    # pytest-postgresql gives us a fresh DB per test; we re-run migrations once
-    # (cheap because schema is small).
+async def db_sessionmaker(postgresql_proc, _migrated_template):
+    """One isolated migrated database/sessionmaker per test."""
     import psycopg
-    admin_url = (
-        f"postgresql://{postgresql.info.user}@"
-        f"{postgresql.info.host}:{postgresql.info.port}/postgres"
-    )
-    with psycopg.connect(admin_url, autocommit=True) as conn:
-        conn.execute(
-            f"DROP DATABASE IF EXISTS {postgresql.info.dbname}",
-        )
-        conn.execute(
-            f"CREATE DATABASE {postgresql.info.dbname} TEMPLATE {_migrated_template}",
-        )
 
-    async with sessionmaker() as session:
+    db_name = f"proposer_test_{uuid.uuid4().hex[:12]}"
+    admin_url = _admin_url(postgresql_proc)
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"CREATE DATABASE {db_name} TEMPLATE {_migrated_template}")
+
+    url = _async_url_for_db(postgresql_proc, db_name)
+    engine = create_async_engine(url, poolclass=NullPool, future=True)
+    sm = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    yield sm
+    await engine.dispose()
+    with psycopg.connect(admin_url, autocommit=True) as conn:
+        conn.execute(f"DROP DATABASE IF EXISTS {db_name} WITH (FORCE)")
+
+
+@pytest_asyncio.fixture
+async def db_session(db_sessionmaker) -> AsyncIterator[AsyncSession]:
+    """One AsyncSession from the per-test DB."""
+    async with db_sessionmaker() as session:
         yield session
         await session.rollback()
-    await engine.dispose()
 ```
 
-> The fixture trades a tiny per-test cost (copy from template) for clean isolation and Alembic-tested schema. If startup time becomes a problem, switch to a session-scoped engine + truncate-tables per test in a follow-up.
+> The fixture trades a tiny per-test cost (copy from template) for clean isolation and Alembic-tested schema. `uow_factory` derives from `db_sessionmaker`, so API tests can seed/assert through the same database that the route dependency override uses. If startup time becomes a problem, switch to a session-scoped engine + truncate-tables per test in a follow-up.
 
 - [ ] **Step 2: Sanity-check the fixture**
 
@@ -2365,7 +2583,9 @@ Expected: ImportError for `apps.api.src.db.repositories.sessions_repo`.
 # apps/api/src/db/repositories/sessions_repo.py
 from __future__ import annotations
 
-from sqlalchemy import select
+from dataclasses import dataclass
+
+from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -2373,11 +2593,21 @@ from apps.api.src.db.models import IntakeSessionRow
 from packages.llm_orchestrator.models.conversation import ConversationState
 
 
+@dataclass(frozen=True)
+class VersionedConversationState:
+    state: ConversationState
+    version: int
+
+
+class ConcurrentUpdateError(RuntimeError):
+    pass
+
+
 class SessionsRepo:
     def __init__(self, session: AsyncSession) -> None:
         self._s = session
 
-    async def save(self, state: ConversationState) -> None:
+    async def save(self, state: ConversationState, *, expected_version: int | None = None) -> None:
         payload = state.model_dump(mode="json")
         values = dict(
             session_id=state.session_id,
@@ -2392,16 +2622,39 @@ class SessionsRepo:
             role_explicitly_set=bool(state.role_explicitly_set),
             payload=payload,
         )
+        if expected_version is not None:
+            result = await self._s.execute(
+                update(IntakeSessionRow)
+                .where(
+                    IntakeSessionRow.session_id == state.session_id,
+                    IntakeSessionRow.version == expected_version,
+                )
+                .values(**values, version=IntakeSessionRow.version + 1)
+            )
+            if result.rowcount != 1:
+                raise ConcurrentUpdateError(f"session changed: {state.session_id}")
+            return
+
         stmt = pg_insert(IntakeSessionRow).values(**values)
         stmt = stmt.on_conflict_do_update(
             index_elements=[IntakeSessionRow.session_id],
-            set_={k: stmt.excluded[k] for k in values if k != "session_id"},
+            set_={**{k: stmt.excluded[k] for k in values if k != "session_id"},
+                  "version": IntakeSessionRow.version + 1},
         )
         await self._s.execute(stmt)
 
     async def get(self, session_id: str) -> ConversationState | None:
         row = await self._s.get(IntakeSessionRow, session_id)
         return ConversationState.model_validate(row.payload) if row else None
+
+    async def get_with_version(self, session_id: str) -> VersionedConversationState | None:
+        row = await self._s.get(IntakeSessionRow, session_id)
+        if row is None:
+            return None
+        return VersionedConversationState(
+            state=ConversationState.model_validate(row.payload),
+            version=row.version,
+        )
 
     async def get_by_case_id(self, case_id: str) -> ConversationState | None:
         result = await self._s.execute(
@@ -2442,7 +2695,8 @@ Mirrors `SessionsRepo`. Public API:
 - `get(dispute_id) → DisputeCase | None`
 - `get_by_invite_code(code) → DisputeCase | None`
 - `get_by_session_id(session_id) → list[DisputeCase]`
-- `lock(dispute_id)` → row-locked SELECT FOR UPDATE; returns DisputeCase, used by prediction caching
+- `lock(dispute_id)` → row-locked SELECT FOR UPDATE; returns `DisputeCase | None` for short dispute mutation transactions
+- `lock_for_prediction_cache(dispute_id)` → row-locked SELECT FOR UPDATE; returns a small projection DTO with `dispute: DisputeCase` and `cached_prediction_id: str | None`
 - `set_cached_prediction_id(dispute_id, prediction_id)` → small UPDATE
 - `delete(dispute_id)`
 - `list_all()`
@@ -2505,12 +2759,22 @@ async def test_set_cached_prediction_id(db_session: AsyncSession) -> None:
     await repo.save(d)
     await db_session.commit()
 
-    # cached_prediction_id FK is nullable + ON DELETE SET NULL; insert without
-    # an actual prediction by relying on the fact that the FK is checked only
-    # when non-null. Bypass FK by using NULL → set actual once we have one.
-    # Here we just assert the no-op path is fine; full FK test in Phase 7.
     await repo.set_cached_prediction_id(d.dispute_id, None)
     await db_session.commit()
+
+
+@pytest.mark.asyncio
+async def test_lock_for_prediction_cache_exposes_projection(db_session: AsyncSession) -> None:
+    repo = DisputesRepo(db_session)
+    d = _make_dispute()
+    await repo.save(d)
+    await db_session.commit()
+
+    locked = await repo.lock_for_prediction_cache(d.dispute_id)
+
+    assert locked is not None
+    assert locked.dispute.dispute_id == d.dispute_id
+    assert locked.cached_prediction_id is None
 ```
 
 - [ ] **Step 2: Implement**
@@ -2519,19 +2783,35 @@ async def test_set_cached_prediction_id(db_session: AsyncSession) -> None:
 # apps/api/src/db/repositories/disputes_repo.py
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.models import DisputeRow
+from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
 from packages.llm_orchestrator.models.dispute import DisputeCase
+
+
+@dataclass(frozen=True)
+class LockedDisputeForPredictionCache:
+    dispute: DisputeCase
+    cached_prediction_id: str | None
+    prediction_cache_key: str | None
+
+
+@dataclass(frozen=True)
+class VersionedDisputeCase:
+    dispute: DisputeCase
+    version: int
 
 
 class DisputesRepo:
     def __init__(self, session: AsyncSession) -> None:
         self._s = session
 
-    async def save(self, dispute: DisputeCase) -> None:
+    async def save(self, dispute: DisputeCase, *, expected_version: int | None = None) -> None:
         payload = dispute.model_dump(mode="json")
         values = dict(
             dispute_id=dispute.dispute_id,
@@ -2540,19 +2820,36 @@ class DisputesRepo:
             created_at=dispute.created_at,
             updated_at=dispute.updated_at,
             created_by_role=(dispute.created_by_role.value
-                             if dispute.created_by_role else None),
+                             if hasattr(dispute.created_by_role, "value")
+                             else dispute.created_by_role),
             tenant_session_id=dispute.tenant_session_id,
             landlord_session_id=dispute.landlord_session_id,
             property_address=dispute.property_address,
             property_postcode=dispute.property_postcode,
             deposit_amount=dispute.deposit_amount,
             cached_prediction_id=None,  # only set explicitly via set_cached_prediction_id
+            prediction_cache_key=None,  # only set with cached_prediction_id
             payload=payload,
         )
+        if expected_version is not None:
+            result = await self._s.execute(
+                update(DisputeRow)
+                .where(
+                    DisputeRow.dispute_id == dispute.dispute_id,
+                    DisputeRow.version == expected_version,
+                )
+                .values(**{k: v for k, v in values.items() if k != "cached_prediction_id"},
+                        version=DisputeRow.version + 1)
+            )
+            if result.rowcount != 1:
+                raise ConcurrentUpdateError(f"dispute changed: {dispute.dispute_id}")
+            return
+
         stmt = pg_insert(DisputeRow).values(**values)
         # do NOT overwrite cached_prediction_id on conflict
         update_cols = {k: stmt.excluded[k] for k in values
-                       if k not in ("dispute_id", "cached_prediction_id")}
+                       if k not in ("dispute_id", "cached_prediction_id", "prediction_cache_key")}
+        update_cols["version"] = DisputeRow.version + 1
         stmt = stmt.on_conflict_do_update(
             index_elements=[DisputeRow.dispute_id], set_=update_cols,
         )
@@ -2561,6 +2858,15 @@ class DisputesRepo:
     async def get(self, dispute_id: str) -> DisputeCase | None:
         row = await self._s.get(DisputeRow, dispute_id)
         return DisputeCase.model_validate(row.payload) if row else None
+
+    async def get_with_version(self, dispute_id: str) -> VersionedDisputeCase | None:
+        row = await self._s.get(DisputeRow, dispute_id)
+        if row is None:
+            return None
+        return VersionedDisputeCase(
+            dispute=DisputeCase.model_validate(row.payload),
+            version=row.version,
+        )
 
     async def get_by_invite_code(self, code: str) -> DisputeCase | None:
         result = await self._s.execute(
@@ -2585,13 +2891,28 @@ class DisputesRepo:
         row = result.scalar_one_or_none()
         return DisputeCase.model_validate(row.payload) if row else None
 
+    async def lock_for_prediction_cache(
+        self, dispute_id: str
+    ) -> LockedDisputeForPredictionCache | None:
+        result = await self._s.execute(
+            select(DisputeRow).where(DisputeRow.dispute_id == dispute_id).with_for_update()
+        )
+        row = result.scalar_one_or_none()
+        if row is None:
+            return None
+        return LockedDisputeForPredictionCache(
+            dispute=DisputeCase.model_validate(row.payload),
+            cached_prediction_id=row.cached_prediction_id,
+            prediction_cache_key=row.prediction_cache_key,
+        )
+
     async def set_cached_prediction_id(
-        self, dispute_id: str, prediction_id: str | None,
+        self, dispute_id: str, prediction_id: str | None, *, cache_key: str | None = None,
     ) -> None:
         await self._s.execute(
             update(DisputeRow)
             .where(DisputeRow.dispute_id == dispute_id)
-            .values(cached_prediction_id=prediction_id)
+            .values(cached_prediction_id=prediction_id, prediction_cache_key=cache_key)
         )
 
     async def delete(self, dispute_id: str) -> None:
@@ -2639,9 +2960,9 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.repositories.predictions_repo import PredictionsRepo
-from apps.api.src.services.prediction_v2 import (
+from packages.llm_orchestrator.models.prediction_v2 import (
     PredictionResult, IssuePrediction, ReasoningStep, Citation,
-    OutcomeType, IssueOutcome, IssueType, EvidenceStrengthEnum,
+    OutcomeType, IssueOutcome, IssueType, EvidenceStrength,
 )
 
 
@@ -2653,11 +2974,11 @@ def _make_prediction(prediction_id: str = "p1", case_id: str = "c1") -> Predicti
     )
     issue = IssuePrediction(
         issue_type=IssueType.CLEANING, issue_description="Dirty kitchen",
-        outcome=IssueOutcome.LANDLORD_FAVOURED, raw_confidence=0.7,
+        outcome=IssueOutcome.LANDLORD_WINS, raw_confidence=0.7,
         predicted_amount=120.0, amount_range=(80.0, 160.0),
         reasoning="Inventory checkin clean, checkout dirty.",
         key_factors=["clear inventory"], supporting_cases=[citation],
-        counterfactuals=[], evidence_strength=EvidenceStrengthEnum.MODERATE,
+        counterfactuals=[], evidence_strength=EvidenceStrength.MODERATE,
     )
     step = ReasoningStep(
         step_number=1, category="legal_framework",
@@ -2735,7 +3056,7 @@ from apps.api.src.db.models import (
     PredictionRow, PredictionIssueRow, PredictionReasoningStepRow,
     PredictionCitationRow,
 )
-from apps.api.src.services.prediction_v2 import PredictionResult
+from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
 
 
 class PredictionsRepo:
@@ -2759,7 +3080,7 @@ class PredictionsRepo:
             rag_confidence=payload.get("rag_confidence"),
             pipeline_metadata=payload.get("pipeline_metadata"),
             citation_verification=payload.get("citation_verification"),
-            metadata=payload.get("metadata"),
+            metadata_=payload.get("metadata"),
             payload=payload,
         )
         stmt = pg_insert(PredictionRow).values(**values)
@@ -2885,9 +3206,11 @@ Public API:
 - `delete(case_id)`
 - `list_case_ids() → list[str]`
 
-The polymorphic node read uses `node_type` to pick the right Pydantic class. The write extracts `event_date` (only for `EventNode`) and `amount` (only for `ClaimedAmountNode`) into typed columns; everything else goes into `node_data` JSONB.
+The polymorphic node read must preserve the existing `JSONGraphStore` behavior. Extract the current `_serialize_graph`, `_serialize_node`, `_deserialize_graph`, and `_deserialize_node` logic into a reusable helper module before moving persistence to Postgres. Plain `KnowledgeGraph.model_validate()` is not enough because `KnowledgeGraph.nodes` is typed as `list[BaseNode]` and can drop subclass-only fields. The write extracts `event_date` (only for `EventNode`) and `amount` (only for `ClaimedAmountNode`) into typed columns; everything else goes into `node_data` JSONB with `_node_class` preserved.
 
 **Files:**
+- Create: `packages/kg_builder/storage/graph_serialization.py`
+- Modify: `packages/kg_builder/storage/json_store.py` (delegate to shared serialization helpers)
 - Create: `apps/api/src/db/repositories/kg_repo.py`
 - Create: `apps/api/tests/db/repositories/test_kg_repo.py`
 
@@ -2982,6 +3305,11 @@ from packages.kg_builder.models.nodes import (
     BaseNode, ClaimedAmountNode, EventNode, EvidenceNode, IssueNode,
     LeaseNode, PartyNode, PropertyNode,
 )
+from packages.kg_builder.storage.graph_serialization import (
+    deserialize_knowledge_graph,
+    serialize_knowledge_graph,
+    serialize_node,
+)
 
 _NODE_CLASSES: dict[str, type[BaseNode]] = {
     "party": PartyNode,
@@ -3008,7 +3336,7 @@ class KnowledgeGraphRepo:
         self._s = session
 
     async def save(self, kg: KnowledgeGraph) -> None:
-        payload = kg.model_dump(mode="json")
+        payload = serialize_knowledge_graph(kg)
         meta_section = payload.get("metadata")
         values = dict(
             case_id=kg.case_id,
@@ -3020,7 +3348,7 @@ class KnowledgeGraphRepo:
             validation_info=payload.get("validation_info"),
             is_consistent=payload.get("is_consistent"),
             data_quality_tier=payload.get("data_quality_tier"),
-            metadata=meta_section,
+            metadata_=meta_section,
             payload=payload,
         )
         stmt = pg_insert(KnowledgeGraphRow).values(**values)
@@ -3039,7 +3367,7 @@ class KnowledgeGraphRepo:
         )
 
         for node in kg.nodes:
-            d = node.model_dump(mode="json")
+            d = serialize_node(node)
             self._s.add(KGNodeRow(
                 case_id=kg.case_id,
                 node_id=node.node_id,
@@ -3053,7 +3381,7 @@ class KnowledgeGraphRepo:
                     node.node_type.value if hasattr(node.node_type, "value") else node.node_type
                 ) else None,
                 node_data=d,
-                metadata=d.get("metadata"),
+                metadata_=d.get("metadata"),
             ))
 
         for edge in kg.edges:
@@ -3065,7 +3393,7 @@ class KnowledgeGraphRepo:
                 target_node_id=edge.target_node_id,
                 confidence=float(edge.confidence),
                 source=edge.source, description=edge.description,
-                metadata=d.get("metadata"),
+                metadata_=d.get("metadata"),
                 payload=d,
             ))
 
@@ -3083,7 +3411,7 @@ class KnowledgeGraphRepo:
         kg_dict = dict(row.payload)
         kg_dict["nodes"] = [self._row_to_node_dict(n) for n in nodes_q.scalars()]
         kg_dict["edges"] = [e.payload for e in edges_q.scalars()]
-        return KnowledgeGraph.model_validate(kg_dict)
+        return deserialize_knowledge_graph(kg_dict)
 
     @staticmethod
     def _row_to_node_dict(row: KGNodeRow) -> dict:
@@ -3131,13 +3459,15 @@ Follows the same delete-then-insert children pattern as `PredictionsRepo`. Test 
 
 Smallest repo. Public API:
 - `save(metadata: EvidenceMetadata)` (define `EvidenceMetadata` Pydantic model in `packages/llm_orchestrator/models/evidence.py` if not already present — Phase 2 doesn't depend on it being there; check first)
-- `get(evidence_id)` / `get_by_case_id(case_id) → list` / `delete(evidence_id)`
+- `get(case_id, evidence_id)` / `get_by_case_id(case_id) → list` / `delete(case_id, evidence_id)`
+
+Identity is composite `(case_id, evidence_id)` to match the existing nested JSON path and avoid eight-character ID collisions across cases.
 
 **Files:**
 - Create: `apps/api/src/db/repositories/evidence_repo.py`
 - Create: `apps/api/tests/db/repositories/test_evidence_repo.py`
 
-- [ ] **Step 1**: write tests — round-trip, `get_by_case_id` filters correctly, `delete` removes the row.
+- [ ] **Step 1**: write tests — round-trip, `get_by_case_id` filters correctly, duplicate `evidence_id` can exist in two different cases, and `delete(case_id, evidence_id)` removes only the matching row.
 - [ ] **Step 2**: implement. If `EvidenceMetadata` model doesn't exist, extract it from `apps/api/src/services/storage_service.py` (the existing JSON shape) into `packages/llm_orchestrator/models/evidence.py` and export it; this is part of the migration.
 - [ ] **Step 3**: run; commit `feat(db): add EvidenceRepo and lift EvidenceMetadata into a domain model`.
 
@@ -3223,28 +3553,42 @@ from typing import Any
 from packages.llm_orchestrator.models.conversation import ConversationState
 from packages.llm_orchestrator.models.dispute import DisputeCase
 from packages.llm_orchestrator.models.mediation import MediationSession
-from apps.api.src.services.prediction_v2 import PredictionResult
-from packages.kg_builder.models.graph import KnowledgeGraph
+from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
+from packages.kg_builder.storage.graph_serialization import (
+    deserialize_knowledge_graph,
+    serialize_knowledge_graph,
+)
 
 VALIDATORS: dict[str, Any] = {
     "sessions": ConversationState,
     "disputes": DisputeCase,
     "predictions": PredictionResult,
-    "knowledge_graphs": KnowledgeGraph,
     "mediations": MediationSession,
 }
+
+
+def _validate_kg_payload(data: dict[str, Any]) -> None:
+    kg = deserialize_knowledge_graph(data)
+    serialized = serialize_knowledge_graph(kg)
+    # Ensure subclass-only data remains present after round-trip.
+    if len(serialized.get("nodes", [])) != len(data.get("nodes", [])):
+        raise ValueError("KG node count changed during polymorphic round-trip")
 
 
 def dry_run(data_dir: Path) -> dict[str, Any]:
     planned: dict[str, int] = {}
     invalid: list[dict[str, Any]] = []
 
-    for d, model in VALIDATORS.items():
-        sub = data_dir / d
+    def _json_files(dirname: str) -> list[Path]:
+        sub = data_dir / dirname
         if not sub.is_dir():
-            planned[d] = 0
-            continue
-        files = sorted(sub.glob("*.json"))
+            return []
+        if dirname == "evidence_metadata":
+            return sorted(sub.rglob("*.json"))
+        return sorted(sub.glob("*.json"))
+
+    for d, model in VALIDATORS.items():
+        files = _json_files(d)
         planned[d] = 0
         for f in files:
             try:
@@ -3253,10 +3597,19 @@ def dry_run(data_dir: Path) -> dict[str, Any]:
             except Exception as exc:
                 invalid.append({"dir": d, "file": str(f), "error": repr(exc)[:300]})
 
-    # dispute_predictions and evidence_metadata are dict-shaped, no Pydantic
-    for d in ("dispute_predictions", "evidence_metadata"):
-        sub = data_dir / d
-        planned[d] = len(list(sub.glob("*.json"))) if sub.is_dir() else 0
+    planned["knowledge_graphs"] = 0
+    for f in _json_files("knowledge_graphs"):
+        try:
+            _validate_kg_payload(json.loads(f.read_text()))
+            planned["knowledge_graphs"] += 1
+        except Exception as exc:
+            invalid.append({"dir": "knowledge_graphs", "file": str(f), "error": repr(exc)[:300]})
+
+    # dispute_predictions are dict-shaped. evidence_metadata is nested under
+    # data/evidence_metadata/<case_id>/<evidence_id>.json and becomes typed in
+    # Task 4.2 before commit/verify can run.
+    planned["dispute_predictions"] = len(_json_files("dispute_predictions"))
+    planned["evidence_metadata"] = len(_json_files("evidence_metadata"))
 
     return {"planned": planned, "invalid": invalid}
 
@@ -3295,17 +3648,19 @@ git commit -m "feat(backfill): add --dry-run mode validating JSON against Pydant
 - Modify: `scripts/migrations/backfill_json_to_postgres.py`
 - Create: `scripts/migrations/tests/test_backfill_commit.py`
 
-The commit pass loads JSON in FK-correct order (per spec): `intake_sessions` → `predictions` (with children) → `disputes` (without `cached_prediction_id`) → apply `dispute_predictions` mappings → `knowledge_graphs/kg_nodes/kg_edges` → `mediations/messages/offers` → `evidence_metadata`. Idempotent: the repos use `ON CONFLICT DO UPDATE`, so a re-run is safe.
+The commit pass first runs a full preflight over every directory before writing anything: Pydantic validation, KG polymorphic round-trip, duplicate PK/natural-key detection, FK/orphan checks, enum alignment, projection map validation, nested evidence metadata shape, and quarantine handling. Only if preflight is clean does it load JSON in FK-correct order (per spec): `intake_sessions` → `predictions` (with children) → `disputes` (without `cached_prediction_id`) → apply `dispute_predictions` mappings → `knowledge_graphs/kg_nodes/kg_edges` → `mediations/messages/offers` → `evidence_metadata`. Idempotent: the repos use `ON CONFLICT DO UPDATE`, so a re-run is safe on an empty or previously completed target.
 
-- [ ] **Step 1**: integration test that takes a `tmp_path` data dir with one of each entity, runs `--commit` against a `db_session`, then verifies every entity is queryable through the matching repo. Use the parametrized `_make_*` helpers from the repo tests as fixture sources.
+- [ ] **Step 1**: integration test that takes a `tmp_path` data dir with one of each entity, including nested `evidence_metadata/<case_id>/<evidence_id>.json`, runs `--commit` against a `db_session`, then verifies every entity is queryable through the matching repo. Use the parametrized `_make_*` helpers from the repo tests as fixture sources.
 
-- [ ] **Step 2**: implement `commit()` in `backfill_json_to_postgres.py` opening one `AsyncSession` per directory and committing per-directory (not per-file — too slow; not all-at-once — too much memory for the prediction set with deep nesting). Log progress to `data/_backfill_report.jsonl`, one line per file.
+- [ ] **Step 2**: add typed validators for `dispute_predictions` and `evidence_metadata` before commit. `evidence_metadata` must use `rglob("*.json")`, derive `case_id` from the parent directory when absent, preserve `extracted_text`/`image_description` if present, and write rollback output in the same nested shape.
 
-- [ ] **Step 3**: run + commit `feat(backfill): implement --commit with FK-aware order and idempotent upserts`.
+- [ ] **Step 3**: implement `commit()` in `backfill_json_to_postgres.py` with one migration transaction after preflight. Use one `AsyncSession`/transaction, stream files in FK order to avoid holding all payloads in memory, and commit only after every directory has been written and projection checks pass. If a late unexpected error occurs, rollback leaves the target unchanged. Log progress to `data/_backfill_report.jsonl`, one line per file, using file paths/counts/status only; do not log raw payload fields. If any directory has validation errors, FK orphans, enum drift, duplicate IDs, projection mismatches, or unhandled KG/evidence shape, exit non-zero unless the file is listed in `scripts/migrations/quarantine.yml` with a remediation note.
+
+- [ ] **Step 4**: run + commit `feat(backfill): implement --commit with FK-aware order and idempotent upserts`.
 
 ### Task 4.3 — Backfill `--verify`
 
-`--verify` reads every JSON file again, loads the corresponding Pydantic model, loads the corresponding entity through the repo, and asserts `state.model_dump(mode="json") == row_state.model_dump(mode="json")`. Failures get logged; exit code != 0 if any.
+`--verify` reads every JSON file again, loads the corresponding Pydantic model or typed migration validator, loads the corresponding entity through the repo, and asserts `state.model_dump(mode="json") == row_state.model_dump(mode="json")`. It also verifies projection parity, child-table counts, citation counts, `disputes.cached_prediction_id` mappings from `dispute_predictions`, nested evidence metadata count, and KG subclass fields via `deserialize_knowledge_graph`. Failures get logged without raw PII; exit code != 0 if any.
 
 - [ ] **Step 1**: failing integration test that mutates a row directly in the DB after `--commit`, runs `--verify`, asserts non-zero exit / report flags the diff.
 - [ ] **Step 2**: implement.
@@ -3313,7 +3668,7 @@ The commit pass loads JSON in FK-correct order (per spec): `intake_sessions` →
 
 ### Task 4.4 — `dump_postgres_to_json.py` (rollback insurance)
 
-The reverse operation: load every entity through repos, dump JSON in the original directory shape into `--out`. ~50 lines.
+The reverse operation: load every entity through repos, dump JSON in the original directory shape into `--out`, including `dispute_predictions/<dispute_id>.json` derived from `disputes.cached_prediction_id` and nested `evidence_metadata/<case_id>/<evidence_id>.json`. Use `serialize_knowledge_graph` for KG rollback output so `_node_class` and subclass fields survive.
 
 - [ ] **Step 1**: integration test — populate via repos, dump, parse output, compare to source via Pydantic round-trip.
 - [ ] **Step 2**: implement.
@@ -3462,25 +3817,8 @@ from apps.api.src.db.uow import UnitOfWorkFactory
 
 
 @pytest_asyncio.fixture
-async def uow_factory(postgresql, _migrated_template):
-    import psycopg
-    admin_url = (
-        f"postgresql://{postgresql.info.user}@"
-        f"{postgresql.info.host}:{postgresql.info.port}/postgres"
-    )
-    with psycopg.connect(admin_url, autocommit=True) as conn:
-        conn.execute(f"DROP DATABASE IF EXISTS {postgresql.info.dbname}")
-        conn.execute(
-            f"CREATE DATABASE {postgresql.info.dbname} TEMPLATE {_migrated_template}"
-        )
-    url = (
-        f"postgresql+asyncpg://{postgresql.info.user}:@"
-        f"{postgresql.info.host}:{postgresql.info.port}/{postgresql.info.dbname}"
-    )
-    engine = create_async_engine(url, poolclass=NullPool, future=True)
-    sm = async_sessionmaker(engine, expire_on_commit=False)
-    yield UnitOfWorkFactory(sm)
-    await engine.dispose()
+async def uow_factory(db_sessionmaker):
+    yield UnitOfWorkFactory(db_sessionmaker)
 ```
 
 - [ ] **Step 4: Run + commit**
@@ -3523,7 +3861,8 @@ async def test_lifespan_creates_sessionmaker(monkeypatch) -> None:
 # apps/api/src/main.py — replace lifespan + create_app
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from apps.api.src.config import APIConfig
@@ -3534,7 +3873,8 @@ def create_lifespan(settings: APIConfig):
     async def lifespan(app: FastAPI):
         engine = create_async_engine(
             settings.database_url,
-            pool_size=10, max_overflow=5, pool_pre_ping=True, future=True,
+            pool_size=10, max_overflow=5, pool_timeout=10,
+            pool_pre_ping=True, future=True,
         )
         app.state.engine = engine
         app.state.sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
@@ -3547,8 +3887,28 @@ def create_lifespan(settings: APIConfig):
 def create_app(settings: APIConfig) -> FastAPI:
     app = FastAPI(lifespan=create_lifespan(settings))
     # ... existing router includes stay ...
+
+    @app.get("/livez")
+    async def livez():
+        return {"status": "alive"}
+
+    @app.get("/readyz")
+    async def readyz():
+        expected_revision = "0001"
+        try:
+            async with app.state.engine.connect() as conn:
+                await conn.execute(text("SELECT 1"))
+                version = await conn.scalar(text("SELECT version_num FROM alembic_version"))
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail="database_not_ready") from exc
+        if version != expected_revision:
+            raise HTTPException(status_code=503, detail="schema_version_mismatch")
+        return {"status": "ready", "alembic_version": version}
+
     return app
 ```
+
+Add structured, PII-safe operational logs/metrics around DB connection failures, pool timeout/exhaustion, migration duration, backfill counts/errors, 409 concurrency conflicts, and orphan evidence cleanup. `/livez` must not touch the DB; `/readyz` must fail on schema drift.
 
 - [ ] **Step 3: Run + commit**
 
@@ -3592,6 +3952,42 @@ git add apps/api/src/dependencies.py
 git commit -m "feat(api): add get_db_session and get_uow_factory deps"
 ```
 
+### Task 5.4 — Request-scoped service factories and router wiring
+
+Adding `get_uow_factory()` is not enough by itself. Existing routers depend on singleton `get_*_service()` factories that cannot see `request.app.state.sessionmaker`. This task rewires route dependencies so production paths actually use UoW-backed services.
+
+**Files:**
+- Modify: `apps/api/src/dependencies.py`
+- Modify: `apps/api/src/routers/chat.py`
+- Modify: `apps/api/src/routers/cases.py`
+- Modify: `apps/api/src/routers/disputes.py`
+- Modify: `apps/api/src/routers/predictions.py`
+- Modify: `apps/api/src/routers/evidence.py`
+- Modify: `apps/api/src/routers/mediation.py`
+
+- [ ] **Step 1: Add service dependency factories**
+
+Each factory accepts `uow_factory: UnitOfWorkFactory = Depends(get_uow_factory)` and returns a service instance with only safe singleton collaborators cached (LLM clients, RAG pipeline, graph builder). Do not cache services that hold mutable persistence state.
+
+- [ ] **Step 2: Rewrite router dependencies**
+
+Replace imports of `get_intake_service`, `get_dispute_service`, `get_prediction_service`, `get_storage_service`, and `get_mediation_service` from service modules with dependency factories from `apps.api.src.dependencies`.
+
+- [ ] **Step 3: Add a route smoke test**
+
+Use `httpx` + `asgi-lifespan` with dependency override of `get_uow_factory` to assert each router reaches the test DB-backed service dependency.
+
+- [ ] **Step 4: Add access-isolation tests before broad router rewiring**
+
+Add integration tests proving a caller scoped to one `session_id`/party cannot fetch or mutate another party's case, prediction, evidence, or mediation merely by guessing `case_id`, `evidence_id`, `dispute_id`, or invite code. Service methods should accept the current session/party context where needed and repository queries should include that scope. Invite-code join remains a deliberate exception, but only for the join flow.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add apps/api/src/dependencies.py apps/api/src/routers/
+git commit -m "refactor(api): route services through request-scoped UnitOfWorkFactory"
+```
+
 ---
 
 ## Phase 6 — Services: intake + disputes
@@ -3621,15 +4017,17 @@ class IntakeService:
 
     async def process_message(self, session_id: str, message: str) -> dict[str, Any]:
         async with self._uow_factory() as uow:
-            state = await uow.sessions.get(session_id)
-            if state is None:
+            versioned = await uow.sessions.get_with_version(session_id)
+            if versioned is None:
                 raise SessionNotFoundError(session_id)
+            state = versioned.state
+            version = versioned.version
 
         # External work (LLM) OUTSIDE the transaction.
-        new_state = await self._intake_agent.process(state, message)
+        _, new_state = await self._intake_agent.process_message(state, message)
 
         async with self._uow_factory() as uow:
-            await uow.sessions.save(new_state)
+            await uow.sessions.save(new_state, expected_version=version)
             # If a dispute is linked, sync property/deposit/status.
             disputes = await uow.disputes.get_by_session_id(session_id)
             for d in disputes:
@@ -3638,6 +4036,8 @@ class IntakeService:
 
         return self._build_response(new_state)
 ```
+
+If `save(..., expected_version=version)` raises `ConcurrentUpdateError`, return a clean 409/retry response or retry once by reloading the latest session and re-running the deterministic merge. Do not silently overwrite a newer message history.
 
 Apply the same pattern to:
 - `start_session` → insert session + create dispute (one UoW)
@@ -3683,42 +4083,66 @@ The two routes `/chat/start` and `/chat/join` each touch sessions + disputes ato
 
 ### Task 7.1 — `PredictionService` rewrite
 
-Replace `self.kg_store = JSONGraphStore(config.kg_dir)` with use of `uow.kg`. Replace `_save_prediction`, `_save_dispute_prediction_mapping`, `_get_cached_dispute_prediction`, `list_predictions_for_case` with repo calls.
+Replace `self.kg_store = JSONGraphStore(config.kg_dir)` with use of `uow.kg`. Replace `_save_prediction`, `_save_dispute_prediction_mapping`, `_get_cached_dispute_prediction`, `list_predictions_for_case` with repo calls. Keep the public API contract: `/predictions/generate` and `PredictionService.generate_prediction()` still accept `case_id` only (plus existing `include_reasoning`) and internally resolve whether the case belongs to a two-party dispute.
 
-- [ ] **Step 1**: failing test that calls `generate_prediction(case_id)` and asserts the prediction + KG + `disputes.cached_prediction_id` were all written in a single transaction (parametrize a failure injection on the second write to assert atomic rollback).
+- [ ] **Step 1**: failing tests that call `generate_prediction(case_id)` and assert:
+  - prediction + KG + `disputes.cached_prediction_id` are written in a single transaction (parametrize a failure injection on the second write to assert atomic rollback)
+  - tenant and landlord case IDs for the same dispute resolve to the same merged cached prediction
+  - a dispute with only one party generates a one-party prediction but does **not** populate `disputes.cached_prediction_id`
+  - a case not linked to a dispute still generates a one-party prediction
+
+Only fully merged two-party predictions are cacheable through `disputes.cached_prediction_id`. `_resolve_and_merge_from_repos` returns `(case_file, dispute_id, cacheable, cache_key)` where `cacheable` is true only when both tenant and landlord sessions are present and successfully merged. `cache_key` includes the tenant and landlord session IDs plus their current versions, so stale merged predictions can be invalidated when either side changes.
 
 - [ ] **Step 2**: implement the workflow per spec §"Prediction Generation Detail":
 
 ```python
-async def generate_prediction(self, case_id: str, *, dispute_id: str | None = None) -> PredictionResult:
-    # 1-4: external work (load case, build CaseFile, build KG, LLM prediction)
-    case_file = await self._load_case_file(case_id)
+async def generate_prediction(self, case_id: str, include_reasoning: bool = True) -> PredictionResult:
+    # 1: short read transaction to preserve existing case_id-only API behavior.
+    async with self._uow_factory() as uow:
+        case_file, dispute_id, cacheable, cache_key = await self._resolve_and_merge_from_repos(case_id, uow)
+        if cacheable and dispute_id:
+            locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
+            if locked and locked.cached_prediction_id and locked.prediction_cache_key == cache_key:
+                cached = await uow.predictions.get(locked.cached_prediction_id)
+                if cached:
+                    return cached
+
+    # 2-4: external work outside the transaction.
     kg = self._graph_builder.build(case_file)
     prediction = await self._engine.predict(case_file, kg)
+    if cacheable and dispute_id:
+        prediction.metadata["dispute_id"] = dispute_id
+        prediction.metadata["merged"] = True
+        prediction.metadata["prediction_cache_key"] = cache_key
 
-    # 5-9: short transaction
+    # 5-9: short write transaction. Re-check cache after row lock; another request
+    # may have populated it while this request was doing LLM work.
     async with self._uow_factory() as uow:
-        if dispute_id:
-            dispute = await uow.disputes.lock(dispute_id)  # SELECT FOR UPDATE
-            if dispute and dispute.cached_prediction_id:
-                # Re-check after lock; another request may have populated the cache.
-                cached = await uow.predictions.get(dispute.cached_prediction_id)
+        if cacheable and dispute_id:
+            locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
+            if locked and locked.cached_prediction_id and locked.prediction_cache_key == cache_key:
+                cached = await uow.predictions.get(locked.cached_prediction_id)
                 if cached:
                     return cached
         await uow.kg.save(kg)
         await uow.predictions.save(prediction)
-        if dispute_id:
-            await uow.disputes.set_cached_prediction_id(dispute_id, prediction.prediction_id)
+        if cacheable and dispute_id:
+            await uow.disputes.set_cached_prediction_id(dispute_id, prediction.prediction_id, cache_key=cache_key)
     return prediction
 ```
 
-- [ ] **Step 3**: delete `JSONGraphStore` (and its tests); the `KnowledgeGraphRepo` replaces it. Remove the import in `prediction_service.py:23`.
+Also rewrite and test the other public prediction service methods used by routes:
+- `check_case_ready(case_id)` loads the case through `uow.sessions` and preserves the existing response shape.
+- `get_prediction(prediction_id)` loads through `uow.predictions`.
+- `list_predictions_for_case(case_id)` returns direct case predictions plus the shared cached dispute prediction by resolving `case_id → session → dispute → cached_prediction_id`; it must not be a bare `PredictionsRepo.get_by_case_id`.
+
+- [ ] **Step 3**: remove production use of `JSONGraphStore` from `prediction_service.py`, but keep the shared `graph_serialization.py` helpers and keep/adapt tests that prove legacy KG JSON files deserialize with subclass fields intact. Delete only the JSON file-backed facade once no production path imports it.
 
 - [ ] **Step 4**: commit `refactor(prediction): drop JSONGraphStore; UoW workflow with row-locked cache`.
 
 ### Task 7.2 — Concurrent-prediction integration test
 
-Two simultaneous `generate_prediction(case_id, dispute_id=X)` calls must produce only one `predictions` row referenced by `disputes.cached_prediction_id`.
+Two simultaneous `generate_prediction(case_id)` calls for case IDs linked to the same dispute must produce only one `predictions` row referenced by `disputes.cached_prediction_id`.
 
 - [ ] **Step 1**: write `apps/api/tests/integration/test_concurrent_predictions.py` using `asyncio.gather` against the real DB.
 - [ ] **Step 2**: confirm test fails before the row-lock is added; passes after.
@@ -3739,7 +4163,7 @@ Move metadata reads/writes from `data/evidence_metadata/` JSON files to `Evidenc
 
 ### Task 8.2 — Evidence routes wiring
 
-Routes `/evidence/upload/{case_id}`, `/evidence/{case_id}`, `/evidence/delete/{id}` consume the rewritten service. No DB code in the route file.
+Routes `/evidence/upload/{case_id}`, `GET /evidence/{case_id}`, and existing `DELETE /evidence/{case_id}/{evidence_id}` consume the rewritten service. Keep the current API path; do not introduce `/evidence/delete/{id}`. No DB code in the route file.
 
 - [ ] **Step 1**: smoke test against the test client (httpx + asgi-lifespan + dependency override of `get_uow_factory` to use the test sessionmaker).
 - [ ] **Step 2**: commit `refactor(evidence-routes): wire to repo-backed StorageService`.
@@ -3753,7 +4177,9 @@ The four atomicity hazards (settle, escalate, accept→settle, start_mediation) 
 ### Task 9.1 — `MediationService` rewrite
 
 - [ ] **Step 1**: drop `self._mediations` and the `fcntl` file lock.
-- [ ] **Step 2**: rewrite each public method (`start_mediation`, `add_message`, `submit_offer`, `respond_to_offer`, `settle`, `escalate`, `get_settlement`, `generate_settlement_pdf`) to use `uow.mediations` + `uow.disputes`.
+- [ ] **Step 2**: rewrite each public method used by current routes (`start_mediation`, `get_expectation_data`, `add_message`, `submit_offer`, `respond_to_offer`, `get_messages`, `settle`, `escalate`, `get_settlement`, `generate_settlement_pdf`) to use `uow.mediations` + `uow.disputes`.
+
+Any helper that currently scans singleton services, including `_get_prediction_data`, must use `uow.sessions`, `uow.predictions`, and `disputes.cached_prediction_id`/`prediction_cache_key` instead.
 - [ ] **Step 3**: the four hazards become explicit UoW blocks per the spec table:
 
 ```python
@@ -3768,7 +4194,7 @@ async def settle(self, dispute_id: str, settlement_amount: float) -> None:
         dispute = await uow.disputes.lock(dispute_id)
         if dispute is None:
             raise DisputeNotFoundError(dispute_id)
-        dispute.settle(settlement_amount)
+        dispute.settle()
         await uow.disputes.save(dispute)
 ```
 
@@ -3789,29 +4215,44 @@ async def settle(self, dispute_id: str, settlement_amount: float) -> None:
 - [ ] **Step 1**: write `apps/api/tests/integration/test_roundtrip.py` parametrized over entity types; iterate every JSON file in the spec's audit table; load → save → reload → assert `model_dump(mode="json")` identity.
 
 ```python
+from packages.kg_builder.storage.graph_serialization import deserialize_knowledge_graph
+from packages.llm_orchestrator.models.evidence import EvidenceMetadata
+
 @pytest.mark.parametrize("kind,model_cls,save_fn", [
     ("sessions", ConversationState, "sessions.save"),
     ("disputes", DisputeCase, "disputes.save"),
     ("predictions", PredictionResult, "predictions.save"),
     ("knowledge_graphs", KnowledgeGraph, "kg.save"),
     ("mediations", MediationSession, "mediations.save"),
+    ("evidence_metadata", EvidenceMetadata, "evidence.save"),
 ])
 async def test_roundtrip(kind, model_cls, save_fn, uow_factory) -> None:
     src = Path("data") / kind
     if not src.is_dir():
         pytest.skip(f"no data/{kind}")
-    for f in src.glob("*.json"):
-        original = model_cls.model_validate(json.loads(f.read_text()))
+    files = src.rglob("*.json") if kind == "evidence_metadata" else src.glob("*.json")
+    for f in files:
+        data = json.loads(f.read_text())
+        # KGs must use shared graph_serialization.deserialize_knowledge_graph,
+        # not plain KnowledgeGraph.model_validate, so subclass fields survive.
+        original = (
+            deserialize_knowledge_graph(data)
+            if kind == "knowledge_graphs"
+            else model_cls.model_validate(data)
+        )
         async with uow_factory() as uow:
             ns = save_fn.split(".")
             await getattr(getattr(uow, ns[0]), ns[1])(original)
         async with uow_factory() as uow:
-            ident_arg = original.session_id if kind == "sessions" else (
-                original.dispute_id if kind == "disputes" else (
-                original.prediction_id if kind == "predictions" else (
-                original.case_id if kind == "knowledge_graphs" else
-                original.mediation_id)))
-            reloaded = await getattr(getattr(uow, ns[0]), "get")(ident_arg)
+            if kind == "evidence_metadata":
+                reloaded = await uow.evidence.get(original.case_id, original.evidence_id)
+            else:
+                ident_arg = original.session_id if kind == "sessions" else (
+                    original.dispute_id if kind == "disputes" else (
+                    original.prediction_id if kind == "predictions" else (
+                    original.case_id if kind == "knowledge_graphs" else
+                    original.mediation_id)))
+                reloaded = await getattr(getattr(uow, ns[0]), "get")(ident_arg)
         assert reloaded.model_dump(mode="json") == original.model_dump(mode="json"), str(f)
 ```
 
@@ -3819,19 +4260,27 @@ async def test_roundtrip(kind, model_cls, save_fn, uow_factory) -> None:
 
 ### Task 10.2 — Concurrent-write test
 
-`test_concurrent_writes.py::test_two_concurrent_dispute_updates_no_lost_writes` — Postgres serializes the two `UPDATE`s; assert both increments land.
+`test_concurrent_writes.py::test_two_concurrent_session_messages_detect_conflict` — two workers load the same session version, both mutate, one save succeeds and the other raises `ConcurrentUpdateError` or returns a 409/retry response. Do not rely on Postgres to serialize stale read-modify-write state automatically.
 
 - [ ] **Step 1**: write the test (template in spec §3e).
 - [ ] **Step 2**: commit `test(concurrent): no lost writes on dispute updates`.
 
 ### Task 10.3 — API contract test
 
-Capture golden JSON responses from the existing JSON-backed code BEFORE this branch lands (run on `main`). After cutover, replay the same requests against the Postgres-backed app and diff responses.
+Capture redacted or synthetic golden JSON responses from the existing JSON-backed code BEFORE this branch lands (run on `main`). After cutover, replay the same requests against the Postgres-backed app and diff responses.
 
-- [ ] **Step 1**: capture golden responses on `main` into `apps/api/tests/integration/golden/*.json`.
+- [ ] **Step 1**: capture golden responses on `main` into `apps/api/tests/integration/golden/*.json`; scrub names, addresses, messages, evidence descriptions, file URLs, and invite codes before commit.
 - [ ] **Step 2**: write replay test `test_api_contract.py` using httpx + asgi-lifespan.
-- [ ] **Step 3**: assert response shape equality. Allow whitelisted fields with timestamps to diff by structure, not value.
+- [ ] **Step 3**: assert response shape equality. Allow whitelisted fields with timestamps to diff by structure, not value. Explicitly assert the case-id-only prediction flow still returns the same shared prediction for both parties.
 - [ ] **Step 4**: commit `test(api): API contract regression replay vs JSON-era golden responses`.
+
+### Task 10.3a — Legal invariant regression tests
+
+- [ ] **Step 1**: add canonical fixtures for cited claims, uncertain/abstained claims, unverified citations, and removed citations. Define "surfaced legal prediction claim" as any issue outcome, reasoning step, settlement range rationale, mediation expectation nudge, or API field that explains likely tribunal treatment.
+- [ ] **Step 2**: assert only `verified=True` citations satisfy cite-or-abstain. Unverified/removed citations must not be presented as support; they must either be absent from surfaced support or paired with explicit uncertainty/abstention.
+- [ ] **Step 3**: assert citation counts, citation source, case reference, year, paragraph, quote, and reasoning-step linkage survive repository round-trip and backfill verify.
+- [ ] **Step 4**: assert the legal-information-not-advice disclaimer remains present and materially unchanged in prediction APIs and mediation nudges.
+- [ ] **Step 5**: commit `test(prediction): preserve citation and disclaimer invariants through Postgres migration`.
 
 ### Task 10.4 — No-JSON-write test
 
@@ -3847,6 +4296,8 @@ Hard guard against accidental JSON regressions.
 
 - [ ] **Step 1**: enumerate every ORM class in `apps.api.src.db.models`; for each, find the corresponding Pydantic class; verify each ORM column either appears as a Pydantic field of compatible type or is one of `payload`/`metadata_`/`ordinal`/audit columns.
 
+- [ ] **Step 1b**: add projection parity checks using an explicit projection map, not reflection guesses. Cover aliases/derived fields such as `PredictionResult.timestamp -> predictions.created_at`, settlement range tuple -> `range_lo/range_hi`, issue amount ranges -> `amount_range_lo/amount_range_hi`, `disputes.cached_prediction_id` and `prediction_cache_key` as projection-only state, `metadata -> metadata_`, `verified/removed` citation child rows, and KG node subclass fields. This catches indexed-query drift that payload-only round-trip tests miss.
+
 - [ ] **Step 2**: run as a CI step (added in Phase 11).
 
 - [ ] **Step 3**: commit `feat(ci): add Pydantic↔SQLA alignment check`.
@@ -3854,6 +4305,15 @@ Hard guard against accidental JSON regressions.
 ---
 
 ## Phase 11 — Cutover
+
+### Task 11.0 — DB target preflight script
+
+**Files:**
+- Create: `scripts/migrations/print_db_target.py`
+
+- [ ] **Step 1**: add a small script that parses `--database-url`, prints sanitized host/database/user/sslmode, refuses missing URL, refuses localhost/dev credentials unless `--allow-local`, and never prints passwords.
+- [ ] **Step 2**: test production URL, local URL with `--allow-local`, and password redaction.
+- [ ] **Step 3**: commit `feat(migration): add safe database target preflight script`.
 
 ### Task 11.1 — CI workflow
 
@@ -3870,27 +4330,13 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: proposer
-          POSTGRES_PASSWORD: proposer-dev
-          POSTGRES_DB: proposer
-        ports:
-          - "5432:5432"
-        options: >-
-          --health-cmd pg_isready --health-interval 5s
-          --health-timeout 3s --health-retries 10
-    env:
-      DATABASE_URL: postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y postgresql postgresql-contrib
       - run: pip install -r requirements.txt
-      - run: alembic -c alembic.ini upgrade head
       - run: pytest -q
       - run: python scripts/migrations/check_model_alignment.py
 ```
@@ -3899,7 +4345,7 @@ jobs:
 
 ```bash
 git add .github/workflows/ci.yml
-git commit -m "infra(ci): GitHub Actions Postgres + alembic + pytest"
+git commit -m "infra(ci): run pytest with pytest-postgresql"
 ```
 
 ### Task 11.2 — README + dev setup
@@ -3912,40 +4358,42 @@ git commit -m "infra(ci): GitHub Actions Postgres + alembic + pytest"
 
 ### Task 11.3 — Backfill `--archive-json`
 
-- [ ] **Step 1**: add `--archive-json` mode that renames each `data/<dir>` to `data/_archive_<dir>` after `--verify` passes.
-- [ ] **Step 2**: integration test: tmp data dir → commit → verify → archive → assert source dirs renamed.
+- [ ] **Step 1**: add `--archive-json --archive-dir <path>` mode that moves each migrated `data/<dir>` to `<archive-dir>/<timestamp>/<dir>` after `--verify` passes. The archive dir must be outside the repo or under a gitignored encrypted/private artifact root; refuse paths inside tracked `data/`. Preserve nested evidence metadata paths, `chmod 700` the archive root where supported, and write only a redacted manifest into the repo. Refuse to run if `_migration_audit_report.json`, `_backfill_report.jsonl`, or verify output contains unresolved errors.
+- [ ] **Step 2**: integration test: tmp data dir → commit → verify → archive to an outside tmp archive dir → assert source dirs moved into timestamped archive and rollback dump can recreate the original shape.
 - [ ] **Step 3**: commit `feat(backfill): add --archive-json finalization step`.
 
 ### Task 11.4 — Run end-to-end migration on real `data/`
 
-- [ ] **Step 1**: bring up Postgres and run migrations.
+- [ ] **Step 0: Rehearse on a clone**
+Run this full sequence against a staging clone of `data/` and a disposable Postgres database first. Do not touch the live/local working `data/` until rehearsal passes.
+
+- [ ] **Step 1: Freeze writes and snapshot**
+Stop the API or enable maintenance mode. Create a timestamped copy of `data/` outside git, and take a DB snapshot/PITR checkpoint if migrating a hosted database.
+
+- [ ] **Step 2**: confirm target database and run migrations. Do not run `make db-reset` in a real cutover.
 ```bash
-make db-reset
+python -m scripts.migrations.print_db_target --database-url "$DATABASE_URL"
+alembic -c alembic.ini upgrade head
 ```
 
-- [ ] **Step 2**: run the audit.
+- [ ] **Step 3**: run the audit.
 ```bash
 python -m scripts.migrations.audit_json_stores --data-dir ./data --out data/_migration_audit_report.json
 ```
 
-- [ ] **Step 3**: dry-run the backfill.
+- [ ] **Step 4**: dry-run the backfill.
 ```bash
 python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --dry-run
 ```
 
-- [ ] **Step 4**: commit the backfill.
+- [ ] **Step 5**: commit the backfill.
 ```bash
 python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --commit
 ```
 
-- [ ] **Step 5**: verify identity.
+- [ ] **Step 6**: verify identity, projection parity, row counts, child counts, citation counts, KG subclass preservation, nested evidence metadata count, and dispute prediction cache mappings.
 ```bash
 python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --verify
-```
-
-- [ ] **Step 6**: archive.
-```bash
-python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --archive-json
 ```
 
 - [ ] **Step 7**: smoke-test the API against Postgres.
@@ -3953,7 +4401,26 @@ python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --archi
 make test-db
 ```
 
-- [ ] **Step 8**: commit `chore(cutover): archive JSON dirs after successful Postgres backfill`.
+- [ ] **Step 8**: archive only after verify + smoke pass.
+```bash
+python -m scripts.migrations.backfill_json_to_postgres \
+  --data-dir ./data \
+  --archive-json \
+  --archive-dir "$PROPOSER_MIGRATION_ARCHIVE_DIR"
+```
+
+- [ ] **Step 9**: post-cutover reconciliation.
+```bash
+python -m scripts.migrations.backfill_json_to_postgres \
+  --data-dir "$PROPOSER_MIGRATION_ARCHIVE_DIR/<timestamp>" \
+  --verify
+```
+Then manually spot-check the key flows: start chat, join dispute, generate prediction from both party case IDs, upload/list/delete evidence metadata, start mediation, submit/accept offer.
+
+- [ ] **Step 10: Rollback decision tree**
+If verify or smoke fails before archive: keep the API frozen, fix and rerun backfill on the same empty target or restore the DB snapshot. If failure is after archive but before release: move archived JSON dirs back into `data/`, deploy the previous JSON-backed release, and restore the DB snapshot/PITR checkpoint if needed. If failure is after release: choose rollback (previous release + JSON archive restore) or roll-forward (code fix + DB migration) based on data divergence; record owner, decision time, and max downtime in the runbook.
+
+- [ ] **Step 11**: commit only code/docs/redacted reports. Do not commit raw archived JSON data or PII-bearing migration artifacts.
 
 ### Task 11.5 — Open the PR
 
@@ -3970,20 +4437,20 @@ git push -u origin feature/sha-102-migrate-user-facing-storage-from-json-files-t
 
 I checked this plan against every section of the spec:
 
-- **Verdict (5 amendments):** ✓ UoW (Tasks 5.1, 5.3, 6.x, 7.1, 9.1). ✓ Process-local map removal (Tasks 6.1, 6.2, 9.1). ✓ JSONB + projections (every model task). ✓ Audit-first (Phase 0). ✓ Archive only after verify (Task 11.3, 11.4 step 6).
+- **Verdict + review amendments:** ✓ UoW (Tasks 5.1, 5.3, 5.4, 6.x, 7.1, 9.1). ✓ Process-local map removal (Tasks 6.1, 6.2, 9.1). ✓ JSONB + projections with parity checks (every model task, Task 10.5). ✓ Audit-first/fail-closed backfill (Phase 0, Phase 4). ✓ Archive only after verify + smoke, outside the repo (Task 11.3, 11.4 step 8).
 - **Decisions 1–9:** all reflected — SQLA 2.0 stack (1.1), UoW (5.1), payload+projections (every model + repo), composite KG identity (2.5), no FK to sessions for prediction.case_id and kg.case_id (2.4, 2.5), cached_prediction_id column (2.3), evidence in scope (2.7, 3.6, 8.1), hard cutover (Phase 11), `metadata_` aliasing (every model with a `metadata` column).
 - **Schema/Aggregate columns:** all 13 tables modeled (Tasks 2.2–2.7) and migrated (2.8); columns match the spec's per-table list.
 - **Indexes:** all spec-listed indexes appear in 2.8.
 - **Transactions:** every workflow in spec §"Required Transaction Boundaries" maps to a Phase 6/7/9 task (chat start/join → 6.3; intake message → 6.1; bulk → 6.1; prediction generation → 7.1; cached prediction lookup row-lock → 7.1; start mediation → 9.1; offer flows → 9.1; accept/settle → 9.1; escalate → 9.1; evidence upload/delete → 8.1; dispute fix endpoint → 6.2).
-- **Backfill (audit, dry-run, commit, verify, archive):** 0.1–0.4, 4.1–4.4, 11.3–11.4.
-- **Tests (Required Tests table):** Data audit (0.1–0.3), Alembic upgrade/downgrade (2.9), Repository round-trip (3.1–3.6), Raw API contract (10.3), Concurrent dispute (10.2), Concurrent prediction (7.2), Mid-transaction crash (6.3, 9.2), Evidence compensation (8.1), No production JSON writes (10.4).
+- **Backfill (audit, dry-run, preflight, commit, verify, archive):** 0.1–0.4, 4.1–4.4, 11.3–11.4.
+- **Tests (Required Tests table):** Data audit (0.1–0.3), enum alignment (2.1a), Alembic upgrade/downgrade (2.9), repository round-trip (3.1–3.6), raw API contract (10.3), legal citation/disclaimer invariants (10.3a), concurrent update conflict (10.2), concurrent prediction (7.2), mid-transaction crash (6.3, 9.2), evidence compensation (8.1), access isolation (5.4), no production JSON writes (10.4).
 - **Infra/Docker/Make/CI:** 1.5, 1.6, 11.1.
-- **Rollback:** Task 4.4 ships the dump script before cutover; Task 11.4 archive happens only after verify.
+- **Rollback:** Task 4.4 ships the dump script before cutover; Task 11.3 archives outside the repo; Task 11.4 includes freeze, snapshots, smoke gates, reconciliation, and rollback decision tree.
 - **DoD:** every checkbox in spec §"Definition of Done" maps to a task above.
 
 **Placeholder scan:** searched for `TBD`, `TODO`, `implement later`, `fill in details`. Tasks 3.5, 3.6, 4.2, 4.3, 4.4, 6.2, 6.3, 7.1, 7.2, 8.1, 8.2, 9.1, 9.2, 10.1–10.5, 11.2, 11.3 use the "follow the SessionsRepo template / spec table" shorthand instead of inlining identical code three more times. Each of those tasks names the exact file paths, the exact public methods to implement, and the exact tests to write — that's complete enough for an engineer with the spec open. The same-code copy-paste antipattern would make this plan unreadable; the explicit references to specific spec sections (`spec §"mediations"`, `spec §"Aggregate Columns"`) keep it actionable.
 
-**Type/method consistency:** spot-checked `UnitOfWork.sessions/disputes/predictions/kg/mediations/evidence` attribute names against every Phase 6/7/8/9/10 reference. All match. `set_cached_prediction_id` consistent across DisputesRepo (3.2), PredictionService.generate_prediction (7.1), and Backfill commit step (4.2).
+**Type/method consistency:** spot-checked `UnitOfWork.sessions/disputes/predictions/kg/mediations/evidence` attribute names against every Phase 6/7/8/9/10 reference. All match. `set_cached_prediction_id(..., cache_key=...)`, `lock_for_prediction_cache`, composite `EvidenceRepo.get/delete(case_id, evidence_id)`, and request-scoped service factories are now reflected across repository, service, route, backfill, and test tasks.
 
 ---
 

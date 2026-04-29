@@ -1,53 +1,76 @@
-# SHA-102: JSON → Postgres Storage Migration — Design
+# SHA-102: JSON -> Postgres Storage Migration - Design + Implementation Plan
 
-**Status:** Approved (2026-04-29)
+**Status:** Approved conceptually; amended after multi-agent review (2026-04-29)
 **Owner:** Mohamed Sharif
 **Linear:** [SHA-102](https://linear.app/sharifbuilders/issue/SHA-102/migrate-user-facing-storage-from-json-files-to-postgres)
 **Branch:** `feature/sha-102-migrate-user-facing-storage-from-json-files-to-postgres`
 
+## Verdict
+
+The migration is the right architectural direction, but the original plan was not safe to implement as written. The hard part is not "Postgres instead of JSON"; it is replacing file-backed service state with one clear transactional runtime boundary.
+
+Implementation should proceed only with these amendments:
+
+1. Use a real Unit of Work boundary, with one `AsyncSession` shared across all repositories participating in a business workflow.
+2. Remove process-local persistence maps (`_sessions`, `_disputes`, `_mediations`) from production paths. Singleton LLM clients are fine; singleton mutable storage is not.
+3. Store canonical aggregate payloads in `JSONB` plus indexed projection columns/child rows for query performance.
+4. Run data audit and repository round-trip tests before service cutover.
+5. Archive JSON dirs only after full verification and smoke tests.
+
 ## Context
 
-User-facing persistence is currently file-per-entity JSON in `data/`. Six directories, ~330 entities, four concrete failure modes already present:
+User-facing persistence is currently file-per-entity JSON in `data/`. There are six existing user-facing directories in the checked-out data set:
 
-1. **Cross-entity queries are O(N).** Ablation harness (SHA-32) reads every prediction file. Tolerable now, untenable at 10K+.
-2. **Non-atomic writes.** `json.dump` to the same file races; no concurrent-write safety.
-3. **No transactions.** `MediationService.settle/escalate` already write to two files non-atomically; partial failure leaves inconsistent state.
-4. **Glob-based listing** doesn't scale; ~330-file ceiling visible today.
+- `sessions` - 240 files
+- `predictions` - 42 files
+- `knowledge_graphs` - 16 files
+- `disputes` - 22 files
+- `dispute_predictions` - 7 files
+- `mediations` - 4 files
 
-ChromaDB and raw PDFs stay as-is — different access patterns, already appropriate storage.
+`evidence_metadata` is also a user-facing write path in `StorageService`, even if there are no current files in the checked-out data set. ChromaDB, BM25 indexes, raw PDFs, and local uploaded evidence files stay as files/object storage because their access pattern is not relational.
 
-The original ticket gates this work behind the thesis deadline (2026-05-20) and trigger conditions (100 paying users, beta launch, >3K entities, prod incident). **Decision (2026-04-29):** the user opted to execute now in parallel with thesis work, accepting the conflict with in-flight SHA-32/68/36 branches and the ~⅓-runway cost.
+Current failure modes:
+
+1. Cross-entity queries are O(N), especially prediction listing and admin-style scans.
+2. File writes are not uniformly atomic; concurrent writes can lose data.
+3. Multi-entity workflows have no transaction boundary.
+4. In-memory service caches can diverge from disk and will diverge from Postgres unless removed.
+5. Filesystem/object storage side effects cannot be made transactionally atomic with database rows, so evidence upload/delete needs compensation logic.
 
 ## Decisions
 
 | # | Decision | Rationale |
 |---|---|---|
-| 1 | **Stack: SQLAlchemy 2.0 async + Alembic + Pydantic DTOs** | The two hard parts of this migration — transaction boundaries and polymorphic KG nodes — both have first-class SQLA support (`AsyncSession.begin()`, `Mapped[dict]` JSONB). Alembic autogenerate keeps schema-evolution costs low. |
-| 2 | **KG nodes: single table, typed columns + JSONB** | 7 polymorphic node types share 7 base fields; per-type fields are read-when-loading-the-graph but never filtered on. Hot fields (`event_date`, `amount`) become indexed columns; the rest goes in `node_data` JSONB. Future node-type evolution = JSONB shape change, no migration. |
-| 3 | **Scope includes `evidence_metadata` (7th JSON store, missed by ticket)** | Same pattern, isomorphic to the others. Leaving it as JSON would violate the DoD's "no production code paths touch JSON" line and break FK coherence with KG `EvidenceNode`. |
-| 4 | **`dispute_predictions/` becomes a column on `disputes`** | The directory holds 1:1 `{dispute_id, prediction_id}` pointers — a filesystem workaround for "no FKs." On Postgres it's `disputes.cached_prediction_id REFERENCES predictions(prediction_id)`. |
-| 5 | **Cutover: hard, single PR (no dual-write feature flag)** | Solo dev, ~330 entities, no production traffic, no users to keep online. Dual-write's complexity buys nothing. JSON dirs renamed to `data/_archive_*` (not deleted) for trivial rollback. |
-| 6 | **`CaseFile` and chat `messages` stay as JSONB on `intake_sessions`, not normalized** | KG already extracts CaseFile into structured nodes (Party/Property/Lease/Issue/Evidence/Event). Normalizing CaseFile too would double-store everything and balloon scope into a domain remodel. Chat messages are append-only; no cross-row queries. |
-| 7 | **Repository layer between services and SQLA** | Repositories own all `AsyncSession` interaction and Pydantic↔SQLA mapping. Services orchestrate transactions across repositories. Public service APIs unchanged → SHA-32/68/36 callers unaffected. |
+| 1 | **Stack: SQLAlchemy 2.0 async + asyncpg + Alembic + Pydantic DTOs** | Async SQLAlchemy gives explicit transaction control and integrates cleanly with FastAPI. Pydantic models remain the canonical domain contracts. |
+| 2 | **Unit of Work owns sessions and transactions** | Repositories never commit. Services or workflow methods open one UoW and pass the same `AsyncSession` to every repository call in the workflow. |
+| 3 | **Canonical `payload JSONB` per aggregate + projected columns/children** | Strict round-trip identity is realistic, while hot queries still get indexes and normalized child tables. |
+| 4 | **KG nodes use composite identity `(case_id, node_id)`** | `GraphBuilder` emits deterministic node IDs such as `party_tenant`, `property_main`, `lease_main`, and `issue_{type}` that repeat across cases. `node_id` cannot be a global PK. |
+| 5 | **No FK from prediction/KG `case_id` to `intake_sessions.case_id`** | Merged two-party predictions use synthetic IDs like `merged-...` that do not correspond to a single intake session. |
+| 6 | **`dispute_predictions/` becomes `disputes.cached_prediction_id`** | The JSON directory is a 1:1 pointer workaround. Postgres should model it as a nullable FK to `predictions(prediction_id)`. |
+| 7 | **`evidence_metadata` is in scope; evidence files are not** | Metadata is relational and user-facing. Uploaded blobs remain Supabase/local files with cleanup compensation. |
+| 8 | **Hard cutover, no dual-write, but audit-first** | Solo dev, small data set, no production traffic. Dual-write is more complexity than value, but final archiving happens only after verification. |
+| 9 | **SQLAlchemy models avoid reserved `metadata` attribute names** | Use `metadata_ = mapped_column("metadata", JSONB)` wherever a table has a `metadata` column. |
 
 ## Architecture
 
-### Module layout
+### Module Layout
 
 ```
 apps/api/src/
   db/
-    __init__.py          # public: get_engine, get_sessionmaker, AsyncSession
-    engine.py            # asyncpg pool + SQLAlchemy AsyncEngine
-    base.py              # SQLAlchemy DeclarativeBase
-    models/              # SQLA ORM models, one file per entity group
+    __init__.py
+    engine.py              # AsyncEngine + async_sessionmaker
+    base.py                # DeclarativeBase
+    uow.py                 # UnitOfWork and UnitOfWorkFactory
+    models/
       sessions.py
       disputes.py
-      predictions.py     # PredictionRow + IssuePredictionRow + ReasoningStepRow + CitationRow
-      kg.py              # KnowledgeGraphRow + KGNodeRow + KGEdgeRow
-      mediations.py      # MediationSessionRow + MediationMessageRow + StructuredOfferRow
+      predictions.py
+      kg.py
+      mediations.py
       evidence.py
-    repositories/        # async CRUD + Pydantic mapping, one per entity group
+    repositories/
       sessions_repo.py
       disputes_repo.py
       predictions_repo.py
@@ -55,237 +78,486 @@ apps/api/src/
       mediations_repo.py
       evidence_repo.py
   alembic/
-    env.py               # async Alembic env using same engine
+    env.py
     versions/
       0001_initial_schema.py
+alembic.ini
+scripts/
+  migrations/
+    audit_json_stores.py
+    backfill_json_to_postgres.py
+    dump_postgres_to_json.py
 ```
 
-Repositories are the only code that touches `AsyncSession`. Services consume repositories. Pydantic models stay in `packages/llm_orchestrator/models/` and `packages/kg_builder/models/` as canonical domain types.
+### Runtime Boundary
 
-### Lifespan wiring (`apps/api/src/main.py`)
+One workflow gets one Unit of Work.
 
 ```python
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    engine = create_async_engine(
-        config.database_url,
-        pool_size=10,
-        max_overflow=5,
-        pool_pre_ping=True,
+class UnitOfWork:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+        self.sessions = SessionsRepo(session)
+        self.disputes = DisputesRepo(session)
+        self.predictions = PredictionsRepo(session)
+        self.kg = KnowledgeGraphRepo(session)
+        self.mediations = MediationsRepo(session)
+        self.evidence = EvidenceRepo(session)
+```
+
+Services should not call `get_*_service()` from inside transactional workflows. If a workflow needs session + dispute + prediction writes, the top-level method uses the same UoW and talks to the required repositories directly.
+
+Allowed singleton state:
+
+- LLM clients
+- RAG pipeline instances
+- deterministic builders/processors without mutable persistence state
+
+Disallowed production state:
+
+- `_sessions`
+- `_disputes`
+- `_invite_code_index`
+- `_mediations`
+- private `_save_*` methods used by other services or routers
+
+### FastAPI Wiring
+
+`create_app(settings)` must capture the provided settings in its lifespan factory. The current global `config` capture is not test-friendly.
+
+```python
+def create_lifespan(settings: APIConfig):
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        engine = create_async_engine(
+            settings.database_url,
+            pool_size=10,
+            max_overflow=5,
+            pool_pre_ping=True,
+        )
+        app.state.engine = engine
+        app.state.sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
+        settings.ensure_directories()
+        yield
+        await engine.dispose()
+
+    return lifespan
+```
+
+`get_db_session(request)` reads `request.app.state.sessionmaker`. For business workflows, prefer a UoW factory over passing raw sessions through service internals.
+
+### Config
+
+Current config is a Pydantic `BaseModel`, so use `Field`, not dataclass `field`.
+
+```python
+database_url: str = Field(
+    default_factory=lambda: os.getenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
     )
-    app.state.engine = engine
-    app.state.sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
-    config.ensure_directories()
-    yield
-    await engine.dispose()
-```
-
-### Dependency injection
-
-Existing `get_*_service()` module-level singletons remain. Each service takes a `sessionmaker` injected lazily on first call. New `get_db_session()` FastAPI dependency yields one `AsyncSession` per request.
-
-### Config (`apps/api/src/config.py`)
-
-```python
-database_url: str = field(default_factory=lambda: os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
-))
+)
 ```
 
 ## Schema
 
+### Core Rule
+
+Every migrated aggregate table stores the canonical Pydantic dump in `payload JSONB`. Projected columns and child rows exist for lookup, filtering, joins, and future analytics. Repositories must be able to reconstruct the Pydantic model from rows and also compare against `payload` in tests.
+
+This keeps the system honest: exact rollback/round-trip remains possible, while the DB still solves the O(N), FK, and transaction problems.
+
 ### Tables
 
-13 tables, one Alembic initial migration: `intake_sessions`, `disputes`, `predictions`, `prediction_issues`, `prediction_reasoning_steps`, `prediction_citations`, `knowledge_graphs`, `kg_nodes`, `kg_edges`, `mediations`, `mediation_messages`, `structured_offers`, `evidence_metadata`. Polymorphic KG nodes use typed columns + JSONB; mediation messages, offers, prediction issues/reasoning/citations are normalized into child tables.
+13 tables remain in scope:
 
-```
-intake_sessions          ──┬──▶ disputes ──┬──▶ mediations ──┬──▶ mediation_messages
-  session_id PK            │     dispute_id PK     │           └──▶ structured_offers
-  case_id UNIQ             │     tenant_session_id │
-  user_role                │     landlord_session_id
-  current_stage            │     status            │
-  stages_completed         │     property_*        │
-  case_file JSONB          │     deposit_amount    │
-  messages JSONB           │     cached_prediction_id ──┐
-  started_at, updated_at   │                            │
-                           │                            ▼
-                           │                       predictions ──┬──▶ prediction_issues
-                           │                         prediction_id PK    └──▶ prediction_reasoning_steps
-                           │                         case_id IDX         └──▶ prediction_citations
-                           │                         overall_outcome     (reasoning_step_id NULL
-                           │                         overall_confidence   for top-level verified)
-                           │                         pipeline_version
-                           │                         pipeline_metadata JSONB
-                           │
-                           └──▶ evidence_metadata
-                                  evidence_id PK
-                                  case_id IDX
-                                  evidence_type
-                                  blob_url
-                                  payload JSONB
+- `intake_sessions`
+- `disputes`
+- `predictions`
+- `prediction_issues`
+- `prediction_reasoning_steps`
+- `prediction_citations`
+- `knowledge_graphs`
+- `kg_nodes`
+- `kg_edges`
+- `mediations`
+- `mediation_messages`
+- `structured_offers`
+- `evidence_metadata`
 
-knowledge_graphs ──┬──▶ kg_nodes (single table, polymorphic)
-  case_id PK       │     node_id PK
-  graph_id UNIQ    │     case_id FK
-                   │     node_type ENUM        ← discriminator
-                   │     confidence, source, source_text, created_at
-                   │     event_date IDX        ← only EventNode (timeline)
-                   │     amount IDX            ← only ClaimedAmountNode
-                   │     node_data JSONB       ← type-specific fields
-                   │     metadata JSONB
-                   │
-                   └──▶ kg_edges (uniform)
-                         edge_id PK
-                         case_id FK
-                         edge_type ENUM
-                         source_node_id FK
-                         target_node_id FK
-                         confidence, source, description
-                         metadata JSONB
-```
+### Aggregate Columns
 
-### Postgres enums (~14)
+`intake_sessions`
 
-`user_role`, `intake_stage`, `dispute_status`, `outcome_type`, `issue_outcome`, `issue_type`, `evidence_strength`, `evidence_type`, `mediation_status`, `message_type`, `offer_status`, `node_type`, `edge_type`, `party_role`. Self-documenting and rejects bad writes at the DB layer.
+- `session_id PK`
+- `case_id UNIQUE`
+- `user_role`
+- `current_stage`
+- `started_at TEXT`
+- `updated_at TEXT`
+- `payload JSONB NOT NULL`
+- projected fields: `intake_complete`, `completeness_score`, `role_explicitly_set`
+
+`disputes`
+
+- `dispute_id PK`
+- `invite_code UNIQUE NOT NULL`
+- `status`
+- `created_at TEXT`
+- `updated_at TEXT`
+- `created_by_role`
+- `tenant_session_id` nullable FK to `intake_sessions(session_id)`
+- `landlord_session_id` nullable FK to `intake_sessions(session_id)`
+- `property_address`
+- `property_postcode`
+- `deposit_amount NUMERIC`
+- `cached_prediction_id` nullable FK to `predictions(prediction_id)`
+- `payload JSONB NOT NULL`
+
+`predictions`
+
+- `prediction_id PK`
+- `case_id INDEX` but no FK to sessions
+- `created_at TEXT` from `timestamp`
+- `overall_outcome`
+- `overall_confidence NUMERIC`
+- `range_lo NUMERIC`
+- `range_hi NUMERIC`
+- `pipeline_version`
+- `model_version`
+- `retrieval_quality`
+- `rag_confidence NUMERIC`
+- `pipeline_metadata JSONB`
+- `citation_verification JSONB`
+- `metadata JSONB`
+- `payload JSONB NOT NULL`
+
+`prediction_issues`
+
+- `id PK`
+- `prediction_id FK`
+- `ordinal INT NOT NULL`
+- `issue_type`
+- `issue_description`
+- `outcome`
+- `raw_confidence NUMERIC`
+- `calibrated_confidence NUMERIC`
+- `predicted_amount NUMERIC`
+- `amount_range_lo NUMERIC`
+- `amount_range_hi NUMERIC`
+- `reasoning TEXT`
+- `key_factors JSONB`
+- `supporting_cases JSONB`
+- `counterfactuals JSONB`
+- `evidence_strength`
+- `data_completeness_impact TEXT`
+- `payload JSONB NOT NULL`
+
+`prediction_reasoning_steps`
+
+- `id PK`
+- `prediction_id FK`
+- `ordinal INT NOT NULL`
+- `step_number INT`
+- `category`
+- `title`
+- `content TEXT`
+- `confidence NUMERIC`
+- `payload JSONB NOT NULL`
+
+`prediction_citations`
+
+- `id PK`
+- `prediction_id FK`
+- `reasoning_step_id NULL FK`
+- `citation_source` enum/text: `reasoning`, `issue_supporting_case`, `verified`, `removed`
+- `ordinal INT NOT NULL`
+- `case_reference`
+- `year INT`
+- `region`
+- `paragraph`
+- `quote TEXT`
+- `relevance TEXT`
+- `similarity_score NUMERIC`
+- `verified BOOLEAN`
+- `payload JSONB NOT NULL`
+
+`knowledge_graphs`
+
+- `case_id PK` but no FK to sessions
+- `graph_id UNIQUE`
+- `created_at TEXT`
+- `updated_at TEXT`
+- `validation_errors JSONB`
+- `validation_warnings JSONB`
+- `validation_info JSONB`
+- `is_consistent BOOLEAN`
+- `data_quality_tier`
+- `metadata JSONB`
+- `payload JSONB NOT NULL`
+
+`kg_nodes`
+
+- `case_id FK to knowledge_graphs(case_id)`
+- `node_id`
+- `node_type`
+- `confidence NUMERIC`
+- `source`
+- `source_text TEXT`
+- `created_at TEXT`
+- `event_date DATE` nullable
+- `amount NUMERIC` nullable
+- `node_data JSONB NOT NULL`
+- `metadata JSONB`
+- `PRIMARY KEY (case_id, node_id)`
+
+`kg_edges`
+
+- `case_id FK to knowledge_graphs(case_id)`
+- `edge_id`
+- `edge_type`
+- `source_node_id`
+- `target_node_id`
+- `confidence NUMERIC`
+- `source`
+- `description TEXT`
+- `metadata JSONB`
+- `payload JSONB NOT NULL`
+- `PRIMARY KEY (case_id, edge_id)`
+- composite FKs:
+  - `(case_id, source_node_id)` -> `kg_nodes(case_id, node_id)`
+  - `(case_id, target_node_id)` -> `kg_nodes(case_id, node_id)`
+
+`mediations`
+
+- `mediation_id PK`
+- `dispute_id UNIQUE FK`
+- `status`
+- `started_at TEXT`
+- `updated_at TEXT`
+- `settled_at TEXT`
+- `settlement_amount NUMERIC`
+- `escalated_at TEXT`
+- `payload JSONB NOT NULL`
+
+`mediation_messages`
+
+- `id PK`
+- `mediation_id FK`
+- `message_id`
+- `ordinal INT NOT NULL`
+- `sender_role`
+- `content TEXT`
+- `message_type`
+- `timestamp TEXT`
+- `offer_id` nullable
+- `metadata JSONB`
+- `payload JSONB NOT NULL`
+
+`structured_offers`
+
+- `id PK`
+- `mediation_id FK`
+- `offer_id`
+- `ordinal INT NOT NULL`
+- `amount NUMERIC`
+- `proposed_by_role`
+- `status`
+- `proposed_at TEXT`
+- `responded_at TEXT`
+- `counter_amount NUMERIC`
+- `payload JSONB NOT NULL`
+
+`evidence_metadata`
+
+- `evidence_id PK`
+- `case_id INDEX`
+- `evidence_type`
+- `file_url`
+- `file_name`
+- `file_type`
+- `description TEXT`
+- `payload JSONB NOT NULL`
+
+Use `TEXT` for current timestamp fields because the domain models store ISO strings. A later model cleanup can migrate to `datetime`/`TIMESTAMPTZ`; do not mix string timestamps with DB-returned `datetime` objects during this migration.
 
 ### Indexes
 
 | Table | Index | Reason |
 |---|---|---|
 | `intake_sessions` | `(case_id)` UNIQUE | `get_case_file()` lookup |
-| `disputes` | `(invite_code)` UNIQUE, `(tenant_session_id)`, `(landlord_session_id)` | invite-join flow + reverse session lookup |
-| `predictions` | `(case_id)`, `(created_at)`, `(pipeline_version)` | ablation harness, list-for-case, version filtering |
-| `prediction_issues` | `(prediction_id)`, `(issue_type)` | per-prediction fan-out |
-| `prediction_citations` | `(prediction_id)`, `(reasoning_step_id)` | trace reconstruction |
-| `kg_nodes` | `(case_id, node_type)`, `(case_id, event_date) WHERE node_type='event'` | type filter + timeline |
-| `kg_edges` | `(source_node_id, target_node_id, edge_type)`, `(case_id, edge_type)` | traversal + type filter |
+| `intake_sessions` | `(user_role)`, `(current_stage)` | admin/debug scans |
+| `disputes` | `(invite_code)` UNIQUE | invite join flow |
+| `disputes` | `(tenant_session_id)`, `(landlord_session_id)` | reverse session lookup |
+| `disputes` | `(cached_prediction_id)` | shared prediction lookup |
+| `predictions` | `(case_id)`, `(created_at)`, `(pipeline_version)` | list-for-case, ablation, version filtering |
+| `prediction_issues` | `(prediction_id, ordinal)`, `(issue_type)` | reconstruction and filtering |
+| `prediction_reasoning_steps` | `(prediction_id, ordinal)` | stable trace reconstruction |
+| `prediction_citations` | `(prediction_id)`, `(reasoning_step_id)`, `(citation_source)` | trace + verification lookup |
+| `knowledge_graphs` | `(graph_id)` UNIQUE | graph lookup |
+| `kg_nodes` | `(case_id, node_type)` | type filter |
+| `kg_nodes` | `(case_id, event_date) WHERE node_type='event'` | timeline |
+| `kg_nodes` | `(case_id, amount) WHERE node_type='claimed_amount'` | amount scans |
+| `kg_edges` | `(case_id, source_node_id, edge_type)`, `(case_id, target_node_id, edge_type)` | traversal |
 | `mediations` | `(dispute_id)` UNIQUE | 1:1 with dispute |
-| `mediation_messages` | `(mediation_id, created_at)`, `(offer_id)` | thread fetch + offer reverse |
-| `structured_offers` | `(mediation_id)`, `(status)` | pending-offer scan |
+| `mediation_messages` | `(mediation_id, ordinal)`, `(mediation_id, timestamp)`, `(offer_id)` | thread fetch + offer reverse |
+| `structured_offers` | `(mediation_id, ordinal)`, `(mediation_id, status)` | pending offer scan |
 | `evidence_metadata` | `(case_id)`, `(evidence_type)` | per-case fan-out |
-
-### Decisions worth flagging
-
-1. **`mediation_messages.offer_id`** is a real FK column (not buried in JSONB) — enables "messages referencing accepted offers" queries.
-2. **`prediction_citations`** unifies `reasoning_trace[].citations` and `citation_verification.verified_citations[]` via nullable `reasoning_step_id`. Single table, single query path.
-3. **`predicted_settlement_range`** stored as `range_lo` / `range_hi` numerics, not `int4range`. Simpler ORM, no range queries planned.
-4. **`disputes.cached_prediction_id`** has no `ON DELETE CASCADE` — clearing a prediction shouldn't nuke the dispute.
-5. **No `users` / `auth` tables.** Auth is Supabase per CLAUDE.md.
 
 ## Transactions
 
-The four atomicity hazards become four transaction blocks. Services own the transaction; repositories never commit.
+Postgres gives transactions, but only if the code stops splitting a workflow across file writes, singleton state, and private service calls.
 
-| Operation | Current shape | New shape |
-|---|---|---|
-| `MediationService.start_mediation()` (mediation_service.py:228–229) | dispute write + mediation write, two files | `async with session.begin():` → update dispute, insert mediation |
-| `MediationService.respond_to_offer → accept → settle` (m_s.py:415, 495–499) | offer + mediation + dispute, three files | `async with session.begin():` → update offer, mediation, dispute |
-| `MediationService.escalate()` (m_s.py:523–526) | session + dispute, two files | `async with session.begin():` → update mediation, dispute |
-| `IntakeService.process_message → DisputeService.update_dispute_from_session` (i_s.py:203–220) | session save + dispute sync, two files | `async with session.begin():` → upsert session, dispute |
+### Transaction Rules
 
-Each transaction gets an integration test that monkeypatches the second repository call to raise, asserts no half-written state.
+1. Do not hold a DB transaction open during LLM calls, PDF extraction, file upload, or RAG retrieval.
+2. Perform external work first, then persist the resulting state in one short transaction.
+3. Use row locks or optimistic versioning for read-modify-write flows that can be hit concurrently.
+4. Repositories do not commit or rollback.
+5. Tests must assert both the DB state and the absence of mutated in-memory state.
+
+### Required Transaction Boundaries
+
+| Workflow | Transaction contents |
+|---|---|
+| Chat start + create dispute | insert intake session + insert dispute |
+| Chat start + join dispute | insert intake session + update dispute session link/status |
+| Intake message processing | upsert session + sync dispute status/property/deposit fields |
+| Bulk intake | insert session + create/join/sync dispute |
+| Prediction generation | after KG build + LLM prediction, persist KG + prediction + update `disputes.cached_prediction_id` atomically |
+| Cached dispute prediction lookup/update | lock dispute row or use idempotent uniqueness so two requests do not generate conflicting shared predictions |
+| Start mediation | update dispute status + upsert mediation + insert opening message |
+| Submit/reject/counter offer | update mediation aggregate + projected offers/messages |
+| Accept offer | update offer + mediation settled state + dispute settled state |
+| Escalate mediation | update mediation + dispute |
+| Evidence upload metadata | upload/extract first; insert metadata in DB; if DB insert fails, attempt file cleanup and log orphan |
+| Evidence delete | delete/mark metadata + delete file/object with compensation if object deletion fails |
+| Dispute status fix endpoint | route must call a service/repo method, not mutate `_disputes` or `_save_dispute` directly |
+
+### Prediction Generation Detail
+
+Do not wrap retrieval and LLM calls in a transaction. The shape should be:
+
+1. Load case/dispute data.
+2. Build/merge `CaseFile`.
+3. Build KG in memory.
+4. Call prediction engine.
+5. Open transaction.
+6. Lock dispute row when there is a `dispute_id`.
+7. Re-check `cached_prediction_id`.
+8. Insert KG rows, prediction rows, and cache pointer.
+9. Commit.
 
 ## Backfill
 
-### Script
-
-`scripts/migrations/backfill_json_to_postgres.py` — idempotent, dry-run-first.
+### Scripts
 
 ```bash
+python scripts/migrations/audit_json_stores.py --data-dir ./data
 python scripts/migrations/backfill_json_to_postgres.py --data-dir ./data --dry-run
 python scripts/migrations/backfill_json_to_postgres.py --data-dir ./data --commit
+python scripts/migrations/backfill_json_to_postgres.py --data-dir ./data --verify
+python scripts/migrations/backfill_json_to_postgres.py --data-dir ./data --archive-json
 ```
 
-Order (FK-dependency-driven):
+### Correct Order
 
-1. `intake_sessions` (no FKs out)
-2. `disputes` (FK to sessions; `cached_prediction_id` left NULL on first pass)
-3. `predictions` + `prediction_issues` + `prediction_reasoning_steps` + `prediction_citations`
-4. `dispute_predictions` JSON files → `UPDATE disputes SET cached_prediction_id = ?`
-5. `knowledge_graphs` + `kg_nodes` + `kg_edges`
-6. `mediations` + `mediation_messages` + `structured_offers`
-7. `evidence_metadata`
+1. Audit all JSON stores and produce `data/_migration_audit_report.json`.
+2. Create schema with Alembic.
+3. Backfill into an empty Postgres DB without renaming source dirs.
+4. Verify row counts, child counts, referential integrity, and round-trip identity.
+5. Run API smoke tests against Postgres.
+6. Archive JSON dirs as the final explicit step.
 
-Each stage:
-- Reads JSON files, validates against existing Pydantic models (catches stale-disk drift before insert).
-- Skips entities that already exist (idempotent re-runs).
-- Logs counts + skipped/failed records to `data/_backfill_report.jsonl`.
-- After commit, renames source dir to `data/_archive_<dir>` to prevent old code paths from re-using it.
+### FK-Aware Load Order
 
-### Round-trip identity test (DoD)
+1. `intake_sessions`
+2. `predictions` with children
+3. `disputes` with `cached_prediction_id` populated where possible
+4. `knowledge_graphs`, then `kg_nodes`, then `kg_edges`
+5. `mediations`, then `structured_offers`, then `mediation_messages`
+6. `evidence_metadata`
 
-`tests/integration/test_roundtrip.py` — runs after backfill in CI.
+`predictions` loads before `disputes.cached_prediction_id` to avoid nullable second-pass work where possible. If there are orphan mapping files, the audit must report them and the backfill should leave `cached_prediction_id` null for those disputes.
 
-```python
-@pytest.mark.parametrize("entity_type", ["session", "dispute", "prediction", "kg", "mediation", "evidence"])
-async def test_roundtrip_identity(entity_type, postgres_session, source_archive_dir):
-    for json_path in source_archive_dir.glob(f"{entity_type}_*.json"):
-        original = load_json(json_path)
-        reloaded = await load_via_repo(entity_type, original["id"], postgres_session)
-        assert reloaded.model_dump(mode="json") == OriginalModel.model_validate(original).model_dump(mode="json")
-```
+### Audit Checks
 
-The firewall against schema-design errors. If it passes for every entity in `data/_archive_*` (audit count: 240 sessions, 42 predictions, 16 KGs, 22 disputes, 4 mediations, plus existing evidence-metadata files — count established by the backfill `--dry-run` pass), the schema is right.
-
-### Reverse-backfill (rollback insurance)
-
-`scripts/migrations/dump_postgres_to_json.py` — 50-line companion. Written even if never used.
+- JSON validates with current Pydantic models.
+- Duplicate primary keys.
+- Duplicate invite codes.
+- Dispute session refs that do not exist.
+- Dispute prediction mappings with missing disputes or predictions.
+- KG edges with missing source/target nodes.
+- Prediction/KG synthetic `merged-...` case IDs.
+- Enum values not accepted by current models.
+- Evidence metadata directory absent or empty.
+- Data counts by directory.
 
 ## Testing
 
-### Fixture swap: `pytest-postgresql`
+### Dependency Additions
 
-Chosen over testcontainers because:
-- Local Postgres binary already required (and brought up by `make db-up`); no Docker dependency for unit tests.
-- 5–10× faster startup per session than container spin-up.
+Add to `requirements.txt`:
 
-```python
-# apps/api/tests/conftest.py
-@pytest_asyncio.fixture
-async def db_session(postgresql):
-    engine = create_async_engine(make_async_url(postgresql))
-    async with engine.connect() as conn:
-        async with conn.begin() as tx:
-            session = AsyncSession(bind=conn)
-            yield session
-            await tx.rollback()  # transactional rollback per test, no truncate needed
-    await engine.dispose()
-```
+- `sqlalchemy[asyncio]>=2.0`
+- `asyncpg`
+- `alembic`
+- `pytest-postgresql`
+- `psycopg[binary]`
+- `httpx`
+- `asgi-lifespan`
 
-Existing fixtures (`mediation_service`, `temp_data_dir`, etc.) get rewritten to take `db_session` instead of `tmp_path`. Test bodies stay identical — that's the payoff for the repository abstraction.
+### DB Fixture Strategy
 
-### New integration tests (DoD requirements)
+Use `pytest-postgresql` deliberately:
 
-| Test | Location | Asserts |
-|---|---|---|
-| Round-trip identity | `tests/integration/test_roundtrip.py` | every backed-up JSON entity reloads identically |
-| Concurrent writes | `tests/integration/test_concurrent_writes.py` | two simultaneous dispute updates don't lose data (currently fails on JSON) |
-| Mid-transaction crash | `tests/integration/test_atomicity.py` | each of the 4 transaction boundaries leaves no half-written state when the second repo call raises |
+1. Create/migrate a template test DB once per test session.
+2. Clone from the template per test or test module.
+3. Build asyncpg URLs explicitly.
+4. Use SQLAlchemy `NullPool` in tests.
+5. Dispose engines after each test.
+6. Override FastAPI DB/UoW dependencies for API tests.
 
-## Phasing
+The fixture must run Alembic before tests. A fixture that just opens an `AsyncSession` against an empty DB is not sufficient.
 
-Single feature branch `feature/sha-102-postgres-migration`, single PR at the end. Internal commit order for reviewer step-through:
+### Required Tests
+
+| Test | Asserts |
+|---|---|
+| Data audit | reports current counts and invalid/orphan records without mutating data |
+| Alembic upgrade/downgrade | `upgrade head` and `downgrade base` both work on a clean DB |
+| Repository round-trip | each existing JSON entity loads into rows and reconstructs to the same normalized Pydantic dump |
+| Raw API contract | key endpoint responses match current JSON-backed behavior |
+| Concurrent dispute updates | two simultaneous status/session updates do not lose state |
+| Concurrent prediction requests | duplicate shared predictions are not created for one dispute |
+| Mid-transaction crash | every multi-write workflow rolls back fully when the second write fails |
+| Evidence compensation | failed metadata insert after file upload attempts cleanup and records orphan failure |
+| No production JSON writes | service tests fail if migrated workflows touch `data/sessions`, `data/disputes`, `data/predictions`, `data/dispute_predictions`, `data/knowledge_graphs`, `data/mediations`, or `data/evidence_metadata` |
+
+## Implementation Phasing
+
+Single feature branch, single PR, but ordered so schema errors surface before service rewrites.
 
 | # | Title | Lands |
 |---|---|---|
-| 1 | infra: add asyncpg/sqlalchemy/alembic deps + DATABASE_URL config | `requirements.txt`, `config.py`, `apps/api/src/db/engine.py`, `db/base.py`, lifespan wiring |
-| 2 | schema: initial Alembic migration covering 13 tables + enums | `alembic/env.py` async, `alembic/versions/0001_initial_schema.py` |
-| 3 | repos: SQLAlchemy models + repositories for all 7 entities | `apps/api/src/db/models/`, `apps/api/src/db/repositories/`; repo unit tests |
-| 4 | services: swap IntakeService + DisputeService to repos | service files modified, public APIs unchanged; existing tests rewritten on `db_session` fixture |
-| 5 | services: swap PredictionService + dispute_predictions cache column | predictions service refactor; roundtrip test for predictions |
-| 6 | services: swap KG (delete `JSONGraphStore`) + StorageService evidence metadata | KG repo, evidence repo; KG roundtrip + polymorphic node read/write tests |
-| 7 | services: swap MediationService + add transaction boundaries | mediation service + atomicity test cases; concurrent-write test |
-| 8 | tooling: backfill script + roundtrip integration test | `scripts/migrations/backfill_json_to_postgres.py`, `tests/integration/test_roundtrip.py`; dry-run on real `data/` |
-| 9 | infra: docker-compose Postgres + Makefile + CI workflow | `docker-compose.yml`, `Makefile`, `.github/workflows/ci.yml` |
-| 10 | docs: README setup, dev-onboarding update, archive rename | README, `docs/ORCHESTRATION.md` note |
+| 0 | audit: inventory JSON stores and model drift | `scripts/migrations/audit_json_stores.py`, audit report, no service changes |
+| 1 | infra: deps, config, engine, Alembic shell | `requirements.txt`, `APIConfig.database_url`, `db/engine.py`, `db/base.py`, `alembic.ini`, `apps/api/src/alembic/env.py` |
+| 2 | schema: initial migration | 13 tables, enums, indexes, composite KG keys, reserved-name-safe SQLA mappings |
+| 3 | repos: ORM models and repositories | repo CRUD + Pydantic mapping tests, no service cutover |
+| 4 | tooling: backfill and round-trip verification | backfill dry-run/commit/verify, no archive yet |
+| 5 | runtime: Unit of Work and app wiring | lifespan captures settings, UoW factory, test DB dependency overrides |
+| 6 | services: intake + disputes | remove session/dispute persistence maps from production paths, refactor chat create/join workflows |
+| 7 | services: predictions + KG + cache | replace `JSONGraphStore` production path, persist prediction/KG/cache atomically |
+| 8 | services: evidence metadata | DB metadata repo, upload/delete compensation logic |
+| 9 | services: mediation | remove mediation persistence map, projected messages/offers, transaction tests |
+| 10 | verification: concurrency, crash, API contracts | full pytest + DB integration + smoke tests |
+| 11 | cutover: archive JSON and docs | `--archive-json`, rollback runbook, README/dev docs |
 
 ## Infra
 
-### `docker-compose.yml` (new, sibling of existing `docker-compose.langfuse.yml`)
+### Docker Compose
 
 ```yaml
-version: "3.9"
 services:
   postgres:
     image: postgres:16
@@ -293,110 +565,110 @@ services:
       POSTGRES_USER: proposer
       POSTGRES_PASSWORD: proposer-dev
       POSTGRES_DB: proposer
-    ports: ["5432:5432"]
-    volumes: [proposer_pg_data:/var/lib/postgresql/data]
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - proposer_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U proposer"]
+      test: ["CMD-SHELL", "pg_isready -U proposer -d proposer"]
       interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
+
 volumes:
   proposer_pg_data:
 ```
 
-### `Makefile` (new — none exists today)
+### Makefile
+
+Avoid relying on host Postgres client tools when Docker is the expected path.
 
 ```make
-.PHONY: db-up db-down db-reset migrate test eval
+.PHONY: db-up db-down db-reset migrate test test-db test-api
 
 db-up:
 	docker compose up -d postgres
-	@until pg_isready -h localhost -U proposer -q; do sleep 0.5; done
+	@until docker compose exec -T postgres pg_isready -U proposer -d proposer >/dev/null 2>&1; do sleep 0.5; done
 
 db-down:
 	docker compose down
 
-db-reset: db-down
-	docker compose rm -fv postgres
+db-reset:
+	docker compose down -v
 	$(MAKE) db-up
 	$(MAKE) migrate
 
 migrate:
 	alembic upgrade head
 
-test: db-up migrate
-	pytest
+test-db: db-up migrate
+	pytest apps/api/tests tests/integration
 
-eval: db-up migrate
-	python scripts/eval/run_eval.py
+test-api:
+	pytest apps/api/tests
+
+test: test-api test-db
 ```
 
-### CI workflow (new — `.github/workflows/` does not exist today)
+### CI
 
-`.github/workflows/ci.yml`:
+CI needs:
 
-```yaml
-name: ci
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env: { POSTGRES_USER: proposer, POSTGRES_PASSWORD: proposer-dev, POSTGRES_DB: proposer }
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd pg_isready --health-interval 5s --health-timeout 3s --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - run: pip install -r requirements.txt
-      - run: alembic upgrade head
-        env: { DATABASE_URL: postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer }
-      - run: pytest
-        env: { DATABASE_URL: postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer }
-```
+- Postgres service container.
+- `DATABASE_URL=postgresql+asyncpg://...`
+- `alembic upgrade head`.
+- pytest with DB integration enabled.
+- Optional Alembic drift check after models land.
 
 ## Rollback
 
-JSON files are renamed to `data/_archive_<dir>` rather than deleted. To roll back:
+Rollback order matters. Do not `git revert` before dumping new Postgres-only data, because the dump script may disappear.
 
-1. `git revert <merge_commit>` — service code returns to JSON layer.
-2. Rename `data/_archive_*` back to `data/<dir>`.
-3. `data/_backfill_report.jsonl` shows what was migrated; any new entities written to Postgres after cutover are recovered with `scripts/migrations/dump_postgres_to_json.py`.
+1. Stop writes.
+2. Run `python scripts/migrations/dump_postgres_to_json.py --out data/_rollback_dump`.
+3. Verify dumped JSON validates with Pydantic.
+4. Rename archived source dirs back only if needed.
+5. Revert the merge commit.
+6. Start the JSON-backed app.
+7. Keep Postgres snapshot until manual verification is complete.
 
 ## Risks
 
 | Risk | Mitigation |
 |---|---|
-| In-flight branches (SHA-32/68/36) conflict on services | Land migration as commits 1–10 in deterministic order; rebase those branches onto the merged result. Rebase notes in PR description. |
-| Pydantic ↔ SQLAlchemy drift over time | CI step `python scripts/check_model_alignment.py` walks each repo class and asserts every `Mapped[...]` column has a matching Pydantic field of compatible type. Fails CI on drift. |
-| Local-dev friction from new Postgres dep | `make db-up` is one command; pattern already exists in `docker-compose.langfuse.yml`. README onboarding updated. |
-| KG `find_path()` BFS multi-hop traversal not ported | Currently dead code (zero call sites in repo). Deferred. If SHA-15 (KG Activation) wakes it up, it gets a recursive-CTE port at that time. |
-| Schema migration discovers shape errors mid-stream | Round-trip test on real `data/` runs in commit 8 — before any service swap is merged. Catches schema errors before they hit production paths. |
-| Thesis runway pressure (user accepted this trade-off) | Public service APIs unchanged → SHA-32/68/36 keep working. If migration slips past ~10 days of effort, halt and re-evaluate. |
+| Schema misses fields in wide Pydantic aggregates | Canonical `payload JSONB` plus round-trip tests before service cutover |
+| KG node ID collisions | Composite `(case_id, node_id)` PK and composite edge FKs |
+| Lost updates despite Postgres | Row locks, optimistic versions, or atomic SQL updates for read-modify-write flows |
+| Singleton caches diverge from DB | Remove persistence-bearing maps from production paths |
+| Merged case IDs break FKs | Do not FK prediction/KG `case_id` to sessions |
+| Evidence file/DB mismatch | Compensation logic and orphan report |
+| Test DB missing schema | Alembic-migrated template DB fixture |
+| Rollback loses Postgres-only writes | Dump Postgres before reverting code |
+| Thesis runway pressure | Stop after phase 4 if schema/backfill is not clean; do not enter service cutover with unresolved round-trip failures |
 
-## Definition of Done (from ticket, restated against this design)
+## Definition of Done
 
-- [x] All 7 user-facing stores write to Postgres; JSON files no longer touched in production code paths *(7th = `evidence_metadata` added to scope)*
-- [x] Backfill script runs idempotently against a stale JSON checkout
-- [x] Round-trip test asserts dump→reload identity for every existing entity in `data/`
-- [x] All existing tests pass against `pytest-postgresql` fixture
-- [x] `docker-compose up` brings up Postgres locally; `make test` runs against it
-- [x] CI green on the new test job
-- [x] Concurrent-write integration test: two simulated requests touching the same dispute don't lose data
-- [x] Transaction integration test: mid-transaction crash leaves no half-written state
-- [x] README + dev setup docs updated
-- [x] All 6 source dirs (+ `evidence_metadata`) removed from production write paths (kept as `data/_archive_*` until Phase 4 stable)
-- [x] No regression in existing API contracts (intake / prediction / mediation endpoints respond identically)
+- [ ] Audit script reports current data counts and invalid/orphan records.
+- [ ] All 7 user-facing stores write metadata/state to Postgres in production paths.
+- [ ] JSON source dirs are archived only after verification.
+- [ ] Backfill is idempotent and supports dry-run, commit, verify, and archive modes.
+- [ ] Round-trip tests pass for every existing session, dispute, prediction, KG, mediation, and evidence metadata file.
+- [ ] Existing API endpoints preserve response contracts.
+- [ ] No migrated production code path writes to JSON state dirs.
+- [ ] Concurrent-write tests prove no lost dispute/mediation/prediction-cache updates.
+- [ ] Mid-transaction crash tests prove no half-written state.
+- [ ] Evidence upload/delete compensation is tested.
+- [ ] Alembic upgrade/downgrade works on clean DB.
+- [ ] Docker Compose, Makefile, and CI run the migrated tests.
+- [ ] README and dev setup docs explain Postgres workflow and rollback.
 
-## Out of scope (carved out)
+## Out of Scope
 
-- ChromaDB (vector store) — different access pattern, already a real DB.
-- `data/raw/bailii/` PDFs — files-on-disk are correct storage for source documents.
-- KG `find_path()` recursive-CTE port — dead code today, deferred to SHA-15.
-- Read-replica / sharding / managed-Postgres deployment — single-instance is enough until 1k+ paying users.
-- New analytical queries / admin dashboard — separate ticket once schema lands.
-- Normalizing `CaseFile` and chat `messages` out of JSONB into structured tables — would balloon scope into a domain remodel; KG already covers the structured-query view of CaseFile.
+- ChromaDB/vector store.
+- BM25 pickle/index files.
+- `data/raw/bailii/` PDFs.
+- Local/Supabase evidence blobs, except metadata rows and cleanup compensation.
+- Read replicas, sharding, managed Postgres deployment.
+- New analytics/admin dashboard queries.
+- Full CaseFile normalization beyond JSONB payload/projection columns.
+- KG recursive `find_path()` SQL/CTE implementation unless SHA-15 makes it live.
