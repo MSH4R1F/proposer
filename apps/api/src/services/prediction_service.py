@@ -5,30 +5,56 @@ Orchestrates prediction generation with RAG integration.
 Supports two-party dispute merging: when both tenant and landlord
 have submitted for the same dispute, their CaseFiles are merged
 into one and a single shared prediction is generated.
+
+Phase 7.1: All persistence is routed through UnitOfWork (Postgres).
+JSONGraphStore is no longer used.  The legacy singleton getter is kept
+for rollback compatibility.
 """
 
-import json
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from functools import lru_cache
+from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from llm_orchestrator.config import LLMConfig
-from llm_orchestrator.clients.claude_client import ClaudeClient
-from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
-from llm_orchestrator.models.prediction import PredictionResult
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
 
-from kg_builder.builders.graph_builder import GraphBuilder
-from kg_builder.storage.json_store import JSONGraphStore
-
-from apps.api.src.config import config
-from apps.api.src.services.intake_service import get_intake_service
+from apps.api.src.db.uow import UnitOfWork
 
 logger = structlog.get_logger()
 
-# Global service instance
+# Legacy singleton kept for rollback compatibility.
 _prediction_service: Optional["PredictionService"] = None
+
+
+def _build_prediction_engine() -> Any:
+    """
+    Construct the heavy prediction engine (LLM client + optional RAG pipeline).
+
+    This is pulled into a module-level helper so that dependencies.py can
+    cache it at process level via lru_cache without importing the engine at
+    module-import time.
+    """
+    from llm_orchestrator.config import LLMConfig
+    from llm_orchestrator.clients.claude_client import ClaudeClient
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    llm_config = LLMConfig.from_env()
+    llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
+    engine = PredictionEngineV2(llm_client=llm_client, rag_pipeline=None)
+
+    # Try to attach RAG pipeline.
+    try:
+        from rag_engine import RAGPipeline, RAGConfig
+
+        rag_config = RAGConfig.from_env()
+        rag_pipeline = RAGPipeline(config=rag_config)
+        engine.set_rag_pipeline(rag_pipeline)
+        logger.info("rag_pipeline_loaded")
+    except Exception as e:
+        logger.warning("rag_pipeline_not_loaded", error=str(e))
+
+    return engine
 
 
 class PredictionService:
@@ -38,49 +64,56 @@ class PredictionService:
     Integrates RAG retrieval, knowledge graph, and LLM synthesis.
     Supports two-party disputes: merges both parties' CaseFiles and
     generates a single shared prediction cached by dispute_id.
+
+    All persistence goes through UnitOfWork (Postgres).
     """
 
-    def __init__(self):
-        """Initialize the prediction service."""
-        # Initialize components
-        llm_config = LLMConfig.from_env()
-        self.llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
+    def __init__(
+        self,
+        sessionmaker: async_sessionmaker[AsyncSession],
+        *,
+        engine: Optional[Any] = None,        # PredictionEngineV2 — heavy LLM piece
+        graph_builder: Optional[Any] = None,  # GraphBuilder — pure Python
+        rag_pipeline: Optional[Any] = None,   # heavy RAG (unused if engine provided)
+        intake_service: Optional[Any] = None,  # kept for API compat, not used internally
+        dispute_service: Optional[Any] = None, # kept for API compat, not used internally
+    ) -> None:
+        self._sm = sessionmaker
 
-        # Prediction engine V2 (RAG pipeline loaded lazily)
-        self.prediction_engine = PredictionEngineV2(
-            llm_client=self.llm_client,
-            rag_pipeline=None,  # Will be set when needed
-        )
+        # Lazy-init heavy pieces only when not injected (allows test mocking).
+        self._engine = engine
+        self._graph_builder = graph_builder
 
-        # Knowledge graph
-        self.graph_builder = GraphBuilder()
-        self.kg_store = JSONGraphStore(config.kg_dir)
-
-        # Prediction storage
-        self.predictions_dir = config.data_dir / "predictions"
-        self.predictions_dir.mkdir(parents=True, exist_ok=True)
-
-        # Dispute → prediction mapping storage
-        self.dispute_predictions_dir = config.data_dir / "dispute_predictions"
-        self.dispute_predictions_dir.mkdir(parents=True, exist_ok=True)
-
-        # Try to load RAG pipeline
-        self._load_rag_pipeline()
+        # intake_service / dispute_service are no longer called internally —
+        # all IO goes through repos — but we accept them so callers that
+        # pass keyword arguments don't break.
+        _ = intake_service
+        _ = dispute_service
 
         logger.info("prediction_service_initialized")
 
-    def _load_rag_pipeline(self) -> None:
-        """Try to load the RAG pipeline."""
-        try:
-            from rag_engine import RAGPipeline, RAGConfig
+    # ------------------------------------------------------------------
+    # Lazy property accessors for heavy components
+    # ------------------------------------------------------------------
 
-            rag_config = RAGConfig.from_env()
-            rag_pipeline = RAGPipeline(config=rag_config)
-            self.prediction_engine.set_rag_pipeline(rag_pipeline)
+    @property
+    def prediction_engine(self) -> Any:
+        """Process-cached prediction engine (constructed on first use)."""
+        if self._engine is None:
+            self._engine = _build_prediction_engine()
+        return self._engine
 
-            logger.info("rag_pipeline_loaded")
-        except Exception as e:
-            logger.warning("rag_pipeline_not_loaded", error=str(e))
+    @property
+    def graph_builder(self) -> Any:
+        """GraphBuilder (constructed on first use)."""
+        if self._graph_builder is None:
+            from kg_builder.builders.graph_builder import GraphBuilder
+            self._graph_builder = GraphBuilder()
+        return self._graph_builder
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
 
     async def check_case_ready(self, case_id: str) -> Dict[str, Any]:
         """
@@ -89,10 +122,10 @@ class PredictionService:
         Only dispute issues are strictly required. Other fields improve
         prediction quality but don't block generation.
         """
-        intake_service = get_intake_service()
-        case_file = await intake_service.get_case_file(case_id)
+        async with UnitOfWork(self._sm) as uow:
+            state = await uow.sessions.get_by_case_id(case_id)
 
-        if not case_file:
+        if not state:
             return {
                 "exists": False,
                 "is_complete": False,
@@ -102,6 +135,7 @@ class PredictionService:
                 "data_quality_tier": "insufficient",
             }
 
+        case_file = state.case_file
         case_file.calculate_completeness()
         missing = case_file.get_missing_required_info()
         missing_recommended = case_file.get_missing_recommended_info()
@@ -131,7 +165,7 @@ class PredictionService:
         self,
         case_id: str,
         include_reasoning: bool = True,
-    ) -> PredictionResult:
+    ) -> Any:
         """
         Generate a prediction for a case.
 
@@ -139,211 +173,96 @@ class PredictionService:
         have submitted), their CaseFiles are merged and a single shared
         prediction is generated. Both parties will receive the same result.
 
-        Args:
-            case_id: The case ID
-            include_reasoning: Whether to include full reasoning trace
-
-        Returns:
-            PredictionResult with prediction and reasoning
+        3-stage flow:
+          Stage 1 (read transaction) — resolve case_file, check cache.
+          Stage 2 (no transaction) — build KG + run LLM prediction engine.
+          Stage 3 (write transaction) — re-check cache (row-lock), write KG +
+            prediction + update disputes.cached_prediction_id atomically.
         """
-        intake_service = get_intake_service()
-        case_file = await intake_service.get_case_file(case_id)
+        # ── Stage 1: short read transaction ─────────────────────────────────
+        async with UnitOfWork(self._sm) as uow:
+            case_file, dispute_id, cacheable, cache_key = (
+                await self._resolve_and_merge_from_repos(case_id, uow)
+            )
+            if cacheable and dispute_id:
+                locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
+                if (
+                    locked
+                    and locked.cached_prediction_id
+                    and locked.prediction_cache_key == cache_key
+                ):
+                    cached = await uow.predictions.get(locked.cached_prediction_id)
+                    if cached:
+                        logger.info(
+                            "returning_cached_dispute_prediction_stage1",
+                            case_id=case_id,
+                            dispute_id=dispute_id,
+                            prediction_id=locked.cached_prediction_id,
+                        )
+                        return cached
 
-        if not case_file:
-            raise ValueError(f"Case not found: {case_id}")
-
-        # Try to resolve dispute and merge both parties' data
-        merged_case_file, dispute_id = await self._resolve_and_merge(
-            case_id, case_file, intake_service
-        )
-
-        # Check for cached shared prediction (avoid regenerating)
-        if dispute_id:
-            cached = self._get_cached_dispute_prediction(dispute_id)
-            if cached:
-                logger.info(
-                    "returning_cached_dispute_prediction",
-                    case_id=case_id,
-                    dispute_id=dispute_id,
-                    prediction_id=cached.get("prediction_id"),
-                )
-                # Re-hydrate into PredictionResult
-                return PredictionResult.model_validate(cached)
-
-        # Build knowledge graph from (merged or single) case file
-        kg = self.graph_builder.build(merged_case_file)
-        self.kg_store.save(kg)
-
-        logger.info(
-            "generating_prediction",
-            case_id=case_id,
-            dispute_id=dispute_id,
-            is_merged=dispute_id is not None,
-            kg_nodes=len(kg.nodes),
-            kg_edges=len(kg.edges),
-        )
-
-        # Generate prediction
+        # ── Stage 2: external work — NO transaction ──────────────────────────
+        kg = self.graph_builder.build(case_file)
         prediction = await self.prediction_engine.predict(
-            case_file=merged_case_file,
+            case_file=case_file,
             knowledge_graph=kg,
         )
 
-        # Tag with dispute metadata so both parties can find it
-        if dispute_id:
+        if cacheable and dispute_id:
             prediction.metadata["dispute_id"] = dispute_id
             prediction.metadata["merged"] = True
-
-        # Save prediction (and cache by dispute_id if applicable)
-        self._save_prediction(prediction)
-        if dispute_id:
-            self._save_dispute_prediction_mapping(dispute_id, prediction.prediction_id)
-
-        return prediction
-
-    async def _resolve_and_merge(
-        self,
-        case_id: str,
-        case_file: CaseFile,
-        intake_service: Any,
-    ) -> tuple:
-        """
-        Attempt to find a dispute for this case and merge both parties' data.
-
-        Returns:
-            (case_file, dispute_id) — merged CaseFile + dispute_id if both
-            parties are present, otherwise (original case_file, None).
-        """
-        try:
-            from apps.api.src.services.dispute_service import get_dispute_service
-
-            dispute_service = get_dispute_service()
-
-            # Find the session_id backing this case_id
-            session_id = await intake_service.get_session_id_for_case(case_id)
-            if not session_id:
-                logger.debug("no_session_for_case", case_id=case_id)
-                return case_file, None
-
-            # Find the dispute linked to this session
-            dispute = await dispute_service.get_dispute_by_session(session_id)
-            if not dispute:
-                logger.debug("no_dispute_for_session", session_id=session_id)
-                return case_file, None
-
-            logger.info(
-                "dispute_found",
-                dispute_id=dispute.dispute_id,
-                has_both=dispute.has_both_parties,
-                status=dispute.status.value,
-            )
-
-            # If only one party, use the original case file
-            if not dispute.has_both_parties:
-                return case_file, dispute.dispute_id
-
-            # Load both parties' CaseFiles
-            tenant_cf = None
-            landlord_cf = None
-
-            if dispute.tenant_session_id:
-                tenant_cf = await intake_service.get_case_file_by_session(
-                    dispute.tenant_session_id
-                )
-            if dispute.landlord_session_id:
-                landlord_cf = await intake_service.get_case_file_by_session(
-                    dispute.landlord_session_id
-                )
-
-            if tenant_cf and landlord_cf:
-                merged = merge_case_files(tenant_cf, landlord_cf)
-                logger.info(
-                    "case_files_merged",
-                    dispute_id=dispute.dispute_id,
-                    tenant_issues=len(tenant_cf.issues),
-                    landlord_issues=len(landlord_cf.issues),
-                    merged_issues=len(merged.issues),
-                    merged_evidence=len(merged.evidence),
-                )
-                return merged, dispute.dispute_id
-
-            # Fallback: one party's CaseFile couldn't be loaded
-            logger.warning(
-                "partial_merge_fallback",
-                dispute_id=dispute.dispute_id,
-                has_tenant_cf=tenant_cf is not None,
-                has_landlord_cf=landlord_cf is not None,
-            )
-            return case_file, dispute.dispute_id
-
-        except Exception as e:
-            logger.warning(
-                "dispute_merge_failed",
-                case_id=case_id,
-                error=str(e),
-                error_type=type(e).__name__,
-            )
-            return case_file, None
-
-    def _get_cached_dispute_prediction(self, dispute_id: str) -> Optional[Dict]:
-        """
-        Check if a shared prediction already exists for this dispute.
-
-        Returns the prediction data dict if cached, else None.
-        """
-        mapping_path = self.dispute_predictions_dir / f"{dispute_id}.json"
-        if not mapping_path.exists():
-            return None
-
-        try:
-            with open(mapping_path) as f:
-                mapping = json.load(f)
-
-            prediction_id = mapping.get("prediction_id")
-            if not prediction_id:
-                return None
-
-            pred_path = self.predictions_dir / f"prediction_{prediction_id}.json"
-            if not pred_path.exists():
-                return None
-
-            with open(pred_path) as f:
-                return json.load(f)
-        except Exception as e:
-            logger.warning(
-                "cached_dispute_prediction_read_failed",
-                dispute_id=dispute_id,
-                error=str(e),
-            )
-            return None
-
-    def _save_dispute_prediction_mapping(
-        self, dispute_id: str, prediction_id: str
-    ) -> None:
-        """Save dispute_id → prediction_id mapping so both parties get the same result."""
-        mapping_path = self.dispute_predictions_dir / f"{dispute_id}.json"
-        data = {
-            "dispute_id": dispute_id,
-            "prediction_id": prediction_id,
-        }
-
-        with open(mapping_path, "w") as f:
-            json.dump(data, f, indent=2)
+            prediction.metadata["prediction_cache_key"] = cache_key
 
         logger.info(
-            "dispute_prediction_mapping_saved",
+            "prediction_generated_pre_write",
+            case_id=case_id,
+            prediction_id=prediction.prediction_id,
             dispute_id=dispute_id,
-            prediction_id=prediction_id,
+            cacheable=cacheable,
         )
+
+        # ── Stage 3: short write transaction with row-lock re-check ──────────
+        async with UnitOfWork(self._sm) as uow:
+            if cacheable and dispute_id:
+                locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
+                if (
+                    locked
+                    and locked.cached_prediction_id
+                    and locked.prediction_cache_key == cache_key
+                ):
+                    cached = await uow.predictions.get(locked.cached_prediction_id)
+                    if cached:
+                        logger.info(
+                            "returning_cached_dispute_prediction_stage3",
+                            case_id=case_id,
+                            dispute_id=dispute_id,
+                            prediction_id=locked.cached_prediction_id,
+                        )
+                        return cached
+
+            await uow.knowledge_graphs.save(kg)
+            await uow.predictions.save(prediction)
+            if cacheable and dispute_id:
+                await uow.disputes.set_cached_prediction_id(
+                    dispute_id, prediction.prediction_id, cache_key=cache_key
+                )
+
+        logger.info(
+            "prediction_written",
+            case_id=case_id,
+            prediction_id=prediction.prediction_id,
+            dispute_id=dispute_id,
+            cacheable=cacheable,
+        )
+        return prediction
 
     async def get_prediction(self, prediction_id: str) -> Optional[Dict]:
         """Get a saved prediction."""
-        path = self.predictions_dir / f"prediction_{prediction_id}.json"
-        if not path.exists():
+        async with UnitOfWork(self._sm) as uow:
+            result = await uow.predictions.get(prediction_id)
+        if result is None:
             return None
-
-        with open(path) as f:
-            return json.load(f)
+        return result.model_dump(mode="json")
 
     async def list_predictions_for_case(self, case_id: str) -> List[Dict]:
         """
@@ -352,78 +271,177 @@ class PredictionService:
         Also checks if this case belongs to a dispute with a shared prediction,
         so both parties see the same result.
         """
-        predictions = []
-        seen_ids: set = set()
+        async with UnitOfWork(self._sm) as uow:
+            # 1. Direct predictions by case_id.
+            direct = await uow.predictions.get_by_case_id(case_id)
+            seen_ids: set = {p.prediction_id for p in direct}
+            predictions: List[Dict] = [
+                {
+                    "prediction_id": p.prediction_id,
+                    "timestamp": p.timestamp,
+                    "overall_outcome": p.overall_outcome.value,
+                    "overall_confidence": p.overall_confidence,
+                }
+                for p in direct
+            ]
 
-        # 1. Direct matches by case_id
-        for path in self.predictions_dir.glob("prediction_*.json"):
+            # 2. Shared cached dispute prediction.
             try:
-                with open(path) as f:
-                    data = json.load(f)
-                if data.get("case_id") == case_id:
-                    pred_id = data.get("prediction_id")
-                    if pred_id and pred_id not in seen_ids:
-                        seen_ids.add(pred_id)
-                        predictions.append(
-                            {
-                                "prediction_id": pred_id,
-                                "timestamp": data.get("timestamp"),
-                                "overall_outcome": data.get("overall_outcome"),
-                                "overall_confidence": data.get("overall_confidence"),
-                            }
+                state = await uow.sessions.get_by_case_id(case_id)
+                if state:
+                    session_id = state.session_id
+                    disputes = await uow.disputes.get_by_session_id(session_id)
+                    if disputes:
+                        dispute = disputes[0]
+                        # lock_for_prediction_cache returns the cached_prediction_id
+                        # alongside the row lock; acceptable here as this is a
+                        # short read transaction and the lock is released at commit.
+                        locked = await uow.disputes.lock_for_prediction_cache(
+                            dispute.dispute_id
                         )
-            except Exception:
-                continue
-
-        # 2. Check for shared dispute prediction
-        try:
-            from apps.api.src.services.dispute_service import get_dispute_service
-
-            intake_service = get_intake_service()
-            dispute_service = get_dispute_service()
-
-            session_id = await intake_service.get_session_id_for_case(case_id)
-            if session_id:
-                dispute = await dispute_service.get_dispute_by_session(session_id)
-                if dispute:
-                    cached = self._get_cached_dispute_prediction(dispute.dispute_id)
-                    if cached:
-                        pred_id = cached.get("prediction_id")
-                        if pred_id and pred_id not in seen_ids:
-                            seen_ids.add(pred_id)
-                            predictions.append(
-                                {
-                                    "prediction_id": pred_id,
-                                    "timestamp": cached.get("timestamp"),
-                                    "overall_outcome": cached.get("overall_outcome"),
-                                    "overall_confidence": cached.get(
-                                        "overall_confidence"
-                                    ),
-                                }
-                            )
-        except Exception as e:
-            logger.warning(
-                "dispute_prediction_lookup_failed",
-                case_id=case_id,
-                error=str(e),
-            )
+                        if locked and locked.cached_prediction_id:
+                            cached_pid = locked.cached_prediction_id
+                            if cached_pid not in seen_ids:
+                                cached = await uow.predictions.get(cached_pid)
+                                if cached:
+                                    seen_ids.add(cached_pid)
+                                    predictions.append(
+                                        {
+                                            "prediction_id": cached.prediction_id,
+                                            "timestamp": cached.timestamp,
+                                            "overall_outcome": cached.overall_outcome.value,
+                                            "overall_confidence": cached.overall_confidence,
+                                        }
+                                    )
+            except Exception as e:
+                logger.warning(
+                    "dispute_prediction_lookup_failed",
+                    case_id=case_id,
+                    error=str(e),
+                )
 
         return predictions
 
-    def _save_prediction(self, prediction: PredictionResult) -> None:
-        """Save a prediction to disk."""
-        path = self.predictions_dir / f"prediction_{prediction.prediction_id}.json"
-        data = prediction.model_dump(mode="json")
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
 
-        with open(path, "w") as f:
-            json.dump(data, f, indent=2, default=str)
+    async def _resolve_and_merge_from_repos(
+        self,
+        case_id: str,
+        uow: UnitOfWork,
+    ) -> Tuple[CaseFile, Optional[str], bool, Optional[str]]:
+        """
+        Resolve case_file and optionally merge both parties' data via repos.
 
-        logger.info("prediction_saved", prediction_id=prediction.prediction_id)
+        Returns:
+            (case_file, dispute_id, cacheable, cache_key)
+            - cacheable is True only when BOTH parties are present and merged.
+            - cache_key includes both session IDs + their row versions so that
+              any save on either session invalidates the cache automatically.
+        """
+        state = await uow.sessions.get_by_case_id(case_id)
+        if not state:
+            raise ValueError(f"Case not found: {case_id}")
+
+        case_file = state.case_file
+        session_id = state.session_id
+
+        try:
+            disputes = await uow.disputes.get_by_session_id(session_id)
+            if not disputes:
+                logger.debug("no_dispute_for_session", session_id=session_id)
+                return case_file, None, False, None
+
+            dispute = disputes[0]
+            dispute_id = dispute.dispute_id
+
+            logger.info(
+                "dispute_found",
+                dispute_id=dispute_id,
+                has_both=dispute.has_both_parties,
+                status=dispute.status.value,
+            )
+
+            if not dispute.has_both_parties:
+                # One party joined — link dispute_id for listing but don't cache.
+                return case_file, dispute_id, False, None
+
+            # Both parties present — load each session + version.
+            tenant_session_id = dispute.tenant_session_id
+            landlord_session_id = dispute.landlord_session_id
+
+            # Retrieve versioned sessions for cache-key composition.
+            t_versioned = None
+            l_versioned = None
+            tenant_cf: Optional[CaseFile] = None
+            landlord_cf: Optional[CaseFile] = None
+
+            if tenant_session_id:
+                t_versioned = await uow.sessions.get_with_version(tenant_session_id)
+                if t_versioned:
+                    tenant_cf = t_versioned.state.case_file
+
+            if landlord_session_id:
+                l_versioned = await uow.sessions.get_with_version(landlord_session_id)
+                if l_versioned:
+                    landlord_cf = l_versioned.state.case_file
+
+            if tenant_cf and landlord_cf:
+                merged = merge_case_files(tenant_cf, landlord_cf)
+                t_ver = t_versioned.version if t_versioned else 0
+                l_ver = l_versioned.version if l_versioned else 0
+                cache_key = (
+                    f"{tenant_session_id}:{t_ver}:"
+                    f"{landlord_session_id}:{l_ver}"
+                )
+                logger.info(
+                    "case_files_merged",
+                    dispute_id=dispute_id,
+                    tenant_issues=len(tenant_cf.issues),
+                    landlord_issues=len(landlord_cf.issues),
+                    merged_issues=len(merged.issues),
+                    merged_evidence=len(merged.evidence),
+                    cache_key=cache_key,
+                )
+                return merged, dispute_id, True, cache_key
+
+            # Partial fallback — one side failed to load.
+            logger.warning(
+                "partial_merge_fallback",
+                dispute_id=dispute_id,
+                has_tenant_cf=tenant_cf is not None,
+                has_landlord_cf=landlord_cf is not None,
+            )
+            return case_file, dispute_id, False, None
+
+        except ValueError:
+            raise
+        except Exception as e:
+            logger.warning(
+                "dispute_merge_failed",
+                case_id=case_id,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
+            return case_file, None, False, None
 
 
-def get_prediction_service() -> PredictionService:
-    """Dependency injection for prediction service."""
+# ---------------------------------------------------------------------------
+# Legacy singleton getter — kept for rollback compatibility.
+# The dependencies.py factory no longer calls this; the updated factory in
+# dependencies.py creates a per-request PredictionService with the app
+# sessionmaker directly.
+# ---------------------------------------------------------------------------
+
+def get_prediction_service() -> "PredictionService":
+    """Legacy process-singleton getter.  Kept for rollback compatibility."""
     global _prediction_service
     if _prediction_service is None:
-        _prediction_service = PredictionService()
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy.ext.asyncio import async_sessionmaker as _asm
+
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+        sm = _asm(engine, expire_on_commit=False, class_=AsyncSession)
+        _prediction_service = PredictionService(sessionmaker=sm)
     return _prediction_service
