@@ -6,6 +6,7 @@ from apps.api.src.db.models.predictions import (
     PredictionReasoningStepRow,
     PredictionCitationRow,
 )
+from apps.api.src.db.models.kg import KnowledgeGraphRow, KGNodeRow, KGEdgeRow
 
 __all__ = [
     "IntakeSessionRow",
@@ -14,4 +15,7 @@ __all__ = [
     "PredictionIssueRow",
     "PredictionReasoningStepRow",
     "PredictionCitationRow",
+    "KnowledgeGraphRow",
+    "KGNodeRow",
+    "KGEdgeRow",
 ]
