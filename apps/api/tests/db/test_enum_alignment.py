@@ -10,6 +10,8 @@ CitationSource enum is introduced on the Python side, add the mapping here:
     (citation_source_enum, CitationSource)
 """
 
+import importlib
+
 import pytest
 
 from apps.api.src.db.models._enums import (
@@ -43,6 +45,10 @@ from llm_orchestrator.models.mediation import (
 )
 from kg_builder.models.nodes import NodeType
 from kg_builder.models.edges import EdgeType
+
+initial_schema = importlib.import_module(
+    "apps.api.src.alembic.versions.0001_initial_schema"
+)
 
 
 PAIRS = [
@@ -89,8 +95,13 @@ def test_pg_enum_values_match_python(pg_enum, py_enum) -> None:
     )
 
 
-# TODO (Task 2.8): Once the Alembic migration defines an ENUMS dict that maps
-# PG type name -> tuple-of-values, add a second parametrized test here that
-# compares that dict against both the SQLAlchemy ENUM objects above and the
-# Python enums.  Do not add a placeholder that always passes — wait until the
-# migration exists.
+@pytest.mark.parametrize("pg_enum,py_enum", PAIRS, ids=_pair_id)
+def test_migration_enum_values_match_python(pg_enum, py_enum) -> None:
+    migration_values = set(initial_schema.ENUMS[pg_enum.name])
+    py_values = {member.value for member in py_enum}
+    assert migration_values == py_values
+
+
+@pytest.mark.parametrize("pg_enum,_py_enum", PAIRS, ids=_pair_id)
+def test_migration_enum_values_match_orm(pg_enum, _py_enum) -> None:
+    assert set(initial_schema.ENUMS[pg_enum.name]) == set(pg_enum.enums)

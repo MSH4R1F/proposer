@@ -17,10 +17,10 @@ migrate:
 	alembic -c alembic.ini upgrade head
 
 test-api:
-	pytest apps/api/tests
+	PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest apps/api/tests --ignore=apps/api/tests/db -p pytest_asyncio.plugin -p no:cacheprovider
 
-test-db: db-up migrate
-	pytest apps/api/tests/db apps/api/tests/integration
+test-db:
+	pytest apps/api/tests/db scripts/migrations/tests -p no:cacheprovider
 
 test: test-api test-db
 

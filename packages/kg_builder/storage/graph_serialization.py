@@ -5,7 +5,8 @@ audit tooling, to share the same polymorphic node round-trip logic.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+import json
+from typing import Any, Optional
 
 import structlog
 
@@ -92,6 +93,11 @@ def deserialize_node(data: dict[str, Any]) -> Optional[BaseNode]:
         return None
 
 
+def _json_safe(value: Any) -> Any:
+    """Match JSONGraphStore's json.dump(default=str) behavior for JSONB."""
+    return json.loads(json.dumps(value, default=str))
+
+
 def serialize_knowledge_graph(kg: KnowledgeGraph) -> dict[str, Any]:
     """Convert a KnowledgeGraph to a fully serializable dict.
 
@@ -105,12 +111,12 @@ def serialize_knowledge_graph(kg: KnowledgeGraph) -> dict[str, Any]:
         "updated_at": kg.updated_at,
         "nodes": [serialize_node(n) for n in kg.nodes],
         "edges": [e.model_dump(mode="json") for e in kg.edges],
-        "validation_errors": kg.validation_errors,
-        "validation_warnings": kg.validation_warnings,
-        "validation_info": kg.validation_info,
+        "validation_errors": _json_safe(kg.validation_errors),
+        "validation_warnings": _json_safe(kg.validation_warnings),
+        "validation_info": _json_safe(kg.validation_info),
         "is_consistent": kg.is_consistent,
         "data_quality_tier": kg.data_quality_tier,
-        "metadata": kg.metadata,
+        "metadata": _json_safe(kg.metadata),
     }
 
 

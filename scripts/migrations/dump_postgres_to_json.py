@@ -9,13 +9,16 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import sys
 from pathlib import Path
 
-# Add project root so packages/ resolves when run directly.
+# Add repo root and packages directory so direct script execution works.
 _project_root = Path(__file__).parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
+if str(_project_root / "packages") not in sys.path:
+    sys.path.insert(0, str(_project_root / "packages"))
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -37,9 +40,26 @@ from packages.llm_orchestrator.models.mediation import MediationSession
 from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
 
 
+_SAFE_COMPONENT = re.compile(r"^[A-Za-z0-9_.-]+$")
+
+
+class DumpError(RuntimeError):
+    pass
+
+
+def _safe_component(value: str, *, field: str) -> str:
+    if not value or "/" in value or "\\" in value or value in {".", ".."}:
+        raise DumpError(f"unsafe {field} for rollback path")
+    if not _SAFE_COMPONENT.fullmatch(value):
+        raise DumpError(f"unsafe {field} for rollback path")
+    return value
+
+
 async def dump(
     sessionmaker: async_sessionmaker[AsyncSession],
     out_dir: Path,
+    *,
+    allow_nonempty: bool = False,
 ) -> dict[str, int]:
     """Dump every entity from Postgres to JSON files under out_dir.
 
@@ -56,6 +76,9 @@ async def dump(
         "evidence_metadata",
     )}
 
+    if out_dir.exists() and any(out_dir.iterdir()) and not allow_nonempty:
+        raise DumpError("output directory is not empty; use --force-overwrite intentionally")
+
     async with sessionmaker() as session:
         sessions_repo = SessionsRepo(session)
         disputes_repo = DisputesRepo(session)
@@ -65,7 +88,8 @@ async def dump(
         sessions_dir = out_dir / "sessions"
         sessions_dir.mkdir(parents=True, exist_ok=True)
         for state in await sessions_repo.list_all():
-            (sessions_dir / f"{state.session_id}.json").write_text(
+            session_id = _safe_component(state.session_id, field="session_id")
+            (sessions_dir / f"session_{session_id}.json").write_text(
                 json.dumps(state.model_dump(mode="json"), indent=2, default=str)
             )
             counts["sessions"] += 1
@@ -76,7 +100,8 @@ async def dump(
         result = await session.execute(select(PredictionRow))
         for row in result.scalars():
             p = PredictionResult.model_validate(row.payload)
-            (predictions_dir / f"{p.prediction_id}.json").write_text(
+            prediction_id = _safe_component(p.prediction_id, field="prediction_id")
+            (predictions_dir / f"prediction_{prediction_id}.json").write_text(
                 json.dumps(p.model_dump(mode="json"), indent=2, default=str)
             )
             counts["predictions"] += 1
@@ -87,7 +112,8 @@ async def dump(
         disputes_dir.mkdir(parents=True, exist_ok=True)
         dispute_predictions_dir.mkdir(parents=True, exist_ok=True)
         for d in await disputes_repo.list_all():
-            (disputes_dir / f"{d.dispute_id}.json").write_text(
+            dispute_id = _safe_component(d.dispute_id, field="dispute_id")
+            (disputes_dir / f"dispute_{dispute_id}.json").write_text(
                 json.dumps(d.model_dump(mode="json"), indent=2, default=str)
             )
             counts["disputes"] += 1
@@ -100,7 +126,7 @@ async def dump(
                 }
                 if row.prediction_cache_key:
                     mapping["cache_key"] = row.prediction_cache_key
-                (dispute_predictions_dir / f"{d.dispute_id}.json").write_text(
+                (dispute_predictions_dir / f"{dispute_id}.json").write_text(
                     json.dumps(mapping, indent=2)
                 )
                 counts["dispute_predictions"] += 1
@@ -114,7 +140,8 @@ async def dump(
             if kg is None:
                 continue
             data = serialize_knowledge_graph(kg)
-            (kg_dir / f"kg_{case_id}.json").write_text(
+            safe_case_id = _safe_component(case_id, field="case_id")
+            (kg_dir / f"kg_{safe_case_id}.json").write_text(
                 json.dumps(data, indent=2, default=str)
             )
             counts["knowledge_graphs"] += 1
@@ -125,7 +152,8 @@ async def dump(
         result = await session.execute(select(MediationSessionRow))
         for row in result.scalars():
             m = MediationSession.model_validate(row.payload)
-            (mediations_dir / f"{m.mediation_id}.json").write_text(
+            dispute_id = _safe_component(m.dispute_id, field="mediation.dispute_id")
+            (mediations_dir / f"mediation_{dispute_id}.json").write_text(
                 json.dumps(m.model_dump(mode="json"), indent=2, default=str)
             )
             counts["mediations"] += 1
@@ -136,9 +164,11 @@ async def dump(
         result = await session.execute(select(EvidenceMetadataRow))
         for row in result.scalars():
             em = EvidenceMetadata.model_validate(row.payload)
-            sub = evidence_dir / em.case_id
+            case_id = _safe_component(em.case_id, field="evidence.case_id")
+            evidence_id = _safe_component(em.evidence_id, field="evidence.evidence_id")
+            sub = evidence_dir / case_id
             sub.mkdir(parents=True, exist_ok=True)
-            (sub / f"{em.evidence_id}.json").write_text(
+            (sub / f"{evidence_id}.json").write_text(
                 json.dumps(em.model_dump(mode="json"), indent=2, default=str)
             )
             counts["evidence_metadata"] += 1
@@ -153,6 +183,11 @@ def main() -> None:
         description="Dump Postgres state back to the JSON-on-disk shape (rollback insurance)."
     )
     p.add_argument("--out", type=Path, required=True, help="output directory")
+    p.add_argument(
+        "--force-overwrite",
+        action="store_true",
+        help="allow writing into a non-empty output directory",
+    )
     p.add_argument(
         "--database-url",
         type=str,
@@ -170,7 +205,7 @@ def main() -> None:
     engine = create_engine_from_url(url)
     sm = async_sessionmaker(engine, expire_on_commit=False)
     try:
-        counts = asyncio.run(dump(sm, args.out))
+        counts = asyncio.run(dump(sm, args.out, allow_nonempty=args.force_overwrite))
         print(json.dumps({"dumped": counts}, indent=2))
     finally:
         asyncio.run(engine.dispose())

@@ -56,8 +56,13 @@ class DisputesRepo:
                     DisputeRow.dispute_id == dispute.dispute_id,
                     DisputeRow.version == expected_version,
                 )
-                .values(**{k: v for k, v in values.items() if k != "cached_prediction_id"},
-                        version=DisputeRow.version + 1)
+                .values(
+                    **{
+                        k: v for k, v in values.items()
+                        if k not in ("cached_prediction_id", "prediction_cache_key")
+                    },
+                    version=DisputeRow.version + 1,
+                )
             )
             if result.rowcount != 1:
                 raise ConcurrentUpdateError(f"dispute changed: {dispute.dispute_id}")
@@ -126,11 +131,13 @@ class DisputesRepo:
     async def set_cached_prediction_id(
         self, dispute_id: str, prediction_id: Optional[str], *, cache_key: Optional[str] = None,
     ) -> None:
-        await self._s.execute(
+        result = await self._s.execute(
             update(DisputeRow)
             .where(DisputeRow.dispute_id == dispute_id)
             .values(cached_prediction_id=prediction_id, prediction_cache_key=cache_key)
         )
+        if result.rowcount != 1:
+            raise ConcurrentUpdateError(f"dispute not found: {dispute_id}")
 
     async def delete(self, dispute_id: str) -> None:
         row = await self._s.get(DisputeRow, dispute_id)

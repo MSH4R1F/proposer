@@ -8,10 +8,12 @@ from __future__ import annotations
 
 import uuid
 from functools import lru_cache
+from collections.abc import AsyncIterator
 from typing import Optional
 
 from fastapi import Request
 
+from apps.api.src.db.uow import UnitOfWork
 from llm_orchestrator.agent_loop.context import ToolContext
 from llm_orchestrator.agent_loop.trace import LangFuseTraceLogger, TraceLogger
 from llm_orchestrator.clients.claude_client import ClaudeClient
@@ -51,3 +53,9 @@ def _cached_agent_loop_client() -> ClaudeClient:
 def get_agent_loop_client() -> ClaudeClient:
     """Return a process-cached ClaudeClient for the agent loop smoke path."""
     return _cached_agent_loop_client()
+
+
+async def get_uow(request: Request) -> AsyncIterator[UnitOfWork]:
+    """Yield one UnitOfWork bound to the request-scoped app sessionmaker."""
+    async with UnitOfWork(request.app.state.db_sessionmaker) as uow:
+        yield uow

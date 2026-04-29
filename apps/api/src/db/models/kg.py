@@ -2,7 +2,18 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from sqlalchemy import Boolean, Date, ForeignKeyConstraint, Numeric, String, Text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Date,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -31,6 +42,7 @@ class KGNodeRow(Base):
 
     case_id: Mapped[str] = mapped_column(String, primary_key=True)
     node_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
     node_type: Mapped[str] = mapped_column(node_type_enum, nullable=False)
     confidence: Mapped[float] = mapped_column(Numeric, nullable=False)
     source: Mapped[str] = mapped_column(String, nullable=False)
@@ -43,6 +55,10 @@ class KGNodeRow(Base):
 
     __table_args__ = (
         ForeignKeyConstraint(["case_id"], ["knowledge_graphs.case_id"], ondelete="CASCADE"),
+        UniqueConstraint("case_id", "ordinal", name="uq_kg_nodes_case_ordinal"),
+        CheckConstraint("confidence >= 0 AND confidence <= 1", name="ck_kg_nodes_confidence_range"),
+        Index("ix_kg_nodes_case_type", "case_id", "node_type"),
+        Index("ix_kg_nodes_case_ordinal", "case_id", "ordinal"),
     )
 
 
@@ -51,6 +67,7 @@ class KGEdgeRow(Base):
 
     case_id: Mapped[str] = mapped_column(String, primary_key=True)
     edge_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
     edge_type: Mapped[str] = mapped_column(edge_type_enum, nullable=False)
     source_node_id: Mapped[str] = mapped_column(String, nullable=False)
     target_node_id: Mapped[str] = mapped_column(String, nullable=False)
@@ -71,4 +88,16 @@ class KGEdgeRow(Base):
             ["kg_nodes.case_id", "kg_nodes.node_id"],
             ondelete="CASCADE",
         ),
+        UniqueConstraint("case_id", "ordinal", name="uq_kg_edges_case_ordinal"),
+        UniqueConstraint(
+            "case_id",
+            "source_node_id",
+            "target_node_id",
+            "edge_type",
+            name="uq_kg_edges_semantic",
+        ),
+        CheckConstraint("confidence >= 0 AND confidence <= 1", name="ck_kg_edges_confidence_range"),
+        Index("ix_kg_edges_src", "case_id", "source_node_id", "edge_type"),
+        Index("ix_kg_edges_tgt", "case_id", "target_node_id", "edge_type"),
+        Index("ix_kg_edges_case_ordinal", "case_id", "ordinal"),
     )

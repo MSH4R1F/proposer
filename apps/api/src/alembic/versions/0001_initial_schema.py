@@ -100,6 +100,8 @@ def upgrade() -> None:
         sa.Column("payload", JSONB, nullable=False),
         sa.CheckConstraint("overall_confidence >= 0 AND overall_confidence <= 1",
                            name="ck_predictions_overall_confidence_range"),
+        sa.CheckConstraint("rag_confidence IS NULL OR (rag_confidence >= 0 AND rag_confidence <= 1)",
+                           name="ck_predictions_rag_confidence_range"),
     )
     op.create_index("ix_predictions_case_id", "predictions", ["case_id"])
     op.create_index("ix_predictions_created_at", "predictions", ["created_at"])
@@ -166,13 +168,14 @@ def upgrade() -> None:
         sa.Column("prediction_id", sa.String,
                   sa.ForeignKey("predictions.prediction_id", ondelete="CASCADE"), nullable=False),
         sa.Column("ordinal", sa.Integer, nullable=False),
-        sa.Column("step_number", sa.Integer, nullable=True),
-        sa.Column("category", sa.String, nullable=True),
-        sa.Column("title", sa.Text, nullable=True),
-        sa.Column("content", sa.Text, nullable=True),
+        sa.Column("step_number", sa.Integer, nullable=False),
+        sa.Column("category", sa.String, nullable=False),
+        sa.Column("title", sa.Text, nullable=False),
+        sa.Column("content", sa.Text, nullable=False),
         sa.Column("confidence", sa.Numeric, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
         sa.UniqueConstraint("prediction_id", "ordinal", name="uq_prediction_reasoning_pred_ordinal"),
+        sa.UniqueConstraint("prediction_id", "id", name="uq_prediction_reasoning_pred_id"),
         sa.CheckConstraint("confidence IS NULL OR (confidence >= 0 AND confidence <= 1)",
                            name="ck_prediction_reasoning_confidence_range"),
     )
@@ -184,23 +187,35 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("prediction_id", sa.String,
                   sa.ForeignKey("predictions.prediction_id", ondelete="CASCADE"), nullable=False),
-        sa.Column("reasoning_step_id", sa.Integer,
-                  sa.ForeignKey("prediction_reasoning_steps.id", ondelete="CASCADE"), nullable=True),
+        sa.Column("reasoning_step_id", sa.Integer, nullable=True),
+        sa.Column("issue_ordinal", sa.Integer, nullable=True),
         sa.Column("citation_source", PG_ENUM(name="citation_source", create_type=False), nullable=False),
         sa.Column("ordinal", sa.Integer, nullable=False),
-        sa.Column("case_reference", sa.Text, nullable=True),
-        sa.Column("year", sa.Integer, nullable=True),
+        sa.Column("case_reference", sa.Text, nullable=False),
+        sa.Column("year", sa.Integer, nullable=False),
         sa.Column("region", sa.String, nullable=True),
         sa.Column("paragraph", sa.Text, nullable=True),
-        sa.Column("quote", sa.Text, nullable=True),
-        sa.Column("relevance", sa.Text, nullable=True),
+        sa.Column("quote", sa.Text, nullable=False),
+        sa.Column("relevance", sa.Text, nullable=False),
         sa.Column("similarity_score", sa.Numeric, nullable=True),
         sa.Column("verified", sa.Boolean, nullable=True),
         sa.Column("payload", JSONB, nullable=False),
+        sa.ForeignKeyConstraint(
+            ["prediction_id", "reasoning_step_id"],
+            ["prediction_reasoning_steps.prediction_id", "prediction_reasoning_steps.id"],
+            ondelete="CASCADE",
+        ),
+        sa.CheckConstraint(
+            "similarity_score IS NULL OR (similarity_score >= 0 AND similarity_score <= 1)",
+            name="ck_prediction_citations_similarity_range",
+        ),
     )
     op.create_index("ix_prediction_citations_pred", "prediction_citations", ["prediction_id"])
     op.create_index("ix_prediction_citations_step", "prediction_citations", ["reasoning_step_id"])
     op.create_index("ix_prediction_citations_source", "prediction_citations", ["citation_source"])
+    op.create_index("ix_prediction_citations_issue",
+                    "prediction_citations",
+                    ["prediction_id", "citation_source", "issue_ordinal", "ordinal"])
 
     op.create_table(
         "knowledge_graphs",
@@ -223,6 +238,7 @@ def upgrade() -> None:
                   sa.ForeignKey("knowledge_graphs.case_id", ondelete="CASCADE"),
                   primary_key=True),
         sa.Column("node_id", sa.String, primary_key=True),
+        sa.Column("ordinal", sa.Integer, nullable=False),
         sa.Column("node_type", PG_ENUM(name="node_type", create_type=False), nullable=False),
         sa.Column("confidence", sa.Numeric, nullable=False),
         sa.Column("source", sa.String, nullable=False),
@@ -234,8 +250,10 @@ def upgrade() -> None:
         sa.Column("metadata", JSONB, nullable=True),
         sa.CheckConstraint("confidence >= 0 AND confidence <= 1",
                            name="ck_kg_nodes_confidence_range"),
+        sa.UniqueConstraint("case_id", "ordinal", name="uq_kg_nodes_case_ordinal"),
     )
     op.create_index("ix_kg_nodes_case_type", "kg_nodes", ["case_id", "node_type"])
+    op.create_index("ix_kg_nodes_case_ordinal", "kg_nodes", ["case_id", "ordinal"])
     op.execute(
         "CREATE INDEX ix_kg_nodes_event_timeline ON kg_nodes(case_id, event_date) "
         "WHERE node_type = 'event'"
@@ -249,6 +267,7 @@ def upgrade() -> None:
         "kg_edges",
         sa.Column("case_id", sa.String, primary_key=True),
         sa.Column("edge_id", sa.String, primary_key=True),
+        sa.Column("ordinal", sa.Integer, nullable=False),
         sa.Column("edge_type", PG_ENUM(name="edge_type", create_type=False), nullable=False),
         sa.Column("source_node_id", sa.String, nullable=False),
         sa.Column("target_node_id", sa.String, nullable=False),
@@ -269,9 +288,13 @@ def upgrade() -> None:
         ),
         sa.CheckConstraint("confidence >= 0 AND confidence <= 1",
                            name="ck_kg_edges_confidence_range"),
+        sa.UniqueConstraint("case_id", "ordinal", name="uq_kg_edges_case_ordinal"),
+        sa.UniqueConstraint("case_id", "source_node_id", "target_node_id", "edge_type",
+                            name="uq_kg_edges_semantic"),
     )
     op.create_index("ix_kg_edges_src", "kg_edges", ["case_id", "source_node_id", "edge_type"])
     op.create_index("ix_kg_edges_tgt", "kg_edges", ["case_id", "target_node_id", "edge_type"])
+    op.create_index("ix_kg_edges_case_ordinal", "kg_edges", ["case_id", "ordinal"])
 
     op.create_table(
         "mediations",
@@ -297,8 +320,8 @@ def upgrade() -> None:
         sa.Column("message_id", sa.String, nullable=False),
         sa.Column("ordinal", sa.Integer, nullable=False),
         # May be "tenant", "landlord", or "ai_mediator"; keep as String, not party_role enum.
-        sa.Column("sender_role", sa.String, nullable=True),
-        sa.Column("content", sa.Text, nullable=True),
+        sa.Column("sender_role", sa.String, nullable=False),
+        sa.Column("content", sa.Text, nullable=False),
         sa.Column("message_type", PG_ENUM(name="message_type", create_type=False), nullable=False),
         sa.Column("timestamp", sa.Text, nullable=False),
         sa.Column("offer_id", sa.String, nullable=True),
@@ -331,6 +354,13 @@ def upgrade() -> None:
     )
     op.create_index("ix_offers_med_ordinal", "structured_offers", ["mediation_id", "ordinal"])
     op.create_index("ix_offers_med_status", "structured_offers", ["mediation_id", "status"])
+    op.create_foreign_key(
+        "fk_mediation_messages_offer",
+        "mediation_messages",
+        "structured_offers",
+        ["mediation_id", "offer_id"],
+        ["mediation_id", "offer_id"],
+    )
 
     op.create_table(
         "evidence_metadata",
@@ -338,6 +368,7 @@ def upgrade() -> None:
         sa.Column("evidence_id", sa.String, primary_key=True),
         sa.Column("evidence_type", PG_ENUM(name="evidence_type", create_type=False), nullable=False),
         sa.Column("file_url", sa.Text, nullable=True),
+        sa.Column("storage_path", sa.Text, nullable=True),
         sa.Column("file_name", sa.Text, nullable=True),
         sa.Column("file_type", sa.String, nullable=True),
         sa.Column("description", sa.Text, nullable=True),
@@ -351,6 +382,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("evidence_metadata")
+    op.drop_constraint("fk_mediation_messages_offer", "mediation_messages", type_="foreignkey")
     op.drop_table("structured_offers")
     op.drop_table("mediation_messages")
     op.drop_table("mediations")

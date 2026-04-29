@@ -5,14 +5,17 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from .case_file import EvidenceType
+
 
 class EvidenceMetadata(BaseModel):
     """Metadata for a single piece of evidence attached to a case."""
 
     case_id: str
     evidence_id: str
-    evidence_type: str  # one of EvidenceType enum values
+    evidence_type: EvidenceType
     file_url: Optional[str] = None
+    storage_path: Optional[str] = None
     file_name: Optional[str] = None
     file_type: Optional[str] = None
     description: Optional[str] = None

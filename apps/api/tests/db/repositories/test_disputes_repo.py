@@ -43,13 +43,60 @@ async def test_get_by_invite_code(db_session: AsyncSession) -> None:
 
 @pytest.mark.asyncio
 async def test_set_cached_prediction_id(db_session: AsyncSession) -> None:
+    from apps.api.src.db.repositories.predictions_repo import PredictionsRepo
+    from packages.llm_orchestrator.models.prediction_v2 import OutcomeType, PredictionResult
+
     repo = DisputesRepo(db_session)
+    pred_repo = PredictionsRepo(db_session)
     d = _make_dispute()
+    p = PredictionResult(
+        case_id="case-1",
+        prediction_id="p-1",
+        timestamp="2026-01-01T00:00:00",
+        overall_outcome=OutcomeType.SPLIT,
+        overall_confidence=0.5,
+    )
+    await pred_repo.save(p)
     await repo.save(d)
     await db_session.commit()
 
-    await repo.set_cached_prediction_id(d.dispute_id, None)
+    await repo.set_cached_prediction_id(d.dispute_id, "p-1", cache_key="abc")
     await db_session.commit()
+    locked = await repo.lock_for_prediction_cache(d.dispute_id)
+    assert locked is not None
+    assert locked.cached_prediction_id == "p-1"
+    assert locked.prediction_cache_key == "abc"
+
+
+@pytest.mark.asyncio
+async def test_versioned_save_preserves_prediction_cache_key(db_session: AsyncSession) -> None:
+    from apps.api.src.db.repositories.predictions_repo import PredictionsRepo
+    from packages.llm_orchestrator.models.prediction_v2 import OutcomeType, PredictionResult
+
+    repo = DisputesRepo(db_session)
+    pred_repo = PredictionsRepo(db_session)
+    d = _make_dispute()
+    p = PredictionResult(
+        case_id="case-1",
+        prediction_id="p-1",
+        timestamp="2026-01-01T00:00:00",
+        overall_outcome=OutcomeType.SPLIT,
+        overall_confidence=0.5,
+    )
+    await pred_repo.save(p)
+    await repo.save(d)
+    await db_session.commit()
+
+    versioned = await repo.get_with_version(d.dispute_id)
+    assert versioned is not None
+    await repo.set_cached_prediction_id(d.dispute_id, "p-1", cache_key="abc")
+    await repo.save(versioned.dispute, expected_version=versioned.version)
+    await db_session.commit()
+
+    locked = await repo.lock_for_prediction_cache(d.dispute_id)
+    assert locked is not None
+    assert locked.cached_prediction_id == "p-1"
+    assert locked.prediction_cache_key == "abc"
 
 
 @pytest.mark.asyncio

@@ -85,7 +85,7 @@ async def test_commit_then_dump_roundtrip(
         json.loads((src / "sessions" / "sess-x.json").read_text())
     )
     dumped_session = ConversationState.model_validate(
-        json.loads((out / "sessions" / "sess-x.json").read_text())
+        json.loads((out / "sessions" / "session_sess-x.json").read_text())
     )
     assert src_session.model_dump(mode="json") == dumped_session.model_dump(mode="json")
 

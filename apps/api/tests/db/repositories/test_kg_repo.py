@@ -33,19 +33,14 @@ def _make_kg(case_id: str = "case-1") -> KnowledgeGraph:
                               amount=420.0, issue_type="cleaning",
                               description="cleaning cost",
                               confidence=1.0, source="user_input")
-    # Add nodes in node_id-sorted order so that get() (which sorts by node_id)
-    # returns them in the same order as kg.nodes, making model_dump comparison exact.
-    # Sorted node_ids: claim_1, event_1, evidence_1, issue_cleaning, lease_main,
-    #                  party_tenant, property_main
-    for n in sorted([party, prop, lease, ev, event, issue, claim],
-                    key=lambda x: x.node_id):
+    # Deliberately not sorted by node_id: the repo must preserve JSON insertion order.
+    for n in [party, prop, lease, ev, event, issue, claim]:
         kg.add_node(n)
-    # Add edges in edge_id-sorted order for the same reason: e1 < e2.
-    kg.add_edge(Edge(edge_id="e1", edge_type=EdgeType.PARTY_OWNS,
-                     source_node_id="party_tenant", target_node_id="property_main",
-                     confidence=1.0, source="user_input", description="x"))
     kg.add_edge(Edge(edge_id="e2", edge_type=EdgeType.ISSUE_INVOLVES,
                      source_node_id="issue_cleaning", target_node_id="claim_1",
+                     confidence=1.0, source="user_input", description="x"))
+    kg.add_edge(Edge(edge_id="e1", edge_type=EdgeType.PARTY_OWNS,
+                     source_node_id="party_tenant", target_node_id="property_main",
                      confidence=1.0, source="user_input", description="x"))
     return kg
 

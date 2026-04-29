@@ -13,6 +13,7 @@ import structlog
 from fastapi import UploadFile
 
 from apps.api.src.config import config
+from packages.llm_orchestrator.models.case_file import EvidenceType
 
 logger = structlog.get_logger()
 
@@ -53,6 +54,8 @@ class StorageService:
             self.bucket = config.supabase_bucket
         except Exception as e:
             logger.warning("supabase_init_failed", error=str(e))
+            if config.app_env == "production":
+                raise
             self.use_supabase = False
             self._init_local()
 
@@ -80,6 +83,7 @@ class StorageService:
         Returns:
             Dict with evidence_id, file_url, evidence_type, etc.
         """
+        evidence_type_value = EvidenceType(evidence_type).value
         evidence_id = str(uuid4())[:8]
         file_ext = Path(file.filename).suffix
         storage_path = f"{case_id}/{evidence_id}{file_ext}"
@@ -107,9 +111,10 @@ class StorageService:
             "evidence_id": evidence_id,
             "case_id": case_id,
             "file_url": file_url,
+            "storage_path": storage_path,
             "file_name": file.filename,
             "file_type": file.content_type,
-            "evidence_type": evidence_type,
+            "evidence_type": evidence_type_value,
             "description": description,
             "extracted_text": extracted_text,
             "image_description": image_description,
@@ -140,6 +145,8 @@ class StorageService:
             return url
         except Exception as e:
             logger.error("supabase_upload_failed", error=str(e))
+            if config.app_env == "production":
+                raise
             # Fall back to local
             return await self._upload_local(path, content)
 
@@ -206,12 +213,15 @@ class StorageService:
         file_url = metadata.get("file_url", "")
 
         # Delete file
+        storage_path = metadata.get("storage_path") or f"{case_id}/{evidence_id}"
+
         if self.use_supabase and not file_url.startswith("file://"):
             try:
-                path = f"{case_id}/{evidence_id}"
-                self.supabase.storage.from_(self.bucket).remove([path])
+                self.supabase.storage.from_(self.bucket).remove([storage_path])
             except Exception as e:
                 logger.warning("supabase_delete_failed", error=str(e))
+                if config.app_env == "production":
+                    raise
         elif file_url.startswith("file://"):
             local_path = Path(file_url.replace("file://", ""))
             if local_path.exists():

@@ -80,23 +80,7 @@ class MediationsRepo:
             )
         )
 
-        # Insert messages
-        for i, msg in enumerate(getattr(mediation, "messages", []) or []):
-            md = msg.model_dump(mode="json")
-            self._s.add(MediationMessageRow(
-                mediation_id=mediation.mediation_id,
-                message_id=msg.id,
-                ordinal=i,
-                sender_role=getattr(msg, "sender_role", None),
-                content=getattr(msg, "content", None),
-                message_type=msg.message_type.value,
-                timestamp=msg.timestamp,
-                offer_id=getattr(msg, "offer_id", None),
-                metadata_=md.get("metadata"),
-                payload=md,
-            ))
-
-        # Insert offers
+        # Insert offers first so offer-linked messages satisfy the composite FK.
         for i, offer in enumerate(getattr(mediation, "offers", []) or []):
             od = offer.model_dump(mode="json")
             self._s.add(StructuredOfferRow(
@@ -118,6 +102,24 @@ class MediationsRepo:
                     else None
                 ),
                 payload=od,
+            ))
+
+        await self._s.flush()
+
+        # Insert messages
+        for i, msg in enumerate(getattr(mediation, "messages", []) or []):
+            md = msg.model_dump(mode="json")
+            self._s.add(MediationMessageRow(
+                mediation_id=mediation.mediation_id,
+                message_id=msg.id,
+                ordinal=i,
+                sender_role=msg.sender_role,
+                content=msg.content,
+                message_type=msg.message_type.value,
+                timestamp=msg.timestamp,
+                offer_id=getattr(msg, "offer_id", None),
+                metadata_=md.get("metadata"),
+                payload=md,
             ))
 
     async def get(self, mediation_id: str) -> Optional[MediationSession]:

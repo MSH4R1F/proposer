@@ -116,11 +116,13 @@ async def test_backfill_commits_session_dispute_evidence(
 
 @pytest.mark.asyncio
 async def test_backfill_is_idempotent(tmp_path: Path, db_sessionmaker) -> None:
-    """Running commit twice should not error and return equal counts."""
+    """Running commit into a non-empty DB requires explicit overwrite intent."""
     _write_session(tmp_path)
     _write_dispute(tmp_path)
     counts1 = await commit(tmp_path, db_sessionmaker)
-    counts2 = await commit(tmp_path, db_sessionmaker)
+    with pytest.raises(BackfillError):
+        await commit(tmp_path, db_sessionmaker)
+    counts2 = await commit(tmp_path, db_sessionmaker, allow_overwrite=True)
     assert counts1 == counts2
 
 

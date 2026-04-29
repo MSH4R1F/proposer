@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { ExternalLink, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Citation } from '@/lib/types/prediction';
 
@@ -24,6 +24,11 @@ export function CitationCard({ citation, className }: CitationCardProps) {
           <span className="font-medium text-sm">{citation.case_reference}</span>
         </div>
         <div className="flex items-center gap-2">
+          {citation.verified === false && (
+            <Badge variant="destructive" className="text-xs">
+              Removed
+            </Badge>
+          )}
           {citation.year && (
             <Badge variant="outline" className="text-xs">
               {citation.year}

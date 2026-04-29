@@ -2,7 +2,17 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from sqlalchemy import ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import (
+    CheckConstraint,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -40,13 +50,25 @@ class MediationMessageRow(Base):
     message_id: Mapped[str] = mapped_column(String, nullable=False)
     ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
     # May be "tenant", "landlord", or "ai_mediator"; keep as String, not party_role_enum.
-    sender_role: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    sender_role: Mapped[str] = mapped_column(String, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
     message_type: Mapped[str] = mapped_column(message_type_enum, nullable=False)
     timestamp: Mapped[str] = mapped_column(Text, nullable=False)
     offer_id: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     metadata_: Mapped[Optional[dict[str, Any]]] = mapped_column("metadata", JSONB, nullable=True)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("mediation_id", "message_id", name="uq_mediation_messages_message_id"),
+        UniqueConstraint("mediation_id", "ordinal", name="uq_mediation_messages_med_ordinal"),
+        ForeignKeyConstraint(
+            ["mediation_id", "offer_id"],
+            ["structured_offers.mediation_id", "structured_offers.offer_id"],
+        ),
+        Index("ix_mediation_messages_med_ordinal", "mediation_id", "ordinal"),
+        Index("ix_mediation_messages_med_ts", "mediation_id", "timestamp"),
+        Index("ix_mediation_messages_offer", "offer_id"),
+    )
 
 
 class StructuredOfferRow(Base):
@@ -65,3 +87,11 @@ class StructuredOfferRow(Base):
     responded_at: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     counter_amount: Mapped[Optional[float]] = mapped_column(Numeric, nullable=True)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("mediation_id", "offer_id", name="uq_structured_offers_offer_id"),
+        UniqueConstraint("mediation_id", "ordinal", name="uq_structured_offers_med_ordinal"),
+        CheckConstraint("amount >= 0", name="ck_structured_offers_amount_nonnegative"),
+        Index("ix_offers_med_ordinal", "mediation_id", "ordinal"),
+        Index("ix_offers_med_status", "mediation_id", "status"),
+    )
