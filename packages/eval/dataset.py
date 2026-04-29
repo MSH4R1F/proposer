@@ -127,12 +127,54 @@ def load(
     return LoadResult(cases=cases, errors=errors, source_path=path)
 
 
+def _leakage_violations(train_cases: list) -> list:
+    """Return all leakage violations in the given pre-filtered train cases."""
+    violations: list = []
+    for case in train_cases:
+        for authority in case.cited_authorities:
+            if authority.cited_date > TRAIN_CUTOFF:
+                violations.append(
+                    LeakageViolation(
+                        case_id=case.case_id,
+                        authority_name=authority.name,
+                        authority_cited_date=authority.cited_date,
+                        cutoff=TRAIN_CUTOFF,
+                    )
+                )
+    return violations
+
+
 def train(cases: list, *, strict: bool = False) -> list:
-    raise NotImplementedError
+    """Return cases with `decision_date <= TRAIN_CUTOFF`. Run a leakage check
+    on the train subset (every `cited_authorities[].cited_date` must be
+    `<= TRAIN_CUTOFF`).
+
+    Lenient default: log one warning per violation, return cases anyway.
+    Strict (`strict=True`): raise `ValueError` on the first violation.
+    """
+    train_cases = [c for c in cases if c.decision_date <= TRAIN_CUTOFF]
+    violations = _leakage_violations(train_cases)
+    if violations:
+        if strict:
+            v = violations[0]
+            raise ValueError(
+                f"Temporal leakage in train case {v.case_id!r}: cites authority "
+                f"{v.authority_name!r} dated {v.authority_cited_date} "
+                f"(cutoff {v.cutoff}). Total {len(violations)} violation(s)."
+            )
+        for v in violations:
+            _log.warning(
+                "Temporal leakage in train case %r: cites %r dated %s (cutoff %s)",
+                v.case_id, v.authority_name, v.authority_cited_date, v.cutoff,
+            )
+    return train_cases
 
 
 def test(cases: list) -> list:
-    raise NotImplementedError
+    """Return cases with `decision_date >= TEST_START`. No audits — test
+    cases may cite future-dated authorities by construction (they ARE the
+    future relative to the train window)."""
+    return [c for c in cases if c.decision_date >= TEST_START]
 
 
 def audit(cases: list) -> AuditReport:
