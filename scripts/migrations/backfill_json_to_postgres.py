@@ -325,7 +325,15 @@ async def verify(
                 # Sentinel: repo raised an exception; string holds kind
                 mismatches.append({"dir": dir_name, "file": file_name, "key": key, "kind": loaded_model})
                 return False
-            if loaded_model.model_dump(mode="json") != src_model.model_dump(mode="json"):
+            src_dump = src_model.model_dump(mode="json")
+            loaded_dump = loaded_model.model_dump(mode="json")
+            if dir_name == "knowledge_graphs":
+                # Postgres has no ORDER BY guarantee; the repo sorts on read but
+                # source JSON files were written before that convention. Normalize
+                # both sides for KG comparison.
+                src_dump = {**src_dump, "nodes": sorted(src_dump.get("nodes") or [], key=lambda n: n.get("node_id", "")), "edges": sorted(src_dump.get("edges") or [], key=lambda e: e.get("edge_id", ""))}
+                loaded_dump = {**loaded_dump, "nodes": sorted(loaded_dump.get("nodes") or [], key=lambda n: n.get("node_id", "")), "edges": sorted(loaded_dump.get("edges") or [], key=lambda e: e.get("edge_id", ""))}
+            if loaded_dump != src_dump:
                 mismatches.append({"dir": dir_name, "file": file_name, "key": key, "kind": "diff"})
                 return False
             return True
