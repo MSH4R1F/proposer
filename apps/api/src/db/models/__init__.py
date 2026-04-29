@@ -7,6 +7,9 @@ from apps.api.src.db.models.predictions import (
     PredictionCitationRow,
 )
 from apps.api.src.db.models.kg import KnowledgeGraphRow, KGNodeRow, KGEdgeRow
+from apps.api.src.db.models.mediations import (
+    MediationSessionRow, MediationMessageRow, StructuredOfferRow,
+)
 
 __all__ = [
     "IntakeSessionRow",
@@ -18,4 +21,7 @@ __all__ = [
     "KnowledgeGraphRow",
     "KGNodeRow",
     "KGEdgeRow",
+    "MediationSessionRow",
+    "MediationMessageRow",
+    "StructuredOfferRow",
 ]
