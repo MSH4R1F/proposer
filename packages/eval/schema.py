@@ -48,6 +48,28 @@ class Winner(str, Enum):
     SPLIT = "split"
 
 
+class RegionUK(str, Enum):
+    """Closed enumeration of UK regions used by the stratification audit.
+
+    Source PDF region strings vary ("London", "Greater London", "central
+    London") so the schema stores the normalised enum value here and keeps
+    the raw string in `GoldCase.region_source` for provenance.
+    """
+
+    LONDON = "london"
+    SOUTH_EAST = "south_east"
+    SOUTH_WEST = "south_west"
+    EAST_OF_ENGLAND = "east_of_england"
+    EAST_MIDLANDS = "east_midlands"
+    WEST_MIDLANDS = "west_midlands"
+    NORTH_WEST = "north_west"
+    NORTH_EAST = "north_east"
+    YORKSHIRE_AND_HUMBER = "yorkshire_and_humber"
+    WALES = "wales"
+    SCOTLAND = "scotland"
+    NORTHERN_IRELAND = "northern_ireland"
+
+
 class Party(BaseModel):
     role: PartyRole
     represented: bool
@@ -152,7 +174,8 @@ class GoldCase(BaseModel):
     schema_version: SchemaVersion
     case_id: str = Field(min_length=1)
     decision_date: date
-    region: str = Field(min_length=1)
+    region: RegionUK
+    region_source: str = Field(default="", description="Verbatim region string from the source PDF; provenance only.")
     case_size: CaseSize
     disputed_amount_gbp: Decimal = Field(ge=0)
     claim_types: list[ClaimType] = Field(min_length=1)
