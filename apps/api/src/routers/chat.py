@@ -10,8 +10,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 import structlog
 
-from apps.api.src.services.intake_service import IntakeService, get_intake_service
-from apps.api.src.services.dispute_service import DisputeService, get_dispute_service
+from apps.api.src.dependencies import get_dispute_service, get_intake_service
+from apps.api.src.services.dispute_service import DisputeService
+from apps.api.src.services.intake_service import IntakeService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -142,7 +143,6 @@ class SessionStatusResponse(BaseModel):
 async def start_session(
     request: StartSessionRequest,
     intake_service: IntakeService = Depends(get_intake_service),
-    dispute_service: DisputeService = Depends(get_dispute_service),
 ):
     """
     Start a new intake conversation session with the user's role.
@@ -169,23 +169,21 @@ async def start_session(
         )
 
     try:
-        greeting, session_id, stage = await intake_service.start_session(
-            role=request.role
-        )
-        session_status = await intake_service.get_session_status(session_id)
-
-        if session_status is None:
-            raise HTTPException(status_code=500, detail="Failed to get session status")
-
         dispute_info: Optional[DisputeInfo] = None
 
-        if request.invite_code:
-            dispute = await dispute_service.join_dispute(
-                invite_code=request.invite_code,
-                session_id=session_id,
-                role=request.role,
+        if request.invite_code or request.create_dispute:
+            # ---- atomic path: session + dispute in one transaction --------
+            greeting, conversation, dispute = (
+                await intake_service.start_session_with_dispute(
+                    role=request.role,
+                    invite_code=request.invite_code,
+                    create_dispute=request.create_dispute,
+                )
             )
-            if dispute:
+            session_id = conversation.session_id
+            stage = conversation.current_stage.value
+
+            if dispute is not None:
                 dispute_info = DisputeInfo(
                     dispute_id=dispute.dispute_id,
                     invite_code=dispute.invite_code,
@@ -194,44 +192,33 @@ async def start_session(
                     is_ready_for_prediction=dispute.is_ready_for_prediction,
                     waiting_message=dispute.get_waiting_message(request.role),
                 )
-                logger.info(
-                    "session_joined_dispute",
-                    session_id=session_id,
-                    dispute_id=dispute.dispute_id,
-                )
-            else:
+                if request.invite_code:
+                    logger.info(
+                        "session_joined_dispute",
+                        session_id=session_id,
+                        dispute_id=dispute.dispute_id,
+                    )
+                else:
+                    logger.info(
+                        "dispute_created_with_session",
+                        session_id=session_id,
+                        dispute_id=dispute.dispute_id,
+                        invite_code=dispute.invite_code,
+                    )
+            elif request.invite_code:
                 logger.warning(
                     "failed_to_join_dispute", invite_code=request.invite_code
                 )
-
-        elif request.create_dispute:
-            property_address = (
-                session_status["case_file"].get("property", {}).get("address")
-            )
-            deposit_amount = (
-                session_status["case_file"].get("tenancy", {}).get("deposit_amount")
+        else:
+            # ---- standalone path: no dispute involved --------------------
+            greeting, session_id, stage = await intake_service.start_session(
+                role=request.role
             )
 
-            dispute = await dispute_service.create_dispute(
-                session_id=session_id,
-                role=request.role,
-                property_address=property_address,
-                deposit_amount=deposit_amount,
-            )
-            dispute_info = DisputeInfo(
-                dispute_id=dispute.dispute_id,
-                invite_code=dispute.invite_code,
-                status=dispute.status.value,
-                has_both_parties=dispute.has_both_parties,
-                is_ready_for_prediction=dispute.is_ready_for_prediction,
-                waiting_message=dispute.get_waiting_message(request.role),
-            )
-            logger.info(
-                "dispute_created_with_session",
-                session_id=session_id,
-                dispute_id=dispute.dispute_id,
-                invite_code=dispute.invite_code,
-            )
+        session_status = await intake_service.get_session_status(session_id)
+
+        if session_status is None:
+            raise HTTPException(status_code=500, detail="Failed to get session status")
 
         logger.debug(
             "start_session_success",
@@ -262,7 +249,6 @@ async def start_session(
 async def bulk_intake(
     request: BulkIntakeRequest,
     intake_service: IntakeService = Depends(get_intake_service),
-    dispute_service: DisputeService = Depends(get_dispute_service),
 ):
     """
     Process a complete case description in one shot.
@@ -281,41 +267,24 @@ async def bulk_intake(
         )
 
     try:
-        result = await intake_service.bulk_intake(
-            role=request.role,
-            case_text=request.case_text,
-        )
+        if request.invite_code or request.create_dispute:
+            result, dispute = await intake_service.bulk_intake_with_dispute(
+                role=request.role,
+                case_text=request.case_text,
+                invite_code=request.invite_code,
+                create_dispute=request.create_dispute,
+            )
+        else:
+            result = await intake_service.bulk_intake(
+                role=request.role,
+                case_text=request.case_text,
+            )
+            dispute = None
 
         session_id = result["session_id"]
         dispute_info: Optional[DisputeInfo] = None
 
-        if request.invite_code:
-            dispute = await dispute_service.join_dispute(
-                invite_code=request.invite_code,
-                session_id=session_id,
-                role=request.role,
-            )
-            if dispute:
-                dispute_info = DisputeInfo(
-                    dispute_id=dispute.dispute_id,
-                    invite_code=dispute.invite_code,
-                    status=dispute.status.value,
-                    has_both_parties=dispute.has_both_parties,
-                    is_ready_for_prediction=dispute.is_ready_for_prediction,
-                    waiting_message=dispute.get_waiting_message(request.role),
-                )
-        elif request.create_dispute:
-            property_address = result["case_file"].get("property", {}).get("address")
-            deposit_amount = (
-                result["case_file"].get("tenancy", {}).get("deposit_amount")
-            )
-
-            dispute = await dispute_service.create_dispute(
-                session_id=session_id,
-                role=request.role,
-                property_address=property_address,
-                deposit_amount=deposit_amount,
-            )
+        if dispute:
             dispute_info = DisputeInfo(
                 dispute_id=dispute.dispute_id,
                 invite_code=dispute.invite_code,

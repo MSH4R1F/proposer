@@ -5,8 +5,9 @@ API configuration and settings.
 import os
 from pathlib import Path
 from typing import Optional
+from urllib.parse import parse_qs, urlparse
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 import structlog
 
 logger = structlog.get_logger()
@@ -73,6 +74,36 @@ class APIConfig(BaseModel):
     prediction_mode: str = Field(
         default_factory=lambda: os.getenv("PREDICTION_MODE", "hybrid").lower()
     )
+
+    # Environment + Database
+    app_env: str = Field(default_factory=lambda: os.getenv("APP_ENV", "local"))
+    database_url: str = Field(
+        default_factory=lambda: os.getenv(
+            "DATABASE_URL",
+            "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
+        )
+    )
+
+    @model_validator(mode="after")
+    def validate_database_url_for_environment(self) -> "APIConfig":
+        if self.app_env != "production":
+            return self
+        if self.debug:
+            raise ValueError("DEBUG must be false in production")
+        raw = os.getenv("DATABASE_URL") or self.database_url
+        if (
+            not os.getenv("DATABASE_URL")
+            and raw == "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer"
+        ):
+            raise ValueError("DATABASE_URL is required in production")
+        host = (urlparse(raw).hostname or "").lower()
+        if host in {"localhost", "127.0.0.1", "::1", "0.0.0.0"} or "proposer-dev" in raw:
+            raise ValueError("production must not use the local dev database")
+        qs = parse_qs(urlparse(raw).query)
+        sslmode = (qs.get("sslmode") or [""])[0]
+        if sslmode not in {"require", "verify-ca", "verify-full"}:
+            raise ValueError("production DATABASE_URL must set sslmode=require or stronger")
+        return self
 
     @property
     def langfuse_configured(self) -> bool:

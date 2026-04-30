@@ -155,6 +155,8 @@ class MediationSession(BaseModel):
         offer = self._find_offer(offer_id)
         if responder_role == offer.proposed_by_role:
             raise ValueError("Cannot accept own offer")
+        if offer.status != OfferStatus.PENDING:
+            raise ValueError(f"Cannot accept offer with status: {offer.status.value}")
 
         offer.status = OfferStatus.ACCEPTED
         offer.responded_at = datetime.now().isoformat()
@@ -171,6 +173,8 @@ class MediationSession(BaseModel):
         offer = self._find_offer(offer_id)
         if responder_role == offer.proposed_by_role:
             raise ValueError("Cannot reject own offer")
+        if offer.status != OfferStatus.PENDING:
+            raise ValueError(f"Cannot reject offer with status: {offer.status.value}")
 
         offer.status = OfferStatus.REJECTED
         offer.responded_at = datetime.now().isoformat()
@@ -192,6 +196,8 @@ class MediationSession(BaseModel):
         offer = self._find_offer(offer_id)
         if responder_role == offer.proposed_by_role:
             raise ValueError("Cannot counter own offer")
+        if offer.status != OfferStatus.PENDING:
+            raise ValueError(f"Cannot counter offer with status: {offer.status.value}")
 
         offer.status = OfferStatus.COUNTERED
         offer.counter_amount = counter_amount

@@ -8,10 +8,12 @@ from __future__ import annotations
 
 import uuid
 from functools import lru_cache
-from typing import Optional
+from collections.abc import AsyncIterator
+from typing import Any, Optional
 
 from fastapi import Request
 
+from apps.api.src.db.uow import UnitOfWork
 from llm_orchestrator.agent_loop.context import ToolContext
 from llm_orchestrator.agent_loop.trace import LangFuseTraceLogger, TraceLogger
 from llm_orchestrator.clients.claude_client import ClaudeClient
@@ -51,3 +53,102 @@ def _cached_agent_loop_client() -> ClaudeClient:
 def get_agent_loop_client() -> ClaudeClient:
     """Return a process-cached ClaudeClient for the agent loop smoke path."""
     return _cached_agent_loop_client()
+
+
+async def get_uow(request: Request) -> AsyncIterator[UnitOfWork]:
+    """Yield one UnitOfWork bound to the request-scoped app sessionmaker."""
+    async with UnitOfWork(request.app.state.db_sessionmaker) as uow:
+        yield uow
+
+
+# --- Service factories (Task 5.4) -------------------------------------------
+#
+# Routers import these instead of pulling singleton getters out of the
+# service modules directly. Each factory takes a request-scoped UnitOfWork so
+# that Phase 6-9 service rewrites can drop their internal mutable caches
+# without further router changes — only the factory body and service
+# constructor change.
+#
+# Until each service is rewritten, the factory ignores `uow` and returns
+# the legacy process-singleton; the UoW just rides along on the request so
+# /readyz and downstream rewrites see a live transactional boundary.
+
+from apps.api.src.services.dispute_service import (  # noqa: E402
+    DisputeService,
+    get_dispute_service as _legacy_get_dispute_service,
+)
+from apps.api.src.services.intake_service import (  # noqa: E402
+    IntakeService,
+    get_intake_service as _legacy_get_intake_service,  # kept for rollback
+)
+from llm_orchestrator.agents.intake_agent import IntakeAgent  # noqa: E402
+from apps.api.src.services.mediation_service import (  # noqa: E402
+    MediationService,
+    get_mediation_service as _legacy_get_mediation_service,
+)
+from apps.api.src.services.prediction_service import (  # noqa: E402
+    PredictionService,
+    _build_prediction_engine,
+    get_prediction_service as _legacy_get_prediction_service,
+)
+from apps.api.src.services.storage_service import StorageService  # noqa: E402
+
+
+@lru_cache(maxsize=1)
+def _cached_intake_agent() -> IntakeAgent:
+    """Process-level cache for the heavy LLM agent (avoids per-request client construction)."""
+    from llm_orchestrator.clients.claude_client import ClaudeClient
+    from llm_orchestrator.config import LLMConfig
+
+    cfg = LLMConfig.from_env()
+    return IntakeAgent(ClaudeClient(api_key=cfg.anthropic_api_key))
+
+
+def get_intake_service(request: Request) -> IntakeService:
+    """Per-request IntakeService backed by the request-scoped Postgres sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return IntakeService(sessionmaker=sm, agent=_cached_intake_agent())
+
+
+def get_dispute_service(request: Request) -> DisputeService:
+    """Per-request DisputeService backed by the request-scoped Postgres sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return DisputeService(sessionmaker=sm)
+
+
+@lru_cache(maxsize=1)
+def _cached_prediction_engine() -> Any:
+    """Process-level cache for the heavy prediction engine + RAG pipeline."""
+    return _build_prediction_engine()
+
+
+def get_prediction_service(request: Request) -> PredictionService:
+    """Per-request PredictionService backed by the request-scoped sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return PredictionService(
+        sessionmaker=sm,
+        engine=_cached_prediction_engine(),
+    )
+
+
+def get_storage_service(request: Request) -> StorageService:
+    """Per-request StorageService backed by the request-scoped sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return StorageService(sessionmaker=sm)
+
+
+@lru_cache(maxsize=1)
+def _cached_mediator_agent() -> Any:
+    """Process-level cache for the heavy LLM mediator agent."""
+    from llm_orchestrator.agents.mediator_agent import MediatorAgent
+    from llm_orchestrator.clients.claude_client import ClaudeClient
+    from llm_orchestrator.config import LLMConfig
+
+    cfg = LLMConfig.from_env()
+    return MediatorAgent(ClaudeClient(api_key=cfg.anthropic_api_key))
+
+
+def get_mediation_service(request: Request) -> MediationService:
+    """Per-request MediationService backed by the request-scoped Postgres sessionmaker."""
+    sm = request.app.state.db_sessionmaker
+    return MediationService(sessionmaker=sm, mediator_agent=_cached_mediator_agent())

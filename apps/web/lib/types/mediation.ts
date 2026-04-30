@@ -111,6 +111,7 @@ export interface StartMediationResponse {
   mediation_id: string;
   dispute_id: string;
   status: MediationStatus;
+  initial_message?: MediationMessage;
   messages: MediationMessage[];
   offers: StructuredOffer[];
 }
@@ -122,6 +123,7 @@ export interface SendMessageResponse {
 
 export interface OfferActionResponse {
   offer: StructuredOffer;
+  new_offer?: StructuredOffer;
   mediation_status: MediationStatus;
   settlement_amount?: number;
   messages: MediationMessage[];

@@ -10,7 +10,8 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends
 from pydantic import BaseModel
 import structlog
 
-from apps.api.src.services.storage_service import StorageService, get_storage_service
+from apps.api.src.dependencies import get_storage_service
+from apps.api.src.services.storage_service import StorageService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/evidence", tags=["evidence"])

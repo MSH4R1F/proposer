@@ -18,18 +18,22 @@ export function ExpectationCard({ expectationData }: ExpectationCardProps) {
     : `You would likely pay £${suggested_amount.toLocaleString()}`;
 
   const confidencePct = Math.round(overall_confidence * 100);
+  const isTenantFavored =
+    overall_outcome === 'tenant_favored' || overall_outcome === 'tenant_win';
+  const isLandlordFavored =
+    overall_outcome === 'landlord_favored' || overall_outcome === 'landlord_win';
 
   const outcomeBadgeVariant =
-    overall_outcome === 'tenant_favored'
+    isTenantFavored
       ? 'default'
-      : overall_outcome === 'landlord_favored'
+      : isLandlordFavored
         ? 'destructive'
         : 'secondary';
 
   const outcomeLabel =
-    overall_outcome === 'tenant_favored'
+    isTenantFavored
       ? 'Tenant Favoured'
-      : overall_outcome === 'landlord_favored'
+      : isLandlordFavored
         ? 'Landlord Favoured'
         : overall_outcome === 'split'
           ? 'Split Decision'

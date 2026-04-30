@@ -104,7 +104,12 @@ function ExpectationContent({ disputeId }: { disputeId: string }) {
     <div className="max-w-3xl mx-auto space-y-6">
       <ExpectationCard expectationData={expectationData} />
       <CostBenefitTable expectationData={expectationData} />
-      <AcceptancePrompt disputeId={disputeId} sessionId={sessionId} role={expectationData.party_role} />
+      <AcceptancePrompt
+        disputeId={disputeId}
+        sessionId={sessionId}
+        partyRole={expectationData.party_role}
+        suggestedAmount={expectationData.prediction_summary.suggested_amount}
+      />
       <LegalDisclaimer
         variant="info"
         disclaimer="This expectation analysis is based on similar tribunal decisions and does not constitute legal advice. Actual outcomes may vary. Always consult a qualified legal professional for advice specific to your situation."
