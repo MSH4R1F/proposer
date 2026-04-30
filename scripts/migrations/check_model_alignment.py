@@ -267,7 +267,23 @@ _VALID_KINDS = frozenset({
 
 def check_alignment() -> list[str]:
     """Return a list of drift-violation messages. Empty list means aligned."""
+    import inspect
+    from apps.api.src.db import models as models_pkg
+
     drift: list[str] = []
+
+    # Table-level coverage: every ORM class with __tablename__ must be in PROJECTION_MAP.
+    expected_tables = set(PROJECTION_MAP.keys())
+    declared_orm_classes = set()
+    for _, cls in inspect.getmembers(models_pkg, inspect.isclass):
+        if hasattr(cls, "__tablename__") and cls.__module__.startswith("apps.api.src.db.models"):
+            declared_orm_classes.add(cls)
+    missing_tables = declared_orm_classes - expected_tables
+    for cls in sorted(missing_tables, key=lambda c: c.__name__):
+        drift.append(
+            f"{cls.__name__} has __tablename__={cls.__tablename__!r} but is not in PROJECTION_MAP. "
+            f"Add an entry to track its column projections."
+        )
 
     for orm_class, mapping in PROJECTION_MAP.items():
         actual_columns = {c.name for c in orm_class.__table__.columns}

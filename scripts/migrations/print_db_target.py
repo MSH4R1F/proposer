@@ -34,7 +34,7 @@ def sanitize(url: str) -> dict[str, str]:
 
 
 def is_local(host: str) -> bool:
-    return host in LOCAL_HOSTS
+    return host == "" or host in LOCAL_HOSTS
 
 
 def is_dev_url(url: str) -> bool:

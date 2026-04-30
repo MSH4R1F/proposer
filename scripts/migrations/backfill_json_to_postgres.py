@@ -744,6 +744,11 @@ def main() -> None:
         default=None,
         help="override DATABASE_URL env var",
     )
+    p.add_argument(
+        "--skip-verify",
+        action="store_true",
+        help="Skip the in-archive verify step. Required for --archive-json without DATABASE_URL.",
+    )
     args = p.parse_args()
     modes = [args.dry_run, args.commit, args.verify, args.archive_json]
     if sum(bool(m) for m in modes) != 1:
@@ -800,7 +805,6 @@ def main() -> None:
 
         if not args.archive_dir:
             raise SystemExit("--archive-json requires --archive-dir")
-        # If DATABASE_URL is provided, run an internal verify first
         url = args.database_url or os.getenv("DATABASE_URL")
         if url:
             from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -814,9 +818,13 @@ def main() -> None:
                 )
             finally:
                 asyncio.run(engine.dispose())
-        else:
+        elif args.skip_verify:
             manifest = asyncio.run(
                 archive_json(args.data_dir, args.archive_dir, skip_verify=True)
+            )
+        else:
+            raise SystemExit(
+                "--archive-json without DATABASE_URL requires explicit --skip-verify"
             )
         print(json.dumps(manifest, indent=2))
         return

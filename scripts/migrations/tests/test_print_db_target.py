@@ -48,3 +48,10 @@ def test_warns_when_sslmode_unset_on_non_local():
     r = _run("--database-url", "postgresql+asyncpg://u:p@db.example.com:5432/proposer")
     assert r.returncode == 0
     assert "sslmode is unset" in r.stderr
+
+
+def test_refuses_hostless_dsn_without_allow_local():
+    """Unix-socket DSNs (no host) must be treated as local and refused without --allow-local."""
+    r = _run("--database-url", "postgresql:///proposer")
+    assert r.returncode == 3
+    assert "refusing" in r.stderr
