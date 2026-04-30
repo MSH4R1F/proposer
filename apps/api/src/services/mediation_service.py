@@ -322,6 +322,7 @@ class MediationService:
                     "predicted_settlement_range"
                 ),
             },
+            "disclaimer": LEGAL_DISCLAIMER,
         }
 
     @staticmethod

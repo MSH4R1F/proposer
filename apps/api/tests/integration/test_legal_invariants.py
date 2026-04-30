@@ -387,20 +387,17 @@ def test_prediction_response_disclaimer_propagates_from_model():
     )
 
 
-def test_mediation_expectation_payload_no_top_level_disclaimer():
-    """Document the known gap: _build_expectation_payload does not include a
-    top-level `disclaimer` key. The service enforces legal disclaimers at the
-    *message* level via _enforce_legal_disclaimer(), but the expectation
-    payload sent to the frontend has no disclaimer field.
+def test_mediation_expectation_payload_includes_disclaimer():
+    """Mediation expectation payload must carry the legal disclaimer.
 
-    This test DOCUMENTS the gap rather than asserting its presence.
-    If a future commit adds a disclaimer field to the payload, update this
-    test to assert its value instead of pytest.skip.
-
-    Remediation: add `'disclaimer': LEGAL_DISCLAIMER` to the dict returned
-    by _build_expectation_payload in mediation_service.py.
+    The disclaimer is also enforced per-message via _enforce_legal_disclaimer,
+    but the expectation payload is what primes the UI before any messages
+    exist — so it must carry its own copy.
     """
-    from apps.api.src.services.mediation_service import MediationService
+    from apps.api.src.services.mediation_service import (
+        LEGAL_DISCLAIMER,
+        MediationService,
+    )
 
     prediction_data = {
         "prediction_id": "disc-gap-test",
@@ -413,16 +410,7 @@ def test_mediation_expectation_payload_no_top_level_disclaimer():
     }
     payload = MediationService._build_expectation_payload(prediction_data, "tenant")
 
-    if "disclaimer" in payload:
-        # Gap has been fixed — assert it's non-empty and skip the warn
-        assert payload["disclaimer"].strip() != "", (
-            "expectation payload disclaimer is present but empty"
-        )
-    else:
-        pytest.skip(
-            "KNOWN GAP (SHA-102): MediationService._build_expectation_payload does not "
-            "include a top-level `disclaimer` key. Legal disclaimer is enforced at the "
-            "message level (_enforce_legal_disclaimer) but not in the expectation payload "
-            "consumed by the frontend. A follow-up hardening task should add "
-            "`'disclaimer': LEGAL_DISCLAIMER` to that dict."
-        )
+    assert "disclaimer" in payload, "expectation payload missing disclaimer"
+    assert payload["disclaimer"] == LEGAL_DISCLAIMER, (
+        "expectation payload disclaimer does not match the canonical LEGAL_DISCLAIMER"
+    )
