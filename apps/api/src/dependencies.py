@@ -125,9 +125,10 @@ def _cached_prediction_engine() -> Any:
 def get_prediction_service(request: Request) -> PredictionService:
     """Per-request PredictionService backed by the request-scoped sessionmaker."""
     sm = request.app.state.db_sessionmaker
-    # Engine/graph_builder/RAG are constructed lazily inside PredictionService
-    # via internal helpers; we don't need to inject them at this layer.
-    return PredictionService(sessionmaker=sm)
+    return PredictionService(
+        sessionmaker=sm,
+        engine=_cached_prediction_engine(),
+    )
 
 
 def get_storage_service(request: Request) -> StorageService:
