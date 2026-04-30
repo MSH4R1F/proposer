@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import socket
 import subprocess
+import sys
 import uuid
 from pathlib import Path
 from typing import AsyncIterator
@@ -54,7 +55,7 @@ def _migrated_template(postgresql_proc):
     template_url = _async_url_for_db(postgresql_proc, template_name)
     env = {**os.environ, "DATABASE_URL": template_url}
     subprocess.run(
-        ["alembic", "-c", "alembic.ini", "upgrade", "head"],
+        [sys.executable, "-m", "alembic", "-c", "alembic.ini", "upgrade", "head"],
         check=True,
         env=env,
         cwd=Path(__file__).resolve().parents[4],

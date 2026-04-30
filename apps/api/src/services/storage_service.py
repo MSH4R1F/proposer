@@ -160,7 +160,7 @@ class StorageService:
         except Exception as exc:
             # Compensation: delete the orphan blob
             try:
-                await self._delete_blob(file_url)
+                await self._delete_blob(file_url, storage_path=storage_path)
                 logger.warning(
                     "evidence_upload_compensation_succeeded",
                     case_id=case_id,
@@ -215,7 +215,7 @@ class StorageService:
         # Step 3: delete blob; on failure log orphan blob (row is already gone)
         correlation_id = uuid.uuid4().hex[:12]
         try:
-            await self._delete_blob(metadata.file_url)
+            await self._delete_blob(metadata.file_url, storage_path=metadata.storage_path)
         except Exception as exc:
             logger.error(
                 "evidence_delete_orphan_blob",
@@ -281,30 +281,33 @@ class StorageService:
             logger.warning("pdf_extraction_failed", error=str(e))
             return None
 
-    async def _delete_blob(self, file_url: Optional[str]) -> None:
+    async def _delete_blob(self, file_url: Optional[str], storage_path: Optional[str] = None) -> None:
         """Delete the blob identified by *file_url*.
 
         Called both from delete_evidence (normal flow) and from upload_evidence
         compensation.  Mirrors the blob-removal block that previously lived
         inline inside delete_evidence.
+
+        When *storage_path* is provided (from EvidenceMetadata.storage_path) it
+        is used directly for Supabase deletes, avoiding fragile URL parsing.
         """
         if not file_url:
             return
 
         if self.use_supabase and not file_url.startswith("file://"):
-            # Derive storage_path from URL — we reconstruct as a best-effort.
-            # Supabase public URLs end with the storage path after the bucket
-            # segment; if that fails we log and swallow.
             try:
-                # storage_path is embedded in the URL after the bucket name
-                bucket_marker = f"/{self.bucket}/"
-                idx = file_url.find(bucket_marker)
-                if idx != -1:
-                    storage_path = file_url[idx + len(bucket_marker):]
+                if storage_path:
+                    # Prefer the authoritative storage_path from metadata.
+                    resolved_path = storage_path
                 else:
-                    # Fallback: take everything after the last relevant segment
-                    storage_path = file_url.split("/")[-1]
-                self.supabase.storage.from_(self.bucket).remove([storage_path])
+                    # Legacy fallback: derive storage_path from URL via best-effort parsing.
+                    bucket_marker = f"/{self.bucket}/"
+                    idx = file_url.find(bucket_marker)
+                    if idx != -1:
+                        resolved_path = file_url[idx + len(bucket_marker):]
+                    else:
+                        resolved_path = file_url.split("/")[-1]
+                self.supabase.storage.from_(self.bucket).remove([resolved_path])
             except Exception as e:
                 logger.warning("supabase_delete_failed", error=str(e))
                 if config.app_env == "production":

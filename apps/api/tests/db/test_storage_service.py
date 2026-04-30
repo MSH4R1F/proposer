@@ -98,7 +98,7 @@ async def test_upload_evidence_compensates_on_db_failure(
 
     delete_calls = []
 
-    async def track_delete(self, file_url):
+    async def track_delete(self, file_url, storage_path=None):
         delete_calls.append(file_url)
 
     monkeypatch.setattr(StorageService, "_delete_blob", track_delete)
@@ -150,7 +150,7 @@ async def test_delete_evidence_removes_row_and_blob(storage_service, monkeypatch
 
     delete_calls = []
 
-    async def track_delete(self, file_url):
+    async def track_delete(self, file_url, storage_path=None):
         delete_calls.append(file_url)
 
     monkeypatch.setattr(StorageService, "_delete_blob", track_delete)
