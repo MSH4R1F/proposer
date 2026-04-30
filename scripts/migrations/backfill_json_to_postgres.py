@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -635,6 +636,94 @@ async def verify(
     return {"verified": verified, "mismatches": mismatches}
 
 
+async def archive_json(
+    data_dir: Path,
+    archive_dir: Path,
+    *,
+    sessionmaker: Optional[Any] = None,  # for verify if not pre-run
+    skip_verify: bool = False,
+) -> dict[str, Any]:
+    """Archive migrated JSON dirs to a private archive root.
+
+    Atomic-ish: refuses to start if anything looks wrong, moves dirs one at
+    a time with shutil.move (POSIX rename when same filesystem). Writes a
+    manifest summarizing what moved.
+    """
+    import shutil
+    from datetime import datetime, timezone
+
+    # 1. Path containment safety
+    data_resolved = data_dir.resolve()
+    archive_resolved = archive_dir.resolve()
+    try:
+        if archive_resolved.is_relative_to(data_resolved):
+            raise BackfillError(
+                f"archive-dir {archive_resolved} is inside data dir {data_resolved}; "
+                f"choose an archive root outside the repo's data/ tree"
+            )
+    except AttributeError:
+        # Python 3.8 fallback
+        if str(archive_resolved).startswith(str(data_resolved) + "/"):
+            raise BackfillError(
+                f"archive-dir {archive_resolved} is inside data dir {data_resolved}; "
+                f"choose an archive root outside the repo's data/ tree"
+            )
+
+    # 2. Refuse if audit report contains unresolved errors
+    audit_report_path = data_dir / "_migration_audit_report.json"
+    if audit_report_path.exists():
+        report = json.loads(audit_report_path.read_text())
+        if report.get("validation_errors"):
+            raise BackfillError("audit report contains unresolved validation_errors")
+        if report.get("orphans"):
+            raise BackfillError("audit report contains unresolved orphans")
+
+    # 3. Run verify unless skipped
+    if not skip_verify and sessionmaker is not None:
+        verify_result = await verify(data_dir, sessionmaker)
+        if verify_result["mismatches"]:
+            raise BackfillError(
+                f"verify reported {len(verify_result['mismatches'])} mismatches; refusing to archive"
+            )
+
+    # 4. Move each entity dir
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    target_root = archive_dir / timestamp
+    target_root.mkdir(parents=True, exist_ok=True)
+
+    moved: dict[str, str] = {}
+    for entity_dir_name in (
+        "sessions", "disputes", "predictions", "dispute_predictions",
+        "knowledge_graphs", "mediations", "evidence_metadata",
+    ):
+        src = data_dir / entity_dir_name
+        if not src.is_dir():
+            continue
+        dst = target_root / entity_dir_name
+        shutil.move(str(src), str(dst))
+        moved[entity_dir_name] = str(dst)
+
+    # 5. chmod 700 (best-effort)
+    try:
+        os.chmod(archive_dir, 0o700)
+        os.chmod(target_root, 0o700)
+    except OSError:
+        pass
+
+    # 6. Write redacted manifest in the repo
+    manifest = {
+        "timestamp": timestamp,
+        "source": str(data_dir),
+        "archive_root": str(target_root),
+        "moved_dirs": list(moved.keys()),
+    }
+    (data_dir / f"_archive_manifest_{timestamp}.json").write_text(
+        json.dumps(manifest, indent=2)
+    )
+
+    return manifest
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--data-dir", type=Path, required=True)
@@ -642,6 +731,8 @@ def main() -> None:
     p.add_argument("--commit", action="store_true")
     p.add_argument("--verify", action="store_true")
     p.add_argument("--archive-json", action="store_true")
+    p.add_argument("--archive-dir", type=Path, default=None,
+                   help="destination root for --archive-json (must be outside data-dir)")
     p.add_argument(
         "--force-overwrite",
         action="store_true",
@@ -704,7 +795,31 @@ def main() -> None:
             asyncio.run(engine.dispose())
         return
 
-    raise SystemExit("--archive-json is intentionally disabled until post-verify archival lands")
+    if args.archive_json:
+        import os
+
+        if not args.archive_dir:
+            raise SystemExit("--archive-json requires --archive-dir")
+        # If DATABASE_URL is provided, run an internal verify first
+        url = args.database_url or os.getenv("DATABASE_URL")
+        if url:
+            from sqlalchemy.ext.asyncio import async_sessionmaker
+            from apps.api.src.db.engine import create_engine_from_url
+
+            engine = create_engine_from_url(url)
+            sm = async_sessionmaker(engine, expire_on_commit=False)
+            try:
+                manifest = asyncio.run(
+                    archive_json(args.data_dir, args.archive_dir, sessionmaker=sm)
+                )
+            finally:
+                asyncio.run(engine.dispose())
+        else:
+            manifest = asyncio.run(
+                archive_json(args.data_dir, args.archive_dir, skip_verify=True)
+            )
+        print(json.dumps(manifest, indent=2))
+        return
 
 
 if __name__ == "__main__":
