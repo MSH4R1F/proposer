@@ -68,6 +68,10 @@ class DisputeService:
         """
         logger.debug("creating_dispute", session_id=session_id, role=role)
 
+        _VALID_ROLES = {"tenant", "landlord"}
+        if role is not None and role not in _VALID_ROLES:
+            raise ValueError(f"Invalid role: {role!r}; expected 'tenant' or 'landlord'")
+
         # Build the dispute once; override its invite_code explicitly on every
         # attempt so that the module-level `generate_invite_code` symbol is the
         # one called (this allows tests to monkeypatch it on this module).
@@ -160,6 +164,10 @@ class DisputeService:
             The updated DisputeCase, or None if join failed
         """
         logger.debug("joining_dispute", invite_code=invite_code, session_id=session_id, role=role)
+
+        _VALID_ROLES = {"tenant", "landlord"}
+        if role not in _VALID_ROLES:
+            raise ValueError(f"Invalid role: {role!r}; expected 'tenant' or 'landlord'")
 
         normalized_code = invite_code.upper().strip()
 

@@ -119,7 +119,7 @@ async def start_mediation(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/{dispute_id}/expectation/{session_id}")
@@ -167,7 +167,7 @@ async def get_expectation(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/{dispute_id}/messages")
@@ -202,7 +202,7 @@ async def get_messages(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/{dispute_id}/session")
@@ -232,7 +232,7 @@ async def get_session(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/{dispute_id}/message")
@@ -281,7 +281,7 @@ async def add_message(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/{dispute_id}/offer")
@@ -331,7 +331,7 @@ async def submit_offer(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/{dispute_id}/respond")
@@ -394,7 +394,7 @@ async def respond_to_offer(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/{dispute_id}/settle")
@@ -440,7 +440,7 @@ async def settle_mediation(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/{dispute_id}/escalate")
@@ -472,7 +472,7 @@ async def escalate_mediation(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/{dispute_id}/settlement")
@@ -508,7 +508,7 @@ async def get_settlement(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/{dispute_id}/settlement/pdf")
@@ -552,4 +552,4 @@ async def get_settlement_pdf(
             error=str(e),
             error_type=type(e).__name__,
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
