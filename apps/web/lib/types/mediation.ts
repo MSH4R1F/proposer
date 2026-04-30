@@ -1,3 +1,5 @@
+import type { TraceSummary } from './trace';
+
 // Enums as string union types (matches backend Python str enums)
 export type MediationStatus =
   | 'expectation_adjustment'
@@ -26,6 +28,7 @@ export interface MediationMessage {
   timestamp: string;
   metadata?: Record<string, unknown>;
   offer_id?: string;
+  reasoning_trace?: TraceSummary;
 }
 
 export interface StructuredOffer {

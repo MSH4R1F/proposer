@@ -4,7 +4,42 @@ from typing import Any, Dict, List, Optional
 import structlog
 
 from ..models.case_file import CaseFile
-from ..models.prediction_v2 import IssueContext, IssueRetrievalResult, IssueType
+from ..models.prediction_v2 import (
+    IssueContext,
+    IssueRetrievalResult,
+    IssueType,
+    PredictionMode,
+)
+from .kg_facts import KGFacts
+
+
+# Typed contradiction patterns: which retrieved-chunk text patterns contradict
+# each typed KG fact. Kept small and grounded in UK tribunal vocabulary.
+DEPOSIT_LATE_CONTRADICTORS = (
+    "on time",
+    "within 14 days",
+    "within 30 days",
+    "compliant protection",
+)
+DEPOSIT_NONE_CONTRADICTORS = (
+    "protected within",
+    "scheme certificate",
+    "deposit was protected",
+)
+PRESCRIBED_LATE_CONTRADICTORS = (
+    "prescribed information served on time",
+    "served within 30 days",
+)
+INVENTORY_ABSENT_CONTRADICTORS = (
+    "inventory at check-in",
+    "check-in inventory",
+    "baseline inventory",
+)
+
+# Penalty applied per matched contradiction pattern. Tuned so a single match
+# pushes a precedent below temporally newer / on-point alternatives without
+# eliminating it (soft demotion).
+KG_CONTRADICTION_PENALTY = -0.35
 
 logger = structlog.get_logger()
 
@@ -44,8 +79,20 @@ class IssueRetriever:
         issues: List[IssueContext],
         case_file: CaseFile,
         top_k: int = 10,
+        kg_facts_by_issue: Optional[Dict[IssueType, KGFacts]] = None,
+        mode: PredictionMode = PredictionMode.HYBRID,
     ) -> Dict[IssueType, IssueRetrievalResult]:
-        tasks = [self._retrieve_for_issue(issue, case_file, top_k) for issue in issues]
+        kg_facts_by_issue = kg_facts_by_issue or {}
+        tasks = [
+            self._retrieve_for_issue(
+                issue,
+                case_file,
+                top_k,
+                kg_facts=kg_facts_by_issue.get(issue.issue_type, KGFacts()),
+                mode=mode,
+            )
+            for issue in issues
+        ]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         retrieval_by_issue: Dict[IssueType, IssueRetrievalResult] = {}
@@ -70,6 +117,8 @@ class IssueRetriever:
         issue: IssueContext,
         case_file: CaseFile,
         top_k: int,
+        kg_facts: KGFacts = KGFacts(),
+        mode: PredictionMode = PredictionMode.HYBRID,
     ) -> IssueRetrievalResult:
         query = self._build_issue_query(issue, case_file)
         rag_result = await self.rag.retrieve(
@@ -80,6 +129,11 @@ class IssueRetriever:
 
         raw_results = self._extract_results(rag_result)
         reranked = self._apply_temporal_decay(raw_results, issue)
+        if (
+            mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
+            and not kg_facts.is_empty()
+        ):
+            reranked = self._apply_kg_filter(reranked, kg_facts)
         trimmed_results = reranked[:top_k]
 
         temporal_distribution: Dict[int, int] = {}
@@ -185,6 +239,60 @@ class IssueRetriever:
 
         scored.sort(key=lambda item: item[0], reverse=True)
         return [item[1] for item in scored]
+
+    def _apply_kg_filter(
+        self, results: List[Any], kg_facts: KGFacts
+    ) -> List[Any]:
+        """Demote retrieved-case chunks whose text contradicts typed KG facts.
+
+        Writes to both `combined_score` (read by IssuePredictor when formatting
+        the prompt) and `final_score` (used for internal sorting). Soft demotion
+        only — does not drop precedents below `min_cases_required` threshold.
+        """
+        adjusted: List[tuple[float, Any]] = []
+        for r in results:
+            score = self._to_float(
+                self._get_value(
+                    r,
+                    "combined_score",
+                    self._get_value(r, "final_score", 0.0),
+                )
+            )
+            text = str(
+                self._get_value(
+                    r,
+                    "text",
+                    self._get_value(r, "chunk_text", ""),
+                )
+            ).lower()
+            penalty = 0.0
+
+            if kg_facts.deposit_protection_status == "protected_late":
+                if any(p in text for p in DEPOSIT_LATE_CONTRADICTORS):
+                    penalty += KG_CONTRADICTION_PENALTY
+            elif kg_facts.deposit_protection_status == "not_protected":
+                if any(p in text for p in DEPOSIT_NONE_CONTRADICTORS):
+                    penalty += KG_CONTRADICTION_PENALTY
+
+            if kg_facts.prescribed_information_status in (
+                "provided_late",
+                "not_provided",
+            ):
+                if any(p in text for p in PRESCRIBED_LATE_CONTRADICTORS):
+                    penalty += KG_CONTRADICTION_PENALTY
+
+            if kg_facts.check_in_inventory_baseline == "absent":
+                if any(p in text for p in INVENTORY_ABSENT_CONTRADICTORS):
+                    penalty += KG_CONTRADICTION_PENALTY
+
+            adjusted_score = score + penalty
+            self._set_value(r, "kg_filter_penalty", penalty)
+            self._set_value(r, "combined_score", adjusted_score)
+            self._set_value(r, "final_score", adjusted_score)
+            adjusted.append((adjusted_score, r))
+
+        adjusted.sort(key=lambda item: item[0], reverse=True)
+        return [r for _, r in adjusted]
 
     def _determine_legislative_regime(
         self,

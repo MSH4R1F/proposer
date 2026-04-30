@@ -521,7 +521,7 @@ async def test_generate_prediction_conflicts_if_sessions_change_before_stage3(
         dispute.link_landlord_session(landlord_sid)
         await uow.disputes.save(dispute)
 
-    async def _predict_and_change_session(*, case_file, knowledge_graph):
+    async def _predict_and_change_session(*, case_file, knowledge_graph, mode=None):
         async with UnitOfWork(db_sessionmaker) as uow:
             state = await uow.sessions.get(landlord_sid)
             assert state is not None

@@ -6,7 +6,7 @@ Wires together: Issue Decomposer → Per-Issue Retrieval → Per-Issue Predictor
 """
 
 import time
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import structlog
 
@@ -15,12 +15,14 @@ from ..models.case_file import CaseFile
 from ..models.prediction_v2 import (
     IssueOutcome,
     PipelineMetadata,
+    PredictionMode,
     PredictionResult,
 )
 from .citation_verifier import CitationVerifier
 from .issue_decomposer import IssueDecomposer
 from .issue_predictor import IssuePredictor
 from .issue_retrieval import IssueRetriever
+from .kg_facts import KGFacts, derive_kg_facts
 from .output_assembler import OutputAssembler
 
 logger = structlog.get_logger()
@@ -61,17 +63,26 @@ class PredictionEngineV2:
         case_file: CaseFile,
         knowledge_graph: Optional[Any] = None,
         top_k: int = 10,
+        mode: PredictionMode = PredictionMode.HYBRID,
     ) -> PredictionResult:
         start_time = time.time()
-        metadata = PipelineMetadata()
+        metadata = PipelineMetadata(mode=mode.value)
 
         logger.info(
             "prediction_v2_starting",
             case_id=case_file.case_id,
+            mode=mode.value,
+        )
+
+        # KG visibility per mode: only HYBRID and KG_ONLY pass the graph downstream.
+        kg_for_decomposer = (
+            knowledge_graph
+            if mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
+            else None
         )
 
         # ── Step 1: Issue Decomposition (deterministic) ──
-        issues = self.issue_decomposer.decompose(case_file, knowledge_graph)
+        issues = self.issue_decomposer.decompose(case_file, kg_for_decomposer)
         metadata.issues_decomposed = len(issues)
         metadata.steps_executed.append("issue_decomposition")
 
@@ -89,6 +100,42 @@ class PredictionEngineV2:
             types=[i.issue_type.value for i in issues],
         )
 
+        # Derive typed KG facts per issue (used by both retrieval reranker and
+        # the prompt-side fact card). Empty when KG hidden by mode.
+        kg_facts_by_issue: Dict[Any, KGFacts] = {}
+        if (
+            mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
+            and knowledge_graph is not None
+        ):
+            for issue in issues:
+                kg_facts_by_issue[issue.issue_type] = derive_kg_facts(
+                    knowledge_graph, issue.issue_type
+                )
+
+        # ── Modes that skip retrieval entirely (LLM_ONLY, KG_ONLY) ──
+        if mode in (PredictionMode.LLM_ONLY, PredictionMode.KG_ONLY):
+            self.issue_predictor._case_file = case_file
+            self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
+            prompt_mode = "llm_only" if mode == PredictionMode.LLM_ONLY else "kg_only"
+            metadata.steps_executed.append(f"{prompt_mode}_path")
+            issue_predictions = await self.issue_predictor.predict_no_rag(
+                issues, prompt_mode=prompt_mode,
+            )
+            metadata.total_llm_calls = sum(
+                1 for ip in issue_predictions
+                if ip.outcome != IssueOutcome.UNCERTAIN
+            )
+            metadata.total_latency_ms = int((time.time() - start_time) * 1000)
+            metadata.steps_executed.append("output_assembly")
+            return self.output_assembler.assemble(
+                case_file=case_file,
+                issues=issues,
+                issue_predictions=issue_predictions,
+                retrieval_results={},
+                verification=CitationVerifier.empty_verification(),
+                pipeline_metadata=metadata,
+            )
+
         # ── Step 2: Per-Issue Retrieval (parallel RAG calls) ──
         if not self.rag:
             return PredictionResult.create_uncertain(
@@ -97,7 +144,9 @@ class PredictionEngineV2:
             )
 
         retrieval_results = await self.issue_retriever.retrieve_all(
-            issues, case_file, top_k
+            issues, case_file, top_k,
+            kg_facts_by_issue=kg_facts_by_issue,
+            mode=mode,
         )
         sufficient_count = sum(1 for r in retrieval_results.values() if r.is_sufficient)
         metadata.issues_with_sufficient_cases = sufficient_count
@@ -117,6 +166,8 @@ class PredictionEngineV2:
             )
 
         # ── Step 3: Per-Issue Prediction (parallel LLM calls) ──
+        self.issue_predictor._case_file = case_file
+        self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
         issue_predictions = await self.issue_predictor.predict_all(
             issues, retrieval_results, case_file=case_file
         )
