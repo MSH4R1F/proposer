@@ -4,6 +4,55 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-05-01 - SHA-102: Postgres-backed user-facing storage
+
+### Overview
+
+Migrated user-facing state from per-entity JSON files in `data/<entity>/` to Postgres, behind a Unit-of-Work-managed SQLAlchemy 2.0 async repository layer. API contracts unchanged. PR [#9](https://github.com/MSH4R1F/proposer/pull/9). Linear: [SHA-102](https://linear.app/sharifbuilders/issue/SHA-102).
+
+### What landed
+
+- **Schema** — 13 tables + 15 Postgres enums in a hand-written initial Alembic migration (`apps/api/src/alembic/versions/0001_initial_schema.py`). Tables: `intake_sessions`, `disputes`, `predictions` + 3 children, `knowledge_graphs`/`kg_nodes`/`kg_edges` with composite `(case_id, node_id)` PK preserving polymorphic node identity, `mediations`/`mediation_messages`/`structured_offers`, `evidence_metadata`. Each aggregate carries a `payload` JSONB (full Pydantic round-trip) plus projection columns and child rows for indexed queries.
+- **Repositories** — `apps/api/src/db/repositories/` — six repos translate Pydantic ↔ ORM rows. Optimistic locking via `version` columns; row locks via `lock_for_prediction_cache`.
+- **Unit of Work** — `apps/api/src/db/uow.py` — request-scoped async context manager exposing all six repos on one `AsyncSession`. Commits on clean exit, rolls back on exception. Routes inject it via `apps.api.src.dependencies.get_uow`.
+- **Service rewrites (Phase 6–9)** — `IntakeService`, `DisputeService`, `PredictionService`, `StorageService`, `MediationService` all dropped JSON-file persistence. Five atomic flows are now single transactions with provable rollback on second-write failure: chat-start session+dispute create, prediction generation (3-stage with row-locked cache), and the four mediation hazards (`settle`, `escalate`, `accept_offer→settle`, `start_mediation`).
+- **Migration toolchain** — `scripts/migrations/`: `audit_json_stores`, `backfill_json_to_postgres` (`--dry-run`/`--commit`/`--verify`/`--archive-json`), `dump_postgres_to_json` (rollback insurance), `print_db_target` (cutover preflight that refuses non-TLS production DSNs and never prints passwords), `check_model_alignment` (CI-enforced projection map covering all 13 tables).
+- **Operational** — `docker-compose.yml` (Postgres 16), `Makefile` (`db-up` with readiness timeout, `db-down`, `db-reset`, `migrate`), GitHub Actions CI workflow at `.github/workflows/ci.yml`, request-scoped `/readyz` probe asserting Alembic head matches.
+- **Production safety** — `APIConfig` refuses `localhost`, `proposer-dev` credentials, and non-TLS DSNs in production. Backfill is fail-closed on validation errors, FK orphans, duplicate IDs, and projection drift. `--archive-json` requires explicit `--skip-verify` if `DATABASE_URL` is missing.
+- **Frontend** — outcome-alias support (`tenant_win`/`landlord_win`) across prediction UI; legal disclaimer carried in mediation expectation payload (Phase 10.3a found the gap and patched it).
+
+### Real-data verification
+
+End-to-end run on `legal-mediation-system/data/`:
+- 240 sessions / 42 predictions (155 issues / 945 citations) / 22 disputes (7 with `cached_prediction_id`) / 16 KGs (517 nodes / 690 edges) / 4 mediations / 0 evidence_metadata
+- Audit: 0 validation errors, 0 FK orphans, 0 duplicates, 14 expected synthetic merged-case-ids
+- Verify: **0 mismatches** across all 331 entities
+- After verify: archived to `~/proposer_migration_archive/<timestamp>/`
+
+### Tests
+
+210 passing across `apps/api/tests/` (unit, repo, integration, atomicity, contract, legal-invariants) and `scripts/migrations/tests/`. 10 skipped: 6 post-archive expected (round-trip tests against moved data), 4 legacy-architecture tests from main that need rewriting (KG-fallback coverage preserved by `apps/api/tests/db/test_prediction_service.py`).
+
+### CodeRabbit review fixes (post-PR)
+
+Addressed 13 of 18 inline comments in 5 commits: `.git`-as-directory handling for CI, `Path.open` write guard, confidence fallback chain, reject-unknown-roles, redact 500 detail leaks, re-raise on prediction merge failures, use `storage_path` for blob deletes, `sys.executable -m alembic`, Makefile readiness timeout, `--skip-verify` for archive without DB URL, hostless DSN guard, table-level alignment coverage, inject cached prediction engine. The 5 deferred comments are documented on the PR.
+
+### Documentation
+
+- **Spec**: [`docs/superpowers/specs/2026-04-29-postgres-migration-design.md`](docs/superpowers/specs/2026-04-29-postgres-migration-design.md)
+- **Plan**: [`docs/superpowers/plans/2026-04-29-postgres-migration.md`](docs/superpowers/plans/2026-04-29-postgres-migration.md)
+- **README**: new `🗄️ Database Setup (Postgres)` section
+- **ARCHITECTURE**: new `🗄️ Persistence Layer (SHA-102)` section with mermaid flow diagram
+
+### Next-plan candidates surfaced during this work
+
+1. **Stale-mediation guard during LLM generation** — currently the second-write transaction reloads but doesn't compare versions; an intervening offer/settle/escalate could be silently overwritten. Needs design.
+2. **DB CHECK constraints for `calibrated_confidence` and `amount_range_lo/hi`** — needs a new Alembic revision (0002).
+3. **API contract golden capture from `main`** — Phase 10.3 deferred; current shape-only contract test catches structural regressions but not literal-value drift.
+4. **Drop legacy `_legacy_get_*_service()` helpers** — kept as rollback insurance; removable once production has run on Postgres for a stable period.
+
+---
+
 ## 2026-01-08 - Case Linking System & Intake Sidebar
 
 ### Overview
