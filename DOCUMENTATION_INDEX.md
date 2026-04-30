@@ -297,6 +297,22 @@ The following technical documents are mentioned in the main README but located i
 - Key architectural patterns (separation of concerns, async/await, RAG patterns)
 - Learning resources for beginners (What is RAG? What is KG? What is Hybrid Search?)
 
+#### `docs/superpowers/specs/2026-04-29-postgres-migration-design.md`
+**Status**: ✅ **Exists**
+**Purpose**: Design spec for SHA-102 — moving user-facing state from JSON files to Postgres. Covers schema (13 tables, 15 enums), runtime layering (UoW + repositories), transaction boundaries, backfill toolchain, rollback runbook, risks, and Definition of Done.
+
+**Target Audience**: Engineers implementing or reviewing the Postgres migration; academic readers wanting architecture rationale.
+
+---
+
+#### `docs/superpowers/plans/2026-04-29-postgres-migration.md`
+**Status**: ✅ **Exists** (closes once PR #9 merges)
+**Purpose**: Implementation plan for SHA-102. 12 phases × ~70 TDD tasks, each with file paths, failing test code, expected output, and commit commands. Used as the working canonical reference during implementation.
+
+**Target Audience**: Developers executing SHA-102 work; post-merge historical reference for understanding implementation sequence.
+
+---
+
 #### `docs/API_DOCUMENTATION.md`
 **Status**: ✅ **Exists** (mentioned in TODO.md and CHANGELOG)
 **Content** (based on TODO.md):

@@ -42,10 +42,10 @@ graph TB
         end
         
         subgraph Services["Service Layer"]
-            IntakeService["IntakeService<br/>• Session Management<br/>• Conversation Flow<br/>• Case File Building"]
-            PredictionService["PredictionService<br/>• Prediction Generation<br/>• RAG Integration<br/>• KG Integration"]
-            DisputeService["DisputeService<br/>• Dispute Creation<br/>• Invite Codes<br/>• Party Linking"]
-            StorageService["StorageService<br/>• File Uploads<br/>• Supabase Integration<br/>• Evidence Processing"]
+            IntakeService["IntakeService<br/>• Session Management<br/>• Conversation Flow<br/>• Case File Building<br/>• Postgres + UoW"]
+            PredictionService["PredictionService<br/>• Prediction Generation<br/>• RAG Integration<br/>• KG Integration<br/>• Postgres + UoW"]
+            DisputeService["DisputeService<br/>• Dispute Creation<br/>• Invite Codes<br/>• Party Linking<br/>• Postgres + UoW"]
+            StorageService["StorageService<br/>• File Uploads<br/>• Evidence Processing<br/>• Postgres + UoW"]
         end
     end
 
@@ -75,11 +75,15 @@ graph TB
 
     %% Data Layer
     subgraph DataLayer["💾 Data & Storage"]
-        subgraph FileSystem["Local File System"]
+        subgraph FileSystem["Local File System (pre-SHA-102 / archive)"]
             SessionsDir["data/sessions/<br/>Session JSON files"]
             KGDir["data/knowledge_graphs/<br/>KG JSON files"]
             PredictionsDir["data/predictions/<br/>Prediction JSON files"]
             DisputesDir["data/disputes/<br/>Dispute JSON files"]
+        end
+        
+        subgraph PostgresDB["Primary Database (SHA-102)"]
+            PostgresNode["Postgres 16<br/>13 tables · 15 enums<br/>via UoW + Repositories<br/>Alembic migrations"]
         end
         
         subgraph VectorDB["Vector Database"]
@@ -87,7 +91,7 @@ graph TB
         end
         
         subgraph ExternalStorage["External Storage"]
-            Supabase["Supabase<br/>• PostgreSQL (Auth, Metadata)<br/>• Storage Buckets (Evidence)"]
+            Supabase["Supabase<br/>• Storage Buckets (Evidence)"]
         end
         
         subgraph CaseData["Case Data"]
@@ -154,11 +158,11 @@ graph TB
     GraphBuilder --> KGModels
     GraphBuilder --> JSONStore
 
-    %% Data Persistence Connections
-    IntakeService -.->|"Save/Load"| SessionsDir
-    DisputeService -.->|"Save/Load"| DisputesDir
-    PredictionService -.->|"Save/Load"| PredictionsDir
-    GraphBuilder -.->|"Save/Load"| KGDir
+    %% Data Persistence Connections (SHA-102: services now use Postgres via UoW)
+    IntakeService -.->|"UoW / Repo"| PostgresNode
+    DisputeService -.->|"UoW / Repo"| PostgresNode
+    PredictionService -.->|"UoW / Repo"| PostgresNode
+    GraphBuilder -.->|"UoW / Repo"| PostgresNode
     ChromaStore -.->|"Read/Write"| ChromaDB
     HybridRetriever -.->|"Query"| ChromaDB
     StorageService -.->|"Upload"| Supabase
@@ -178,7 +182,7 @@ graph TB
     class HomePage,ChatListPage,ChatSessionPage,PredictionPage,AdminPage,ChatContainer,IntakeSidebar,MessageList,PredictionViewer,ReasoningTrace,ChatAPIClient,PredictionsAPIClient,APIClient frontend
     class MainApp,ChatRouter,PredictionsRouter,DisputesRouter,EvidenceRouter,CasesRouter,IntakeService,PredictionService,DisputeService,StorageService backend
     class IntakeAgent,PredictionAgent,ClaudeClient,FactExtractor,GraphBuilder,KGModels,JSONStore,RAGPipeline,HybridRetriever,ChromaStore,Reranker,LegalChunker package
-    class SessionsDir,KGDir,PredictionsDir,DisputesDir,ChromaDB,Supabase,TribunalCases data
+    class SessionsDir,KGDir,PredictionsDir,DisputesDir,ChromaDB,Supabase,TribunalCases,PostgresNode data
     class Anthropic,OpenAI external
 ```
 
@@ -318,6 +322,78 @@ sequenceDiagram
     API-->>TenantFE: Combined prediction
     API-->>LandlordFE: Notify prediction available
 ```
+
+## 🗄️ Persistence Layer (SHA-102)
+
+SHA-102 ([PR #9](https://github.com/MSH4R1F/proposer/pull/9)) replaced all JSON-file persistence with a Postgres 16 database backed by SQLAlchemy async + Alembic.
+
+### Schema Overview
+
+13 tables grouped by aggregate:
+
+| Aggregate | Tables |
+|-----------|--------|
+| **Sessions** | `intake_sessions` |
+| **Disputes** | `disputes` |
+| **Predictions** | `predictions`, `prediction_issues`, `prediction_reasoning_steps`, `prediction_citations` |
+| **Knowledge Graph** | `knowledge_graphs`, `kg_nodes`, `kg_edges` |
+| **Mediations** | `mediations`, `mediation_messages`, `structured_offers` |
+| **Evidence** | `evidence_metadata` |
+
+- **JSONB payload + projection columns**: each row stores the full Pydantic model dump in a JSONB column; scalar projection columns (e.g. `status`, `case_id`) are indexed separately for efficient filtering.
+- **KG identity**: `kg_nodes` uses a composite `(case_id, node_id)` primary key to preserve polymorphic node identity across cases without surrogate keys.
+- **Optimistic locking**: `version` columns on mutable aggregates; `lock_for_prediction_cache` issues a `SELECT … FOR UPDATE` row lock during the 3-stage prediction flow.
+
+### Repositories + Unit of Work
+
+```
+Router → dependencies.py (Depends(get_uow)) → Service → UnitOfWork → Repository → AsyncSession → Postgres
+```
+
+- **`apps/api/src/db/uow.py`**: `UnitOfWork` is a request-scoped async context manager. It opens one `AsyncSession`, exposes all six repos as attributes, commits on clean `__aexit__`, and rolls back on exception.
+- **`apps/api/src/dependencies.py`**: `get_uow` / `get_*_service` factories wire per-request UoW into service constructors via FastAPI `Depends()`.
+- **Repositories** (`apps/api/src/db/repositories/`): 6 repos — one per aggregate. Each exposes `save`, `get`, `get_by_*`, `delete`, and `list_*` methods. Repos translate between Pydantic domain models and SQLAlchemy ORM rows.
+
+### Atomic Flows
+
+Five transactional boundaries introduced by SHA-102:
+
+| Flow | Guarantee |
+|------|-----------|
+| `POST /chat/start` | Session + dispute create in one transaction |
+| `PredictionService.generate_prediction` | Read-cache → external LLM work → write-with-row-lock-recheck (3-stage) |
+| `MediationService.start_mediation` | Status check + record create atomic |
+| `MediationService.settle` / `escalate` | State transition + message append atomic |
+| `MediationService.respond_to_offer` (accept path) | Offer accept + auto-settle in one transaction |
+
+### Migration / Cutover Scripts
+
+All scripts live under `scripts/migrations/`:
+
+- **`audit_json_stores.py`** — scans `data/` and reports record counts + schema drift vs. current Pydantic models.
+- **`backfill_json_to_postgres.py`** — migrates existing JSON files; flags: `--dry-run`, `--commit`, `--verify`, `--archive-json`. Fail-closed on validation errors, FK orphans, duplicate IDs, and projection drift.
+- **`dump_postgres_to_json.py`** — rollback insurance: exports Postgres rows back to JSON files.
+- **`print_db_target.py`** — cutover preflight: prints current Alembic head and DB version.
+- **`check_model_alignment.py`** — CI-enforced: asserts projection column map matches current SQLAlchemy models.
+
+### Layered Flow (Persistence)
+
+```mermaid
+graph LR
+    Router["API Router"] --> Dep["dependencies.py<br/>get_*_service / get_uow"]
+    Dep --> Svc["Service<br/>(IntakeService etc.)"]
+    Svc --> UoW["UnitOfWork<br/>apps/api/src/db/uow.py"]
+    UoW --> Repo["Repository<br/>apps/api/src/db/repositories/"]
+    Repo --> Session["AsyncSession<br/>(SQLAlchemy)"]
+    Session --> PG["Postgres 16<br/>13 tables"]
+
+    classDef box fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    classDef db fill:#f59e0b,stroke:#d97706,color:#fff
+    class Router,Dep,Svc,UoW,Repo,Session box
+    class PG db
+```
+
+---
 
 ## Key Architectural Patterns
 

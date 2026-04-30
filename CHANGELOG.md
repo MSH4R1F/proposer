@@ -103,6 +103,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **SHA-102: Postgres-backed user-facing storage** ([PR #9](https://github.com/MSH4R1F/proposer/pull/9))
+  - **Schema**: 13 tables + 15 enums; hand-written initial Alembic migration `0001_initial_schema.py`. Tables: `intake_sessions`, `disputes`, `predictions` + 3 children (`prediction_issues`, `prediction_reasoning_steps`, `prediction_citations`), `knowledge_graphs`/`kg_nodes`/`kg_edges` (composite `(case_id, node_id)` PK preserves polymorphic node identity), `mediations`/`mediation_messages`/`structured_offers`, `evidence_metadata`.
+  - **Repositories**: 6 repos under `apps/api/src/db/repositories/` translate between Pydantic domain models and SQLAlchemy rows. JSONB payload carries the full Pydantic dump; projection columns serve indexed queries. Optimistic locking via `version` columns; row locks via `lock_for_prediction_cache`.
+  - **Unit of Work**: `apps/api/src/db/uow.py` — request-scoped `UnitOfWork` async context manager exposing all six repos on one `AsyncSession`. Commits on clean exit, rolls back on exception. Routes reach services through `apps/api/src/dependencies.py` factories that inject the per-request UoW.
+  - **Service rewrites**: `IntakeService`, `DisputeService`, `PredictionService`, `StorageService`, `MediationService` dropped JSON-file persistence. The four mediation atomicity hazards (`settle`, `escalate`, `accept_offer→settle`, `start_mediation`) and chat-start session+dispute create are each one transaction with provable rollback on second-write failure.
+  - **Migration toolchain** under `scripts/migrations/`: `audit_json_stores`, `backfill_json_to_postgres` (`--dry-run`/`--commit`/`--verify`/`--archive-json`), `dump_postgres_to_json` (rollback insurance), `print_db_target` (cutover preflight), `check_model_alignment` (CI-enforced projection map).
+  - **Operational**: `docker-compose.yml` (Postgres 16), `Makefile` targets (`db-up`/`db-down`/`db-reset`/`migrate`), GitHub Actions CI at `.github/workflows/ci.yml`, `/readyz` probe asserting Alembic head matches.
+  - **Production safety**: `APIConfig` refuses `localhost` / `proposer-dev` / non-TLS DSNs in `production`. Backfill is fail-closed on validation errors, FK orphans, duplicate IDs, and projection drift.
+  - **Real-data verification**: 331 JSON files (240 sessions / 42 predictions / 22 disputes / 16 KGs / 4 mediations / 7 dispute_predictions) backfilled and round-trip-verified with **0 mismatches**.
+  - **Test count**: ~210 passing tests across `apps/api/tests/` (unit, repo, integration, atomicity, contract, legal-invariants) and `scripts/migrations/tests/`.
+  - **Spec**: `docs/superpowers/specs/2026-04-29-postgres-migration-design.md`. **Plan**: `docs/superpowers/plans/2026-04-29-postgres-migration.md`.
+
 - **Improved Invite Code Display & Prediction Blocking** - Better UX for multi-party disputes
   - **UI Changes**:
     - Moved invite code display from bottom input area to the right sidebar
