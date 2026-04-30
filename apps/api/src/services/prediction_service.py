@@ -15,6 +15,7 @@ from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
@@ -518,12 +519,14 @@ class PredictionService:
 
         except ValueError:
             raise
-        except Exception as e:
+        except SQLAlchemyError:
+            raise
+        except (KeyError, AttributeError) as exc:
             logger.warning(
                 "dispute_merge_failed",
                 case_id=case_id,
-                error=str(e),
-                error_type=type(e).__name__,
+                error=str(exc),
+                error_type=type(exc).__name__,
             )
             return case_file, None, False, None
 

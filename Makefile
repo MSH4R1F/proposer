@@ -2,7 +2,14 @@
 
 db-up:
 	docker compose up -d postgres
-	@until docker compose exec -T postgres pg_isready -U proposer -d proposer >/dev/null 2>&1; do sleep 0.5; done
+	@for i in $$(seq 1 60); do \
+		if docker compose exec -T postgres pg_isready -U proposer -d proposer >/dev/null 2>&1; then \
+			exit 0; \
+		fi; \
+		sleep 0.5; \
+	done; \
+	echo "ERROR: Postgres did not become ready within 30s" >&2; \
+	exit 1
 
 db-down:
 	docker compose down
