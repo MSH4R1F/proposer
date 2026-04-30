@@ -6,6 +6,12 @@ export type OutcomeType =
   | 'split'
   | 'uncertain';
 
+export type IssueOutcomeType =
+  | 'tenant_wins'
+  | 'landlord_wins'
+  | 'split'
+  | 'uncertain';
+
 export interface Citation {
   case_reference: string;
   year: number;
@@ -30,7 +36,7 @@ export interface IssuePrediction {
   issue_type: string;
   issue_description?: string;
   outcome?: 'tenant_wins' | 'landlord_wins' | 'split' | 'uncertain';
-  predicted_outcome: OutcomeType;
+  predicted_outcome: OutcomeType | IssueOutcomeType;
   raw_confidence?: number;
   predicted_amount?: number;
   amount_range?: [number, number];

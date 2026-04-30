@@ -30,20 +30,20 @@ export function useMediationChat(disputeId: string, sessionId: string) {
     state.messages,
   ]);
 
-  // Fetch initial messages on mount
-  const fetchMessages = useCallback(async (since?: string) => {
+  const fetchSession = useCallback(async () => {
     try {
-      const messages = await mediationApi.getMessages(disputeId, since);
+      const session = await mediationApi.getSession(disputeId);
       setState((prev) => ({
         ...prev,
-        messages,
+        messages: session.messages,
+        offers: session.offers,
         lastUpdated: new Date().toISOString(),
         error: null,
       }));
-      return messages;
+      return session;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch messages';
+        error instanceof Error ? error.message : 'Failed to fetch mediation session';
       setState((prev) => ({
         ...prev,
         error: errorMessage,
@@ -56,19 +56,18 @@ export function useMediationChat(disputeId: string, sessionId: string) {
   useEffect(() => {
     if (disputeId && sessionId) {
       setState((prev) => ({ ...prev, isLoading: true }));
-      fetchMessages().then(() => {
+      fetchSession().then(() => {
         setState((prev) => ({ ...prev, isLoading: false }));
       });
     }
-  }, [disputeId, sessionId, fetchMessages]);
+  }, [disputeId, sessionId, fetchSession]);
 
-  // Polling for new messages every 10 seconds
+  // Polling for new messages/offers every 10 seconds
   useEffect(() => {
     if (!disputeId || !sessionId) return;
 
     pollingIntervalRef.current = setInterval(() => {
-      const lastMessageTime = state.messages[state.messages.length - 1]?.timestamp;
-      fetchMessages(lastMessageTime);
+      fetchSession();
     }, 10000);
 
     return () => {
@@ -76,7 +75,7 @@ export function useMediationChat(disputeId: string, sessionId: string) {
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [disputeId, sessionId, state.messages, fetchMessages]);
+  }, [disputeId, sessionId, fetchSession]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -121,12 +120,7 @@ export function useMediationChat(disputeId: string, sessionId: string) {
           amount
         );
 
-        setState((prev) => ({
-          ...prev,
-          offers: [...prev.offers, offer],
-          lastUpdated: new Date().toISOString(),
-          error: null,
-        }));
+        await fetchSession();
 
         return offer;
       } catch (error) {
@@ -139,7 +133,7 @@ export function useMediationChat(disputeId: string, sessionId: string) {
         return null;
       }
     },
-    [disputeId, sessionId]
+    [disputeId, sessionId, fetchSession]
   );
 
   const respondToOffer = useCallback(
@@ -161,9 +155,14 @@ export function useMediationChat(disputeId: string, sessionId: string) {
 
         setState((prev) => ({
           ...prev,
-          offers: prev.offers.map((o) =>
-            o.id === offerId ? response.offer : o
-          ),
+          offers: response.new_offer
+            ? [
+                ...prev.offers.map((o) =>
+                  o.id === offerId ? response.offer : o
+                ),
+                response.new_offer,
+              ]
+            : prev.offers.map((o) => (o.id === offerId ? response.offer : o)),
           messages: [...prev.messages, ...response.messages],
           lastUpdated: new Date().toISOString(),
           error: null,
@@ -184,8 +183,8 @@ export function useMediationChat(disputeId: string, sessionId: string) {
   );
 
   const refresh = useCallback(() => {
-    return fetchMessages();
-  }, [fetchMessages]);
+    return fetchSession();
+  }, [fetchSession]);
 
   const clearError = useCallback(() => {
     setState((prev) => ({ ...prev, error: null }));

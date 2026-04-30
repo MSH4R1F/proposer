@@ -57,6 +57,25 @@ export const mediationApi = {
       counter_amount: counterAmount,
     }),
 
+  settle: (disputeId: string, amount: number) =>
+    api.post<{
+      dispute_id: string;
+      status: MediationSession['status'];
+      settlement_amount: number;
+      settled_at: string;
+    }>(`/mediation/${disputeId}/settle`, {
+      amount,
+    }),
+
+  escalate: (disputeId: string) =>
+    api.post<{
+      dispute_id: string;
+      mediation_status: MediationSession['status'];
+      dispute_status: string;
+      escalated_at: string;
+      messages: MediationMessage[];
+    }>(`/mediation/${disputeId}/escalate`),
+
   getSettlement: (disputeId: string) =>
     api.get<SettlementSummary>(`/mediation/${disputeId}/settlement`),
 

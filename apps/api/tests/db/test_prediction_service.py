@@ -17,7 +17,10 @@ from sqlalchemy import select
 
 from apps.api.src.db.models.disputes import DisputeRow
 from apps.api.src.db.uow import UnitOfWork
-from apps.api.src.services.prediction_service import PredictionService
+from apps.api.src.services.prediction_service import (
+    PredictionCacheConflictError,
+    PredictionService,
+)
 from packages.llm_orchestrator.models.case_file import CaseFile, PartyRole
 from packages.llm_orchestrator.models.conversation import ConversationState, IntakeStage
 from packages.llm_orchestrator.models.dispute import DisputeCase, generate_invite_code
@@ -477,3 +480,137 @@ async def test_list_predictions_for_case_includes_shared_cached(
         f"Shared prediction {pred_shared_id!r} must appear; got {pred_ids}"
     )
     assert len(pred_ids) == 2, f"Expected exactly 2 distinct predictions; got {pred_ids}"
+
+
+@pytest.mark.asyncio
+async def test_generate_prediction_conflicts_if_sessions_change_before_stage3(
+    db_sessionmaker,
+    mock_engine: AsyncMock,
+    mock_graph_builder: MagicMock,
+) -> None:
+    """A merged prediction generated against old session versions must not be persisted."""
+    tenant_sid = "sess-conflict-t"
+    landlord_sid = "sess-conflict-l"
+    tenant_case = "case-conflict-tenant"
+    landlord_case = "case-conflict-landlord"
+    dispute_id = "dispute-conflict"
+    pred_id = "pred-conflict-stale"
+    invite = generate_invite_code()
+
+    kg = _make_kg(case_id=tenant_case)
+    pred = _make_prediction(prediction_id=pred_id, case_id=tenant_case)
+    mock_graph_builder.build.return_value = kg
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        await uow.sessions.save(
+            _make_session(session_id=tenant_sid, case_id=tenant_case, role=PartyRole.TENANT)
+        )
+        await uow.sessions.save(
+            _make_session(
+                session_id=landlord_sid,
+                case_id=landlord_case,
+                role=PartyRole.LANDLORD,
+            )
+        )
+        dispute = DisputeCase(
+            dispute_id=dispute_id,
+            invite_code=invite,
+            created_by_role="tenant",
+        )
+        dispute.link_tenant_session(tenant_sid)
+        dispute.link_landlord_session(landlord_sid)
+        await uow.disputes.save(dispute)
+
+    async def _predict_and_change_session(*, case_file, knowledge_graph):
+        async with UnitOfWork(db_sessionmaker) as uow:
+            state = await uow.sessions.get(landlord_sid)
+            assert state is not None
+            state.updated_at = "2026-01-01T00:01:00"
+            await uow.sessions.save(state)
+        return pred
+
+    mock_engine.predict.side_effect = _predict_and_change_session
+
+    svc = PredictionService(
+        sessionmaker=db_sessionmaker,
+        engine=mock_engine,
+        graph_builder=mock_graph_builder,
+    )
+
+    with pytest.raises(PredictionCacheConflictError):
+        await svc.generate_prediction(tenant_case)
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        assert await uow.predictions.get(pred_id) is None
+        assert await uow.knowledge_graphs.get(tenant_case) is None
+        row_result = await uow.session.execute(
+            select(DisputeRow).where(DisputeRow.dispute_id == dispute_id)
+        )
+        row = row_result.scalar_one()
+        assert row.cached_prediction_id is None
+        assert row.prediction_cache_key is None
+
+
+@pytest.mark.asyncio
+async def test_list_predictions_for_case_hides_stale_shared_cached_prediction(
+    db_sessionmaker,
+    mock_engine: AsyncMock,
+    mock_graph_builder: MagicMock,
+) -> None:
+    """A merged prediction is hidden once either party's intake session version changes."""
+    tenant_sid = "sess-stale-list-t"
+    landlord_sid = "sess-stale-list-l"
+    tenant_case = "case-stale-list-tenant"
+    landlord_case = "case-stale-list-landlord"
+    dispute_id = "dispute-stale-list"
+    pred_id = "pred-stale-list"
+    invite = generate_invite_code()
+
+    kg = _make_kg(case_id=tenant_case)
+    pred = _make_prediction(prediction_id=pred_id, case_id=tenant_case)
+    mock_graph_builder.build.return_value = kg
+    mock_engine.predict.return_value = pred
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        await uow.sessions.save(
+            _make_session(session_id=tenant_sid, case_id=tenant_case, role=PartyRole.TENANT)
+        )
+        await uow.sessions.save(
+            _make_session(
+                session_id=landlord_sid,
+                case_id=landlord_case,
+                role=PartyRole.LANDLORD,
+            )
+        )
+        dispute = DisputeCase(
+            dispute_id=dispute_id,
+            invite_code=invite,
+            created_by_role="tenant",
+        )
+        dispute.link_tenant_session(tenant_sid)
+        dispute.link_landlord_session(landlord_sid)
+        await uow.disputes.save(dispute)
+
+    svc = PredictionService(
+        sessionmaker=db_sessionmaker,
+        engine=mock_engine,
+        graph_builder=mock_graph_builder,
+    )
+    await svc.generate_prediction(tenant_case)
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        state = await uow.sessions.get(landlord_sid)
+        assert state is not None
+        state.updated_at = "2026-01-01T00:02:00"
+        await uow.sessions.save(state)
+
+    predictions = await svc.list_predictions_for_case(tenant_case)
+    assert pred_id not in {p["prediction_id"] for p in predictions}
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        row_result = await uow.session.execute(
+            select(DisputeRow).where(DisputeRow.dispute_id == dispute_id)
+        )
+        row = row_result.scalar_one()
+        assert row.cached_prediction_id is None
+        assert row.prediction_cache_key is None

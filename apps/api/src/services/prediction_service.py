@@ -27,6 +27,10 @@ logger = structlog.get_logger()
 _prediction_service: Optional["PredictionService"] = None
 
 
+class PredictionCacheConflictError(RuntimeError):
+    """Raised when intake sessions changed while a prediction was being generated."""
+
+
 def _build_prediction_engine() -> Any:
     """
     Construct the heavy prediction engine (LLM client + optional RAG pipeline).
@@ -225,10 +229,26 @@ class PredictionService:
         async with UnitOfWork(self._sm) as uow:
             if cacheable and dispute_id:
                 locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
+                current_cache_key = (
+                    await self._current_cache_key_for_locked_dispute(locked, uow)
+                    if locked
+                    else None
+                )
+                if current_cache_key != cache_key:
+                    logger.warning(
+                        "prediction_cache_conflict_stage3",
+                        case_id=case_id,
+                        dispute_id=dispute_id,
+                        generated_cache_key=cache_key,
+                        current_cache_key=current_cache_key,
+                    )
+                    raise PredictionCacheConflictError(
+                        "Case intake changed while generating prediction; retry with current case data."
+                    )
                 if (
                     locked
                     and locked.cached_prediction_id
-                    and locked.prediction_cache_key == cache_key
+                    and locked.prediction_cache_key == current_cache_key
                 ):
                     cached = await uow.predictions.get(locked.cached_prediction_id)
                     if cached:
@@ -274,16 +294,20 @@ class PredictionService:
         async with UnitOfWork(self._sm) as uow:
             # 1. Direct predictions by case_id.
             direct = await uow.predictions.get_by_case_id(case_id)
-            seen_ids: set = {p.prediction_id for p in direct}
-            predictions: List[Dict] = [
-                {
-                    "prediction_id": p.prediction_id,
-                    "timestamp": p.timestamp,
-                    "overall_outcome": p.overall_outcome.value,
-                    "overall_confidence": p.overall_confidence,
-                }
-                for p in direct
-            ]
+            seen_ids: set = set()
+            predictions: List[Dict] = []
+            for p in direct:
+                if not await self._prediction_is_current_for_shared_cache(p, uow):
+                    continue
+                seen_ids.add(p.prediction_id)
+                predictions.append(
+                    {
+                        "prediction_id": p.prediction_id,
+                        "timestamp": p.timestamp,
+                        "overall_outcome": p.overall_outcome.value,
+                        "overall_confidence": p.overall_confidence,
+                    }
+                )
 
             # 2. Shared cached dispute prediction.
             try:
@@ -300,6 +324,24 @@ class PredictionService:
                             dispute.dispute_id
                         )
                         if locked and locked.cached_prediction_id:
+                            current_cache_key = (
+                                await self._current_cache_key_for_locked_dispute(
+                                    locked, uow
+                                )
+                            )
+                            if locked.prediction_cache_key != current_cache_key:
+                                logger.info(
+                                    "clearing_stale_prediction_cache",
+                                    case_id=case_id,
+                                    dispute_id=dispute.dispute_id,
+                                    cached_prediction_id=locked.cached_prediction_id,
+                                    cached_cache_key=locked.prediction_cache_key,
+                                    current_cache_key=current_cache_key,
+                                )
+                                await uow.disputes.set_cached_prediction_id(
+                                    dispute.dispute_id, None, cache_key=None
+                                )
+                                return predictions
                             cached_pid = locked.cached_prediction_id
                             if cached_pid not in seen_ids:
                                 cached = await uow.predictions.get(cached_pid)
@@ -321,6 +363,65 @@ class PredictionService:
                 )
 
         return predictions
+
+    async def _current_cache_key_for_locked_dispute(
+        self,
+        locked: Any,
+        uow: UnitOfWork,
+    ) -> Optional[str]:
+        """Build the current shared-prediction cache key from live session versions."""
+        dispute = locked.dispute
+        if not dispute.has_both_parties:
+            return None
+
+        tenant_session_id = dispute.tenant_session_id
+        landlord_session_id = dispute.landlord_session_id
+        if not tenant_session_id or not landlord_session_id:
+            return None
+
+        tenant = await uow.sessions.get_with_version(tenant_session_id)
+        landlord = await uow.sessions.get_with_version(landlord_session_id)
+        if not tenant or not landlord:
+            return None
+
+        return (
+            f"{tenant_session_id}:{tenant.version}:"
+            f"{landlord_session_id}:{landlord.version}"
+        )
+
+    async def _prediction_is_current_for_shared_cache(
+        self,
+        prediction: Any,
+        uow: UnitOfWork,
+    ) -> bool:
+        """Hide merged predictions whose dispute cache key no longer matches intake."""
+        metadata = prediction.metadata or {}
+        if not metadata.get("merged") or not metadata.get("dispute_id"):
+            return True
+
+        dispute_id = metadata["dispute_id"]
+        locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
+        if not locked:
+            return False
+
+        current_cache_key = await self._current_cache_key_for_locked_dispute(locked, uow)
+        prediction_cache_key = metadata.get("prediction_cache_key")
+        is_current = (
+            locked.cached_prediction_id == prediction.prediction_id
+            and locked.prediction_cache_key == current_cache_key
+            and prediction_cache_key == current_cache_key
+        )
+        if not is_current and locked.cached_prediction_id == prediction.prediction_id:
+            logger.info(
+                "clearing_stale_direct_prediction_cache",
+                dispute_id=dispute_id,
+                prediction_id=prediction.prediction_id,
+                cached_cache_key=locked.prediction_cache_key,
+                prediction_cache_key=prediction_cache_key,
+                current_cache_key=current_cache_key,
+            )
+            await uow.disputes.set_cached_prediction_id(dispute_id, None, cache_key=None)
+        return is_current
 
     # ------------------------------------------------------------------
     # Private helpers

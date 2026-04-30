@@ -9,13 +9,16 @@ so we never hit the LLM.
 from __future__ import annotations
 
 from unittest.mock import AsyncMock
+from types import SimpleNamespace
 
 import pytest
 import pytest_asyncio
 
+from apps.api.src.services.dispute_service import DisputeService
 from apps.api.src.services.intake_service import IntakeService
-from packages.llm_orchestrator.models.case_file import CaseFile, PartyRole
-from packages.llm_orchestrator.models.conversation import ConversationState, IntakeStage
+from llm_orchestrator.models.case_file import CaseFile, DisputeIssue, PartyRole
+from llm_orchestrator.models.conversation import ConversationState, IntakeStage
+from llm_orchestrator.models.dispute import DisputeStatus
 
 
 # ---------------------------------------------------------------------------
@@ -166,3 +169,64 @@ async def test_list_sessions_returns_all(db_sessionmaker) -> None:
     session_ids = {s["session_id"] for s in sessions}
     assert "sess-a" in session_ids
     assert "sess-b" in session_ids
+
+
+@pytest.mark.asyncio
+async def test_process_message_syncs_linked_dispute_in_postgres(db_sessionmaker) -> None:
+    agent = AsyncMock()
+    initial = _make_state(session_id="sync-sess", case_id="sync-case")
+    agent.start_conversation.return_value = ("hello", initial)
+
+    completed = _make_state(
+        session_id="sync-sess",
+        case_id="sync-case",
+        stage=IntakeStage.CONFIRMATION,
+    )
+    completed.case_file.issues = [DisputeIssue.CLEANING]
+    completed.case_file.intake_complete = True
+    completed.case_file.calculate_completeness()
+    agent.process_message.return_value = ("done", completed)
+
+    intake = IntakeService(sessionmaker=db_sessionmaker, agent=agent)
+    disputes = DisputeService(sessionmaker=db_sessionmaker)
+
+    _, conversation, dispute = await intake.start_session_with_dispute(
+        role="tenant",
+        create_dispute=True,
+    )
+    assert dispute is not None
+
+    await intake.process_message(conversation.session_id, "cleaning dispute details")
+
+    loaded = await disputes.get_dispute(dispute.dispute_id)
+    assert loaded is not None
+    assert loaded.status == DisputeStatus.TENANT_COMPLETE
+
+
+@pytest.mark.asyncio
+async def test_bulk_intake_with_dispute_marks_party_complete(db_sessionmaker) -> None:
+    agent = AsyncMock()
+    initial = _make_state(session_id="bulk-sess", case_id="bulk-case")
+    agent.start_conversation.return_value = ("hello", initial)
+
+    completed_case = CaseFile(case_id="bulk-case", user_role=PartyRole.TENANT)
+    completed_case.issues = [DisputeIssue.CLEANING]
+    completed_case.calculate_completeness()
+    completed_case.intake_complete = True
+    agent.extractor.extract_bulk = AsyncMock(
+        return_value=SimpleNamespace(
+            updated_case_file=completed_case,
+            no_new_info=False,
+        )
+    )
+
+    intake = IntakeService(sessionmaker=db_sessionmaker, agent=agent)
+
+    _, dispute = await intake.bulk_intake_with_dispute(
+        role="tenant",
+        case_text="The landlord is withholding money for cleaning.",
+        create_dispute=True,
+    )
+
+    assert dispute is not None
+    assert dispute.status == DisputeStatus.TENANT_COMPLETE

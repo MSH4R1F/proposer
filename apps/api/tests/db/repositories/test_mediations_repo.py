@@ -158,6 +158,24 @@ async def test_get_by_dispute_id(db_session: AsyncSession) -> None:
 
 
 @pytest.mark.asyncio
+async def test_lock_by_dispute_id_returns_versioned_session(
+    db_session: AsyncSession,
+) -> None:
+    await _seed_dispute(db_session, "DISP-6", "INV-6")
+
+    repo = MediationsRepo(db_session)
+    med = _make_mediation(mediation_id="MED-6", dispute_id="DISP-6")
+    await repo.save(med)
+    await db_session.commit()
+
+    locked = await repo.lock_by_dispute_id("DISP-6")
+
+    assert locked is not None
+    assert locked.session.mediation_id == "MED-6"
+    assert locked.version == 1
+
+
+@pytest.mark.asyncio
 async def test_save_with_expected_version_raises_on_mismatch(
     db_session: AsyncSession,
 ) -> None:
