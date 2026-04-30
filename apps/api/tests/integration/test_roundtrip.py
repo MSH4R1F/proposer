@@ -50,38 +50,27 @@ from apps.api.src.db.uow import UnitOfWork
 _WORKTREE_ROOT = Path(__file__).resolve().parents[4]
 
 def _find_data_dir() -> Path:
-    """Return the data/ directory with production JSON files.
+    """Locate the data/ directory. Prefers worktree-local; falls back to main repo."""
+    worktree_data = _WORKTREE_ROOT / "data"
+    # If the worktree's own data/ has files, prefer it
+    if worktree_data.is_dir() and any(worktree_data.iterdir()):
+        return worktree_data
 
-    The worktree's own data/ directory may be empty (populated only during the
-    migration run).  If so, fall back to the main repo's data/ by following the
-    .git worktree pointer.
-    """
-    local = _WORKTREE_ROOT / "data"
-    # Count actual entity JSON files (ignore the audit report at the top level)
-    entity_dirs = ["sessions", "disputes", "predictions", "knowledge_graphs", "mediations"]
-    has_data = any(
-        list((local / d).glob("*.json"))
-        for d in entity_dirs
-        if (local / d).is_dir()
-    )
-    if has_data:
-        return local
+    # Worktree case: .git is a file pointing to the main repo's .git/worktrees/<name>
+    git_path = _WORKTREE_ROOT / ".git"
+    if git_path.is_file():
+        try:
+            git_file = git_path.read_text().strip()
+            gitdir = Path(git_file.split(": ", 1)[1])
+            main_repo = gitdir.parents[1].parent
+            main_data = main_repo / "data"
+            if main_data.is_dir():
+                return main_data
+        except (OSError, IndexError):
+            pass
 
-    # Derive main repo path from .git worktree pointer
-    git_file = (_WORKTREE_ROOT / ".git").read_text().strip()
-    # Format: "gitdir: /path/to/main-repo/.git/worktrees/<name>"
-    gitdir = Path(git_file.split(": ", 1)[1])
-    # gitdir.parents[0] = worktrees/<name>, [1] = .git, [2] = repo root… wait:
-    # gitdir itself is .git/worktrees/<name>
-    # gitdir.parent = .git/worktrees
-    # gitdir.parents[1] = .git
-    # gitdir.parents[1].parent = main repo root
-    main_repo = gitdir.parents[1].parent
-    main_data = main_repo / "data"
-    if main_data.is_dir():
-        return main_data
-
-    return local  # last resort
+    # Standard checkout: .git is a directory; use the worktree's own data/
+    return worktree_data
 
 
 DATA_DIR = _find_data_dir()

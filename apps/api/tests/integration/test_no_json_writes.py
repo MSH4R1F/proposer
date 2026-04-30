@@ -71,9 +71,18 @@ async def write_guard(monkeypatch):
             blocked.append(f"open({mode}):{file}")
         return real_open(file, mode, *args, **kwargs)
 
+    real_path_open = Path.open
+
+    def _patched_path_open(self, mode="r", *args, **kwargs):
+        is_write = any(c in str(mode) for c in ("w", "a", "x", "+"))
+        if is_write and _is_guarded(str(self)):
+            blocked.append(f"path_open({mode}):{self}")
+        return real_path_open(self, mode, *args, **kwargs)
+
     monkeypatch.setattr(Path, "write_text", _patched_write_text)
     monkeypatch.setattr(Path, "write_bytes", _patched_write_bytes)
     monkeypatch.setattr(builtins, "open", _patched_open)
+    monkeypatch.setattr(Path, "open", _patched_path_open)
 
     yield blocked
 
