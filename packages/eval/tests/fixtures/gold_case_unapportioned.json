@@ -1,0 +1,37 @@
+{
+  "schema_version": "v1",
+  "case_id": "SYNTH-2024-GLOBAL-0001",
+  "decision_date": "2024-03-12",
+  "region": "North West",
+  "case_size": "large",
+  "disputed_amount_gbp": "2400.00",
+  "claim_types": ["damages", "cleaning"],
+  "source_pdf_sha256": "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210",
+  "ocr_confidence": 0.78,
+  "parties": [
+    {"role": "tenant", "represented": false},
+    {"role": "landlord", "represented": false}
+  ],
+  "facts": "Tenant occupied two-bed terrace from 2022-09-01 to 2024-01-15; landlord retained the full 2400 GBP deposit citing combined damages and end-of-tenancy cleaning. Tribunal found a partial deduction was reasonable but did not apportion the award to specific items.",
+  "evidence": [
+    {"kind": "photo", "description": "Move-in photographs", "paragraph_ref": "para 4"},
+    {"kind": "invoice", "description": "End-of-tenancy clean invoice for 320 GBP", "paragraph_ref": "para 9"}
+  ],
+  "statutory_basis": [
+    {"statute": "Housing Act 2004", "section": "s.213"}
+  ],
+  "cited_authorities": [],
+  "claimed_amounts": [
+    {"issue": "damages_walls", "amount_gbp": "1500.00", "by_party": "landlord"},
+    {"issue": "end_of_tenancy_clean", "amount_gbp": "900.00", "by_party": "landlord"}
+  ],
+  "ground_truth_outcome": {
+    "overall_winner": "split",
+    "total_awarded_gbp": "1100.00",
+    "per_issue": [],
+    "unapportioned_reason": "Tribunal found a partial deduction was reasonable but did not apportion the award to specific issues; reasoning at para 22 declines to break the figure down."
+  },
+  "key_reasoning_quotes": [
+    {"text": "It is unnecessary on the present facts to apportion the award between the items claimed.", "paragraph_ref": "para 22"}
+  ]
+}

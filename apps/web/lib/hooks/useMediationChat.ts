@@ -16,7 +16,11 @@ interface UseMediationChatState {
   lastUpdated: string | null;
 }
 
-export function useMediationChat(disputeId: string, sessionId: string) {
+export function useMediationChat(
+  disputeId: string,
+  sessionId: string,
+  currentRole?: string
+) {
   const [state, setState] = useState<UseMediationChatState>({
     messages: [],
     offers: [],
@@ -52,15 +56,54 @@ export function useMediationChat(disputeId: string, sessionId: string) {
     }
   }, [disputeId]);
 
-  // Initialize messages on mount
+  // Initialize mediation session and load messages + offers on mount.
+  // startMediation is idempotent for existing sessions, so calling it here
+  // covers the case where the user lands on the chat page before the
+  // expectation step has explicitly started mediation. Then we read the
+  // authoritative state via getSession so both messages and offers arrive
+  // together (message-only fetches lose offers on page reload).
   useEffect(() => {
-    if (disputeId && sessionId) {
-      setState((prev) => ({ ...prev, isLoading: true }));
-      fetchSession().then(() => {
-        setState((prev) => ({ ...prev, isLoading: false }));
+    if (!disputeId || !sessionId) return;
+
+    let cancelled = false;
+    setState((prev) => ({ ...prev, isLoading: true }));
+
+    // startMediation is idempotent for existing sessions; calling it here
+    // covers the case where the user lands on chat before /expectation
+    // explicitly starts mediation. Then read authoritative state via
+    // getSession so messages and offers arrive together.
+    mediationApi
+      .startMediation(disputeId, sessionId)
+      .catch(() => {
+        // Session may already exist or prediction missing — continue to load anyway
+      })
+      .then(() => mediationApi.getSession(disputeId))
+      .then((session) => {
+        if (cancelled || !session) return;
+        setState((prev) => ({
+          ...prev,
+          messages: session.messages ?? [],
+          offers: session.offers ?? [],
+          isLoading: false,
+          lastUpdated: new Date().toISOString(),
+          error: null,
+        }));
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to load session';
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: errorMessage,
+        }));
       });
-    }
-  }, [disputeId, sessionId, fetchSession]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [disputeId, sessionId]);
 
   // Polling for new messages/offers every 10 seconds
   useEffect(() => {
@@ -80,6 +123,28 @@ export function useMediationChat(disputeId: string, sessionId: string) {
   const sendMessage = useCallback(
     async (content: string) => {
       if (!disputeId || !sessionId || !content.trim()) return;
+      if (!currentRole) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Cannot send message without a known role.',
+        }));
+        return null;
+      }
+
+      const optimisticId = `optimistic-${Date.now()}`;
+      const optimisticMessage: MediationMessage = {
+        id: optimisticId,
+        sender_role: currentRole,
+        content,
+        message_type: 'text',
+        timestamp: new Date().toISOString(),
+      };
+
+      setState((prev) => ({
+        ...prev,
+        messages: [...prev.messages, optimisticMessage],
+        error: null,
+      }));
 
       try {
         const response = await mediationApi.sendMessage(
@@ -90,7 +155,11 @@ export function useMediationChat(disputeId: string, sessionId: string) {
 
         setState((prev) => ({
           ...prev,
-          messages: [...prev.messages, response.user_message, response.ai_response],
+          messages: [
+            ...prev.messages.filter((m) => m.id !== optimisticId),
+            response.user_message,
+            response.ai_response,
+          ],
           lastUpdated: new Date().toISOString(),
           error: null,
         }));
@@ -101,17 +170,52 @@ export function useMediationChat(disputeId: string, sessionId: string) {
           error instanceof Error ? error.message : 'Failed to send message';
         setState((prev) => ({
           ...prev,
+          messages: prev.messages.filter((m) => m.id !== optimisticId),
           error: errorMessage,
         }));
         return null;
       }
     },
-    [disputeId, sessionId]
+    [disputeId, sessionId, currentRole]
   );
 
   const submitOffer = useCallback(
     async (amount: number) => {
       if (!disputeId || !sessionId) return;
+      if (!currentRole) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Cannot submit offer without a known role.',
+        }));
+        return null;
+      }
+
+      const stamp = Date.now();
+      const optimisticOfferId = `optimistic-offer-${stamp}`;
+      const optimisticMessageId = `optimistic-msg-${stamp}`;
+      const role = currentRole;
+      const optimisticOffer: StructuredOffer = {
+        id: optimisticOfferId,
+        amount,
+        proposed_by_role: role,
+        status: 'pending',
+        proposed_at: new Date().toISOString(),
+      };
+      const optimisticMessage: MediationMessage = {
+        id: optimisticMessageId,
+        sender_role: role,
+        content: `Offered £${amount.toFixed(2)}`,
+        message_type: 'offer',
+        timestamp: new Date().toISOString(),
+        offer_id: optimisticOfferId,
+      };
+
+      setState((prev) => ({
+        ...prev,
+        offers: [...prev.offers, optimisticOffer],
+        messages: [...prev.messages, optimisticMessage],
+        error: null,
+      }));
 
       try {
         const offer = await mediationApi.submitOffer(
@@ -120,7 +224,33 @@ export function useMediationChat(disputeId: string, sessionId: string) {
           amount
         );
 
-        await fetchSession();
+        setState((prev) => ({
+          ...prev,
+          offers: [
+            ...prev.offers.filter((o) => o.id !== optimisticOfferId),
+            offer,
+          ],
+          messages: prev.messages.map((m) =>
+            m.id === optimisticMessageId ? { ...m, offer_id: offer.id } : m
+          ),
+          lastUpdated: new Date().toISOString(),
+          error: null,
+        }));
+
+        // Pull authoritative messages and offers so the optimistic placeholders
+        // are replaced by the real server records. Failures here must NOT
+        // revert the offer that already succeeded — keep the confirmed state.
+        try {
+          const fresh = await mediationApi.getSession(disputeId);
+          setState((prev) => ({
+            ...prev,
+            messages: fresh.messages ?? [],
+            offers: fresh.offers ?? [],
+            lastUpdated: new Date().toISOString(),
+          }));
+        } catch {
+          // Reconciliation failed; the next poll will catch up.
+        }
 
         return offer;
       } catch (error) {
@@ -128,12 +258,14 @@ export function useMediationChat(disputeId: string, sessionId: string) {
           error instanceof Error ? error.message : 'Failed to submit offer';
         setState((prev) => ({
           ...prev,
+          offers: prev.offers.filter((o) => o.id !== optimisticOfferId),
+          messages: prev.messages.filter((m) => m.id !== optimisticMessageId),
           error: errorMessage,
         }));
         return null;
       }
     },
-    [disputeId, sessionId, fetchSession]
+    [disputeId, sessionId, currentRole]
   );
 
   const respondToOffer = useCallback(

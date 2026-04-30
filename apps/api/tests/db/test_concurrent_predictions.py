@@ -113,7 +113,7 @@ async def test_concurrent_generation_for_same_dispute_yields_one_cached_predicti
     # The engine sleeps briefly so both concurrent calls overlap inside the
     # external-work stage (stage 2), ensuring the row-lock in stage 3 is
     # exercised as the true safety net.
-    async def slow_predict(*, case_file, knowledge_graph):
+    async def slow_predict(*, case_file, knowledge_graph, mode=None):
         await asyncio.sleep(0.05)  # ensure overlap
         return _make_prediction(case_file.case_id)
 

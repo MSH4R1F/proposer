@@ -18,8 +18,14 @@ import structlog
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from llm_orchestrator.config import LLMConfig
+from llm_orchestrator.clients.claude_client import ClaudeClient
+from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+from llm_orchestrator.models.prediction import PredictionResult
+from llm_orchestrator.models.prediction_v2 import PredictionMode
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
 
+from apps.api.src.config import config
 from apps.api.src.db.uow import UnitOfWork
 
 logger = structlog.get_logger()
@@ -170,7 +176,8 @@ class PredictionService:
         self,
         case_id: str,
         include_reasoning: bool = True,
-    ) -> Any:
+        mode_override: Optional[PredictionMode] = None,
+    ) -> PredictionResult:
         """
         Generate a prediction for a case.
 
@@ -207,10 +214,51 @@ class PredictionService:
                         return cached
 
         # ── Stage 2: external work — NO transaction ──────────────────────────
-        kg = self.graph_builder.build(case_file)
+        # Resolve default mode from config; per-call mode_override beats env var.
+        if mode_override is not None:
+            default_mode = mode_override
+        else:
+            try:
+                default_mode = PredictionMode(config.prediction_mode)
+            except ValueError:
+                logger.warning(
+                    "invalid_prediction_mode_env_falling_back_to_hybrid",
+                    configured=config.prediction_mode,
+                )
+                default_mode = PredictionMode.HYBRID
+
+        # Build knowledge graph from the (already merged in Stage 1) case file.
+        # No silent fallbacks: if KG construction throws, log structured event
+        # and degrade explicitly to RAG_ONLY for this case. The KG itself is
+        # persisted in Stage 3 via uow.knowledge_graphs (no JSON file write).
+        kg = None
+        mode = default_mode
+        try:
+            kg = self.graph_builder.build(case_file)
+        except Exception as e:
+            logger.error(
+                "kg_build_failed_degrading_to_rag_only",
+                case_id=case_id,
+                dispute_id=dispute_id,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
+            mode = PredictionMode.RAG_ONLY
+            kg = None
+
+        logger.info(
+            "generating_prediction",
+            case_id=case_id,
+            dispute_id=dispute_id,
+            is_merged=dispute_id is not None,
+            mode=mode.value,
+            kg_nodes=len(kg.nodes) if kg else 0,
+            kg_edges=len(kg.edges) if kg else 0,
+        )
         prediction = await self.prediction_engine.predict(
             case_file=case_file,
             knowledge_graph=kg,
+            mode=mode,
         )
 
         if cacheable and dispute_id:
