@@ -18,6 +18,7 @@
 - [How It Works](#-how-it-works)
 - [Tech Stack](#-tech-stack)
 - [Getting Started](#-getting-started)
+- [Database Setup](#-database-setup-postgres)
 - [Project Structure](#-project-structure)
 - [Development](#-development)
 - [Evaluation](#-evaluation)
@@ -274,6 +275,76 @@ curl -X POST http://localhost:8000/predictions/generate \
   -H "Content-Type: application/json" \
   -d '{"case_id": "your-case-id"}'
 ```
+
+---
+
+## 🗄️ Database Setup (Postgres)
+
+Phase 1-9 of the SHA-102 migration moved user-facing state from JSON files
+under `data/<entity>/` into Postgres. Local development uses Docker Compose:
+
+```bash
+make db-up        # spin up Postgres 16 in Docker
+make migrate      # run alembic upgrade head
+make test         # full test suite (API + DB)
+```
+
+To reset the local database during development:
+
+```bash
+make db-reset     # drops volumes, brings up fresh Postgres, re-runs migrations
+                  # local-only; refuses to run with APP_ENV=production
+```
+
+For test isolation, `pytest-postgresql` spawns its own Postgres process per
+test session and clones the migrated schema into per-test databases. Local
+Postgres binaries (`pg_ctl`, `postgres`) must be on `PATH` for tests:
+
+```bash
+brew install postgresql@16
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+```
+
+### Production safety
+
+`APP_ENV=production` forces `APIConfig` to refuse:
+- Missing `DATABASE_URL`
+- `localhost` / `proposer-dev` credentials
+- Non-TLS connection strings (sslmode must be `require` / `verify-ca` / `verify-full`)
+
+Use `python -m scripts.migrations.print_db_target --database-url "$DATABASE_URL"`
+to safely preview the target before any cutover step. Passwords are never printed.
+
+### Migrating JSON state into Postgres
+
+For one-time backfill of the existing JSON data:
+
+```bash
+# 1. Audit the source
+python -m scripts.migrations.audit_json_stores --data-dir ./data \
+    --out data/_migration_audit_report.json
+
+# 2. Dry-run the backfill (validates, no writes)
+python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --dry-run
+
+# 3. Commit (writes Postgres rows in FK-correct order, idempotent)
+python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --commit
+
+# 4. Verify round-trip identity (every JSON file == repo-loaded entity)
+python -m scripts.migrations.backfill_json_to_postgres --data-dir ./data --verify
+```
+
+### Rollback insurance
+
+`scripts/migrations/dump_postgres_to_json.py` reverses the operation. It
+dumps every Postgres entity back into the original JSON-on-disk shape:
+
+```bash
+python -m scripts.migrations.dump_postgres_to_json --out /path/to/rollback-dump
+```
+
+The full rollback runbook (write freeze, snapshot, decision tree) is in
+[`docs/superpowers/specs/2026-04-29-postgres-migration-design.md`](docs/superpowers/specs/2026-04-29-postgres-migration-design.md).
 
 ---
 
