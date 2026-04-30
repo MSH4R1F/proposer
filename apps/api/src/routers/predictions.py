@@ -92,7 +92,11 @@ def _prediction_to_response(
             issue_type=ip.issue_type.value,
             issue_description=ip.issue_description or "",
             predicted_outcome=ip.outcome.value,
-            confidence=ip.raw_confidence,
+            confidence=(
+                ip.calibrated_confidence
+                if ip.calibrated_confidence is not None
+                else (ip.raw_confidence if ip.raw_confidence is not None else 0.0)
+            ),
             raw_confidence=ip.raw_confidence,
             predicted_amount=ip.predicted_amount,
             amount_range=list(ip.amount_range) if ip.amount_range else None,
