@@ -151,18 +151,17 @@ async def test_counter_offer(mediation_service):
 
 @pytest.mark.asyncio
 async def test_get_messages_polling(mediation_service):
+    """get_messages returns a list of message dicts; offers are fetched separately
+    via get_session() in the unified contract."""
     await _start(mediation_service)
-    all_payload = await mediation_service.get_messages(DISPUTE_ID)
-    since_timestamp = all_payload["messages"][0]["timestamp"]
+    all_messages = await mediation_service.get_messages(DISPUTE_ID)
+    since_timestamp = all_messages[0]["timestamp"]
 
     await mediation_service.add_message(DISPUTE_ID, TENANT_SESSION, "Follow-up")
 
     filtered = await mediation_service.get_messages(DISPUTE_ID, since_timestamp)
-    assert len(filtered["messages"]) >= 1
-    assert all(
-        message["timestamp"] > since_timestamp for message in filtered["messages"]
-    )
-    assert "offers" in filtered
+    assert len(filtered) >= 1
+    assert all(message["timestamp"] > since_timestamp for message in filtered)
 
 
 @pytest.mark.asyncio

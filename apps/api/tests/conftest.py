@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(PROJECT_ROOT) not in sys.path:
@@ -105,5 +105,6 @@ def mediation_service(tmp_path, test_dispute, test_prediction):
 @pytest_asyncio.fixture
 async def async_client():
     async_client_cls = cast(Any, AsyncClient)
-    async with async_client_cls(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with async_client_cls(transport=transport, base_url="http://test") as client:
         yield client

@@ -34,42 +34,20 @@ export function useMediationChat(
     state.messages,
   ]);
 
-  // Fetch messages and offers. Without `since`, replaces both lists
-  // (initial load / refresh). With `since`, merges any new messages into
-  // the existing list and refreshes the offers list.
-  const fetchMessages = useCallback(async (since?: string) => {
+  const fetchSession = useCallback(async () => {
     try {
-      const { messages, offers } = await mediationApi.getMessages(
-        disputeId,
-        since
-      );
-      setState((prev) => {
-        if (since === undefined) {
-          return {
-            ...prev,
-            messages,
-            offers,
-            lastUpdated: new Date().toISOString(),
-            error: null,
-          };
-        }
-        const existingIds = new Set(prev.messages.map((m) => m.id));
-        const additions = messages.filter((m) => !existingIds.has(m.id));
-        if (additions.length === 0) {
-          return { ...prev, offers, error: null };
-        }
-        return {
-          ...prev,
-          messages: [...prev.messages, ...additions],
-          offers,
-          lastUpdated: new Date().toISOString(),
-          error: null,
-        };
-      });
-      return messages;
+      const session = await mediationApi.getSession(disputeId);
+      setState((prev) => ({
+        ...prev,
+        messages: session.messages,
+        offers: session.offers,
+        lastUpdated: new Date().toISOString(),
+        error: null,
+      }));
+      return session;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch messages';
+        error instanceof Error ? error.message : 'Failed to fetch mediation session';
       setState((prev) => ({
         ...prev,
         error: errorMessage,
@@ -90,6 +68,10 @@ export function useMediationChat(
     let cancelled = false;
     setState((prev) => ({ ...prev, isLoading: true }));
 
+    // startMediation is idempotent for existing sessions; calling it here
+    // covers the case where the user lands on chat before /expectation
+    // explicitly starts mediation. Then read authoritative state via
+    // getSession so messages and offers arrive together.
     mediationApi
       .startMediation(disputeId, sessionId)
       .catch(() => {
@@ -123,13 +105,12 @@ export function useMediationChat(
     };
   }, [disputeId, sessionId]);
 
-  // Polling for new messages every 10 seconds
+  // Polling for new messages/offers every 10 seconds
   useEffect(() => {
     if (!disputeId || !sessionId) return;
 
     pollingIntervalRef.current = setInterval(() => {
-      const lastMessageTime = state.messages[state.messages.length - 1]?.timestamp;
-      fetchMessages(lastMessageTime);
+      fetchSession();
     }, 10000);
 
     return () => {
@@ -137,7 +118,7 @@ export function useMediationChat(
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [disputeId, sessionId, state.messages, fetchMessages]);
+  }, [disputeId, sessionId, fetchSession]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -306,9 +287,14 @@ export function useMediationChat(
 
         setState((prev) => ({
           ...prev,
-          offers: prev.offers.map((o) =>
-            o.id === offerId ? response.offer : o
-          ),
+          offers: response.new_offer
+            ? [
+                ...prev.offers.map((o) =>
+                  o.id === offerId ? response.offer : o
+                ),
+                response.new_offer,
+              ]
+            : prev.offers.map((o) => (o.id === offerId ? response.offer : o)),
           messages: [...prev.messages, ...response.messages],
           lastUpdated: new Date().toISOString(),
           error: null,
@@ -329,8 +315,8 @@ export function useMediationChat(
   );
 
   const refresh = useCallback(() => {
-    return fetchMessages();
-  }, [fetchMessages]);
+    return fetchSession();
+  }, [fetchSession]);
 
   const clearError = useCallback(() => {
     setState((prev) => ({ ...prev, error: null }));

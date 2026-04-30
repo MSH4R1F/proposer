@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Scale, Sparkles } from 'lucide-react';
 
 interface OutcomeDisplayProps {
-  outcome: 'tenant_favored' | 'landlord_favored' | 'split' | 'uncertain';
+  outcome: 'tenant_win' | 'landlord_win' | 'tenant_favored' | 'landlord_favored' | 'split' | 'uncertain';
   confidence: number;
 }
 
@@ -21,7 +21,27 @@ const outcomeConfig = {
     iconColor: 'text-emerald-600 dark:text-emerald-400',
     textColor: 'text-emerald-700 dark:text-emerald-300',
   },
+  tenant_win: {
+    label: 'Tenant Favored',
+    description: 'Based on precedent, the tenant is likely to receive a favorable outcome',
+    icon: TrendingUp,
+    gradient: 'from-emerald-500/20 via-emerald-500/10 to-teal-500/5',
+    border: 'border-emerald-500/20',
+    iconBg: 'bg-emerald-500/10',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
+    textColor: 'text-emerald-700 dark:text-emerald-300',
+  },
   landlord_favored: {
+    label: 'Landlord Favored',
+    description: 'Based on precedent, the landlord is likely to receive a favorable outcome',
+    icon: TrendingDown,
+    gradient: 'from-amber-500/20 via-amber-500/10 to-orange-500/5',
+    border: 'border-amber-500/20',
+    iconBg: 'bg-amber-500/10',
+    iconColor: 'text-amber-600 dark:text-amber-400',
+    textColor: 'text-amber-700 dark:text-amber-300',
+  },
+  landlord_win: {
     label: 'Landlord Favored',
     description: 'Based on precedent, the landlord is likely to receive a favorable outcome',
     icon: TrendingDown,

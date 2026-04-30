@@ -169,7 +169,7 @@ class PredictionEngineV2:
         self.issue_predictor._case_file = case_file
         self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
         issue_predictions = await self.issue_predictor.predict_all(
-            issues, retrieval_results
+            issues, retrieval_results, case_file=case_file
         )
         predicted_count = sum(
             1 for ip in issue_predictions if ip.outcome != IssueOutcome.UNCERTAIN

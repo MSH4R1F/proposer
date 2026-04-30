@@ -10,7 +10,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import structlog
 
-from apps.api.src.services.intake_service import IntakeService, get_intake_service
+from apps.api.src.dependencies import get_intake_service
+from apps.api.src.services.intake_service import IntakeService
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/cases", tags=["cases"])
