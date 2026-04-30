@@ -159,3 +159,40 @@ async def test_chat_start_join_via_invite_code(
 
     assert sess_row is not None, "session row must be persisted after join"
     assert disp_row is not None, "dispute row must be persisted after join"
+
+
+@pytest.mark.asyncio
+async def test_chat_start_invite_collision_retries_do_not_commit_session(
+    intake_service_with_mock_agent,
+    db_sessionmaker,
+    monkeypatch,
+):
+    """Invite-code retries must not commit the session unless the dispute lands."""
+    from apps.api.src.db.repositories.disputes_repo import DisputesRepo
+    import apps.api.src.services.intake_service as intake_mod
+    from packages.llm_orchestrator.models.dispute import DisputeCase, DisputeStatus
+
+    seed_dispute = DisputeCase(
+        dispute_id="DISP-COLLIDE",
+        invite_code="COLLIDE",
+        status=DisputeStatus.WAITING_FOR_LANDLORD,
+        created_at=datetime.now().isoformat(timespec="seconds"),
+        updated_at=datetime.now().isoformat(timespec="seconds"),
+        created_by_role=PartyRole.LANDLORD.value,
+    )
+    async with db_sessionmaker() as session:
+        await DisputesRepo(session).save(seed_dispute)
+        await session.commit()
+
+    monkeypatch.setattr(intake_mod, "generate_invite_code", lambda: "COLLIDE")
+
+    with pytest.raises(RuntimeError, match="unique invite code"):
+        await intake_service_with_mock_agent.start_session_with_dispute(
+            role="tenant",
+            create_dispute=True,
+        )
+
+    async with db_sessionmaker() as session:
+        sess_row = await session.get(IntakeSessionRow, "atom-sess-1")
+
+    assert sess_row is None, "session row leaked after invite-code retry exhaustion"

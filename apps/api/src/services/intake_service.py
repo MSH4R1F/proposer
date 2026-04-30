@@ -160,7 +160,7 @@ class IntakeService:
             async with UnitOfWork(self._sm) as uow:
                 await uow.sessions.save(conversation)
 
-                dispute = await uow.disputes.get_by_invite_code(normalized)
+                dispute = await uow.disputes.lock_by_invite_code(normalized)
                 if dispute is None:
                     logger.warning("invite_code_not_found", invite_code=invite_code)
                     # Session committed; dispute not found — return cleanly.
@@ -210,8 +210,6 @@ class IntakeService:
                 dispute_obj.invite_code = generate_invite_code()
                 try:
                     async with UnitOfWork(self._sm) as uow:
-                        await uow.sessions.save(conversation)
-
                         existing = await uow.disputes.get_by_invite_code(dispute_obj.invite_code)
                         if existing is not None:
                             logger.debug(
@@ -221,6 +219,7 @@ class IntakeService:
                             )
                             continue
 
+                        await uow.sessions.save(conversation)
                         await uow.disputes.save(dispute_obj)
                     # UoW committed — both rows are durable.
                     break
@@ -351,33 +350,14 @@ class IntakeService:
                 )
                 raise
 
-            # CRITICAL: Sync dispute status when party completes required fields.
-            # This enables the prediction button when BOTH parties are ready.
-            # The sync is done via dispute_service (which still owns DisputeCase
-            # persistence until Phase 6.2).  We call it inside the UoW so that if
-            # the session save succeeded but the dispute sync raises we still roll
-            # back the session write and surface the error cleanly.
-            try:
-                from apps.api.src.services.dispute_service import get_dispute_service
-
-                dispute_service = get_dispute_service()
-                await dispute_service.update_dispute_from_session(
-                    session_id=session_id,
-                    property_address=case_file.property.address,
-                    property_postcode=case_file.property.postcode,
-                    deposit_amount=case_file.tenancy.deposit_amount,
-                    intake_complete=case_file.intake_complete,
-                    role=case_file.user_role.value if case_file.user_role else None,
-                )
-                logger.debug(
-                    "dispute_status_synced",
-                    session_id=session_id,
-                    intake_complete=case_file.intake_complete,
-                )
-            except Exception as e:
-                logger.warning(
-                    "dispute_sync_failed", session_id=session_id, error=str(e)
-                )
+            # Keep any linked dispute in sync inside the same transaction. If
+            # the dispute update fails, the session save rolls back too.
+            await self._sync_dispute_from_case_file(
+                uow,
+                session_id=session_id,
+                case_file=case_file,
+                role=case_file.user_role.value if case_file.user_role else None,
+            )
 
         return {
             "response": response,
@@ -468,36 +448,10 @@ class IntakeService:
         and returns the populated case file. The user can then
         continue in the normal chat flow to add more details.
         """
-        logger.debug("bulk_intake_start", role=role, text_length=len(case_text))
-
-        user_role = PartyRole(role)
-
-        # LLM calls — OUTSIDE any transaction
-        greeting, conversation = await self.agent.start_conversation(
-            user_role=user_role
-        )
-
-        conversation.add_user_message(case_text)
-
-        extraction_result = await self.agent.extractor.extract_bulk(
+        conversation, extraction_result, summary = await self._prepare_bulk_intake(
+            role=role,
             case_text=case_text,
-            case_file=conversation.case_file,
         )
-
-        conversation.case_file = extraction_result.updated_case_file
-        conversation.case_file.calculate_completeness()
-        conversation.case_file.get_missing_required_info()
-
-        if conversation.case_file.has_all_required_info():
-            conversation.case_file.intake_complete = True
-
-        stage = self._determine_bulk_stage(conversation.case_file)
-        conversation.advance_stage(stage)
-
-        summary = self._build_extraction_summary(
-            extraction_result, conversation.case_file
-        )
-        conversation.add_assistant_message(summary)
 
         # Persist after all LLM work is done
         async with UnitOfWork(self._sm) as uow:
@@ -511,31 +465,118 @@ class IntakeService:
             intake_complete=conversation.case_file.intake_complete,
         )
 
-        try:
-            from apps.api.src.services.dispute_service import get_dispute_service
+        return self._bulk_response(conversation, extraction_result, summary)
 
-            dispute_service = get_dispute_service()
-            await dispute_service.update_dispute_from_session(
-                session_id=conversation.session_id,
-                property_address=conversation.case_file.property.address,
-                property_postcode=conversation.case_file.property.postcode,
-                deposit_amount=conversation.case_file.tenancy.deposit_amount,
-                intake_complete=conversation.case_file.intake_complete,
-                role=role,
+    async def bulk_intake_with_dispute(
+        self,
+        *,
+        role: str,
+        case_text: str,
+        invite_code: Optional[str] = None,
+        create_dispute: bool = False,
+    ) -> tuple[Dict[str, Any], Optional[DisputeCase]]:
+        """Run bulk intake and create/join the linked dispute in one DB transaction."""
+        conversation, extraction_result, summary = await self._prepare_bulk_intake(
+            role=role,
+            case_text=case_text,
+        )
+        case_file = conversation.case_file
+        session_id = conversation.session_id
+        dispute_obj: Optional[DisputeCase] = None
+
+        if invite_code:
+            normalized = invite_code.upper().strip()
+            async with UnitOfWork(self._sm) as uow:
+                await uow.sessions.save(conversation)
+
+                dispute_obj = await uow.disputes.lock_by_invite_code(normalized)
+                if dispute_obj is None:
+                    logger.warning("bulk_invite_code_not_found", invite_code=invite_code)
+                    return self._bulk_response(conversation, extraction_result, summary), None
+
+                if role == "tenant":
+                    if (
+                        dispute_obj.tenant_session_id
+                        and dispute_obj.tenant_session_id != session_id
+                    ):
+                        logger.warning(
+                            "bulk_tenant_slot_taken",
+                            dispute_id=dispute_obj.dispute_id,
+                        )
+                        return self._bulk_response(
+                            conversation, extraction_result, summary
+                        ), None
+                    dispute_obj.link_tenant_session(session_id)
+                elif role == "landlord":
+                    if (
+                        dispute_obj.landlord_session_id
+                        and dispute_obj.landlord_session_id != session_id
+                    ):
+                        logger.warning(
+                            "bulk_landlord_slot_taken",
+                            dispute_id=dispute_obj.dispute_id,
+                        )
+                        return self._bulk_response(
+                            conversation, extraction_result, summary
+                        ), None
+                    dispute_obj.link_landlord_session(session_id)
+
+                self._apply_case_file_to_dispute(dispute_obj, case_file, role)
+                await uow.disputes.save(dispute_obj)
+
+            return self._bulk_response(conversation, extraction_result, summary), dispute_obj
+
+        if create_dispute:
+            dispute_obj = DisputeCase(
+                created_by_role=role,
+                property_address=case_file.property.address,
+                property_postcode=case_file.property.postcode,
+                deposit_amount=case_file.tenancy.deposit_amount,
             )
-        except Exception as e:
-            logger.warning("bulk_intake_dispute_sync_failed", error=str(e))
+            if role == "tenant":
+                dispute_obj.link_tenant_session(session_id)
+            else:
+                dispute_obj.link_landlord_session(session_id)
+            self._apply_case_file_to_dispute(dispute_obj, case_file, role)
 
-        return {
-            "session_id": conversation.session_id,
-            "response": summary,
-            "stage": conversation.current_stage.value,
-            "completeness": conversation.case_file.completeness_score,
-            "is_complete": conversation.is_complete,
-            "case_file": conversation.case_file.model_dump(mode="json"),
-            "missing_info": conversation.case_file.missing_info,
-            "extraction_successful": not extraction_result.no_new_info,
-        }
+            _MAX_RETRIES = 5
+            for attempt in range(_MAX_RETRIES):
+                dispute_obj.invite_code = generate_invite_code()
+                try:
+                    async with UnitOfWork(self._sm) as uow:
+                        existing = await uow.disputes.get_by_invite_code(
+                            dispute_obj.invite_code
+                        )
+                        if existing is not None:
+                            logger.debug(
+                                "bulk_invite_code_collision_precheck",
+                                code=dispute_obj.invite_code,
+                                attempt=attempt,
+                            )
+                            continue
+
+                        await uow.sessions.save(conversation)
+                        await uow.disputes.save(dispute_obj)
+                    break
+                except IntegrityError:
+                    logger.debug(
+                        "bulk_invite_code_integrity_error_retry",
+                        code=dispute_obj.invite_code,
+                        attempt=attempt,
+                    )
+                    continue
+            else:
+                raise RuntimeError(
+                    "Could not generate a unique invite code after "
+                    f"{_MAX_RETRIES} attempts"
+                )
+
+            return self._bulk_response(conversation, extraction_result, summary), dispute_obj
+
+        async with UnitOfWork(self._sm) as uow:
+            await uow.sessions.save(conversation)
+
+        return self._bulk_response(conversation, extraction_result, summary), None
 
     async def get_session_status(self, session_id: str) -> Optional[Dict]:
         """Get the status of a session."""
@@ -640,8 +681,91 @@ class IntakeService:
         return cases
 
     # ------------------------------------------------------------------
-    # Pure helpers — no IO, no mutation
+    # Helpers
     # ------------------------------------------------------------------
+
+    async def _prepare_bulk_intake(
+        self,
+        *,
+        role: str,
+        case_text: str,
+    ) -> tuple[ConversationState, Any, str]:
+        logger.debug("bulk_intake_start", role=role, text_length=len(case_text))
+
+        user_role = PartyRole(role)
+
+        # LLM calls — OUTSIDE any transaction
+        _, conversation = await self.agent.start_conversation(user_role=user_role)
+        conversation.add_user_message(case_text)
+
+        extraction_result = await self.agent.extractor.extract_bulk(
+            case_text=case_text,
+            case_file=conversation.case_file,
+        )
+
+        conversation.case_file = extraction_result.updated_case_file
+        conversation.case_file.calculate_completeness()
+        conversation.case_file.get_missing_required_info()
+
+        if conversation.case_file.has_all_required_info():
+            conversation.case_file.intake_complete = True
+
+        stage = self._determine_bulk_stage(conversation.case_file)
+        conversation.advance_stage(stage)
+
+        summary = self._build_extraction_summary(
+            extraction_result, conversation.case_file
+        )
+        conversation.add_assistant_message(summary)
+        return conversation, extraction_result, summary
+
+    @staticmethod
+    def _bulk_response(
+        conversation: ConversationState,
+        extraction_result: Any,
+        summary: str,
+    ) -> Dict[str, Any]:
+        return {
+            "session_id": conversation.session_id,
+            "response": summary,
+            "stage": conversation.current_stage.value,
+            "completeness": conversation.case_file.completeness_score,
+            "is_complete": conversation.is_complete,
+            "case_file": conversation.case_file.model_dump(mode="json"),
+            "missing_info": conversation.case_file.missing_info,
+            "extraction_successful": not extraction_result.no_new_info,
+        }
+
+    async def _sync_dispute_from_case_file(
+        self,
+        uow: UnitOfWork,
+        *,
+        session_id: str,
+        case_file: CaseFile,
+        role: Optional[str],
+    ) -> None:
+        disputes = await uow.disputes.lock_by_session_id(session_id)
+        for dispute in disputes:
+            self._apply_case_file_to_dispute(dispute, case_file, role)
+            await uow.disputes.save(dispute)
+
+    @staticmethod
+    def _apply_case_file_to_dispute(
+        dispute: DisputeCase,
+        case_file: CaseFile,
+        role: Optional[str],
+    ) -> None:
+        if case_file.property.address and not dispute.property_address:
+            dispute.property_address = case_file.property.address
+        if case_file.property.postcode and not dispute.property_postcode:
+            dispute.property_postcode = case_file.property.postcode
+        if case_file.tenancy.deposit_amount is not None and dispute.deposit_amount is None:
+            dispute.deposit_amount = case_file.tenancy.deposit_amount
+
+        if case_file.intake_complete and role:
+            dispute.mark_party_complete(role)
+        else:
+            dispute.update_timestamp()
 
     def _determine_bulk_stage(self, case_file):
         from llm_orchestrator.models.conversation import IntakeStage

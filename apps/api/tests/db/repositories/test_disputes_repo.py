@@ -2,8 +2,10 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.repositories.disputes_repo import DisputesRepo
+from apps.api.src.db.repositories.sessions_repo import SessionsRepo
+from packages.llm_orchestrator.models.conversation import ConversationState, IntakeStage
 from packages.llm_orchestrator.models.dispute import DisputeCase, DisputeStatus
-from packages.llm_orchestrator.models.case_file import PartyRole
+from packages.llm_orchestrator.models.case_file import CaseFile, PartyRole
 
 
 def _make_dispute(dispute_id: str = "DISP-1", invite: str = "INV-1") -> DisputeCase:
@@ -111,3 +113,36 @@ async def test_lock_for_prediction_cache_exposes_projection(db_session: AsyncSes
     assert locked is not None
     assert locked.dispute.dispute_id == d.dispute_id
     assert locked.cached_prediction_id is None
+
+
+@pytest.mark.asyncio
+async def test_get_overlays_fk_set_null_columns(db_session: AsyncSession) -> None:
+    sessions = SessionsRepo(db_session)
+    disputes = DisputesRepo(db_session)
+    state = ConversationState(
+        session_id="sess-delete-me",
+        case_file=CaseFile(case_id="case-delete-me", user_role=PartyRole.TENANT),
+        messages=[],
+        current_stage=IntakeStage.GREETING,
+        started_at="2026-01-01T00:00:00",
+        updated_at="2026-01-01T00:00:00",
+        stages_completed=[],
+        current_stage_attempts=0,
+        last_extraction_successful=True,
+        extraction_errors=[],
+        role_explicitly_set=False,
+    )
+    dispute = _make_dispute(dispute_id="DISP-SETNULL")
+    dispute.tenant_session_id = state.session_id
+
+    await sessions.save(state)
+    await disputes.save(dispute)
+    await db_session.commit()
+
+    await sessions.delete(state.session_id)
+    await db_session.commit()
+
+    loaded = await disputes.get(dispute.dispute_id)
+
+    assert loaded is not None
+    assert loaded.tenant_session_id is None

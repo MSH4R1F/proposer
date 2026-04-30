@@ -249,7 +249,6 @@ async def start_session(
 async def bulk_intake(
     request: BulkIntakeRequest,
     intake_service: IntakeService = Depends(get_intake_service),
-    dispute_service: DisputeService = Depends(get_dispute_service),
 ):
     """
     Process a complete case description in one shot.
@@ -268,41 +267,24 @@ async def bulk_intake(
         )
 
     try:
-        result = await intake_service.bulk_intake(
-            role=request.role,
-            case_text=request.case_text,
-        )
+        if request.invite_code or request.create_dispute:
+            result, dispute = await intake_service.bulk_intake_with_dispute(
+                role=request.role,
+                case_text=request.case_text,
+                invite_code=request.invite_code,
+                create_dispute=request.create_dispute,
+            )
+        else:
+            result = await intake_service.bulk_intake(
+                role=request.role,
+                case_text=request.case_text,
+            )
+            dispute = None
 
         session_id = result["session_id"]
         dispute_info: Optional[DisputeInfo] = None
 
-        if request.invite_code:
-            dispute = await dispute_service.join_dispute(
-                invite_code=request.invite_code,
-                session_id=session_id,
-                role=request.role,
-            )
-            if dispute:
-                dispute_info = DisputeInfo(
-                    dispute_id=dispute.dispute_id,
-                    invite_code=dispute.invite_code,
-                    status=dispute.status.value,
-                    has_both_parties=dispute.has_both_parties,
-                    is_ready_for_prediction=dispute.is_ready_for_prediction,
-                    waiting_message=dispute.get_waiting_message(request.role),
-                )
-        elif request.create_dispute:
-            property_address = result["case_file"].get("property", {}).get("address")
-            deposit_amount = (
-                result["case_file"].get("tenancy", {}).get("deposit_amount")
-            )
-
-            dispute = await dispute_service.create_dispute(
-                session_id=session_id,
-                role=request.role,
-                property_address=property_address,
-                deposit_amount=deposit_amount,
-            )
+        if dispute:
             dispute_info = DisputeInfo(
                 dispute_id=dispute.dispute_id,
                 invite_code=dispute.invite_code,

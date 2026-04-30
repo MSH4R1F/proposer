@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Optional
 
 from sqlalchemy import select, update
@@ -28,6 +29,32 @@ class VersionedDisputeCase:
 class DisputesRepo:
     def __init__(self, session: AsyncSession) -> None:
         self._s = session
+
+    @staticmethod
+    def _row_to_dispute(row: DisputeRow) -> DisputeCase:
+        payload = dict(row.payload)
+        payload.update(
+            dispute_id=row.dispute_id,
+            invite_code=row.invite_code,
+            status=row.status,
+            created_at=row.created_at,
+            updated_at=row.updated_at,
+            created_by_role=(
+                row.created_by_role
+                if row.created_by_role is not None
+                else payload.get("created_by_role")
+            ),
+            tenant_session_id=row.tenant_session_id,
+            landlord_session_id=row.landlord_session_id,
+            property_address=row.property_address,
+            property_postcode=row.property_postcode,
+            deposit_amount=(
+                float(row.deposit_amount)
+                if isinstance(row.deposit_amount, Decimal)
+                else row.deposit_amount
+            ),
+        )
+        return DisputeCase.model_validate(payload)
 
     async def save(self, dispute: DisputeCase, *, expected_version: Optional[int] = None) -> None:
         payload = dispute.model_dump(mode="json")
@@ -79,14 +106,14 @@ class DisputesRepo:
 
     async def get(self, dispute_id: str) -> Optional[DisputeCase]:
         row = await self._s.get(DisputeRow, dispute_id)
-        return DisputeCase.model_validate(row.payload) if row else None
+        return self._row_to_dispute(row) if row else None
 
     async def get_with_version(self, dispute_id: str) -> Optional[VersionedDisputeCase]:
         row = await self._s.get(DisputeRow, dispute_id)
         if row is None:
             return None
         return VersionedDisputeCase(
-            dispute=DisputeCase.model_validate(row.payload),
+            dispute=self._row_to_dispute(row),
             version=row.version,
         )
 
@@ -95,7 +122,7 @@ class DisputesRepo:
             select(DisputeRow).where(DisputeRow.invite_code == code)
         )
         row = result.scalar_one_or_none()
-        return DisputeCase.model_validate(row.payload) if row else None
+        return self._row_to_dispute(row) if row else None
 
     async def get_by_session_id(self, session_id: str) -> list[DisputeCase]:
         result = await self._s.execute(
@@ -104,14 +131,34 @@ class DisputesRepo:
                 | (DisputeRow.landlord_session_id == session_id)
             )
         )
-        return [DisputeCase.model_validate(r.payload) for r in result.scalars()]
+        return [self._row_to_dispute(r) for r in result.scalars()]
+
+    async def lock_by_invite_code(self, code: str) -> Optional[DisputeCase]:
+        result = await self._s.execute(
+            select(DisputeRow)
+            .where(DisputeRow.invite_code == code)
+            .with_for_update()
+        )
+        row = result.scalar_one_or_none()
+        return self._row_to_dispute(row) if row else None
+
+    async def lock_by_session_id(self, session_id: str) -> list[DisputeCase]:
+        result = await self._s.execute(
+            select(DisputeRow)
+            .where(
+                (DisputeRow.tenant_session_id == session_id)
+                | (DisputeRow.landlord_session_id == session_id)
+            )
+            .with_for_update()
+        )
+        return [self._row_to_dispute(r) for r in result.scalars()]
 
     async def lock(self, dispute_id: str) -> Optional[DisputeCase]:
         result = await self._s.execute(
             select(DisputeRow).where(DisputeRow.dispute_id == dispute_id).with_for_update()
         )
         row = result.scalar_one_or_none()
-        return DisputeCase.model_validate(row.payload) if row else None
+        return self._row_to_dispute(row) if row else None
 
     async def lock_for_prediction_cache(
         self, dispute_id: str
@@ -123,7 +170,7 @@ class DisputesRepo:
         if row is None:
             return None
         return LockedDisputeForPredictionCache(
-            dispute=DisputeCase.model_validate(row.payload),
+            dispute=self._row_to_dispute(row),
             cached_prediction_id=row.cached_prediction_id,
             prediction_cache_key=row.prediction_cache_key,
         )
@@ -146,4 +193,4 @@ class DisputesRepo:
 
     async def list_all(self) -> list[DisputeCase]:
         result = await self._s.execute(select(DisputeRow))
-        return [DisputeCase.model_validate(r.payload) for r in result.scalars()]
+        return [self._row_to_dispute(r) for r in result.scalars()]

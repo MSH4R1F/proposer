@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 import structlog
 
 from apps.api.src.dependencies import get_mediation_service
+from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
 from apps.api.src.services.mediation_service import MediationService
 
 logger = structlog.get_logger()
@@ -60,6 +61,12 @@ class RespondToOfferRequest(BaseModel):
     )
 
 
+class SettleMediationRequest(BaseModel):
+    """Request to record a settlement amount agreed by both parties."""
+
+    amount: float = Field(..., description="Agreed settlement amount in GBP", ge=0)
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -92,6 +99,12 @@ async def start_mediation(
             mediation_id=result.get("mediation_id"),
         )
         return result
+    except ConcurrentUpdateError as e:
+        logger.warning("start_mediation_conflict", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(
+            status_code=409,
+            detail="Mediation changed while it was being started. Please retry.",
+        )
     except ValueError as e:
         logger.warning(
             "start_mediation_bad_request", dispute_id=dispute_id, error=str(e)
@@ -192,6 +205,36 @@ async def get_messages(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/{dispute_id}/session")
+async def get_session(
+    dispute_id: str,
+    svc: MediationService = Depends(get_mediation_service),
+) -> Dict[str, Any]:
+    """Get the full mediation session, including messages and offers."""
+    logger.debug("get_mediation_session_request", dispute_id=dispute_id)
+    try:
+        result = await svc.get_session(dispute_id)
+        logger.debug(
+            "get_mediation_session_success",
+            dispute_id=dispute_id,
+            mediation_id=result.get("mediation_id"),
+        )
+        return result
+    except ValueError as e:
+        logger.warning("get_mediation_session_not_found", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "get_mediation_session_failed",
+            dispute_id=dispute_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/{dispute_id}/message")
 async def add_message(
     dispute_id: str,
@@ -220,6 +263,12 @@ async def add_message(
             session_id=request.session_id,
         )
         return result
+    except ConcurrentUpdateError as e:
+        logger.warning("add_message_conflict", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(
+            status_code=409,
+            detail="Mediation changed while this message was being saved. Please retry.",
+        )
     except ValueError as e:
         logger.warning("add_message_bad_request", dispute_id=dispute_id, error=str(e))
         raise HTTPException(status_code=400, detail=str(e))
@@ -264,6 +313,12 @@ async def submit_offer(
             amount=request.amount,
         )
         return offer.model_dump(mode="json")
+    except ConcurrentUpdateError as e:
+        logger.warning("submit_offer_conflict", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(
+            status_code=409,
+            detail="Mediation changed while this offer was being saved. Please retry.",
+        )
     except ValueError as e:
         logger.warning("submit_offer_bad_request", dispute_id=dispute_id, error=str(e))
         raise HTTPException(status_code=400, detail=str(e))
@@ -319,6 +374,12 @@ async def respond_to_offer(
             action=request.action,
         )
         return result
+    except ConcurrentUpdateError as e:
+        logger.warning("respond_to_offer_conflict", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(
+            status_code=409,
+            detail="Mediation changed while this response was being saved. Please retry.",
+        )
     except ValueError as e:
         logger.warning(
             "respond_to_offer_bad_request", dispute_id=dispute_id, error=str(e)
@@ -329,6 +390,84 @@ async def respond_to_offer(
     except Exception as e:
         logger.error(
             "respond_to_offer_failed",
+            dispute_id=dispute_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{dispute_id}/settle")
+async def settle_mediation(
+    dispute_id: str,
+    request: SettleMediationRequest,
+    svc: MediationService = Depends(get_mediation_service),
+) -> Dict[str, Any]:
+    """
+    Record a settlement amount already agreed by both parties.
+
+    This endpoint records an agreement; it does not recommend that either party
+    accept a settlement amount.
+    """
+    logger.debug(
+        "settle_mediation_request",
+        dispute_id=dispute_id,
+        amount=request.amount,
+    )
+    try:
+        result = await svc.settle(dispute_id, request.amount)
+        logger.info(
+            "mediation_settled",
+            dispute_id=dispute_id,
+            settlement_amount=result.get("settlement_amount"),
+        )
+        return result
+    except ConcurrentUpdateError as e:
+        logger.warning("settle_mediation_conflict", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(
+            status_code=409,
+            detail="Mediation changed while settlement was being saved. Please retry.",
+        )
+    except ValueError as e:
+        logger.warning("settle_mediation_bad_request", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "settle_mediation_failed",
+            dispute_id=dispute_id,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{dispute_id}/escalate")
+async def escalate_mediation(
+    dispute_id: str,
+    svc: MediationService = Depends(get_mediation_service),
+) -> Dict[str, Any]:
+    """Mark mediation as escalated and return informational next-step state."""
+    logger.debug("escalate_mediation_request", dispute_id=dispute_id)
+    try:
+        result = await svc.escalate(dispute_id)
+        logger.info("mediation_escalated", dispute_id=dispute_id)
+        return result
+    except ConcurrentUpdateError as e:
+        logger.warning("escalate_mediation_conflict", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(
+            status_code=409,
+            detail="Mediation changed while escalation was being saved. Please retry.",
+        )
+    except ValueError as e:
+        logger.warning("escalate_mediation_bad_request", dispute_id=dispute_id, error=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "escalate_mediation_failed",
             dispute_id=dispute_id,
             error=str(e),
             error_type=type(e).__name__,

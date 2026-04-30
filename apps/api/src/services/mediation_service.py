@@ -262,10 +262,59 @@ class MediationService:
         prediction_data: Dict[str, Any], role: str
     ) -> Dict[str, Any]:
         analysis = get_cost_benefit_analysis(role=role, prediction_data=prediction_data)
+        analysis_payload = analysis.model_dump(mode="json")
+        tribunal_costs = analysis_payload["tribunal_costs"]
+        settlement_range = [
+            analysis_payload["settlement_range_low"],
+            analysis_payload["settlement_range_high"],
+        ]
+        tribunal_cost_to_party: Any
+        if role == "tenant":
+            tribunal_cost_to_party = tribunal_costs["tenant_costs"]
+        else:
+            tribunal_cost_to_party = [
+                tribunal_costs["landlord_costs_min"],
+                tribunal_costs["landlord_costs_max"],
+            ]
+
         return {
             "party_role": role,
-            "analysis": analysis.model_dump(mode="json"),
             "prediction_summary": {
+                "prediction_id": prediction_data.get("prediction_id"),
+                "overall_outcome": MediationService._coerce_prediction_outcome(
+                    prediction_data.get("overall_outcome")
+                ),
+                "overall_confidence": MediationService._clamp_confidence(
+                    prediction_data.get("overall_confidence")
+                ),
+                "suggested_amount": analysis_payload["settlement_amount"],
+                "settlement_range": settlement_range,
+                "key_strengths": MediationService._coerce_string_list(
+                    prediction_data.get("key_strengths")
+                ),
+                "key_weaknesses": MediationService._coerce_string_list(
+                    prediction_data.get("key_weaknesses")
+                ),
+            },
+            "party_framing": analysis_payload["party_framing"],
+            "cost_benefit": {
+                "settlement_option": {
+                    "amount": analysis_payload["settlement_amount"],
+                    "description": analysis_payload["settlement_framing"],
+                },
+                "tribunal_option": {
+                    "cost_to_party": tribunal_cost_to_party,
+                    "timeline": (
+                        f"{tribunal_costs['timeline_months_min']}-"
+                        f"{tribunal_costs['timeline_months_max']} months"
+                    ),
+                    "outcome_uncertainty": analysis_payload["tribunal_framing"],
+                },
+            },
+            "tribunal_costs": tribunal_costs,
+            # Kept for legacy callers/tests while the web uses the fields above.
+            "analysis": analysis_payload,
+            "prediction": {
                 "prediction_id": prediction_data.get("prediction_id"),
                 "overall_outcome": prediction_data.get("overall_outcome"),
                 "overall_confidence": prediction_data.get("overall_confidence"),
@@ -311,11 +360,18 @@ class MediationService:
 
             existing = await uow.mediations.get_by_dispute_id(dispute_id)
             if existing is not None:
-                prediction_data = await self._fetch_prediction_data_uow(uow, dispute_id)
                 return {
                     "mediation_id": existing.mediation_id,
                     "dispute_id": dispute_id,
                     "status": existing.status.value,
+                    "messages": [
+                        message.model_dump(mode="json")
+                        for message in existing.messages
+                    ],
+                    "offers": [
+                        offer.model_dump(mode="json")
+                        for offer in existing.offers
+                    ],
                     "initial_message": (
                         existing.messages[0].model_dump(mode="json")
                         if existing.messages
@@ -359,13 +415,26 @@ class MediationService:
 
         # ── Phase 3: write txn — create mediation + update dispute ───────────
         async with self._uow() as uow:
-            # Race-check: another request may have created the session already.
+            # Serialize start idempotency on the dispute row so two starters cannot
+            # both observe "no mediation" and race on the mediation.dispute_id key.
+            dispute_locked = await uow.disputes.lock(dispute_id)
+            if dispute_locked is None:
+                raise DisputeNotFoundError(dispute_id)
+
             existing = await uow.mediations.get_by_dispute_id(dispute_id)
             if existing is not None:
                 return {
                     "mediation_id": existing.mediation_id,
                     "dispute_id": dispute_id,
                     "status": existing.status.value,
+                    "messages": [
+                        message.model_dump(mode="json")
+                        for message in existing.messages
+                    ],
+                    "offers": [
+                        offer.model_dump(mode="json")
+                        for offer in existing.offers
+                    ],
                     "initial_message": (
                         existing.messages[0].model_dump(mode="json")
                         if existing.messages
@@ -385,9 +454,6 @@ class MediationService:
             )
             await uow.mediations.save(new_mediation)
 
-            dispute_locked = await uow.disputes.lock(dispute_id)
-            if dispute_locked is None:
-                raise DisputeNotFoundError(dispute_id)
             dispute_locked.start_mediation()
             await uow.disputes.save(dispute_locked)
 
@@ -397,6 +463,14 @@ class MediationService:
             "mediation_id": new_mediation.mediation_id,
             "dispute_id": dispute_id,
             "status": new_mediation.status.value,
+            "messages": [
+                message.model_dump(mode="json")
+                for message in new_mediation.messages
+            ],
+            "offers": [
+                offer.model_dump(mode="json")
+                for offer in new_mediation.offers
+            ],
             "initial_message": initial_message.model_dump(mode="json"),
         }
 
@@ -420,20 +494,10 @@ class MediationService:
         if not prediction_data:
             raise ValueError(f"Prediction not found for dispute: {dispute_id}")
 
-        analysis = get_cost_benefit_analysis(role=role, prediction_data=prediction_data)
         return {
             "dispute_id": dispute_id,
             "session_id": session_id,
-            "party_role": role,
-            "prediction": {
-                "prediction_id": prediction_data.get("prediction_id"),
-                "overall_outcome": prediction_data.get("overall_outcome"),
-                "overall_confidence": prediction_data.get("overall_confidence"),
-                "predicted_settlement_range": prediction_data.get(
-                    "predicted_settlement_range"
-                ),
-            },
-            "analysis": analysis.model_dump(mode="json"),
+            **self._build_expectation_payload(prediction_data, role),
         }
 
     async def add_message(
@@ -448,9 +512,10 @@ class MediationService:
     ) -> Dict[str, Any]:
         # ── Txn 1: load + validate + persist user message ────────────────────
         async with self._uow() as uow:
-            mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-            if mediation is None:
+            versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+            if versioned is None:
                 raise MediationNotFoundError(dispute_id)
+            mediation = versioned.session
             if mediation.status != MediationStatus.ACTIVE_NEGOTIATION:
                 raise ValueError(
                     f"Mediation must be active for this operation. "
@@ -471,7 +536,9 @@ class MediationService:
                 content=content,
                 message_type=MessageType.TEXT,
             )
-            await uow.mediations.save(mediation)
+            await uow.mediations.save(
+                mediation, expected_version=versioned.version
+            )
 
         # ── LLM call (outside txn) ───────────────────────────────────────────
         prediction = self._build_prediction_result(prediction_data, dispute_id)
@@ -500,15 +567,18 @@ class MediationService:
 
         # ── Txn 2: persist AI response ───────────────────────────────────────
         async with self._uow() as uow:
-            mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-            if mediation is None:
+            versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+            if versioned is None:
                 raise MediationNotFoundError(dispute_id)
+            mediation = versioned.session
             ai_response = self._add_ai_mediator_message(
                 session=mediation,
                 content=ai_content,
                 message_type=MessageType.AI_MEDIATOR,
             )
-            await uow.mediations.save(mediation)
+            await uow.mediations.save(
+                mediation, expected_version=versioned.version
+            )
 
         return {
             "dispute_id": dispute_id,
@@ -530,9 +600,10 @@ class MediationService:
         self, dispute_id: str, session_id: str, amount: float
     ) -> StructuredOffer:
         async with self._uow() as uow:
-            mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-            if mediation is None:
+            versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+            if versioned is None:
                 raise MediationNotFoundError(dispute_id)
+            mediation = versioned.session
             if mediation.status != MediationStatus.ACTIVE_NEGOTIATION:
                 raise ValueError(
                     f"Mediation must be active for this operation. "
@@ -559,7 +630,9 @@ class MediationService:
                 amount=amount,
                 deposit_amount=deposit_amount,
             )
-            await uow.mediations.save(mediation)
+            await uow.mediations.save(
+                mediation, expected_version=versioned.version
+            )
 
         logger.info(
             "offer_submitted",
@@ -599,9 +672,10 @@ class MediationService:
         if normalized_action == "accept":
             # Atomicity hazard #3: accept → settle in one UoW.
             async with self._uow() as uow:
-                mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-                if mediation is None:
+                versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+                if versioned is None:
                     raise MediationNotFoundError(dispute_id)
+                mediation = versioned.session
                 if mediation.status != MediationStatus.ACTIVE_NEGOTIATION:
                     raise ValueError(
                         f"Mediation must be active for this operation. "
@@ -618,7 +692,20 @@ class MediationService:
                     raise ValueError("Offer responder must be the opposite party")
 
                 accepted_offer = mediation.accept_offer(offer_id, responder_role)
-                await uow.mediations.save(mediation)
+                note = self._add_ai_mediator_message(
+                    session=mediation,
+                    content=(
+                        f"Offer {offer_id} accepted at £{accepted_offer.amount:.2f}. "
+                        "The mediation record has been marked as settled. This records "
+                        "the parties' stated agreement and is legal information, not "
+                        "legal advice."
+                    ),
+                    message_type=MessageType.SYSTEM,
+                    offer_id=offer_id,
+                )
+                await uow.mediations.save(
+                    mediation, expected_version=versioned.version
+                )
 
                 dispute_locked = await uow.disputes.lock(dispute_id)
                 if dispute_locked is None:
@@ -630,13 +717,16 @@ class MediationService:
                 "action": "accept",
                 "offer": accepted_offer.model_dump(mode="json"),
                 "settlement_amount": accepted_offer.amount,
+                "mediation_status": mediation.status.value,
+                "messages": [note.model_dump(mode="json")],
             }
 
         if normalized_action == "reject":
             async with self._uow() as uow:
-                mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-                if mediation is None:
+                versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+                if versioned is None:
                     raise MediationNotFoundError(dispute_id)
+                mediation = versioned.session
                 if mediation.status != MediationStatus.ACTIVE_NEGOTIATION:
                     raise ValueError(
                         f"Mediation must be active for this operation. "
@@ -659,12 +749,16 @@ class MediationService:
                     message_type=MessageType.SYSTEM,
                     offer_id=offer_id,
                 )
-                await uow.mediations.save(mediation)
+                await uow.mediations.save(
+                    mediation, expected_version=versioned.version
+                )
 
             return {
                 "action": "reject",
                 "offer": rejected_offer.model_dump(mode="json"),
                 "system_message": note.model_dump(mode="json"),
+                "mediation_status": mediation.status.value,
+                "messages": [note.model_dump(mode="json")],
             }
 
         if normalized_action == "counter":
@@ -672,9 +766,10 @@ class MediationService:
                 raise ValueError("counter_amount is required for counter action")
 
             async with self._uow() as uow:
-                mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-                if mediation is None:
+                versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+                if versioned is None:
                     raise MediationNotFoundError(dispute_id)
+                mediation = versioned.session
                 if mediation.status != MediationStatus.ACTIVE_NEGOTIATION:
                     raise ValueError(
                         f"Mediation must be active for this operation. "
@@ -706,12 +801,19 @@ class MediationService:
                     responder_role=responder_role,
                     counter_amount=counter_amount,
                 )
-                await uow.mediations.save(mediation)
+                countered_offer = self._find_offer(mediation, offer_id)
+                counter_message = mediation.messages[-1]
+                await uow.mediations.save(
+                    mediation, expected_version=versioned.version
+                )
 
             return {
                 "action": "counter",
-                "offer": counter_offer.model_dump(mode="json"),
+                "offer": countered_offer.model_dump(mode="json"),
+                "new_offer": counter_offer.model_dump(mode="json"),
                 "counter_amount": counter_amount,
+                "mediation_status": mediation.status.value,
+                "messages": [counter_message.model_dump(mode="json")],
             }
 
         raise ValueError("action must be one of: accept, reject, counter")
@@ -737,6 +839,18 @@ class MediationService:
             messages = [m for m in messages if m.timestamp > since_timestamp]
         return [message.model_dump(mode="json") for message in messages]
 
+    async def get_session(self, dispute_id: str) -> Dict[str, Any]:
+        if self._sm is None:
+            return await self._legacy_get_session(dispute_id)
+        return await self._pg_get_session(dispute_id)
+
+    async def _pg_get_session(self, dispute_id: str) -> Dict[str, Any]:
+        async with self._uow() as uow:
+            mediation = await uow.mediations.get_by_dispute_id(dispute_id)
+        if mediation is None:
+            raise MediationNotFoundError(dispute_id)
+        return mediation.model_dump(mode="json")
+
     async def settle(self, dispute_id: str, amount: float) -> Dict[str, Any]:
         if self._sm is None:
             return await self._legacy_settle(dispute_id, amount)
@@ -745,9 +859,10 @@ class MediationService:
     async def _pg_settle(self, dispute_id: str, amount: float) -> Dict[str, Any]:
         """Atomicity hazard #2 — mediation + dispute status in one UoW."""
         async with self._uow() as uow:
-            mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-            if mediation is None:
+            versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+            if versioned is None:
                 raise MediationNotFoundError(dispute_id)
+            mediation = versioned.session
 
             dispute = await uow.disputes.lock(dispute_id)
             if dispute is None:
@@ -760,7 +875,9 @@ class MediationService:
                 )
 
             mediation.settle(amount)
-            await uow.mediations.save(mediation)
+            await uow.mediations.save(
+                mediation, expected_version=versioned.version
+            )
 
             dispute.settle()
             await uow.disputes.save(dispute)
@@ -781,16 +898,28 @@ class MediationService:
     async def _pg_escalate(self, dispute_id: str) -> Dict[str, Any]:
         """Atomicity hazard #4 — mediation + dispute status in one UoW."""
         async with self._uow() as uow:
-            mediation = await uow.mediations.get_by_dispute_id(dispute_id)
-            if mediation is None:
+            versioned = await uow.mediations.lock_by_dispute_id(dispute_id)
+            if versioned is None:
                 raise MediationNotFoundError(dispute_id)
+            mediation = versioned.session
 
             dispute = await uow.disputes.lock(dispute_id)
             if dispute is None:
                 raise DisputeNotFoundError(dispute_id)
 
             mediation.escalate()
-            await uow.mediations.save(mediation)
+            note = self._add_ai_mediator_message(
+                session=mediation,
+                content=(
+                    "Mediation has been marked as escalated. The next screen "
+                    "summarises formal resolution options as legal information, "
+                    "not legal advice."
+                ),
+                message_type=MessageType.SYSTEM,
+            )
+            await uow.mediations.save(
+                mediation, expected_version=versioned.version
+            )
 
             dispute.escalate()
             await uow.disputes.save(dispute)
@@ -801,6 +930,7 @@ class MediationService:
             "mediation_status": mediation.status.value,
             "dispute_status": dispute.status.value,
             "escalated_at": mediation.escalated_at,
+            "messages": [note.model_dump(mode="json")],
         }
 
     async def get_settlement(self, dispute_id: str) -> Dict[str, Any]:
@@ -811,6 +941,7 @@ class MediationService:
     async def _pg_get_settlement(self, dispute_id: str) -> Dict[str, Any]:
         async with self._uow() as uow:
             mediation = await uow.mediations.get_by_dispute_id(dispute_id)
+            dispute = await uow.disputes.get(dispute_id)
 
         if mediation is None:
             raise ValueError(f"Mediation session not found for dispute: {dispute_id}")
@@ -822,11 +953,36 @@ class MediationService:
             "mediation_id": mediation.mediation_id,
             "status": mediation.status.value,
             "settlement_amount": mediation.settlement_amount,
+            "agreed_amount": mediation.settlement_amount,
             "settled_at": mediation.settled_at,
             "started_at": mediation.started_at,
             "updated_at": mediation.updated_at,
             "message_count": len(mediation.messages),
             "offer_count": len(mediation.offers),
+            "parties": {
+                "tenant_session_id": (
+                    getattr(dispute, "tenant_session_id", None) if dispute else None
+                ),
+                "landlord_session_id": (
+                    getattr(dispute, "landlord_session_id", None) if dispute else None
+                ),
+            },
+            "property": {
+                "address": getattr(dispute, "property_address", None)
+                if dispute
+                else None,
+                "postcode": getattr(dispute, "property_postcode", None)
+                if dispute
+                else None,
+            },
+            "deposit_amount": getattr(dispute, "deposit_amount", None)
+            if dispute
+            else None,
+            "disclaimer": (
+                "This settlement summary records information provided through "
+                "the mediation flow. It is not legal advice or a legally binding "
+                "contract by itself."
+            ),
         }
 
     async def generate_settlement_pdf(self, dispute_id: str) -> bytes:
@@ -966,20 +1122,10 @@ class MediationService:
         if not prediction_data:
             raise ValueError(f"Prediction not found for dispute: {dispute_id}")
 
-        analysis = get_cost_benefit_analysis(role=role, prediction_data=prediction_data)
         return {
             "dispute_id": dispute_id,
             "session_id": session_id,
-            "party_role": role,
-            "prediction": {
-                "prediction_id": prediction_data.get("prediction_id"),
-                "overall_outcome": prediction_data.get("overall_outcome"),
-                "overall_confidence": prediction_data.get("overall_confidence"),
-                "predicted_settlement_range": prediction_data.get(
-                    "predicted_settlement_range"
-                ),
-            },
-            "analysis": analysis.model_dump(mode="json"),
+            **self._build_expectation_payload(prediction_data, role),
         }
 
     async def _legacy_add_message(
@@ -1151,6 +1297,12 @@ class MediationService:
             messages = [m for m in messages if m.timestamp > since_timestamp]
         return [message.model_dump(mode="json") for message in messages]
 
+    async def _legacy_get_session(self, dispute_id: str) -> Dict[str, Any]:
+        session = self._mediations.get(dispute_id)
+        if not session:
+            raise ValueError(f"Mediation session not found for dispute: {dispute_id}")
+        return session.model_dump(mode="json")
+
     async def _legacy_settle(self, dispute_id: str, amount: float) -> Dict[str, Any]:
         from apps.api.src.services.dispute_service import get_dispute_service
 
@@ -1215,16 +1367,48 @@ class MediationService:
             raise ValueError(f"Mediation session not found for dispute: {dispute_id}")
         if session.status != MediationStatus.SETTLED:
             raise ValueError(f"Mediation not settled for dispute: {dispute_id}")
+        try:
+            from apps.api.src.services.dispute_service import get_dispute_service
+
+            dispute_service = get_dispute_service()
+            dispute = await dispute_service.get_dispute(dispute_id)
+        except Exception:
+            dispute = None
         return {
             "dispute_id": dispute_id,
             "mediation_id": session.mediation_id,
             "status": session.status.value,
             "settlement_amount": session.settlement_amount,
+            "agreed_amount": session.settlement_amount,
             "settled_at": session.settled_at,
             "started_at": session.started_at,
             "updated_at": session.updated_at,
             "message_count": len(session.messages),
             "offer_count": len(session.offers),
+            "parties": {
+                "tenant_session_id": (
+                    getattr(dispute, "tenant_session_id", None) if dispute else None
+                ),
+                "landlord_session_id": (
+                    getattr(dispute, "landlord_session_id", None) if dispute else None
+                ),
+            },
+            "property": {
+                "address": getattr(dispute, "property_address", None)
+                if dispute
+                else None,
+                "postcode": getattr(dispute, "property_postcode", None)
+                if dispute
+                else None,
+            },
+            "deposit_amount": getattr(dispute, "deposit_amount", None)
+            if dispute
+            else None,
+            "disclaimer": (
+                "This settlement summary records information provided through "
+                "the mediation flow. It is not legal advice or a legally binding "
+                "contract by itself."
+            ),
         }
 
     async def _legacy_generate_settlement_pdf(self, dispute_id: str) -> bytes:

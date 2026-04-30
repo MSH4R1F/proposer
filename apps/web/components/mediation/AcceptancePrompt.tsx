@@ -11,29 +11,39 @@ import { Handshake, MessageSquare, Loader2 } from 'lucide-react';
 interface AcceptancePromptProps {
   disputeId: string;
   sessionId: string;
+  partyRole: string;
+  suggestedAmount: number;
 }
 
-export function AcceptancePrompt({ disputeId, sessionId }: AcceptancePromptProps) {
+export function AcceptancePrompt({
+  disputeId,
+  sessionId,
+  partyRole,
+  suggestedAmount,
+}: AcceptancePromptProps) {
   const router = useRouter();
-  const [isSettling, setIsSettling] = useState(false);
-  const [settleError, setSettleError] = useState<string | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
 
-  const handleAcceptAndSettle = async () => {
-    setIsSettling(true);
-    setSettleError(null);
+  const chatHref =
+    ROUTES.MEDIATION_CHAT(disputeId) +
+    `?session=${encodeURIComponent(sessionId)}&role=${encodeURIComponent(partyRole)}`;
+
+  const startAndOpenChat = async () => {
+    setIsStarting(true);
+    setStartError(null);
     try {
       await mediationApi.startMediation(disputeId, sessionId);
-      router.push(ROUTES.MEDIATION_SETTLEMENT(disputeId));
+      router.push(chatHref);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to start mediation';
-      setSettleError(message);
-      setIsSettling(false);
+      const message =
+        error instanceof Error ? error.message : 'Failed to start mediation';
+      setStartError(message);
+      setIsStarting(false);
     }
   };
 
-  const handleNegotiate = () => {
-    router.push(ROUTES.MEDIATION_CHAT(disputeId) + '?session=' + sessionId);
-  };
+  const handleNegotiate = startAndOpenChat;
 
   return (
     <Card>
@@ -42,36 +52,38 @@ export function AcceptancePrompt({ disputeId, sessionId }: AcceptancePromptProps
           <div>
             <h3 className="font-semibold text-base">How would you like to proceed?</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Choose to settle at the predicted amount or negotiate directly with the other party.
+              The midpoint estimate is £{suggestedAmount.toLocaleString('en-GB')}.
+              You can use it as negotiation context, but settlement requires both
+              parties to agree.
             </p>
           </div>
 
-          {settleError && (
-            <p className="text-sm text-destructive">{settleError}</p>
+          {startError && (
+            <p className="text-sm text-destructive">{startError}</p>
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
-              onClick={handleAcceptAndSettle}
-              disabled={isSettling}
+              onClick={startAndOpenChat}
+              disabled={isStarting}
               className="gap-2"
             >
-              {isSettling ? (
+              {isStarting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Handshake className="h-4 w-4" />
               )}
-              Accept & Settle
+              Start Mediation
             </Button>
 
             <Button
               variant="outline"
               onClick={handleNegotiate}
-              disabled={isSettling}
+              disabled={isStarting}
               className="gap-2"
             >
               <MessageSquare className="h-4 w-4" />
-              Negotiate
+              Open Chat
             </Button>
           </div>
         </div>

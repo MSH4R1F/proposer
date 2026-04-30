@@ -17,6 +17,7 @@ Atomicity-rollback tests are covered separately in Task 9.2.
 
 from __future__ import annotations
 
+import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -195,6 +196,33 @@ async def test_start_mediation_is_idempotent(
 
 
 @pytest.mark.asyncio
+async def test_concurrent_start_mediation_is_idempotent(
+    mediation_service: MediationService,
+    seeded_dispute,
+    db_sessionmaker,
+) -> None:
+    """Concurrent starters must converge on one mediation row for the dispute."""
+    dispute_id = seeded_dispute.dispute_id
+    tenant_session = seeded_dispute.tenant_session_id
+
+    first, second = await asyncio.gather(
+        mediation_service.start_mediation(dispute_id, tenant_session),
+        mediation_service.start_mediation(dispute_id, tenant_session),
+    )
+
+    assert first["mediation_id"] == second["mediation_id"]
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        mediation = await uow.mediations.get_by_dispute_id(dispute_id)
+        dispute = await uow.disputes.get(dispute_id)
+
+    assert mediation is not None
+    assert dispute is not None
+    assert mediation.status == MediationStatus.ACTIVE_NEGOTIATION
+    assert dispute.status == DisputeStatus.IN_MEDIATION
+
+
+@pytest.mark.asyncio
 async def test_add_message_appends_user_and_ai_messages(
     mediation_service: MediationService,
     seeded_dispute,
@@ -220,6 +248,61 @@ async def test_add_message_appends_user_and_ai_messages(
 
     # Opening message + user message + AI response = at least 3.
     assert len(mediation.messages) >= 3
+
+
+@pytest.mark.asyncio
+async def test_concurrent_add_message_preserves_both_updates(
+    mediation_service: MediationService,
+    seeded_dispute,
+    db_sessionmaker,
+) -> None:
+    """Two simultaneous messages must both survive the read-modify-write cycle."""
+    dispute_id = seeded_dispute.dispute_id
+    tenant_session = seeded_dispute.tenant_session_id
+    landlord_session = seeded_dispute.landlord_session_id
+
+    async def _delayed_response(**kwargs):
+        await asyncio.sleep(0.05)
+        return "Neutral follow-up with legal-information framing."
+
+    mediation_service._mediator.generate_response = AsyncMock(
+        side_effect=_delayed_response
+    )
+
+    await mediation_service.start_mediation(dispute_id, tenant_session)
+    await asyncio.gather(
+        mediation_service.add_message(dispute_id, tenant_session, "Tenant update"),
+        mediation_service.add_message(dispute_id, landlord_session, "Landlord update"),
+    )
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        mediation = await uow.mediations.get_by_dispute_id(dispute_id)
+
+    assert mediation is not None
+    contents = [message.content for message in mediation.messages]
+    assert "Tenant update" in contents
+    assert "Landlord update" in contents
+    assert len(mediation.messages) >= 5
+
+
+@pytest.mark.asyncio
+async def test_get_expectation_data_matches_web_contract(
+    mediation_service: MediationService,
+    seeded_dispute,
+) -> None:
+    """Expectation payload should expose the frontend ExpectationData shape."""
+    result = await mediation_service.get_expectation_data(
+        seeded_dispute.dispute_id,
+        seeded_dispute.tenant_session_id,
+    )
+
+    assert result["party_role"] == "tenant"
+    assert result["prediction_summary"]["suggested_amount"] == 750.0
+    assert result["prediction_summary"]["settlement_range"] == [600.0, 900.0]
+    assert "party_framing" in result
+    assert result["cost_benefit"]["settlement_option"]["amount"] == 750.0
+    assert result["cost_benefit"]["tribunal_option"]["cost_to_party"] == 0
+    assert result["tribunal_costs"]["timeline_months_min"] == 6
 
 
 @pytest.mark.asyncio
@@ -293,6 +376,8 @@ async def test_submit_offer_and_accept_settles(
 
     assert result["action"] == "accept"
     assert result["settlement_amount"] == 600.0
+    assert result["mediation_status"] == "settled"
+    assert len(result["messages"]) == 1
 
     async with UnitOfWork(db_sessionmaker) as uow:
         mediation = await uow.mediations.get_by_dispute_id(dispute_id)
@@ -301,6 +386,53 @@ async def test_submit_offer_and_accept_settles(
     assert mediation.status == MediationStatus.SETTLED
     assert mediation.settlement_amount == 600.0
     assert dispute.status == DisputeStatus.SETTLED
+
+
+@pytest.mark.asyncio
+async def test_get_session_returns_messages_and_offers(
+    mediation_service: MediationService,
+    seeded_dispute,
+) -> None:
+    """The web client's /session call needs the full mediation state."""
+    dispute_id = seeded_dispute.dispute_id
+    tenant_session = seeded_dispute.tenant_session_id
+
+    await mediation_service.start_mediation(dispute_id, tenant_session)
+    offer = await mediation_service.submit_offer(dispute_id, tenant_session, 600.0)
+
+    result = await mediation_service.get_session(dispute_id)
+
+    assert result["dispute_id"] == dispute_id
+    assert result["offers"][0]["id"] == offer.id
+    assert any(message["offer_id"] == offer.id for message in result["messages"])
+
+
+@pytest.mark.asyncio
+async def test_counter_offer_returns_updated_and_new_offer_with_messages(
+    mediation_service: MediationService,
+    seeded_dispute,
+) -> None:
+    """Counter responses should let the web update the old card and add the new one."""
+    dispute_id = seeded_dispute.dispute_id
+    tenant_session = seeded_dispute.tenant_session_id
+    landlord_session = seeded_dispute.landlord_session_id
+
+    await mediation_service.start_mediation(dispute_id, tenant_session)
+    offer = await mediation_service.submit_offer(dispute_id, tenant_session, 600.0)
+
+    result = await mediation_service.respond_to_offer(
+        dispute_id,
+        landlord_session,
+        offer.id,
+        "counter",
+        counter_amount=700.0,
+    )
+
+    assert result["action"] == "counter"
+    assert result["offer"]["id"] == offer.id
+    assert result["offer"]["status"] == "countered"
+    assert result["new_offer"]["amount"] == 700.0
+    assert result["messages"][0]["offer_id"] == result["new_offer"]["id"]
 
 
 @pytest.mark.asyncio

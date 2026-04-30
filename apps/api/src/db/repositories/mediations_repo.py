@@ -137,6 +137,22 @@ class MediationsRepo:
             version=row.version,
         )
 
+    async def lock(
+        self, mediation_id: str
+    ) -> Optional[VersionedMediationSession]:
+        result = await self._s.execute(
+            select(MediationSessionRow)
+            .where(MediationSessionRow.mediation_id == mediation_id)
+            .with_for_update()
+        )
+        row = result.scalar_one_or_none()
+        if row is None:
+            return None
+        return VersionedMediationSession(
+            session=MediationSession.model_validate(row.payload),
+            version=row.version,
+        )
+
     async def get_by_dispute_id(self, dispute_id: str) -> Optional[MediationSession]:
         result = await self._s.execute(
             select(MediationSessionRow).where(
@@ -145,6 +161,22 @@ class MediationsRepo:
         )
         row = result.scalar_one_or_none()
         return MediationSession.model_validate(row.payload) if row else None
+
+    async def lock_by_dispute_id(
+        self, dispute_id: str
+    ) -> Optional[VersionedMediationSession]:
+        result = await self._s.execute(
+            select(MediationSessionRow)
+            .where(MediationSessionRow.dispute_id == dispute_id)
+            .with_for_update()
+        )
+        row = result.scalar_one_or_none()
+        if row is None:
+            return None
+        return VersionedMediationSession(
+            session=MediationSession.model_validate(row.payload),
+            version=row.version,
+        )
 
     async def delete(self, mediation_id: str) -> None:
         row = await self._s.get(MediationSessionRow, mediation_id)

@@ -4,27 +4,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatIssueType, formatOutcome, formatCurrency } from '@/lib/utils/formatters';
 import { ConfidenceGauge } from './ConfidenceGauge';
 import { CitationCard } from './CitationCard';
-import type { IssuePrediction, OutcomeType } from '@/lib/types/prediction';
+import type { IssueOutcomeType, IssuePrediction, OutcomeType } from '@/lib/types/prediction';
 
 interface IssuePredictionCardProps {
   prediction: IssuePrediction;
   className?: string;
 }
 
-const outcomeColors: Record<OutcomeType, string> = {
+type DisplayOutcome = OutcomeType | IssueOutcomeType;
+
+const outcomeColors: Record<DisplayOutcome, string> = {
   tenant_win: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
+  tenant_wins: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
   tenant_favored: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
   landlord_win: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
+  landlord_wins: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
   landlord_favored: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
   split: 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950',
   uncertain: 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950',
 };
 
-const isTenantFavored = (outcome: OutcomeType) =>
-  outcome === 'tenant_favored' || outcome === 'tenant_win';
+const isTenantFavored = (outcome: DisplayOutcome) =>
+  outcome === 'tenant_favored' || outcome === 'tenant_win' || outcome === 'tenant_wins';
 
-const isLandlordFavored = (outcome: OutcomeType) =>
-  outcome === 'landlord_favored' || outcome === 'landlord_win';
+const isLandlordFavored = (outcome: DisplayOutcome) =>
+  outcome === 'landlord_favored'
+  || outcome === 'landlord_win'
+  || outcome === 'landlord_wins';
+
+const formatDisplayOutcome = (outcome: DisplayOutcome) => {
+  if (outcome === 'tenant_wins') return formatOutcome('tenant_win');
+  if (outcome === 'landlord_wins') return formatOutcome('landlord_win');
+  return formatOutcome(outcome);
+};
 
 export function IssuePredictionCard({
   prediction,
@@ -58,7 +70,7 @@ export function IssuePredictionCard({
                 : 'secondary'
             }
           >
-            {formatOutcome(prediction.predicted_outcome)}
+            {formatDisplayOutcome(prediction.predicted_outcome)}
           </Badge>
           {prediction.predicted_amount !== undefined && (
             <span className="text-sm font-medium">

@@ -164,7 +164,7 @@ class DisputeService:
         normalized_code = invite_code.upper().strip()
 
         async with UnitOfWork(self._sm) as uow:
-            dispute = await uow.disputes.get_by_invite_code(normalized_code)
+            dispute = await uow.disputes.lock_by_invite_code(normalized_code)
             if not dispute:
                 logger.warning("dispute_not_found_for_code", invite_code=invite_code)
                 return None
@@ -206,7 +206,7 @@ class DisputeService:
         Uses robust status recalculation to fix any inconsistencies.
         """
         async with UnitOfWork(self._sm) as uow:
-            results = await uow.disputes.get_by_session_id(session_id)
+            results = await uow.disputes.lock_by_session_id(session_id)
             if not results:
                 return None
 

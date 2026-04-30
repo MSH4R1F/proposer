@@ -44,11 +44,13 @@ class UnitOfWork:
         exc: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
-        if exc_type is None:
-            await self.session.commit()
-        else:
-            await self.session.rollback()
-        await self.session.close()
+        try:
+            if exc_type is None:
+                await self.session.commit()
+            else:
+                await self.session.rollback()
+        finally:
+            await self.session.close()
 
     async def commit(self) -> None:
         await self.session.commit()
