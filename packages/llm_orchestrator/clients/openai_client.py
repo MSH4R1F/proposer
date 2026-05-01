@@ -22,9 +22,14 @@ Key design points (see SHA-114 spec §6.1, §6.2, §10):
   ``input``/``output``). For tiered models we currently use short-context
   rates only — long-context detection is a follow-up (spec §9 simplification).
 
-NO ``generate_with_tools`` and NO ``run_agent_turn`` here yet — those land in
-Task 4 of SHA-114. NO factory wiring either — that lands in Task 5. The class
-is reachable via direct construction only until then.
+``run_agent_turn`` (SHA-114 Task 4) implements the
+:class:`~llm_orchestrator.agent_loop.loop.AgentTurnClient` protocol on top of
+the Responses API. The conversion between the agent loop's canonical
+Anthropic-flavoured content blocks and OpenAI Responses *Items* is
+deliberately verbose (see ``_internal_to_openai_input`` /
+``_openai_response_to_blocks``) — getting ``call_id`` plumbing wrong silently
+breaks tool round-trips, so the helpers favour explicit shape checks over
+"clever" passthrough. NO factory wiring yet — that lands in Task 5.
 """
 
 from __future__ import annotations
@@ -43,6 +48,7 @@ from openai import (
 )
 from pydantic import BaseModel, ValidationError
 
+from ..agent_loop.loop import AgentTurnResponse
 from ._pricing import get_model_pricing
 from ._schema import strict_json_schema
 from .base import BaseLLMClient
@@ -283,6 +289,327 @@ class OpenAIClient(BaseLLMClient):
         raise LLMStructuredOutputError(
             f"Structured output validation failed: {last_error}"
         )
+
+    async def run_agent_turn(
+        self,
+        *,
+        system_prompt: str,
+        messages: List[Dict[str, Any]],
+        tool_schemas: List[Dict[str, Any]],
+        model: Optional[str] = None,
+        max_tokens: int = 1024,
+    ) -> AgentTurnResponse:
+        """One LLM turn for the AgentLoop, against the Responses API.
+
+        Implements :class:`~llm_orchestrator.agent_loop.loop.AgentTurnClient`.
+
+        Conversion contract (see SHA-114 spec §6.3):
+          - Input ``messages`` use the loop's canonical Anthropic-flavoured
+            shape (``tool_use`` / ``tool_result`` content blocks). They are
+            translated to typed Responses *Items* —
+            ``function_call`` / ``function_call_output`` — preserving order
+            and ``call_id`` linkage.
+          - The Responses output is walked once: ``output_text`` parts become
+            ``{"type": "text", ...}`` blocks; ``function_call`` Items become
+            ``{"type": "tool_use", ...}`` blocks with ``input`` parsed from
+            the JSON-string ``arguments``.
+
+        Stop-reason normalisation:
+          - Any ``function_call`` Item in the output ⇒ ``"tool_use"`` (wins
+            over ``end_turn``).
+          - ``status == "incomplete"`` ⇒ ``"max_tokens"`` (we do NOT raise
+            here — the agent loop owns termination policy and should be
+            allowed to end gracefully on truncation).
+          - ``status == "failed"`` ⇒ raise :class:`LLMAPIError`.
+          - Otherwise ⇒ ``"end_turn"``.
+
+        Refusal during an agent turn raises :class:`LLMRefusalError` and does
+        NOT swap to ``fallback_model`` (parity with ``generate``).
+
+        Note: ``tool_schemas`` is forwarded verbatim as ``tools=...``. Today
+        the loop hands us **Anthropic-shaped** schemas (it currently calls
+        ``ToolSet.anthropic_schemas()`` unconditionally — see
+        ``agent_loop/loop.py:150``). Task 5 will branch on provider and pass
+        ``ToolSet.openai_response_tools()`` here. Until then, integration
+        with the real loop will fail at the OpenAI API boundary; *unit*
+        tests pass OpenAI-shaped schemas directly. This is a deliberate
+        Task 5 hand-off point.
+        """
+        self._stats["calls"] += 1
+
+        kwargs = self._build_request_kwargs(
+            input_items=self._internal_to_openai_input(messages),
+            system_prompt=system_prompt,
+            max_tokens=max_tokens,
+            model=model,
+        )
+        kwargs["tools"] = tool_schemas
+
+        response = await self._call_with_retries_and_fallback(
+            self.client.responses.create, kwargs
+        )
+
+        self._record_usage(response)
+
+        # Refusal must raise; an "incomplete" response must NOT raise here
+        # (the agent loop handles termination). We therefore inline the
+        # refusal/failed checks instead of calling
+        # _raise_if_refused_or_incomplete which would also raise on incomplete.
+        for item in getattr(response, "output", None) or []:
+            for part in getattr(item, "content", None) or []:
+                if getattr(part, "type", None) == "refusal":
+                    refusal_text = getattr(part, "refusal", "") or ""
+                    self._stats["errors"] += 1
+                    logger.error(
+                        "openai_run_agent_turn_refusal",
+                        refusal=refusal_text[:200],
+                    )
+                    raise LLMRefusalError(
+                        f"Model refused to answer: {refusal_text or '<no refusal text>'}"
+                    )
+
+        status = getattr(response, "status", None)
+        if status == "failed":
+            self._stats["errors"] += 1
+            err = getattr(response, "error", None)
+            err_msg = (
+                getattr(err, "message", None) or str(err)
+                if err
+                else "unknown error"
+            )
+            raise LLMAPIError(
+                f"OpenAI Responses API returned failed status: {err_msg}"
+            )
+
+        content_blocks = self._openai_response_to_blocks(response)
+        has_tool_calls = any(
+            b.get("type") == "tool_use" for b in content_blocks
+        )
+        stop_reason = self._normalize_stop_reason(response, has_tool_calls)
+
+        # ``model`` may have been swapped to ``fallback_model`` mid-call by
+        # the rate-limit branch of ``_call_with_retries_and_fallback``; the
+        # SDK response carries the actual model used, so prefer that.
+        model_used = getattr(response, "model", None) or kwargs["model"]
+
+        usage = getattr(response, "usage", None)
+        tokens_in = int(getattr(usage, "input_tokens", 0) or 0) if usage else 0
+        tokens_out = (
+            int(getattr(usage, "output_tokens", 0) or 0) if usage else 0
+        )
+
+        logger.debug(
+            "openai_run_agent_turn_success",
+            model=model_used,
+            stop_reason=stop_reason,
+            block_count=len(content_blocks),
+            tokens_in=tokens_in,
+            tokens_out=tokens_out,
+        )
+
+        return AgentTurnResponse(
+            content_blocks=content_blocks,
+            stop_reason=stop_reason,
+            tokens_in=tokens_in,
+            tokens_out=tokens_out,
+            model_used=model_used,
+        )
+
+    # ------------------------------------------------------------------ #
+    # Agent-turn helpers                                                  #
+    # ------------------------------------------------------------------ #
+
+    @staticmethod
+    def _internal_to_openai_input(
+        messages: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        """Translate canonical agent-loop messages into Responses Items.
+
+        The loop hands us ``[{"role": ..., "content": ...}, ...]`` where
+        ``content`` is either a flat string OR a list of typed blocks
+        (``text`` / ``tool_use`` for replayed assistant turns, ``tool_result``
+        inside a user message after tool dispatch).
+
+        Mapping (per SHA-114 spec §6.3):
+          - ``role=user, content=<str>``                     → ``{"role":"user","content":<str>}``
+          - ``role=assistant, content=<str>``                → ``{"role":"assistant","content":<str>}``
+          - ``role=user, content=[{"type":"tool_result", ...}]`` → one or more
+            ``{"type":"function_call_output","call_id":...,"output":<str>}`` Items
+          - ``role=assistant, content=[{"type":"text"|"tool_use", ...}]`` →
+            text parts collapse into a flat assistant message; each
+            ``tool_use`` becomes a ``{"type":"function_call",...}`` Item with
+            ``arguments`` JSON-encoded as a string.
+        """
+        out: List[Dict[str, Any]] = []
+        for m in messages:
+            role = m.get("role")
+            content = m.get("content")
+
+            # Flat string content — passthrough (text-only message).
+            if isinstance(content, str):
+                out.append({"role": role, "content": content})
+                continue
+
+            # Structured content list.
+            if isinstance(content, list):
+                if role == "user":
+                    # Either a tool-result reply (one or more tool_result
+                    # blocks) or a regular user message with input_text parts.
+                    text_parts: List[str] = []
+                    for block in content:
+                        if not isinstance(block, dict):
+                            continue
+                        btype = block.get("type")
+                        if btype == "tool_result":
+                            tool_use_id = str(block.get("tool_use_id", ""))
+                            inner = block.get("content", "")
+                            output_str = (
+                                inner if isinstance(inner, str) else json.dumps(
+                                    inner, ensure_ascii=True, default=str
+                                )
+                            )
+                            out.append(
+                                {
+                                    "type": "function_call_output",
+                                    "call_id": tool_use_id,
+                                    "output": output_str,
+                                }
+                            )
+                        elif btype in ("input_text", "text"):
+                            t = block.get("text", "")
+                            if isinstance(t, str) and t:
+                                text_parts.append(t)
+                        # Unknown block types are dropped — adding them as
+                        # opaque items would surprise the API.
+                    if text_parts:
+                        out.append(
+                            {"role": "user", "content": "".join(text_parts)}
+                        )
+                    continue
+
+                if role == "assistant":
+                    # Assistant replay: text + tool_use blocks. Text parts
+                    # become a flat assistant message; tool_use blocks each
+                    # become a function_call Item. Order is preserved by
+                    # emitting each text-run before any subsequent function_calls.
+                    pending_text: List[str] = []
+
+                    def _flush_text() -> None:
+                        if pending_text:
+                            out.append(
+                                {
+                                    "role": "assistant",
+                                    "content": "".join(pending_text),
+                                }
+                            )
+                            pending_text.clear()
+
+                    for block in content:
+                        if not isinstance(block, dict):
+                            continue
+                        btype = block.get("type")
+                        if btype == "text":
+                            t = block.get("text", "")
+                            if isinstance(t, str) and t:
+                                pending_text.append(t)
+                        elif btype == "tool_use":
+                            _flush_text()
+                            tool_input = block.get("input", {}) or {}
+                            try:
+                                args_str = json.dumps(
+                                    tool_input,
+                                    ensure_ascii=True,
+                                    default=str,
+                                )
+                            except (TypeError, ValueError):
+                                args_str = "{}"
+                            out.append(
+                                {
+                                    "type": "function_call",
+                                    "call_id": str(block.get("id", "")),
+                                    "name": str(block.get("name", "")),
+                                    "arguments": args_str,
+                                }
+                            )
+                        # Unknown block types dropped (see above).
+                    _flush_text()
+                    continue
+
+            # Fallback — pass through unchanged. The SDK will surface any
+            # error naturally; better than silently dropping.
+            out.append({"role": role, "content": content})
+
+        return out
+
+    @staticmethod
+    def _openai_response_to_blocks(response: Any) -> List[Dict[str, Any]]:
+        """Walk ``response.output`` and build the canonical content_blocks list.
+
+        - ``output_text`` parts → ``{"type":"text","text":...}``
+        - ``function_call`` Items → ``{"type":"tool_use","id":<call_id>,
+          "name":...,"input":<parsed dict>}``
+
+        Order is preserved exactly as in ``response.output``. Refusal parts
+        are NOT handled here — the caller checks for them earlier and raises.
+
+        Raises :class:`LLMStructuredOutputError` if a function_call Item has
+        malformed JSON in ``arguments``.
+        """
+        blocks: List[Dict[str, Any]] = []
+        for item in getattr(response, "output", None) or []:
+            item_type = getattr(item, "type", None)
+
+            if item_type == "function_call":
+                call_id = str(getattr(item, "call_id", "") or "")
+                name = str(getattr(item, "name", "") or "")
+                raw_args = getattr(item, "arguments", "") or ""
+                if isinstance(raw_args, dict):
+                    parsed_args = raw_args
+                else:
+                    try:
+                        parsed_args = json.loads(raw_args) if raw_args else {}
+                    except (json.JSONDecodeError, TypeError) as exc:
+                        raise LLMStructuredOutputError(
+                            f"OpenAI function_call '{call_id}' had malformed "
+                            f"arguments JSON: {exc}; raw={raw_args!r}"
+                        ) from exc
+                blocks.append(
+                    {
+                        "type": "tool_use",
+                        "id": call_id,
+                        "name": name,
+                        "input": parsed_args,
+                    }
+                )
+                continue
+
+            # message Item — walk content parts.
+            for part in getattr(item, "content", None) or []:
+                part_type = getattr(part, "type", None)
+                if part_type == "output_text":
+                    text = getattr(part, "text", "")
+                    if text:
+                        blocks.append({"type": "text", "text": text})
+                # refusal parts handled in run_agent_turn before we get here
+
+        return blocks
+
+    @staticmethod
+    def _normalize_stop_reason(response: Any, has_tool_calls: bool) -> str:
+        """Map Responses status + output shape to the agent-loop vocab.
+
+        Priority: tool_use > max_tokens > end_turn. ``failed`` is handled
+        by the caller (raises) so it never reaches this function.
+        """
+        if has_tool_calls:
+            return "tool_use"
+        status = getattr(response, "status", None)
+        if status == "incomplete":
+            # Map any incomplete reason to max_tokens — the agent loop
+            # treats it as a terminal stop and we surface whatever text
+            # we got.
+            return "max_tokens"
+        return "end_turn"
 
     def get_stats(self) -> Dict[str, Any]:
         """Provider-neutral stats dict (spec §9)."""
