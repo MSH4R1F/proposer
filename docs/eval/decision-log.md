@@ -316,6 +316,44 @@ The Phase 4a scope (no heavy ML deps) is fully usable on its own — accuracy an
 
 ---
 
+## D-019 — Stub `PredictionResult` builder, not LLM client mock, for `--dry-run`
+
+**Linear:** SHA-32 (Phase 5b runner design)
+**Decision:** The live runner's `--engine stub` path bypasses `PredictionEngineV2` entirely and synthesises `PredictionResult` directly via `eval._stub_prediction.make_stub_prediction(case_file, mode)`. The runner does NOT mock `BaseLLMClient` to drive a real engine.
+
+**Why:**
+1. **Surface area.** `BaseLLMClient` exposes `generate`, `generate_structured` (with arbitrary Pydantic response models), `get_stats`, `reset_stats`. The pipeline calls `generate_structured` from at least four call sites (decomposer, predictor, retrieval, verifier) with four different response models. A faithful stub would need a fixture or scripted response per model. High maintenance cost; brittle as the pipeline evolves.
+2. **What we're testing.** The runner's job is the data-flow plumbing: gold → CaseFile → PredictionResult → adapter → JSONL → ablate. The pipeline's *internal* correctness is tested elsewhere. Stubbing at the engine boundary tests the wiring without coupling to the engine's prompt graph.
+3. **Determinism.** A direct `make_stub_prediction` is trivially deterministic (SHA-256 hash of `(case_id, mode)`). A scripted LLM stub would need to be re-pinned every time prompts change.
+
+**Rejected alternatives:**
+- **Mock `BaseLLMClient` with a scripted response dict.** Rejected — high maintenance, brittle, couples evaluation tests to prompt internals.
+- **Always require a real LLM key in CI.** Rejected — slow, costly, non-deterministic. Real-LLM smoke tests can run nightly outside this CI.
+- **No CI exercise of the live runner at all (only unit-test components).** Rejected — the integration risk lives at the seams (CaseFile reconstruction, vocab alignment, JSONL serialisation), and end-to-end is the only way to catch them.
+
+**Trigger to revisit:** if a future runner change makes mode-specific behaviour visible only through the prompt-pipeline (not catchable via direct stub), revisit and either add a thin scripted-LLM stub or pin a real-LLM golden run.
+
+---
+
+## D-020 — Eval-vocab `disrepair` and `end_of_tenancy` fall back to `DisputeIssue.OTHER`
+
+**Linear:** SHA-32 (Phase 5b alignment design)
+**Decision:** When `gold_case_to_case_file` encounters a `ClaimType` with no clean orchestrator equivalent (currently `disrepair` and `end_of_tenancy`), the issue is mapped to `DisputeIssue.OTHER` and the original eval value is recorded on `LossyReconstruction.unmapped_claim_types` for the runner's alignment summary. The runner does **not** drop the case.
+
+**Why:**
+1. **Don't shrink the corpus arbitrarily.** Roughly 20–30% of housing-tribunal cases involve disrepair; dropping them would meaningfully change the corpus distribution and make the thesis harder to defend on representativeness grounds.
+2. **`OTHER` is honest.** The engine sees that *something* is in dispute, just without a tighter category — same as a real intake user who picks "other" from the dropdown.
+3. **Surface the gap, don't hide it.** The runner emits the per-eval-value tally to stdout and returns it in the in-process summary, so SHA-68's thesis chapter can quantify the alignment loss alongside the headline numbers.
+
+**Rejected alternatives:**
+- **Drop unmappable cases.** Rejected for distribution-bias reasons above.
+- **Add `disrepair` and `end_of_tenancy` to `DisputeIssue`.** Rejected from this PR — `DisputeIssue` is a production UI/intake taxonomy with downstream consumers (chat surfaces, settlement nudges, KG facts). Changing it is a coordinated cross-package change that deserves its own ticket.
+- **Two-pass mapping (disrepair → fair_wear_and_tear OR damage based on fact text).** Rejected — fact-text classification is a non-trivial subsystem to introduce in an alignment shim. Keep alignment a static lookup; let semantic refinement live elsewhere.
+
+**Trigger to revisit:** when SHA-68 reports a measurable accuracy delta between mapped and `OTHER`-bucketed issues that shifts thesis claims, push the production-vocab expansion as a separate ticket.
+
+---
+
 ## How this log relates to the Codex sparring record
 
 `.sisyphus/codex/sha-28-schema-2026-04-27.md` records Codex's findings and our triage. This log records the *implemented* decisions. Some decisions don't appear in Codex (e.g. D-001 Pydantic vs JSON Schema, D-009 pair-vs-issue bootstrap) — those are pure design choices with no Codex input. Conversely, every Codex HIGH that we accepted produced a decision entry here (D-005 through D-008, D-011, D-014, D-015).
