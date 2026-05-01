@@ -96,7 +96,11 @@ def test_proposition_run_columns() -> None:
     assert cols == expected
 
 
-def test_proposition_run_unique_constraint() -> None:
+def test_proposition_run_no_pipeline_unique_constraint() -> None:
+    """Phase 1 Task 9 dropped the (document, extractor, prompt, model) unique
+    constraint so deliberate re-runs (--force / measurement) are allowed.
+    Application-layer --resume in the ingestion CLI handles dedup.
+    """
     table = PropositionExtractionRunRow.__table__
     uniques = [
         c for c in table.constraints if c.__class__.__name__ == "UniqueConstraint"
@@ -107,7 +111,7 @@ def test_proposition_run_unique_constraint() -> None:
         "extractor_version",
         "prompt_sha256",
         "model",
-    } in triple_names
+    } not in triple_names
 
 
 def test_proposition_run_check_constraints() -> None:

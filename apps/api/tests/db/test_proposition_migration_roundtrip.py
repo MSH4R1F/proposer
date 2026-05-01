@@ -103,10 +103,11 @@ def test_alembic_upgrade_creates_proposition_tables(postgresql_proc) -> None:
                 assert row is not None, f"enum {enum_name} missing after upgrade"
 
             # Spot-check distinctive constraints to confirm schema fidelity.
+            # Note: uq_proposition_runs_document_extractor was dropped in
+            # Task 9 — see test_proposition_run_no_pipeline_unique_constraint.
             for cname in (
                 "ck_proposition_edges_no_self_loop",
                 "uq_proposition_edges_triple",
-                "uq_proposition_runs_document_extractor",
                 "ck_propositions_confidence_range",
             ):
                 row = conn.execute(
@@ -114,6 +115,16 @@ def test_alembic_upgrade_creates_proposition_tables(postgresql_proc) -> None:
                     (cname,),
                 ).fetchone()
                 assert row is not None, f"constraint {cname} missing after upgrade"
+
+            # And the dropped one must NOT exist:
+            row = conn.execute(
+                "SELECT 1 FROM pg_constraint WHERE conname = %s",
+                ("uq_proposition_runs_document_extractor",),
+            ).fetchone()
+            assert row is None, (
+                "uq_proposition_runs_document_extractor should have been "
+                "dropped in Task 9 to allow deliberate re-runs"
+            )
     finally:
         _drop_db(admin_url, db_name)
 

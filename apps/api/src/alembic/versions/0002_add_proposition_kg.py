@@ -127,13 +127,11 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.func.now(),
         ),
-        sa.UniqueConstraint(
-            "document_id",
-            "extractor_version",
-            "prompt_sha256",
-            "model",
-            name="uq_proposition_runs_document_extractor",
-        ),
+        # Note: no UniqueConstraint on (document_id, extractor_version,
+        # prompt_sha256, model) — Phase 1 Task 9 dropped it so the same
+        # pipeline can be intentionally re-run against a document for
+        # measurement. App-level --resume in the ingestion CLI handles
+        # idempotency.
         sa.CheckConstraint(
             "input_chars >= 0",
             name="ck_proposition_runs_input_chars_nonneg",

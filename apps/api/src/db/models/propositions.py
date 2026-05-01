@@ -121,14 +121,12 @@ class PropositionExtractionRunRow(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
+    # Note: no UniqueConstraint on (document_id, extractor_version, prompt_sha256,
+    # model) — Phase 1 Task 9 dropped it. The CLI's --resume / --force flags
+    # enforce dedup at the application layer; the DB allows multiple succeeded
+    # runs of the same pipeline against the same document so deliberate
+    # re-runs (e.g. measurement / variance studies) are not blocked.
     __table_args__ = (
-        UniqueConstraint(
-            "document_id",
-            "extractor_version",
-            "prompt_sha256",
-            "model",
-            name="uq_proposition_runs_document_extractor",
-        ),
         CheckConstraint(
             "input_chars >= 0",
             name="ck_proposition_runs_input_chars_nonneg",
