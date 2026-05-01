@@ -124,7 +124,7 @@ class LLMPropositionExtractor:
         *,
         max_chars_per_chunk: int = 12000,
         min_confidence: float = 0.5,
-        max_tokens: int = 4096,
+        max_tokens: int = 16384,
         logger: Optional[logging.Logger] = None,
     ) -> None:
         if max_chars_per_chunk <= 0:
