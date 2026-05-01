@@ -11,8 +11,44 @@ from pydantic import BaseModel, Field
 import structlog
 
 from apps.api.src.dependencies import get_dispute_service, get_intake_service
+from apps.api.src.domain_runtime import (
+    DomainNotFoundError,
+    DomainRuntimeContext,
+    resolve_domain_runtime,
+)
 from apps.api.src.services.dispute_service import DisputeService
 from apps.api.src.services.intake_service import IntakeService
+
+
+def _resolve_domain_or_400(domain_id: Optional[str]) -> DomainRuntimeContext:
+    """SHA-20 Phase 3 helper: resolve domain runtime or raise 4xx."""
+    try:
+        runtime = resolve_domain_runtime(domain_id, user_id=None)
+    except DomainNotFoundError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "domain_not_found",
+                "message": f"Unknown domain id: {domain_id}",
+                "error": str(exc),
+            },
+        )
+    if not runtime.is_usable:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "domain_unavailable",
+                "message": (
+                    f"Domain {runtime.domain_id!r} is not available "
+                    f"(gate={runtime.gate_status.value}, "
+                    f"allowlist={runtime.allowlist_status.value})."
+                ),
+                "domain_id": runtime.domain_id,
+                "gate_status": runtime.gate_status.value,
+                "allowlist_status": runtime.allowlist_status.value,
+            },
+        )
+    return runtime
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -47,6 +83,11 @@ class StartSessionRequest(BaseModel):
     )
     create_dispute: bool = Field(
         True, description="Whether to create a new dispute case"
+    )
+    # SHA-20 Phase 3: optional domain selector. Defaults to housing.deposit.v1
+    # when omitted (preserves existing behaviour exactly).
+    domain_id: Optional[str] = Field(
+        default=None, description="Optional domain id (defaults to housing.deposit.v1)"
     )
 
 
@@ -84,6 +125,9 @@ class BulkIntakeRequest(BaseModel):
     )
     invite_code: Optional[str] = Field(
         None, description="Invite code to join existing dispute"
+    )
+    domain_id: Optional[str] = Field(
+        default=None, description="Optional domain id (defaults to housing.deposit.v1)"
     )
 
 
@@ -168,6 +212,11 @@ async def start_session(
             detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
         )
 
+    # SHA-20 Phase 3: resolve domain runtime up-front. Default request
+    # (no domain_id) resolves to housing.deposit.v1 with gate=enabled and
+    # allowlist=unrestricted, so persisted payloads/responses are unchanged.
+    domain_runtime = _resolve_domain_or_400(request.domain_id)
+
     try:
         dispute_info: Optional[DisputeInfo] = None
 
@@ -178,6 +227,7 @@ async def start_session(
                     role=request.role,
                     invite_code=request.invite_code,
                     create_dispute=request.create_dispute,
+                    domain_runtime=domain_runtime,
                 )
             )
             session_id = conversation.session_id
@@ -212,7 +262,7 @@ async def start_session(
         else:
             # ---- standalone path: no dispute involved --------------------
             greeting, session_id, stage = await intake_service.start_session(
-                role=request.role
+                role=request.role, domain_runtime=domain_runtime,
             )
 
         session_status = await intake_service.get_session_status(session_id)
@@ -266,6 +316,8 @@ async def bulk_intake(
             detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
         )
 
+    domain_runtime = _resolve_domain_or_400(request.domain_id)
+
     try:
         if request.invite_code or request.create_dispute:
             result, dispute = await intake_service.bulk_intake_with_dispute(
@@ -273,11 +325,13 @@ async def bulk_intake(
                 case_text=request.case_text,
                 invite_code=request.invite_code,
                 create_dispute=request.create_dispute,
+                domain_runtime=domain_runtime,
             )
         else:
             result = await intake_service.bulk_intake(
                 role=request.role,
                 case_text=request.case_text,
+                domain_runtime=domain_runtime,
             )
             dispute = None
 
