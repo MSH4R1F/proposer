@@ -393,6 +393,16 @@ graph LR
     class PG db
 ```
 
+### Proposition KG Substrate (SHA-36, Phase 1)
+
+SHA-36 adds a separate **offline corpus-ingestion path** for tribunal decisions. It is not user-case state and is not read by live mediation predictions in this phase.
+
+- **Substrate**: 4 tables — `decision_documents`, `proposition_extraction_runs`, `propositions`, `proposition_edges` — added via Alembic migration `0002_add_proposition_kg.py` (3 new enums).
+- **Ingestion**: opt-in CLIs under `scripts/ingestion/` (`select_proposition_corpus`, `ingest_propositions`). Each proposition is persisted only if its `source_passage` literally appears in the decision text (substrate-layer cite-or-abstain).
+- **Phase 2**: PageRank-driven retrieval will consume `proposition_id`, `issue_tags`, `entities`, `proposition_edges.edge_type`, and `document_id`. Phase 1 only ships the substrate so Phase 2 can be built without re-shaping it.
+
+See `docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md` for the full design rationale.
+
 ---
 
 ## Key Architectural Patterns
