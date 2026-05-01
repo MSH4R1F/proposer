@@ -68,8 +68,9 @@ Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (p
 | 3 — Annotation CLI + reviewer onboarding | **Done** ([PR #8](https://github.com/MSH4R1F/proposer/pull/8)) | SHA-103 | `scripts/eval/annotate.py`, reviewer guide, synthetic corpus |
 | 4a — Accuracy + calibration + bootstrap CI | **Done** ([PR #8](https://github.com/MSH4R1F/proposer/pull/8)) | SHA-104, SHA-30, SHA-97 (partial) | `packages/eval/metrics/`, `eval.run` CLI |
 | 4b — NLI hallucination + RAGAS | Deferred | SHA-31, SHA-29 | Heavy ML deps; depends on SHA-94 schema |
-| 5 — Ablation runner | **Done (this PR)** | SHA-32 | `eval.adapter`, `eval.compare`, `python -m eval.ablate`, synthetic per-mode fixtures, `docs/eval/ablation.md` |
-| 5b — Live runner + GoldCase→CaseFile | Deferred | follow-up | Blocks on Phase 6 real corpus; lossy reconstruction needs Codex sparring |
+| 5 — Ablation comparison machinery | **Done** ([PR #10](https://github.com/MSH4R1F/proposer/pull/10)) | SHA-32 | `eval.adapter`, `eval.compare`, `python -m eval.ablate`, synthetic per-mode fixtures, `docs/eval/ablation.md` |
+| 5b — Live runner + GoldCase→CaseFile + alignment | **Done (this PR)** | SHA-32 | `eval.issue_alignment`, `eval.case_file_adapter`, `eval._stub_prediction`, `scripts/eval/predict_all.py`, end-to-end test |
+| 5c — Real LLM client wiring | Deferred | follow-up | Concrete `BaseLLMClient` + key handling; project-level decision (Anthropic/OpenAI) |
 | 6 — Push to 50 cases + Cohen's κ | Pending | SHA-28 DoD | Depends on reviewer assignment (SHA-96) |
 
 ## Source of truth pointers
@@ -81,6 +82,10 @@ Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (p
 - **Adapter (orchestrator → eval):** `packages/eval/adapter.py`
 - **Comparison report:** `packages/eval/compare.py`
 - **Ablation CLI (multi-mode):** `packages/eval/ablate.py`
+- **Issue vocab alignment (eval ↔ orchestrator):** `packages/eval/issue_alignment.py`
+- **GoldCase → CaseFile reconstructor:** `packages/eval/case_file_adapter.py`
+- **Stub PredictionResult builder:** `packages/eval/_stub_prediction.py`
+- **Live runner CLI:** `scripts/eval/predict_all.py`
 - **Annotation CLI:** `scripts/eval/annotate.py`
 - **Tests:** `packages/eval/tests/`
 - **Synthetic fixtures:** `packages/eval/tests/fixtures/`
