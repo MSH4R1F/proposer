@@ -27,8 +27,71 @@ from llm_orchestrator.models.case_file import CaseFile, merge_case_files
 
 from apps.api.src.config import config
 from apps.api.src.db.uow import UnitOfWork
+from apps.api.src.domain_runtime import (
+    DomainRuntimeContext,
+    resolve_domain_runtime,
+)
 
 logger = structlog.get_logger()
+
+
+# SHA-20 Phase 3 sentinel values for things that don't yet exist as
+# first-class artifacts (prompt packs land in Phase 6, namespaces in Phase 4).
+# Keeping them as named constants makes it obvious where to swap real values
+# in once those phases land.
+_LEGACY_PROMPT_PACK_HASH = "legacy_deposit_v1"
+_LEGACY_ONTOLOGY_HASH = "legacy_deposit_v1"
+_LEGACY_CORPUS_VERSION = "legacy"
+_LEGACY_NAMESPACE_ID = "tribunal_cases"
+
+
+def _build_domain_cache_segment(
+    runtime: Optional[DomainRuntimeContext],
+    *,
+    mode: PredictionMode,
+    cross_domain: bool,
+) -> str:
+    """Produce the SHA-20 cache-key segment that captures domain state.
+
+    The segment includes everything that, if changed, must invalidate any
+    cached prediction:
+
+    - ``domain_id`` and ``domain_spec_hash`` (spec changes)
+    - ``prompt_pack_hash`` (Phase 6+)
+    - ``ontology_hash`` (Phase 5+)
+    - ``corpus_version`` (Phase 4+)
+    - retrieval ``namespace_id``
+    - prediction ``mode``
+    - ``cross_domain`` flag
+
+    Phase 3 substitutes legacy sentinels for the items that don't have real
+    artifacts yet. The format is intentionally a single delimited string so
+    that callers can prepend it to their existing ``session:version`` cache
+    keys without changing schema.
+    """
+    if runtime is None:
+        # No domain context — fall back to the deposit baseline + sentinels.
+        domain_id = "housing.deposit.v1"
+        spec_hash = "legacy_deposit_v1"
+        namespace_id = _LEGACY_NAMESPACE_ID
+    else:
+        domain_id = runtime.domain_id
+        spec_hash = runtime.domain_spec_hash
+        # Use the first declared namespace_id for the spec; fall back to
+        # legacy sentinel if the spec has none (shouldn't happen for valid
+        # specs, but keeps the segment well-formed).
+        ns = runtime.domain_spec.retrieval_namespaces
+        namespace_id = ns[0].namespace_id if ns else _LEGACY_NAMESPACE_ID
+    return (
+        f"d={domain_id}"
+        f"|sh={spec_hash}"
+        f"|pp={_LEGACY_PROMPT_PACK_HASH}"
+        f"|on={_LEGACY_ONTOLOGY_HASH}"
+        f"|cv={_LEGACY_CORPUS_VERSION}"
+        f"|ns={namespace_id}"
+        f"|m={mode.value}"
+        f"|x={'1' if cross_domain else '0'}"
+    )
 
 # Legacy singleton kept for rollback compatibility.
 _prediction_service: Optional["PredictionService"] = None
@@ -177,6 +240,8 @@ class PredictionService:
         case_id: str,
         include_reasoning: bool = True,
         mode_override: Optional[PredictionMode] = None,
+        *,
+        domain_runtime: Optional[DomainRuntimeContext] = None,
     ) -> PredictionResult:
         """
         Generate a prediction for a case.
@@ -191,10 +256,28 @@ class PredictionService:
           Stage 3 (write transaction) — re-check cache (row-lock), write KG +
             prediction + update disputes.cached_prediction_id atomically.
         """
+        # Resolve effective mode early so the cache key segment is correct
+        # even at Stage 1 (the cache key MUST change when mode changes).
+        if mode_override is not None:
+            effective_mode = mode_override
+        else:
+            try:
+                effective_mode = PredictionMode(config.prediction_mode)
+            except ValueError:
+                effective_mode = PredictionMode.HYBRID
+        cross_domain = (
+            domain_runtime.cross_domain_retrieval if domain_runtime else False
+        )
+        domain_segment = _build_domain_cache_segment(
+            domain_runtime, mode=effective_mode, cross_domain=cross_domain
+        )
+
         # ── Stage 1: short read transaction ─────────────────────────────────
         async with UnitOfWork(self._sm) as uow:
             case_file, dispute_id, cacheable, cache_key = (
-                await self._resolve_and_merge_from_repos(case_id, uow)
+                await self._resolve_and_merge_from_repos(
+                    case_id, uow, domain_segment=domain_segment
+                )
             )
             if cacheable and dispute_id:
                 locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
@@ -214,18 +297,18 @@ class PredictionService:
                         return cached
 
         # ── Stage 2: external work — NO transaction ──────────────────────────
-        # Resolve default mode from config; per-call mode_override beats env var.
-        if mode_override is not None:
-            default_mode = mode_override
-        else:
+        # Effective mode was resolved before Stage 1 so the cache key segment
+        # is correct; reuse it here and emit the legacy warning log if the
+        # configured env value was unparseable.
+        if mode_override is None:
             try:
-                default_mode = PredictionMode(config.prediction_mode)
+                PredictionMode(config.prediction_mode)
             except ValueError:
                 logger.warning(
                     "invalid_prediction_mode_env_falling_back_to_hybrid",
                     configured=config.prediction_mode,
                 )
-                default_mode = PredictionMode.HYBRID
+        default_mode = effective_mode
 
         # Build knowledge graph from the (already merged in Stage 1) case file.
         # No silent fallbacks: if KG construction throws, log structured event
@@ -266,6 +349,41 @@ class PredictionService:
             prediction.metadata["merged"] = True
             prediction.metadata["prediction_cache_key"] = cache_key
 
+        # SHA-20 Phase 3: stamp the domain block into prediction.metadata and
+        # mirror the routing fields onto the new top-level Pydantic columns.
+        # Top-level prediction contract (HTTP response shape) does NOT change
+        # in Phase 3; that's owned by Phase 6.
+        if domain_runtime is not None:
+            spec = domain_runtime.domain_spec
+            ns = spec.retrieval_namespaces
+            namespace_id = ns[0].namespace_id if ns else _LEGACY_NAMESPACE_ID
+            domain_meta_block = {
+                "id": str(spec.id),
+                "version": spec.domain_version,
+                "family": spec.family.value,
+                "stage": spec.stage.value,
+                "spec_hash": domain_runtime.domain_spec_hash,
+                "prompt_pack_hash": _LEGACY_PROMPT_PACK_HASH,
+                "ontology_hash": _LEGACY_ONTOLOGY_HASH,
+                "corpus_version": _LEGACY_CORPUS_VERSION,
+                "namespace_id": namespace_id,
+                "prediction_mode": effective_mode.value,
+                "cross_domain_retrieval": cross_domain,
+                "routing_metadata": dict(domain_runtime.routing_metadata),
+            }
+            prediction.metadata["domain"] = domain_meta_block
+
+            # Mirror onto Pydantic top-level fields so the projection layer
+            # picks them up directly.
+            prediction.domain_id = str(spec.id)
+            prediction.domain_version = spec.domain_version
+            prediction.matter_types = list(spec.matter_types)
+            prediction.routing_metadata = dict(domain_runtime.routing_metadata)
+            prediction.domain_spec_hash = domain_runtime.domain_spec_hash
+            prediction.prompt_pack_hash = _LEGACY_PROMPT_PACK_HASH
+            prediction.ontology_hash = _LEGACY_ONTOLOGY_HASH
+            prediction.corpus_version = _LEGACY_CORPUS_VERSION
+
         logger.info(
             "prediction_generated_pre_write",
             case_id=case_id,
@@ -279,7 +397,9 @@ class PredictionService:
             if cacheable and dispute_id:
                 locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
                 current_cache_key = (
-                    await self._current_cache_key_for_locked_dispute(locked, uow)
+                    await self._current_cache_key_for_locked_dispute(
+                        locked, uow, domain_segment=domain_segment
+                    )
                     if locked
                     else None
                 )
@@ -417,8 +537,25 @@ class PredictionService:
         self,
         locked: Any,
         uow: UnitOfWork,
+        *,
+        domain_segment: str = "",
     ) -> Optional[str]:
-        """Build the current shared-prediction cache key from live session versions."""
+        """Build the current shared-prediction cache key from live session versions.
+
+        ``domain_segment`` is prepended (Phase 3) so that the key matches
+        what ``_resolve_and_merge_from_repos`` produces for the same domain
+        + mode + namespace combination.
+
+        When ``domain_segment`` is empty (e.g. staleness checks invoked from
+        ``list_predictions_for_case`` that don't have a fresh runtime context),
+        derive the segment from the stored ``prediction_cache_key`` so the
+        comparison stays apples-to-apples for legacy rows.
+        """
+        if not domain_segment:
+            stored = getattr(locked, "prediction_cache_key", None)
+            if stored and "|" in stored and stored.startswith("d="):
+                # Stored key has a Phase-3 domain prefix; reuse it.
+                domain_segment = stored.rsplit("|", 1)[0]
         dispute = locked.dispute
         if not dispute.has_both_parties:
             return None
@@ -433,10 +570,11 @@ class PredictionService:
         if not tenant or not landlord:
             return None
 
-        return (
+        base_key = (
             f"{tenant_session_id}:{tenant.version}:"
             f"{landlord_session_id}:{landlord.version}"
         )
+        return f"{domain_segment}|{base_key}" if domain_segment else base_key
 
     async def _prediction_is_current_for_shared_cache(
         self,
@@ -480,6 +618,8 @@ class PredictionService:
         self,
         case_id: str,
         uow: UnitOfWork,
+        *,
+        domain_segment: str = "",
     ) -> Tuple[CaseFile, Optional[str], bool, Optional[str]]:
         """
         Resolve case_file and optionally merge both parties' data via repos.
@@ -541,9 +681,16 @@ class PredictionService:
                 merged = merge_case_files(tenant_cf, landlord_cf)
                 t_ver = t_versioned.version if t_versioned else 0
                 l_ver = l_versioned.version if l_versioned else 0
-                cache_key = (
+                base_key = (
                     f"{tenant_session_id}:{t_ver}:"
                     f"{landlord_session_id}:{l_ver}"
+                )
+                # SHA-20 Phase 3: prepend the domain/mode segment so that any
+                # change to spec/prompt-pack/ontology/corpus/namespace/mode
+                # invalidates the cached prediction without touching the
+                # session-version segment.
+                cache_key = (
+                    f"{domain_segment}|{base_key}" if domain_segment else base_key
                 )
                 logger.info(
                     "case_files_merged",

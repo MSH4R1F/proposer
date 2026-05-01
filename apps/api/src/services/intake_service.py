@@ -20,6 +20,7 @@ from llm_orchestrator.models.dispute import DisputeCase, DisputeStatus, generate
 
 from apps.api.src.db.uow import UnitOfWork
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
+from apps.api.src.domain_runtime import DomainRuntimeContext
 
 logger = structlog.get_logger()
 
@@ -66,11 +67,58 @@ class IntakeService:
         self.agent = agent
         logger.info("intake_service_initialized")
 
+    @staticmethod
+    def _stamp_domain_on_dispute(
+        dispute: DisputeCase,
+        domain_runtime: Optional[DomainRuntimeContext],
+    ) -> None:
+        """Mirror the domain runtime onto a freshly constructed DisputeCase."""
+        if domain_runtime is None:
+            return
+        spec = domain_runtime.domain_spec
+        dispute.domain_id = str(spec.id)
+        dispute.domain_version = spec.domain_version
+        dispute.matter_types = list(spec.matter_types)
+        dispute.routing_metadata = dict(domain_runtime.routing_metadata)
+
+    @staticmethod
+    def _stamp_domain(
+        conversation: ConversationState,
+        domain_runtime: Optional[DomainRuntimeContext],
+    ) -> None:
+        """Apply the resolved domain runtime onto the ConversationState + CaseFile.
+
+        Phase 3: stamps both the conversation-level and the case-file-level
+        domain fields so they round-trip identically. When ``domain_runtime``
+        is ``None`` we leave the model defaults in place — that path is the
+        existing deposit baseline.
+        """
+        if domain_runtime is None:
+            return
+        spec = domain_runtime.domain_spec
+        domain_id = str(spec.id)
+        version = spec.domain_version
+        matter_types = list(spec.matter_types)
+        routing_metadata = dict(domain_runtime.routing_metadata)
+        conversation.domain_id = domain_id
+        conversation.domain_version = version
+        conversation.matter_types = matter_types
+        conversation.routing_metadata = routing_metadata
+        conversation.case_file.domain_id = domain_id
+        conversation.case_file.domain_version = version
+        conversation.case_file.matter_types = matter_types
+        conversation.case_file.routing_metadata = routing_metadata
+
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
-    async def start_session(self, role: Optional[str] = None) -> tuple[str, str, str]:
+    async def start_session(
+        self,
+        role: Optional[str] = None,
+        *,
+        domain_runtime: Optional[DomainRuntimeContext] = None,
+    ) -> tuple[str, str, str]:
         """
         Start a new intake session with optional role.
 
@@ -95,6 +143,11 @@ class IntakeService:
             user_role=user_role
         )
 
+        # SHA-20 Phase 3: stamp domain routing metadata onto the new
+        # conversation before any persistence so the projection columns and
+        # the canonical payload agree from the first save.
+        self._stamp_domain(conversation, domain_runtime)
+
         logger.debug(
             "conversation_created",
             session_id=conversation.session_id,
@@ -103,6 +156,7 @@ class IntakeService:
             if conversation.case_file.user_role
             else None,
             greeting_length=len(greeting),
+            domain_id=conversation.domain_id,
         )
 
         # Persist via UoW
@@ -126,6 +180,7 @@ class IntakeService:
         property_address: Optional[str] = None,
         property_postcode: Optional[str] = None,
         deposit_amount: Optional[float] = None,
+        domain_runtime: Optional[DomainRuntimeContext] = None,
     ) -> "tuple[str, ConversationState, Optional[DisputeCase]]":
         """Start a session AND create/join its dispute in one transaction.
 
@@ -150,6 +205,7 @@ class IntakeService:
 
         # LLM call — OUTSIDE any transaction
         greeting, conversation = await self.agent.start_conversation(user_role=user_role)
+        self._stamp_domain(conversation, domain_runtime)
         session_id = conversation.session_id
 
         if invite_code:
@@ -200,6 +256,7 @@ class IntakeService:
                 property_postcode=property_postcode,
                 deposit_amount=deposit_amount,
             )
+            self._stamp_domain_on_dispute(dispute_obj, domain_runtime)
             if role == "tenant":
                 dispute_obj.link_tenant_session(session_id)
             else:
@@ -440,6 +497,8 @@ class IntakeService:
         self,
         role: str,
         case_text: str,
+        *,
+        domain_runtime: Optional[DomainRuntimeContext] = None,
     ) -> Dict[str, Any]:
         """
         Process a complete case description in one shot.
@@ -451,6 +510,7 @@ class IntakeService:
         conversation, extraction_result, summary = await self._prepare_bulk_intake(
             role=role,
             case_text=case_text,
+            domain_runtime=domain_runtime,
         )
 
         # Persist after all LLM work is done
@@ -474,11 +534,13 @@ class IntakeService:
         case_text: str,
         invite_code: Optional[str] = None,
         create_dispute: bool = False,
+        domain_runtime: Optional[DomainRuntimeContext] = None,
     ) -> tuple[Dict[str, Any], Optional[DisputeCase]]:
         """Run bulk intake and create/join the linked dispute in one DB transaction."""
         conversation, extraction_result, summary = await self._prepare_bulk_intake(
             role=role,
             case_text=case_text,
+            domain_runtime=domain_runtime,
         )
         case_file = conversation.case_file
         session_id = conversation.session_id
@@ -533,6 +595,7 @@ class IntakeService:
                 property_postcode=case_file.property.postcode,
                 deposit_amount=case_file.tenancy.deposit_amount,
             )
+            self._stamp_domain_on_dispute(dispute_obj, domain_runtime)
             if role == "tenant":
                 dispute_obj.link_tenant_session(session_id)
             else:
@@ -689,6 +752,7 @@ class IntakeService:
         *,
         role: str,
         case_text: str,
+        domain_runtime: Optional[DomainRuntimeContext] = None,
     ) -> tuple[ConversationState, Any, str]:
         logger.debug("bulk_intake_start", role=role, text_length=len(case_text))
 
@@ -696,6 +760,7 @@ class IntakeService:
 
         # LLM calls — OUTSIDE any transaction
         _, conversation = await self.agent.start_conversation(user_role=user_role)
+        self._stamp_domain(conversation, domain_runtime)
         conversation.add_user_message(case_text)
 
         extraction_result = await self.agent.extractor.extract_bulk(

@@ -11,6 +11,12 @@ from pydantic import BaseModel, Field
 import structlog
 
 from apps.api.src.dependencies import get_prediction_service
+from apps.api.src.domain_runtime import (
+    DomainGateStatus,
+    DomainNotFoundError,
+    DomainAllowlistStatus,
+    resolve_domain_runtime,
+)
 from apps.api.src.services.prediction_service import (
     PredictionCacheConflictError,
     PredictionService,
@@ -27,6 +33,16 @@ class PredictionRequest(BaseModel):
     case_id: str = Field(..., description="Case ID to generate prediction for")
     include_reasoning: bool = Field(
         default=True, description="Include full reasoning trace"
+    )
+    # SHA-20 Phase 3: optional domain selector. Omitted requests behave
+    # exactly as today (default housing.deposit.v1, deposit semantics).
+    domain_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "Optional domain id (e.g. 'housing.deposit.v1'). Omit for default "
+            "deposit behaviour. Disabled / unknown domains return a 4xx with "
+            "code 'domain_unavailable' or 'domain_not_found'."
+        ),
     )
 
 
@@ -179,7 +195,55 @@ async def generate_prediction(
         "generate_prediction_request",
         case_id=request.case_id,
         include_reasoning=request.include_reasoning,
+        domain_id=request.domain_id,
     )
+
+    # SHA-20 Phase 3: resolve domain runtime context. Only build one when the
+    # caller passed a domain_id explicitly OR when we want to record domain
+    # metadata for the default deposit run. We always resolve so that the
+    # prediction is stamped with the correct (default deposit) domain block.
+    try:
+        domain_runtime = resolve_domain_runtime(
+            request.domain_id,
+            user_id=None,  # Auth not yet wired; Phase 8 plugs in Supabase UUIDs.
+        )
+    except DomainNotFoundError as exc:
+        logger.warning(
+            "prediction_request_unknown_domain",
+            requested_domain=request.domain_id,
+            error=str(exc),
+        )
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "domain_not_found",
+                "message": f"Unknown domain id: {request.domain_id}",
+            },
+        )
+
+    if not domain_runtime.is_usable:
+        logger.warning(
+            "prediction_request_domain_unavailable",
+            requested_domain=request.domain_id,
+            resolved_domain=domain_runtime.domain_id,
+            gate_status=domain_runtime.gate_status.value,
+            allowlist_status=domain_runtime.allowlist_status.value,
+        )
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "domain_unavailable",
+                "message": (
+                    f"Domain {domain_runtime.domain_id!r} is not available "
+                    f"(gate={domain_runtime.gate_status.value}, "
+                    f"allowlist={domain_runtime.allowlist_status.value})."
+                ),
+                "domain_id": domain_runtime.domain_id,
+                "gate_status": domain_runtime.gate_status.value,
+                "allowlist_status": domain_runtime.allowlist_status.value,
+            },
+        )
+
     try:
         # Check if case exists and is complete
         logger.debug("checking_case_ready", case_id=request.case_id)
@@ -227,6 +291,7 @@ async def generate_prediction(
         prediction = await prediction_service.generate_prediction(
             case_id=request.case_id,
             include_reasoning=request.include_reasoning,
+            domain_runtime=domain_runtime,
         )
 
         logger.info(
