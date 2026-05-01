@@ -72,6 +72,18 @@ citation_source_enum = ENUM(
     "reasoning", "issue_supporting_case", "verified", "removed",
     name="citation_source", create_type=False,
 )
+proposition_type_enum = ENUM(
+    "fact", "rule", "outcome", "authority",
+    name="proposition_type", create_type=False,
+)
+proposition_edge_type_enum = ENUM(
+    "supports", "contradicts", "cites", "temporal_before", "applies_rule_to_fact",
+    name="proposition_edge_type", create_type=False,
+)
+proposition_run_status_enum = ENUM(
+    "started", "succeeded", "failed", "skipped",
+    name="proposition_run_status", create_type=False,
+)
 
 ALL_ENUMS = (
     user_role_enum, intake_stage_enum, dispute_status_enum, party_role_enum,
@@ -79,4 +91,5 @@ ALL_ENUMS = (
     evidence_strength_enum, evidence_type_enum,
     mediation_status_enum, message_type_enum, offer_status_enum,
     node_type_enum, edge_type_enum, citation_source_enum,
+    proposition_type_enum, proposition_edge_type_enum, proposition_run_status_enum,
 )
