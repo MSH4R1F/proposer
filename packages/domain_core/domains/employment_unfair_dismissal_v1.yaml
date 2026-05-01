@@ -1,0 +1,103 @@
+# Domain: employment.unfair_dismissal.v1
+#
+# Unfair dismissal first slice only (audit decision D5). Wage disputes,
+# discrimination, and whistleblowing are out of scope for v1 - they have
+# different remedies and risk profiles. PII redaction (SHA-123) blocks
+# anything beyond research ingestion.
+
+id: employment.unfair_dismissal.v1
+family: employment
+domain_version: v1
+schema_version: 1
+display_name: "Employment - Unfair Dismissal (v1)"
+user_facing_name: "Unfair dismissal claim"
+stage: research
+jurisdiction:
+  - GB-ENG
+  - GB-SCT
+  - GB-WLS
+forums:
+  - employment_tribunal
+forum_profiles:
+  - forum: employment_tribunal
+    source_publishers:
+      - bailii
+      - govuk
+      - acas
+      - legislation_gov_uk
+    source_kinds:
+      - case_decision
+      - statute
+      - guidance
+    citation_kinds:
+      - retrieved_legal_source
+      - statute_or_guidance
+      - user_fact
+      - uploaded_evidence
+      - deterministic_calculator_trace
+    matter_types:
+      - unfair_dismissal
+    remedies:
+      - basic_award
+      - compensatory_award
+      - reinstatement
+      - re_engagement
+    output_framing: "Employment Tribunal unfair dismissal outcome analysis"
+    citation_label: "Employment Tribunal decision"
+    prohibited_phrases:
+      - "the court will award"
+      - "we recommend you sue"
+      - "you should accept"
+    required_disclaimers:
+      - "This is legal information based on similar published Employment Tribunal decisions, not legal advice."
+      - "Employment claims have strict time limits - see ACAS early conciliation."
+party_roles:
+  - claimant
+  - respondent_employer
+matter_types:
+  - unfair_dismissal
+remedies:
+  - basic_award
+  - compensatory_award
+  - reinstatement
+  - re_engagement
+intake_schema_ref: ref://intake_schema/employment.unfair_dismissal.v1
+case_file_adapter_ref: ref://case_file_adapter/employment.unfair_dismissal.v1
+ontology_ref: ref://ontology/employment.unfair_dismissal.v1
+prompt_pack_ref: ref://prompt_pack/employment.unfair_dismissal.v1
+retrieval_namespaces:
+  - namespace_id: employment_unfair_dismissal_v1
+    vector_collection: employment_unfair_dismissal_v1
+    bm25_index_path: data/embeddings/employment_unfair_dismissal_v1_bm25.pkl
+    corpus_root: data/raw/employment
+    chunk_kinds:
+      - document_chunk
+    source_publishers:
+      - bailii
+      - govuk
+    source_kinds:
+      - case_decision
+    forums:
+      - employment_tribunal
+    allowed_cross_namespace_ids: []
+    metadata_filters:
+      matter_type: unfair_dismissal
+    corpus_version: research_seed_2026_05
+eval_gate:
+  gold_set_path: data/gold_standard/employment_unfair_dismissal_v1.jsonl
+  min_cases: 30
+  required_metrics: {}
+  max_hallucination_rate: 0.02
+  min_citation_validity: 0.98
+  min_abstention_precision: 0.80
+safety_notes:
+  - "Audit D5: unfair dismissal only. Wage disputes, discrimination, whistleblowing are out of scope."
+  - "PII redaction (SHA-123) is required for ingestion."
+  - "Deterministic award calculator must be in place before public beta promotion."
+temporal_law_markers:
+  - label: "Employment Rights Act 1996 ss.94-132A (unfair dismissal)"
+    effective_date: "1996-08-22"
+    note: "Statutory basis for unfair dismissal claims."
+  - label: "ACAS early conciliation requirement"
+    effective_date: "2014-05-06"
+    note: "Mandatory early conciliation before issuing most ET claims."
