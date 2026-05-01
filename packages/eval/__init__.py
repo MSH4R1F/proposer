@@ -12,6 +12,17 @@ from eval.dataset import (
     test,
     train,
 )
+from eval.metrics import (
+    IssuePrediction,
+    MetricResult,
+    Prediction,
+    amount_within_threshold,
+    bootstrap_ci,
+    brier_score,
+    expected_calibration_error,
+    issue_winner_accuracy,
+    reliability_diagram,
+)
 from eval.schema import (
     Authority,
     CaseSize,
@@ -23,7 +34,9 @@ from eval.schema import (
     IssueOutcome,
     Party,
     PartyRole,
+    Provenance,
     ReasoningQuote,
+    RegionUK,
     SchemaVersion,
     StatutoryReference,
     Winner,
@@ -41,7 +54,9 @@ __all__ = [
     "IssueOutcome",
     "Party",
     "PartyRole",
+    "Provenance",
     "ReasoningQuote",
+    "RegionUK",
     "SchemaVersion",
     "StatutoryReference",
     "Winner",
@@ -57,4 +72,14 @@ __all__ = [
     "load",
     "test",
     "train",
+    # metrics
+    "IssuePrediction",
+    "MetricResult",
+    "Prediction",
+    "amount_within_threshold",
+    "bootstrap_ci",
+    "brier_score",
+    "expected_calibration_error",
+    "issue_winner_accuracy",
+    "reliability_diagram",
 ]
