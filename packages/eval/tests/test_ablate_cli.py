@@ -275,6 +275,41 @@ class TestInProcessCli:
         assert report["seed"] == 7
         assert report["n_resamples"] == 100
 
+    def test_negative_n_resamples_fails_fast(
+        self, capsys, perfect_predictions_path
+    ):
+        with pytest.raises(SystemExit) as exc:
+            _cli_main(
+                [
+                    "--gold",
+                    str(GOLD_PATH),
+                    "--predictions",
+                    f"hybrid={perfect_predictions_path}",
+                    "--n-resamples",
+                    "-1",
+                ]
+            )
+        assert exc.value.code == 2
+        assert "--n-resamples" in capsys.readouterr().err
+
+    @pytest.mark.parametrize("threshold", ["-0.1", "1.1"])
+    def test_invalid_amount_threshold_pct_fails_fast(
+        self, capsys, perfect_predictions_path, threshold
+    ):
+        with pytest.raises(SystemExit) as exc:
+            _cli_main(
+                [
+                    "--gold",
+                    str(GOLD_PATH),
+                    "--predictions",
+                    f"hybrid={perfect_predictions_path}",
+                    "--amount-threshold-pct",
+                    threshold,
+                ]
+            )
+        assert exc.value.code == 2
+        assert "--amount-threshold-pct" in capsys.readouterr().err
+
 
 # ---------- Subprocess (real entry point) ----------
 

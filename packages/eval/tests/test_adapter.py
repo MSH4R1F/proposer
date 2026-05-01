@@ -18,7 +18,11 @@ from decimal import Decimal
 
 import pytest
 
-from eval.adapter import from_prediction_result
+from eval.adapter import (
+    _confidence_to_p_landlord,
+    _outcome_to_winner,
+    from_prediction_result,
+)
 from eval.schema import Winner
 
 
@@ -111,6 +115,10 @@ class TestOverallOutcomeMapping:
         prediction = from_prediction_result(result)
         assert prediction.overall_winner is Winner.SPLIT
 
+    def test_unknown_outcome_raises_clear_error(self):
+        with pytest.raises(ValueError, match="_outcome_to_winner.*mystery_outcome"):
+            _outcome_to_winner("mystery_outcome")
+
 
 class TestOverallConfidenceConversion:
     """`overall_confidence` is confidence in the *predicted outcome*. Convert
@@ -148,6 +156,12 @@ class TestOverallConfidenceConversion:
         prediction = from_prediction_result(result)
         assert prediction.overall_win_probability == pytest.approx(0.5)
 
+    def test_unknown_outcome_probability_raises_clear_error(self):
+        with pytest.raises(
+            ValueError, match="_confidence_to_p_landlord.*mystery_outcome"
+        ):
+            _confidence_to_p_landlord("mystery_outcome", 0.8)
+
 
 class TestAmountAggregation:
     def test_sums_tenant_and_landlord_recovery(self):
@@ -174,7 +188,6 @@ class TestAmountAggregation:
 
 class TestPerIssueMapping:
     def test_per_issue_count_matches(self):
-        _, _, OutcomeType, _ = _orchestrator_imports()
         IssueOutcome, _, _, _ = _orchestrator_imports()
         issues = [
             _build_orchestrator_issue(
