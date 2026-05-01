@@ -1,0 +1,48 @@
+{
+  "manifest_version": "v1",
+  "selected_at": "2026-05-01T00:00:00Z",
+  "bailii_root": "data/raw/bailii",
+  "criteria": {
+    "n": 3,
+    "min_chars": 1000,
+    "max_chars": 30000
+  },
+  "cases": [
+    {
+      "case_reference": "LON_00BG_HMF_2022_0030",
+      "year": 2022,
+      "category": "adjacent",
+      "case_type_code": "HMF",
+      "region_code": "LON",
+      "decision_date": null,
+      "pdf_path": "data/raw/bailii/adjacent-cases/2022/LON_00BG_HMF_2022_0030/decision.pdf",
+      "html_path": "data/raw/bailii/adjacent-cases/2022/LON_00BG_HMF_2022_0030/decision.html",
+      "char_count": 12345,
+      "extraction_method": "pymupdf_pdf"
+    },
+    {
+      "case_reference": "MAN_00BN_HNA_2023_0014",
+      "year": 2023,
+      "category": "adjacent",
+      "case_type_code": "HNA",
+      "region_code": "MAN",
+      "decision_date": "2023-07-12",
+      "pdf_path": "data/raw/bailii/adjacent-cases/2023/MAN_00BN_HNA_2023_0014/decision.pdf",
+      "html_path": null,
+      "char_count": 8421,
+      "extraction_method": "pymupdf_pdf"
+    },
+    {
+      "case_reference": "BIR_00CN_HAS_2021_0007",
+      "year": 2021,
+      "category": "other",
+      "case_type_code": "HAS",
+      "region_code": "BIR",
+      "decision_date": null,
+      "pdf_path": null,
+      "html_path": "data/raw/bailii/other-cases/2021/BIR_00CN_HAS_2021_0007/decision.html",
+      "char_count": 15782,
+      "extraction_method": "html_text"
+    }
+  ]
+}

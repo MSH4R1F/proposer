@@ -274,6 +274,9 @@ docker-volumes/
 # gold-standard evaluation set must be tracked (see SHA-28).
 data/*
 !data/gold_standard/
+# Proposition KG corpus manifest: track the example, ignore real outputs.
+data/proposition_corpus_v*.json
+!data/proposition_corpus_v*.example.json
 
 # ===================================
 # Multi-window orchestration
