@@ -120,7 +120,7 @@ class LLMPropositionEdgeExtractor:
         llm_client,
         *,
         min_confidence: float = 0.5,
-        max_tokens: int = 4096,
+        max_tokens: int = 16384,
         logger: Optional[logging.Logger] = None,
     ) -> None:
         if not 0.0 <= min_confidence <= 1.0:
