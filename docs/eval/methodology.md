@@ -155,7 +155,20 @@ Four modes, evaluated on the same gold set:
 
 Each mode produces a predictions JSONL. `python -m eval.ablate` (Phase 5) loads the gold set + every mode's predictions in one run, computes accuracy / amount-within-threshold / Brier / ECE per mode under bootstrap CIs, and emits a single `ComparisonReport` JSON for the thesis to consume.
 
-The hybrid > RAG-only and hybrid > KG-only claims (the thesis's headline novelty contributions) are ablation-runner outputs. The thesis-claim survival rule applies to the *difference* between two modes, not just the absolute number — a 2-point hybrid advantage with overlapping CIs is no thesis claim. Phase 5 ships `summarise_dominance(a, b)` which decides per-metric significance via non-overlapping bootstrap CIs (mirrored for lower-is-better metrics like Brier and ECE). See [`ablation.md`](ablation.md) for the worked example.
+### 7.1 Generating per-mode predictions (Phase 5b)
+
+`scripts/eval/predict_all.py` produces the per-mode JSONLs that `eval.ablate` consumes. For each gold case it:
+
+1. **Reconstructs a pre-decision `CaseFile`** (`eval.case_file_adapter.gold_case_to_case_file`) by stripping every post-decision artifact from the `GoldCase` — `ground_truth_outcome`, `key_reasoning_quotes`, the tribunal's `statutory_basis`, `cited_authorities`, and `decision_date`. Without this step the engine would see the verdict in the input.
+2. **Aligns the issue vocabulary** (`eval.issue_alignment`). The eval `ClaimType` enum (annotator-facing) and the orchestrator `DisputeIssue` enum (intake-facing) overlap but aren't identical: `damages↔damage` (spelling), `deposit_non_protection↔deposit_protection` (eval names the breach, orch names the area), `disrepair`/`end_of_tenancy` are unmappable. Unmappables fall back to `DisputeIssue.OTHER`; the count is recorded on `LossyReconstruction.unmapped_claim_types` and surfaced in the runner summary so the alignment loss is reported alongside headline numbers.
+3. **Calls the predictor in each mode** — currently the deterministic `make_stub_prediction` (Phase 5b CI default), with a `--engine live` slot for the real `BaseLLMClient` once Phase 5c wires it.
+4. **Adapts** orchestrator `PredictionResult` → eval `Prediction` (`eval.adapter.from_prediction_result`) and writes one JSONL row.
+
+The Phase 5b end-to-end test (`packages/eval/tests/test_predict_all.py::TestOutputAblationCompatible`) exercises this exact chain on the synthetic 10-case fixture in CI — the same chain the thesis chapter (SHA-68) replays once a real corpus and real LLM run land.
+
+### 7.2 Significance test
+
+The hybrid > RAG-only and hybrid > KG-only claims (the thesis's headline novelty contributions) are ablation-runner outputs. The thesis-claim survival rule applies to the *difference* between two modes, not just the absolute number — a 2-point hybrid advantage with overlapping CIs is no thesis claim. Phase 5 ships `summarise_dominance(a, b)` which decides per-metric significance via non-overlapping bootstrap CIs (mirrored for lower-is-better metrics like Brier and ECE). See [`ablation.md`](ablation.md) for the worked example and [`decision-log.md`](decision-log.md) D-018 for the choice of CI overlap over paired hypothesis tests.
 
 ## 8. Reproducibility
 
