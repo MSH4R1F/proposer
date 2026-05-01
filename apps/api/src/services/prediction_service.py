@@ -11,16 +11,14 @@ JSONGraphStore is no longer used.  The legacy singleton getter is kept
 for rollback compatibility.
 """
 
-from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from llm_orchestrator.config import LLMConfig
-from llm_orchestrator.clients.claude_client import ClaudeClient
-from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+from llm_orchestrator.clients.factory import get_llm_client
+from llm_orchestrator.clients.types import LLMRole
 from llm_orchestrator.models.prediction import PredictionResult
 from llm_orchestrator.models.prediction_v2 import PredictionMode
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
@@ -46,12 +44,9 @@ def _build_prediction_engine() -> Any:
     cache it at process level via lru_cache without importing the engine at
     module-import time.
     """
-    from llm_orchestrator.config import LLMConfig
-    from llm_orchestrator.clients.claude_client import ClaudeClient
     from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
 
-    llm_config = LLMConfig.from_env()
-    llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
+    llm_client = get_llm_client(LLMRole.PREDICTION)
     engine = PredictionEngineV2(llm_client=llm_client, rag_pipeline=None)
 
     # Try to attach RAG pipeline.

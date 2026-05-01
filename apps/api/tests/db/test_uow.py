@@ -28,3 +28,11 @@ async def test_uow_closes_session_when_commit_fails() -> None:
             pass
 
     assert session.closed is True
+
+
+@pytest.mark.asyncio
+async def test_uow_exposes_propositions_repo(db_sessionmaker) -> None:
+    from apps.api.src.db.repositories.propositions_repo import PropositionsRepo
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        assert isinstance(uow.propositions, PropositionsRepo)

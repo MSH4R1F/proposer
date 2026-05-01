@@ -143,6 +143,10 @@ async def mediation_service(db_sessionmaker, seeded_dispute):
     agent = _make_mock_agent()
     svc = MediationService(sessionmaker=db_sessionmaker, mediator_agent=agent)
     # Stub out prediction lookup (no prediction rows seeded in DB).
+    # _fetch_prediction_data_uow is the actual code path used by the
+    # postgres-mode service; the legacy _get_prediction_data hook is kept
+    # for in-memory rollback paths only.
+    svc._fetch_prediction_data_uow = AsyncMock(return_value=_FAKE_PREDICTION)
     svc._get_prediction_data = AsyncMock(return_value=_FAKE_PREDICTION)
     return svc
 
@@ -396,10 +400,14 @@ async def test_submit_offer_allows_prediction_range_above_deposit(
     """Deposit-penalty settlements may exceed the original deposit."""
     dispute_id = seeded_dispute.dispute_id
     tenant_session = seeded_dispute.tenant_session_id
-    mediation_service._get_prediction_data.return_value = {
+    prediction_with_penalty_range = {
         **_FAKE_PREDICTION,
         "predicted_settlement_range": [1500, 3000],
     }
+    mediation_service._fetch_prediction_data_uow.return_value = (
+        prediction_with_penalty_range
+    )
+    mediation_service._get_prediction_data.return_value = prediction_with_penalty_range
 
     await mediation_service.start_mediation(dispute_id, tenant_session)
     offer = await mediation_service.submit_offer(dispute_id, tenant_session, 2500.0)
