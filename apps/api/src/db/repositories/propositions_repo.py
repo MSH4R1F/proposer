@@ -87,6 +87,39 @@ class PropositionsRepo:
         self._s.add(PropositionExtractionRunRow(**values))
         await self._s.flush()
 
+    async def find_succeeded_run(
+        self,
+        *,
+        document_id: UUID,
+        extractor_version: str,
+        prompt_sha256: str,
+        model: str,
+    ) -> Optional[UUID]:
+        """Return the run_id of an existing succeeded run for this pipeline,
+        or None.
+
+        Used by the ingestion CLI's `--resume` to skip already-completed work.
+        If multiple succeeded runs exist (legal after the unique constraint
+        was dropped in Task 9), the most recently created one is returned.
+        """
+        result = await self._s.execute(
+            select(PropositionExtractionRunRow.run_id)
+            .where(PropositionExtractionRunRow.document_id == document_id)
+            .where(
+                PropositionExtractionRunRow.extractor_version == extractor_version
+            )
+            .where(PropositionExtractionRunRow.prompt_sha256 == prompt_sha256)
+            .where(PropositionExtractionRunRow.model == model)
+            .where(
+                PropositionExtractionRunRow.status
+                == ExtractionRunStatus.succeeded.value
+            )
+            .order_by(PropositionExtractionRunRow.created_at.desc())
+            .limit(1)
+        )
+        row = result.scalar_one_or_none()
+        return row
+
     async def finish_run(
         self,
         run_id: UUID,
