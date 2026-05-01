@@ -637,3 +637,165 @@ def test_openai_client_implements_base_llm_client() -> None:
 
     client = _make_client()
     assert isinstance(client, BaseLLMClient)
+
+
+# ---------------------------------------------------------------------------
+# I-2: content_filter incomplete-reason gets the moderation hint, not the
+#      "increase max_output_tokens" hint.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_incomplete_content_filter_mentions_moderation() -> None:
+    client = _make_client()
+    fake = _response(
+        output=[_output_message([_text_part("partial...")])],
+        status="incomplete",
+        incomplete_details=SimpleNamespace(reason="content_filter"),
+        usage=_usage(tokens_in=10, tokens_out=5),
+    )
+    client.client.responses.create.return_value = fake
+
+    with pytest.raises(LLMIncompleteResponseError) as exc_info:
+        await client.generate(
+            [{"role": "user", "content": "x"}], system_prompt="s"
+        )
+
+    msg = str(exc_info.value)
+    assert "content_filter" in msg
+    assert "moderation" in msg.lower()
+    # Must NOT recommend increasing max_output_tokens for a moderation block.
+    assert "increase max_output_tokens" not in msg
+
+
+# ---------------------------------------------------------------------------
+# I-3: refusal in a mixed (text + refusal) output takes priority over text.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_refusal_overshadows_text_in_mixed_output() -> None:
+    """When the same output message contains both a text part AND a refusal
+    part, the refusal MUST raise LLMRefusalError — we must not silently
+    return the partial text.
+    """
+    client = _make_client()
+    fake = _response(
+        output=[
+            _output_message(
+                [
+                    _text_part("partial answer "),
+                    _refusal_part("blocked"),
+                ]
+            )
+        ],
+    )
+    client.client.responses.create.return_value = fake
+
+    with pytest.raises(LLMRefusalError, match="blocked"):
+        await client.generate(
+            [{"role": "user", "content": "x"}], system_prompt="s"
+        )
+
+
+# ---------------------------------------------------------------------------
+# I-4: text_format-unsupported detection uses the structural body signal.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_fallback_triggers_on_structural_body_signal() -> None:
+    """Even when ``str(exc)`` is unhelpful (none of the substring hints
+    appear), a body with ``error.param == "text_format"`` should still
+    trigger the manual JSON-schema fallback.
+    """
+    client = _make_client()
+    response_400 = httpx.Response(
+        status_code=400,
+        request=httpx.Request("POST", "https://api.openai.com/x"),
+    )
+    parse_err = APIStatusError(
+        # Deliberately unhelpful message — no fallback hint substrings.
+        "Bad Request",
+        response=response_400,
+        body={"error": {"param": "text_format", "message": "nope"}},
+    )
+    parse_err.status_code = 400
+    client.client.responses.parse.side_effect = parse_err
+
+    fake_create = _response(
+        output=[_output_message([_text_part('{"name":"Ada","age":36}')])],
+    )
+    client.client.responses.create.return_value = fake_create
+
+    result = await client.generate_structured(
+        [{"role": "user", "content": "extract"}],
+        system_prompt="parse",
+        response_model=Person,
+        max_tokens=256,
+    )
+    assert result.name == "Ada"
+    client.client.responses.create.assert_awaited_once()
+
+
+# ---------------------------------------------------------------------------
+# I-5: store=True is rejected at construction time.
+# ---------------------------------------------------------------------------
+
+
+def test_store_true_raises_value_error() -> None:
+    """Privacy invariant: silently overriding store=True would mask a
+    contract violation. Raise instead.
+    """
+    with pytest.raises(ValueError, match="store=True"):
+        OpenAIClient(api_key="x", model="gpt-5.4-mini", store=True)
+
+
+def test_store_default_false_succeeds() -> None:
+    """Sanity: omitting ``store`` (or passing ``False``) still works."""
+    client = OpenAIClient(api_key="x", model="gpt-5.4-mini")
+    assert client.store is False
+
+
+# ---------------------------------------------------------------------------
+# I-6: aclose() closes owned clients only.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_aclose_does_not_close_injected_client() -> None:
+    """Injected SDK clients are the caller's responsibility — aclose()
+    must NOT close them (that would surprise tests sharing a single
+    AsyncOpenAI across many client instances).
+    """
+    fake_responses = SimpleNamespace(create=AsyncMock(), parse=AsyncMock())
+    fake_sdk = SimpleNamespace(responses=fake_responses, close=AsyncMock())
+    client = OpenAIClient(api_key="x", model="gpt-5.4-mini", client=fake_sdk)
+
+    await client.aclose()
+
+    fake_sdk.close.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_aclose_closes_owned_client() -> None:
+    """When OpenAIClient constructed its own AsyncOpenAI, aclose() MUST
+    close it so connection pools don't leak. We patch AsyncOpenAI in the
+    module under test so the constructor produces an AsyncMock.
+    """
+    from unittest.mock import patch
+
+    fake_async_openai = SimpleNamespace(
+        responses=SimpleNamespace(create=AsyncMock(), parse=AsyncMock()),
+        close=AsyncMock(),
+    )
+
+    with patch(
+        "llm_orchestrator.clients.openai_client.AsyncOpenAI",
+        return_value=fake_async_openai,
+    ):
+        client = OpenAIClient(api_key="x", model="gpt-5.4-mini")
+
+    assert client._owns_client is True
+    await client.aclose()
+    fake_async_openai.close.assert_awaited_once()
