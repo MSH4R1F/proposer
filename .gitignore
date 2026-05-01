@@ -270,7 +270,10 @@ docker-volumes/
 # Backup files
 *.orig
 
-data/
+# All user-facing data dirs (sessions/predictions/etc) are ignored, but the
+# gold-standard evaluation set must be tracked (see SHA-28).
+data/*
+!data/gold_standard/
 
 # ===================================
 # Multi-window orchestration
@@ -279,5 +282,10 @@ data/
 worktrees/
 .worktrees/
 
-# Sisyphus orchestration scratch (boulders, evidence, plans, notepads)
-.sisyphus/
+# Sisyphus orchestration scratch (boulders, plans, notepads). Evaluation
+# evidence is intentionally trackable for thesis reproducibility.
+.sisyphus/*
+!.sisyphus/evidence/
+.sisyphus/evidence/*
+!.sisyphus/evidence/eval/
+!.sisyphus/evidence/eval/**

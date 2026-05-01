@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -308,14 +309,14 @@ class TestAudit:
 
     def test_audit_distributions(self):
         from eval.dataset import audit
-        from eval.schema import CaseSize
+        from eval.schema import CaseSize, RegionUK
         cases = self._build([
-            gold_case_dict(case_id="L1", region="London"),
-            gold_case_dict(case_id="L2", region="London"),
-            gold_case_dict(case_id="W1", region="Wales"),
+            gold_case_dict(case_id="L1", region="london", region_source="London"),
+            gold_case_dict(case_id="L2", region="london", region_source="London"),
+            gold_case_dict(case_id="W1", region="wales", region_source="Wales"),
         ])
         report = audit(cases)
-        assert report.region_distribution == {"London": 2, "Wales": 1}
+        assert report.region_distribution == {RegionUK.LONDON: 2, RegionUK.WALES: 1}
         assert report.case_size_distribution[CaseSize.SMALL] == 3
 
     def test_audit_is_clean_when_all_types_at_floor(self):
@@ -342,12 +343,47 @@ class TestAudit:
         assert report.is_clean is False
 
 
+class TestSyntheticCorpus10:
+    """The 10-case fixture is the seed corpus every metric module
+    develops against. Loading must be clean."""
+
+    def test_loads_without_errors(self):
+        from eval.dataset import load
+        result = load(
+            "synthetic_corpus_10",
+            base_dir=Path(__file__).parent / "fixtures",
+        )
+        assert result.is_clean
+        assert len(result.cases) == 10
+
+    def test_every_claim_type_represented(self):
+        from eval.dataset import load
+        from eval.schema import ClaimType
+        result = load(
+            "synthetic_corpus_10",
+            base_dir=Path(__file__).parent / "fixtures",
+        )
+        types_seen = set()
+        for c in result.cases:
+            types_seen.update(c.claim_types)
+        assert types_seen == set(ClaimType)
+
+    def test_train_test_split_is_meaningful(self):
+        from eval.dataset import load, train, test as test_split
+        result = load(
+            "synthetic_corpus_10",
+            base_dir=Path(__file__).parent / "fixtures",
+        )
+        assert len(train(result.cases)) >= 4
+        assert len(test_split(result.cases)) >= 3
+
+
 class TestCli:
     """End-to-end CLI tests via subprocess. Exercises the real entry point
     (`python -m eval.dataset audit ...`) rather than mocking argparse."""
 
     REPO_ROOT = Path(__file__).resolve().parents[3]
-    VENV_PY = "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/bin/python"
+    VENV_PY = sys.executable
 
     @classmethod
     def _run(cls, *args, cwd=None):
@@ -407,6 +443,22 @@ class TestCli:
         self._write_corpus(path, cases)
         proc = self._run("audit", str(path), "--strict")
         assert proc.returncode == 0, proc.stderr
+
+    def test_cli_audit_strict_fails_on_load_errors(self, tmp_path):
+        from eval.schema import ClaimType
+        path = tmp_path / "housing_v1.jsonl"
+        cases = [
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType
+            for i in range(5)
+        ]
+        self._write_corpus(path, cases)
+        with path.open("a") as f:
+            f.write(json.dumps(gold_case_dict(case_id="BROKEN", decision_date="2018-01-01")))
+            f.write("\n")
+        proc = self._run("audit", str(path), "--strict")
+        assert proc.returncode == 1
+        assert "Load error" in proc.stderr
 
     def test_cli_audit_json_output(self, tmp_path):
         path = tmp_path / "housing_v1.jsonl"

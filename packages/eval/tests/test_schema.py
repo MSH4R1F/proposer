@@ -82,19 +82,22 @@ class TestClaimedAmount:
 
 class TestReasoningQuote:
     def test_valid(self):
-        from eval.schema import ReasoningQuote
-        q = ReasoningQuote(text="The deposit was not protected.", paragraph_ref="para 14")
-        assert q.paragraph_ref == "para 14"
+        from eval.schema import Provenance, ReasoningQuote
+        q = ReasoningQuote(
+            text="The deposit was not protected.",
+            provenance=Provenance(page=1, paragraph=14),
+        )
+        assert q.provenance.paragraph == 14
 
-    def test_paragraph_ref_required(self):
+    def test_provenance_required(self):
         from eval.schema import ReasoningQuote
         with pytest.raises(ValidationError):
-            ReasoningQuote(text="x", paragraph_ref=None)  # type: ignore[arg-type]
+            ReasoningQuote(text="x")  # provenance required
 
     def test_empty_text_rejected(self):
-        from eval.schema import ReasoningQuote
+        from eval.schema import Provenance, ReasoningQuote
         with pytest.raises(ValidationError):
-            ReasoningQuote(text="", paragraph_ref="para 1")
+            ReasoningQuote(text="", provenance=Provenance(page=1, paragraph=1))
 
 
 class TestGroundTruthOutcome:
@@ -324,6 +327,16 @@ class TestUnapportionedOutcome:
                 unapportioned_reason="Judge declined to break it down.",
             )
 
+    def test_unapportioned_reason_empty_string_rejected(self):
+        from eval.schema import GroundTruthOutcome, Winner
+        with pytest.raises(ValidationError, match="unapportioned_reason"):
+            GroundTruthOutcome(
+                overall_winner=Winner.SPLIT,
+                total_awarded_gbp=Decimal("100"),
+                per_issue=[],
+                unapportioned_reason=" ",
+            )
+
     def test_unapportioned_bypasses_inv5_per_issue_match(self):
         # When unapportioned, per_issue is empty so INV-5 is vacuously satisfied
         from eval.schema import GoldCase
@@ -430,6 +443,192 @@ class TestInv9OverallWinnerConsistency:
         assert gc.ground_truth_outcome.per_issue == []
 
 
+class TestRegionUK:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_region_is_enum(self):
+        from eval.schema import GoldCase, RegionUK
+        case = self._base() | {"region": "london"}
+        gc = GoldCase.model_validate(case)
+        assert gc.region == RegionUK.LONDON
+
+    def test_region_source_preserved(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"region": "london", "region_source": "Greater London"}
+        gc = GoldCase.model_validate(case)
+        assert gc.region_source == "Greater London"
+
+    def test_region_unknown_value_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"region": "atlantis"}
+        with pytest.raises(ValidationError, match="region"):
+            GoldCase.model_validate(case)
+
+    def test_region_uk_has_12_values(self):
+        from eval.schema import RegionUK
+        assert len(list(RegionUK)) == 12
+
+    def test_region_uk_values_match_uk_standard_regions(self):
+        from eval.schema import RegionUK
+        expected = {
+            "london", "south_east", "south_west", "east_of_england",
+            "east_midlands", "west_midlands", "north_west", "north_east",
+            "yorkshire_and_humber", "wales", "scotland", "northern_ireland",
+        }
+        assert {r.value for r in RegionUK} == expected
+
+
+class TestInv10EvidenceStatutoryAvailability:
+    def _base(self) -> dict:
+        return _load_minimal()
+
+    def test_empty_evidence_without_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"evidence": []}
+        with pytest.raises(ValidationError, match="evidence"):
+            GoldCase.model_validate(case)
+
+    def test_empty_evidence_with_reason_ok(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "evidence": [],
+            "evidence_unavailable_reason": "Tribunal heard the case on submissions only; no evidence catalogue published.",
+        }
+        gc = GoldCase.model_validate(case)
+        assert gc.evidence == []
+        assert gc.evidence_unavailable_reason is not None
+
+    def test_empty_statutory_basis_without_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"statutory_basis": []}
+        with pytest.raises(ValidationError, match="statutory_basis"):
+            GoldCase.model_validate(case)
+
+    def test_empty_statutory_basis_with_reason_ok(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "statutory_basis": [],
+            "statutory_basis_unavailable_reason": "Decision turned on common-law principles only.",
+        }
+        gc = GoldCase.model_validate(case)
+        assert gc.statutory_basis == []
+
+    def test_empty_evidence_reason_must_be_non_empty(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "evidence": [],
+            "evidence_unavailable_reason": " ",
+        }
+        with pytest.raises(ValidationError, match="evidence_unavailable_reason"):
+            GoldCase.model_validate(case)
+
+    def test_empty_statutory_basis_reason_must_be_non_empty(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "statutory_basis": [],
+            "statutory_basis_unavailable_reason": "",
+        }
+        with pytest.raises(ValidationError, match="statutory_basis_unavailable_reason"):
+            GoldCase.model_validate(case)
+
+    def test_non_empty_evidence_with_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "evidence_unavailable_reason": "Should not be set when evidence is non-empty",
+        }
+        with pytest.raises(ValidationError, match="evidence"):
+            GoldCase.model_validate(case)
+
+    def test_non_empty_statute_with_reason_rejected(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "statutory_basis_unavailable_reason": "Should not be set when statutory_basis is non-empty",
+        }
+        with pytest.raises(ValidationError, match="statutory_basis"):
+            GoldCase.model_validate(case)
+
+
+class TestProvenance:
+    def test_valid_provenance(self):
+        from eval.schema import Provenance
+        p = Provenance(page=1, paragraph=14)
+        assert p.page == 1 and p.paragraph == 14
+        assert p.text_span is None
+
+    def test_text_span_optional(self):
+        from eval.schema import Provenance
+        p = Provenance(page=2, paragraph=3, text_span=(120, 240))
+        assert p.text_span == (120, 240)
+
+    def test_text_span_rejects_negative_values(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError, match="text_span"):
+            Provenance(page=2, paragraph=3, text_span=(-1, 10))
+
+    def test_text_span_rejects_reversed_range(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError, match="text_span"):
+            Provenance(page=2, paragraph=3, text_span=(240, 120))
+
+    def test_page_min_1(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError):
+            Provenance(page=0, paragraph=1)
+
+    def test_paragraph_min_1(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError):
+            Provenance(page=1, paragraph=0)
+
+
+class TestProvenanceMigration:
+    """Verify Evidence, StatutoryReference, Authority, ReasoningQuote all
+    use Provenance instead of bare paragraph_ref."""
+
+    def test_evidence_uses_provenance(self):
+        from eval.schema import Evidence, Provenance
+        e = Evidence(
+            kind="invoice",
+            description="Cleaning invoice",
+            provenance=Provenance(page=1, paragraph=7),
+        )
+        assert e.provenance.paragraph == 7
+
+    def test_evidence_provenance_optional(self):
+        from eval.schema import Evidence
+        Evidence(kind="invoice", description="Cleaning invoice")  # no provenance is fine
+
+    def test_reasoning_quote_requires_provenance(self):
+        from eval.schema import ReasoningQuote, Provenance
+        rq = ReasoningQuote(text="Quote.", provenance=Provenance(page=1, paragraph=1))
+        assert rq.provenance.page == 1
+
+    def test_reasoning_quote_provenance_required(self):
+        from eval.schema import ReasoningQuote
+        with pytest.raises(ValidationError):
+            ReasoningQuote(text="Quote.")  # provenance required
+
+    def test_authority_uses_provenance(self):
+        from eval.schema import Authority, Provenance
+        from datetime import date as _date
+        a = Authority(
+            name="Howard v Aggio",
+            cited_date=_date(2008, 6, 25),
+            provenance=Provenance(page=2, paragraph=12),
+        )
+        assert a.provenance.page == 2
+
+    def test_statutory_reference_uses_provenance(self):
+        from eval.schema import StatutoryReference, Provenance
+        s = StatutoryReference(
+            statute="Housing Act 2004",
+            section="s.213",
+            provenance=Provenance(page=1, paragraph=12),
+        )
+        assert s.provenance.paragraph == 12
+
+
 class TestClaimTypesIsList:
     def _base(self) -> dict:
         return _load_minimal()
@@ -444,6 +643,12 @@ class TestClaimTypesIsList:
         case = self._base() | {"claim_types": ["cleaning", "damages"]}
         gc = GoldCase.model_validate(case)
         assert set(gc.claim_types) == {ClaimType.CLEANING, ClaimType.DAMAGES}
+
+    def test_claim_types_rejects_duplicates(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"claim_types": ["cleaning", "cleaning"]}
+        with pytest.raises(ValidationError, match="claim_types"):
+            GoldCase.model_validate(case)
 
     def test_claim_types_rejects_empty_list(self):
         from eval.schema import GoldCase
@@ -460,23 +665,34 @@ class TestClaimTypesIsList:
 
 class TestAuthority:
     def test_valid_authority(self):
-        from eval.schema import Authority
+        from eval.schema import Authority, Provenance
         from datetime import date as _date
         a = Authority(
             name="Howard de Walden Estates Ltd v Aggio",
             court="UKSC",
             cited_date=_date(2008, 6, 25),
-            paragraph_ref="para 12",
+            provenance=Provenance(page=2, paragraph=12),
         )
         assert a.name.startswith("Howard")
         assert a.court == "UKSC"
         assert a.cited_date.year == 2008
+        assert a.provenance.paragraph == 12
+
+    def test_legacy_paragraph_ref_rejected(self):
+        from eval.schema import Authority
+        from datetime import date as _date
+        with pytest.raises(ValidationError, match="paragraph_ref|Extra"):
+            Authority(
+                name="Howard de Walden Estates Ltd v Aggio",
+                cited_date=_date(2008, 6, 25),
+                paragraph_ref="para 12",
+            )
 
     def test_optional_fields_default(self):
         from eval.schema import Authority
         from datetime import date as _date
         a = Authority(name="Anon v Anon", cited_date=_date(2021, 1, 1))
-        assert a.court is None and a.paragraph_ref is None
+        assert a.court is None and a.provenance is None
 
     def test_empty_name_rejected(self):
         from eval.schema import Authority
@@ -502,7 +718,7 @@ class TestGoldCaseAuthorities:
                     "name": "Howard de Walden Estates Ltd v Aggio",
                     "court": "UKSC",
                     "cited_date": "2008-06-25",
-                    "paragraph_ref": "para 12",
+                    "provenance": {"page": 2, "paragraph": 12},
                 }
             ]
         }
