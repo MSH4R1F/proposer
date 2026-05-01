@@ -246,6 +246,16 @@ def _emit_jsonl(report_path: Optional[Path], record: dict) -> None:
         f.write(json.dumps(record, sort_keys=True) + "\n")
 
 
+def _token_totals(llm) -> tuple[int, int]:  # noqa: ANN001 - duck-typed client
+    """Return cumulative token totals exposed by the LLM client, if any."""
+    stats = getattr(llm, "_stats", None)
+    if not isinstance(stats, dict):
+        return 0, 0
+    return int(stats.get("tokens_in", 0) or 0), int(
+        stats.get("tokens_out", 0) or 0
+    )
+
+
 # ---------------------------------------------------------------------------
 # Per-document driver
 # ---------------------------------------------------------------------------
@@ -381,6 +391,7 @@ async def _run_one_document(
         llm,
         min_confidence=args.min_confidence,
     )
+    tokens_in_before, tokens_out_before = _token_totals(llm)
 
     try:
         prop_result = await extractor.extract(
@@ -404,6 +415,9 @@ async def _run_one_document(
     except Exception as exc:
         log.exception("extraction failed for case=%s", case_ref)
         metrics["error_message"] = f"extraction_error: {type(exc).__name__}: {exc}"
+        tokens_in_after, tokens_out_after = _token_totals(llm)
+        metrics["tokens_in"] = max(0, tokens_in_after - tokens_in_before)
+        metrics["tokens_out"] = max(0, tokens_out_after - tokens_out_before)
         if args.commit:
             # Mark the run as failed in a fresh UoW (Option A).
             from apps.api.src.db.uow import UnitOfWork
@@ -413,7 +427,10 @@ async def _run_one_document(
                     await uow.propositions.finish_run(
                         run.run_id,
                         status=ExtractionRunStatus.failed,
-                        counts={},
+                        counts={
+                            "tokens_in": metrics["tokens_in"],
+                            "tokens_out": metrics["tokens_out"],
+                        },
                         error_message=str(exc)[:1900],
                     )
             except Exception:
@@ -428,13 +445,11 @@ async def _run_one_document(
     edge_count = len(accepted_edges)
     edge_rejected = len(edge_result.rejections) + len(graph_rejections)
 
-    # Token usage from the LLM client when it exposes a stats dict.
-    tokens_in = 0
-    tokens_out = 0
-    stats = getattr(llm, "_stats", None)
-    if isinstance(stats, dict):
-        tokens_in = int(stats.get("tokens_in", 0))
-        tokens_out = int(stats.get("tokens_out", 0))
+    # Token usage from the LLM client is cumulative; store/report the
+    # per-document delta so run rows are usable for cost-per-document analysis.
+    tokens_in_after, tokens_out_after = _token_totals(llm)
+    tokens_in = max(0, tokens_in_after - tokens_in_before)
+    tokens_out = max(0, tokens_out_after - tokens_out_before)
 
     metrics.update(
         {

@@ -246,7 +246,7 @@ class IssueRetrievalResult(BaseModel):
 
 **Fallback**: If per-issue retrieval returns < `min_cases_required` for any issue, fall back to a combined query for that issue. If still insufficient, mark issue as `uncertain`.
 
-> **Phase 2 alternative — proposition-grained retrieval (SHA-36).** A parallel retrieval mode operating on atomic propositions (Dense X / HippoRAG style) is being built as a **substrate first**, retrieval second. The substrate (proposition extraction, typed edges, quote-verified provenance, Postgres persistence) ships in PR #15; the PageRank-over-KG retrieval that consumes it is Phase 2 and will appear in §7.3 as a new ablation row alongside `RAG-only` / `KG-only`. See [`docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md`](superpowers/specs/2026-05-01-sha-36-proposition-kg.md) for the schema and Phase 2 contract.
+> **Phase 2 alternative — proposition-grained retrieval (SHA-36).** A parallel retrieval mode operating on atomic propositions (Dense X / HippoRAG style) is being built as a **substrate first**, retrieval second. The substrate (proposition extraction, typed edges, quote-verified provenance, Postgres persistence) shipped in PR #15; the PageRank-over-KG retrieval that consumes it is Phase 2 and will appear in §7.3 as a new ablation row alongside `RAG-only` / `KG-only`. See [`docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md`](superpowers/specs/2026-05-01-sha-36-proposition-kg.md) for the Phase 1 schema and [`docs/superpowers/specs/2026-05-01-sha-36-phase-2-proposition-retrieval.md`](superpowers/specs/2026-05-01-sha-36-phase-2-proposition-retrieval.md) for the Phase 2 retriever plan.
 
 ---
 
