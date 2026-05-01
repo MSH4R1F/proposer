@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`GET /mediation/{dispute_id}/messages` returned HTTP 500** — `MediationService.get_messages` returns `List[Dict]` (per its tests), but the router treated the result as a dict and indexed `result["messages"]`/`result["offers"]`, raising `TypeError: list indices must be integers or slices, not str`. The web client expects the `{messages, offers}` envelope. Fix: assemble the envelope in the router by combining `get_messages()` with offers read from `get_session()`; service contract and tests unchanged. (`apps/api/src/routers/mediation.py`)
+
 ### Added
 
 - **Comprehensive Architecture Documentation** - Created detailed system architecture documentation
