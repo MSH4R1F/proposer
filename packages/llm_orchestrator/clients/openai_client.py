@@ -1,0 +1,630 @@
+"""OpenAI Responses-API LLM client.
+
+Implements :class:`BaseLLMClient` against OpenAI's *Responses API* — NOT the
+Chat Completions API. The Responses API is the surface that supports the
+``reasoning``/``text.verbosity`` controls used by GPT-5-class models, and it
+exposes structured output via :meth:`AsyncOpenAI.responses.parse` (passing a
+Pydantic model directly as ``text_format``).
+
+Key design points (see SHA-114 spec §6.1, §6.2, §10):
+
+- ``store=False`` is hard-coded; we never opt in to server-side storage.
+- ``previous_response_id`` is *never* sent — we always replay explicit input
+  items so no conversation state lives on OpenAI's side.
+- ``responses.parse`` is the default path for structured outputs. The manual
+  ``text.format=json_schema`` strict-mode path is a conservative fallback for
+  models / SDK versions that don't accept ``text_format``.
+- Errors are mapped to the provider-neutral types in
+  :mod:`llm_orchestrator.clients.exceptions` so call sites don't import
+  ``openai`` exception classes.
+- Cost accounting handles BOTH the tiered OpenAI pricing schema (e.g.
+  ``input_short_context``/``output_short_context``) and the flat schema (e.g.
+  ``input``/``output``). For tiered models we currently use short-context
+  rates only — long-context detection is a follow-up (spec §9 simplification).
+
+NO ``generate_with_tools`` and NO ``run_agent_turn`` here yet — those land in
+Task 4 of SHA-114. NO factory wiring either — that lands in Task 5. The class
+is reachable via direct construction only until then.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import re
+from typing import Any, Dict, List, Optional, Type, TypeVar
+
+import structlog
+from openai import (
+    APIError,
+    APIStatusError,
+    AsyncOpenAI,
+    RateLimitError,
+)
+from pydantic import BaseModel, ValidationError
+
+from ._pricing import get_model_pricing
+from ._schema import strict_json_schema
+from .base import BaseLLMClient
+from .exceptions import (
+    LLMAPIError,
+    LLMIncompleteResponseError,
+    LLMRateLimitError,
+    LLMRefusalError,
+    LLMStructuredOutputError,
+)
+from .types import LLMProvider
+
+logger = structlog.get_logger()
+
+T = TypeVar("T", bound=BaseModel)
+
+
+# Sentinel used to detect SDK builds that don't expose ``responses.parse``.
+# We treat AttributeError + a small set of "model doesn't support text_format"
+# API errors as the trigger for the manual ``text.format`` JSON-schema fallback.
+_FALLBACK_PARSE_HINTS = (
+    "text_format",
+    "response_format",
+    "structured outputs",
+    "json_schema",
+)
+
+
+class OpenAIClient(BaseLLMClient):
+    """Async client for the OpenAI Responses API.
+
+    See the module docstring for the full design. Constructor knobs:
+
+    Args:
+        api_key: OpenAI API key. Required even when a pre-built ``client`` is
+            injected, because the SDK's ``AsyncOpenAI`` ctor refuses an empty
+            key — tests pass any non-empty placeholder.
+        model: Primary model id (e.g. ``"gpt-5.5"``).
+        fallback_model: Optional cheaper model used only on a
+            :class:`openai.RateLimitError`. ``None`` means the rate-limit
+            surfaces as :class:`LLMRateLimitError` immediately.
+        max_retries: Total attempts (incl. the first call) on transient 5xx
+            errors. The default of 3 means 1 try + 2 retries.
+        reasoning_effort: One of ``low|medium|high|xhigh|none`` (or ``None``
+            to omit the field entirely). Forwarded as
+            ``reasoning={"effort": ...}``. We omit rather than send ``None``
+            so models that don't support reasoning don't reject the request.
+        text_verbosity: One of ``low|medium|high`` (or ``None`` to omit).
+            Forwarded as ``text={"verbosity": ...}``.
+        store: Reserved; always sent as ``False`` regardless of this flag.
+            The argument exists so the constructor signature matches what
+            ``LLMConfig.OpenAIControls`` carries, but flipping it would
+            violate the privacy invariant — Task 5's factory will pass
+            ``False`` always.
+        client: Optional pre-built ``AsyncOpenAI`` for tests. When provided,
+            ``api_key`` is unused for SDK construction.
+        retry_base_delay: Base delay (seconds) for the exponential backoff
+            on transient 5xx errors. Tests can patch this to ``0`` to keep
+            unit tests fast.
+    """
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str,
+        fallback_model: Optional[str] = None,
+        max_retries: int = 3,
+        reasoning_effort: Optional[str] = None,
+        text_verbosity: Optional[str] = None,
+        store: bool = False,
+        *,
+        client: Optional[AsyncOpenAI] = None,
+        retry_base_delay: float = 0.1,
+    ) -> None:
+        # We construct AsyncOpenAI with the supplied key only when no client is
+        # injected; tests that mock ``responses.create`` typically pass their
+        # own ``AsyncOpenAI`` so this branch is skipped.
+        self.client = client if client is not None else AsyncOpenAI(api_key=api_key)
+        self.model = model
+        self.fallback_model = fallback_model
+        self.max_retries = max(1, int(max_retries))
+        self.reasoning_effort = reasoning_effort
+        self.text_verbosity = text_verbosity
+        # Hard-coded for privacy. The constructor arg exists for symmetry only.
+        self.store = False
+        self._retry_base_delay = retry_base_delay
+
+        self._stats: Dict[str, int] = {
+            "calls": 0,
+            "tokens_in": 0,
+            "tokens_out": 0,
+            "cached_tokens_in": 0,
+            "reasoning_tokens_out": 0,
+            "errors": 0,
+            "fallback_uses": 0,
+        }
+
+        logger.info(
+            "openai_client_initialized",
+            model=model,
+            fallback_model=fallback_model,
+            reasoning_effort=reasoning_effort,
+            text_verbosity=text_verbosity,
+        )
+
+    # ------------------------------------------------------------------ #
+    # Public API                                                          #
+    # ------------------------------------------------------------------ #
+
+    async def generate(
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: str,
+        max_tokens: int = 4096,
+        temperature: float = 0.7,
+    ) -> str:
+        """Generate plain text via ``responses.create``.
+
+        ``temperature`` is intentionally ignored — GPT-5-class reasoning models
+        reject it on the Responses API and we'd rather honour the role's
+        ``reasoning_effort`` knob. Argument is kept for ``BaseLLMClient`` parity.
+        """
+        self._stats["calls"] += 1
+
+        kwargs = self._build_request_kwargs(
+            input_items=self._convert_messages(messages),
+            system_prompt=system_prompt,
+            max_tokens=max_tokens,
+        )
+
+        response = await self._call_with_retries_and_fallback(
+            self.client.responses.create, kwargs
+        )
+
+        self._record_usage(response)
+        self._raise_if_refused_or_incomplete(response)
+
+        return self._extract_text(response)
+
+    async def generate_structured(
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: str,
+        response_model: Type[T],
+        max_tokens: int = 4096,
+    ) -> T:
+        """Return a ``response_model`` instance via ``responses.parse``.
+
+        Strategy:
+          1. Try ``responses.parse(text_format=response_model, ...)``.
+          2. If the SDK / model rejects ``text_format``, fall back to a manual
+             ``responses.create`` with
+             ``text={"format": {"type": "json_schema", "strict": True, ...}}``
+             and parse the text output.
+          3. On Pydantic ``ValidationError`` / JSON decode failure, retry ONCE
+             with a repair message appended; if that also fails, raise
+             :class:`LLMStructuredOutputError`.
+        """
+        input_items = self._convert_messages(messages)
+        last_error: Optional[Exception] = None
+
+        for attempt in range(2):  # one retry on validation failure
+            try:
+                parsed = await self._attempt_structured_call(
+                    input_items=input_items,
+                    system_prompt=system_prompt,
+                    response_model=response_model,
+                    max_tokens=max_tokens,
+                )
+                return parsed
+            except (ValidationError, json.JSONDecodeError, LLMStructuredOutputError) as exc:
+                last_error = exc
+                if attempt == 0:
+                    # Append a repair message instructing the model to fix the
+                    # output. This goes into the *user* turn so the system
+                    # prompt stays clean.
+                    repair_text = (
+                        "The previous response failed schema validation: "
+                        f"{exc}. Respond again with valid JSON that matches "
+                        "the requested schema EXACTLY."
+                    )
+                    input_items = list(input_items) + [
+                        {"role": "user", "content": repair_text}
+                    ]
+                    logger.warning(
+                        "openai_structured_validation_retry",
+                        error=str(exc)[:200],
+                    )
+                    continue
+                # Second failure — give up.
+                self._stats["errors"] += 1
+                logger.error(
+                    "openai_structured_validation_failed",
+                    error=str(exc)[:200],
+                )
+                raise LLMStructuredOutputError(
+                    f"Structured output validation failed after retry: {exc}"
+                ) from exc
+
+        # Unreachable — both branches above either return or raise.
+        assert last_error is not None  # pragma: no cover
+        raise LLMStructuredOutputError(
+            f"Structured output validation failed: {last_error}"
+        )
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Provider-neutral stats dict (spec §9)."""
+        stats: Dict[str, Any] = dict(self._stats)
+        stats["provider"] = LLMProvider.OPENAI.value
+        stats["model"] = self.model
+        stats["estimated_cost_usd"] = self._estimate_cost(
+            tokens_in=stats["tokens_in"],
+            tokens_out=stats["tokens_out"],
+        )
+        return stats
+
+    def reset_stats(self) -> None:
+        """Zero every counter while preserving the dict shape."""
+        for key in self._stats:
+            self._stats[key] = 0
+
+    # ------------------------------------------------------------------ #
+    # Internals                                                           #
+    # ------------------------------------------------------------------ #
+
+    def _convert_messages(
+        self, messages: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Translate ``[{"role": ..., "content": ...}, ...]`` to Responses input items.
+
+        For Task 3 (text + structured only) flat-string content is sufficient.
+        Tool-result content blocks are tolerated unchanged but not yet
+        translated — Task 4 will handle that path.
+        """
+        out: List[Dict[str, Any]] = []
+        for m in messages:
+            role = m.get("role")
+            content = m.get("content")
+            if isinstance(content, str):
+                out.append({"role": role, "content": content})
+            else:
+                # Pass through structured content unchanged. Task 4 will
+                # translate ``{"type": "tool_result", ...}`` blocks; for now
+                # this lets the SDK error surface naturally if present.
+                out.append({"role": role, "content": content})
+        return out
+
+    def _build_request_kwargs(
+        self,
+        *,
+        input_items: List[Dict[str, Any]],
+        system_prompt: str,
+        max_tokens: int,
+        model: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Assemble the kwargs dict for ``responses.create`` / ``responses.parse``.
+
+        Only includes ``reasoning`` / ``text`` when configured — sending
+        ``None`` would trip up models that don't support those controls.
+        """
+        kwargs: Dict[str, Any] = {
+            "model": model or self.model,
+            "instructions": system_prompt,
+            "input": input_items,
+            "max_output_tokens": max_tokens,
+            "store": False,
+        }
+        if self.reasoning_effort is not None:
+            kwargs["reasoning"] = {"effort": self.reasoning_effort}
+        if self.text_verbosity is not None:
+            kwargs["text"] = {"verbosity": self.text_verbosity}
+        return kwargs
+
+    async def _call_with_retries_and_fallback(
+        self,
+        sdk_callable: Any,
+        base_kwargs: Dict[str, Any],
+    ) -> Any:
+        """Run an SDK call with rate-limit fallback + 5xx exponential backoff.
+
+        - :class:`openai.RateLimitError` → swap ``model`` to ``fallback_model``
+          (if configured) and retry once. If no fallback or already on
+          fallback, raise :class:`LLMRateLimitError`.
+        - :class:`openai.APIStatusError` with 5xx status → retry up to
+          ``max_retries`` total attempts with exponential backoff.
+        - :class:`openai.APIError` (no status) at the last attempt → raise
+          :class:`LLMAPIError`.
+
+        Any non-API exception (e.g. ``LLMRefusalError`` re-raised after
+        partial processing) propagates unchanged.
+        """
+        kwargs = dict(base_kwargs)
+        attempted_fallback = False
+        attempt = 0
+
+        while True:
+            try:
+                return await sdk_callable(**kwargs)
+
+            except RateLimitError as e:
+                # On rate-limit we don't count it as an "error" until we've
+                # actually given up — the fallback path is expected to succeed.
+                if (
+                    self.fallback_model
+                    and not attempted_fallback
+                    and kwargs.get("model") != self.fallback_model
+                ):
+                    logger.warning(
+                        "openai_rate_limit_falling_back",
+                        from_model=kwargs.get("model"),
+                        to_model=self.fallback_model,
+                    )
+                    kwargs["model"] = self.fallback_model
+                    attempted_fallback = True
+                    self._stats["fallback_uses"] += 1
+                    continue
+                self._stats["errors"] += 1
+                logger.error(
+                    "openai_rate_limit_exhausted",
+                    model=kwargs.get("model"),
+                )
+                raise LLMRateLimitError(str(e)) from e
+
+            except APIStatusError as e:
+                status = getattr(e, "status_code", None)
+                if status is not None and 500 <= int(status) < 600:
+                    attempt += 1
+                    if attempt < self.max_retries:
+                        delay = self._retry_base_delay * (2 ** (attempt - 1))
+                        logger.warning(
+                            "openai_api_5xx_retry",
+                            status=status,
+                            attempt=attempt,
+                            delay=delay,
+                        )
+                        if delay > 0:
+                            await asyncio.sleep(delay)
+                        continue
+                    self._stats["errors"] += 1
+                    logger.error(
+                        "openai_api_5xx_exhausted",
+                        status=status,
+                        attempts=attempt,
+                    )
+                    raise LLMAPIError(str(e)) from e
+                # Non-5xx status (4xx other than 429) — not retryable.
+                self._stats["errors"] += 1
+                raise LLMAPIError(str(e)) from e
+
+            except APIError as e:
+                self._stats["errors"] += 1
+                raise LLMAPIError(str(e)) from e
+
+    async def _attempt_structured_call(
+        self,
+        *,
+        input_items: List[Dict[str, Any]],
+        system_prompt: str,
+        response_model: Type[T],
+        max_tokens: int,
+    ) -> T:
+        """Single attempt: try ``responses.parse``, fall back to manual schema.
+
+        Increments ``calls`` once per attempt (matching ``generate``).
+        """
+        self._stats["calls"] += 1
+
+        # ---- Path A: SDK structured parse --------------------------------
+        if hasattr(self.client.responses, "parse"):
+            kwargs = self._build_request_kwargs(
+                input_items=input_items,
+                system_prompt=system_prompt,
+                max_tokens=max_tokens,
+            )
+            kwargs["text_format"] = response_model
+            try:
+                response = await self._call_with_retries_and_fallback(
+                    self.client.responses.parse, kwargs
+                )
+                self._record_usage(response)
+                self._raise_if_refused_or_incomplete(response)
+                parsed = getattr(response, "output_parsed", None)
+                if parsed is not None:
+                    if isinstance(parsed, response_model):
+                        return parsed
+                    # SDK returned a dict-like — coerce via model_validate.
+                    return response_model.model_validate(parsed)
+                # SDK returned no parsed object — try to recover from
+                # output_text, otherwise fall through to manual path.
+                text = self._extract_text(response)
+                return self._parse_text_into_model(text, response_model)
+
+            except LLMAPIError as exc:
+                # Detect "this model doesn't support text_format" and retry
+                # via the manual JSON-schema path. Be conservative: only fall
+                # back when the message clearly hints at the structured-output
+                # surface.
+                if not self._is_text_format_unsupported(exc):
+                    raise
+                logger.info(
+                    "openai_text_format_unsupported_falling_back",
+                    error=str(exc)[:200],
+                )
+
+        # ---- Path B: manual text.format = json_schema (strict) -----------
+        kwargs = self._build_request_kwargs(
+            input_items=input_items,
+            system_prompt=system_prompt,
+            max_tokens=max_tokens,
+        )
+        # Replace any existing ``text`` block — strict-mode JSON schema is
+        # mutually exclusive with verbosity here.
+        schema = strict_json_schema(response_model)
+        kwargs["text"] = {
+            "format": {
+                "type": "json_schema",
+                "name": response_model.__name__,
+                "strict": True,
+                "schema": schema,
+            }
+        }
+        response = await self._call_with_retries_and_fallback(
+            self.client.responses.create, kwargs
+        )
+        self._record_usage(response)
+        self._raise_if_refused_or_incomplete(response)
+        text = self._extract_text(response)
+        return self._parse_text_into_model(text, response_model)
+
+    @staticmethod
+    def _is_text_format_unsupported(exc: BaseException) -> bool:
+        """Heuristic: did this error tell us the model can't take ``text_format``?"""
+        msg = str(exc).lower()
+        return any(hint in msg for hint in _FALLBACK_PARSE_HINTS)
+
+    @staticmethod
+    def _parse_text_into_model(text: str, response_model: Type[T]) -> T:
+        """Best-effort parse of model output text into ``response_model``.
+
+        Tolerates Markdown code fences (``"```json ... ```"``) which some
+        models still emit even with strict mode.
+        """
+        m = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
+        json_str = m.group(1) if m else text.strip()
+        data = json.loads(json_str)
+        return response_model.model_validate(data)
+
+    def _record_usage(self, response: Any) -> None:
+        """Pull ``usage`` from the Responses object into ``self._stats``."""
+        usage = getattr(response, "usage", None)
+        if usage is None:
+            return
+        tokens_in = getattr(usage, "input_tokens", 0) or 0
+        tokens_out = getattr(usage, "output_tokens", 0) or 0
+        self._stats["tokens_in"] += int(tokens_in)
+        self._stats["tokens_out"] += int(tokens_out)
+
+        in_details = getattr(usage, "input_tokens_details", None)
+        if in_details is not None:
+            cached = getattr(in_details, "cached_tokens", 0) or 0
+            self._stats["cached_tokens_in"] += int(cached)
+
+        out_details = getattr(usage, "output_tokens_details", None)
+        if out_details is not None:
+            reasoning = getattr(out_details, "reasoning_tokens", 0) or 0
+            self._stats["reasoning_tokens_out"] += int(reasoning)
+
+    def _raise_if_refused_or_incomplete(self, response: Any) -> None:
+        """Translate Responses-API status flags into our neutral exceptions.
+
+        Refusal: any output message whose content list contains a
+        ``ResponseOutputRefusal`` part. We surface the refusal text so the
+        caller knows what was refused — and we explicitly do NOT fall back
+        to another model (per spec §10).
+
+        Incomplete: ``status == "incomplete"`` or
+        ``incomplete_details.reason == "max_output_tokens"``.
+        """
+        status = getattr(response, "status", None)
+        incomplete_details = getattr(response, "incomplete_details", None)
+
+        # Refusal detection — walk output items.
+        for item in getattr(response, "output", None) or []:
+            content = getattr(item, "content", None) or []
+            for part in content:
+                part_type = getattr(part, "type", None)
+                if part_type == "refusal":
+                    refusal_text = getattr(part, "refusal", "") or ""
+                    self._stats["errors"] += 1
+                    logger.error("openai_refusal", refusal=refusal_text[:200])
+                    raise LLMRefusalError(
+                        f"Model refused to answer: {refusal_text or '<no refusal text>'}"
+                    )
+
+        if status == "incomplete":
+            reason = getattr(incomplete_details, "reason", None) if incomplete_details else None
+            self._stats["errors"] += 1
+            tokens_out = getattr(getattr(response, "usage", None), "output_tokens", None)
+            logger.error(
+                "openai_incomplete_response",
+                reason=reason,
+                tokens_out=tokens_out,
+            )
+            raise LLMIncompleteResponseError(
+                f"Response incomplete (reason={reason}, tokens_out={tokens_out}); "
+                f"increase max_output_tokens"
+            )
+
+        if status == "failed":
+            self._stats["errors"] += 1
+            err = getattr(response, "error", None)
+            err_msg = getattr(err, "message", None) or str(err) if err else "unknown error"
+            raise LLMAPIError(f"OpenAI Responses API returned failed status: {err_msg}")
+
+    @staticmethod
+    def _extract_text(response: Any) -> str:
+        """Concatenate every ``output_text`` content part in the response.
+
+        Walks ``response.output`` (a list of Items), and for each
+        ``ResponseOutputMessage`` sums up the ``text`` of every
+        ``output_text`` part. Refusal parts are skipped here — they're
+        already raised in :meth:`_raise_if_refused_or_incomplete`.
+        """
+        # If the SDK gives us a top-level ``output_text`` convenience attr,
+        # prefer it for simple single-message responses.
+        convenience = getattr(response, "output_text", None)
+        if isinstance(convenience, str) and convenience:
+            return convenience
+
+        chunks: List[str] = []
+        for item in getattr(response, "output", None) or []:
+            for part in getattr(item, "content", None) or []:
+                if getattr(part, "type", None) == "output_text":
+                    text = getattr(part, "text", "")
+                    if text:
+                        chunks.append(text)
+        return "".join(chunks)
+
+    # ------------------------------------------------------------------ #
+    # Cost                                                                #
+    # ------------------------------------------------------------------ #
+
+    def _estimate_cost(self, *, tokens_in: int, tokens_out: int) -> Optional[float]:
+        """Estimate USD cost from the YAML pricing table.
+
+        Handles both pricing shapes:
+          - **Flat**: ``input``/``output`` (e.g. ``gpt-5.4-mini``).
+          - **Tiered**: ``input_short_context``/``output_short_context``
+            (e.g. ``gpt-5.5``); long-context detection is deferred (spec §9).
+
+        Returns ``None`` for unknown models OR for malformed pricing entries
+        (logs a warning rather than crashing — silently dropping cost from
+        stats is preferable to taking down a request just because the YAML
+        is in an inconsistent state).
+        """
+        pricing = get_model_pricing(LLMProvider.OPENAI, self.model)
+        if pricing is None:
+            return None
+
+        try:
+            if "input" in pricing and "output" in pricing:
+                input_rate = float(pricing["input"])
+                output_rate = float(pricing["output"])
+            elif (
+                "input_short_context" in pricing
+                and "output_short_context" in pricing
+            ):
+                input_rate = float(pricing["input_short_context"])
+                output_rate = float(pricing["output_short_context"])
+            else:
+                logger.warning(
+                    "openai_pricing_malformed",
+                    model=self.model,
+                    keys=list(pricing.keys()),
+                )
+                return None
+        except (TypeError, ValueError) as exc:
+            logger.warning(
+                "openai_pricing_unparseable",
+                model=self.model,
+                error=str(exc),
+            )
+            return None
+
+        return (tokens_in * input_rate + tokens_out * output_rate) / 1_000_000
