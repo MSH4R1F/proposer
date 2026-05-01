@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Optional
 
 from sqlalchemy import delete, select
@@ -9,6 +10,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from apps.api.src.db.models import (
     PredictionRow, PredictionIssueRow, PredictionReasoningStepRow,
     PredictionCitationRow,
+)
+from apps.api.src.db.repositories._domain_meta import (
+    DEFAULT_DOMAIN_ID,
+    extract_citation_provenance as _extract_citation_provenance,
+    extract_domain_block as _extract_domain_block,
+    extract_forum as _extract_forum,
+    extract_reproducibility_hashes as _extract_repro_hashes,
 )
 from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
 
@@ -20,6 +28,8 @@ class PredictionsRepo:
     async def save(self, p: PredictionResult) -> None:
         payload = p.model_dump(mode="json")
         rng = p.predicted_settlement_range or (None, None)
+        domain = _extract_domain_block(payload)
+        hashes = _extract_repro_hashes(payload)
         values = dict(
             prediction_id=p.prediction_id,
             case_id=p.case_id,
@@ -34,6 +44,16 @@ class PredictionsRepo:
             pipeline_metadata=payload.get("pipeline_metadata"),
             citation_verification=payload.get("citation_verification"),
             metadata_=payload.get("metadata"),
+            domain_id=domain["domain_id"],
+            domain_version=domain["domain_version"],
+            forum=_extract_forum(payload),
+            matter_types=domain["matter_types"],
+            routing_confidence=domain["routing_confidence"],
+            routing_metadata=domain["routing_metadata"],
+            domain_spec_hash=hashes["domain_spec_hash"],
+            prompt_pack_hash=hashes["prompt_pack_hash"],
+            ontology_hash=hashes["ontology_hash"],
+            corpus_version=hashes["corpus_version"],
             payload=payload,
         )
         stmt = pg_insert(PredictionRow).values(**values)
@@ -87,12 +107,20 @@ class PredictionsRepo:
             ))
             for j, c in enumerate(issue.supporting_cases or []):
                 cd = c.model_dump(mode="json")
+                prov = _extract_citation_provenance(cd)
                 self._s.add(PredictionCitationRow(
                     prediction_id=p.prediction_id, reasoning_step_id=None,
                     issue_ordinal=i, citation_source="issue_supporting_case", ordinal=j,
                     case_reference=c.case_reference, year=c.year, region=c.region,
                     paragraph=c.paragraph, quote=c.quote, relevance=c.relevance,
                     similarity_score=c.similarity_score, verified=c.verified,
+                    domain_id=domain["domain_id"],
+                    source_kind=prov["source_kind"],
+                    source_publisher=prov["source_publisher"],
+                    source_id=prov["source_id"],
+                    namespace_id=prov["namespace_id"],
+                    canonical_url=prov["canonical_url"],
+                    source_license=prov["source_license"],
                     payload=cd,
                 ))
 
@@ -108,17 +136,26 @@ class PredictionsRepo:
             await self._s.flush()
             for j, c in enumerate(step.citations or []):
                 cd = c.model_dump(mode="json")
+                prov = _extract_citation_provenance(cd)
                 self._s.add(PredictionCitationRow(
                     prediction_id=p.prediction_id, reasoning_step_id=row.id,
                     citation_source="reasoning", ordinal=j,
                     case_reference=c.case_reference, year=c.year, region=c.region,
                     paragraph=c.paragraph, quote=c.quote, relevance=c.relevance,
                     similarity_score=c.similarity_score, verified=c.verified,
+                    domain_id=domain["domain_id"],
+                    source_kind=prov["source_kind"],
+                    source_publisher=prov["source_publisher"],
+                    source_id=prov["source_id"],
+                    namespace_id=prov["namespace_id"],
+                    canonical_url=prov["canonical_url"],
+                    source_license=prov["source_license"],
                     payload=cd,
                 ))
 
         verified = (payload.get("citation_verification") or {}).get("verified_citations") or []
         for j, vc in enumerate(verified):
+            prov = _extract_citation_provenance(vc)
             self._s.add(PredictionCitationRow(
                 prediction_id=p.prediction_id, reasoning_step_id=None, issue_ordinal=None,
                 citation_source="verified", ordinal=j,
@@ -127,10 +164,18 @@ class PredictionsRepo:
                 quote=vc.get("quote"), relevance=vc.get("relevance"),
                 similarity_score=vc.get("similarity_score"),
                 verified=vc.get("verified", True),
+                domain_id=domain["domain_id"],
+                source_kind=prov["source_kind"],
+                source_publisher=prov["source_publisher"],
+                source_id=prov["source_id"],
+                namespace_id=prov["namespace_id"],
+                canonical_url=prov["canonical_url"],
+                source_license=prov["source_license"],
                 payload=vc,
             ))
         removed = (payload.get("citation_verification") or {}).get("removed_citations") or []
         for j, rc in enumerate(removed):
+            prov = _extract_citation_provenance(rc)
             self._s.add(PredictionCitationRow(
                 prediction_id=p.prediction_id, reasoning_step_id=None, issue_ordinal=None,
                 citation_source="removed", ordinal=j,
@@ -139,6 +184,13 @@ class PredictionsRepo:
                 quote=rc.get("quote"), relevance=rc.get("relevance"),
                 similarity_score=rc.get("similarity_score"),
                 verified=rc.get("verified", False),
+                domain_id=domain["domain_id"],
+                source_kind=prov["source_kind"],
+                source_publisher=prov["source_publisher"],
+                source_id=prov["source_id"],
+                namespace_id=prov["namespace_id"],
+                canonical_url=prov["canonical_url"],
+                source_license=prov["source_license"],
                 payload=rc,
             ))
 
@@ -159,6 +211,34 @@ class PredictionsRepo:
             return ["missing_prediction"]
         prediction = PredictionResult.model_validate(row.payload)
         mismatches: list[str] = []
+
+        # SHA-124 phase 2: projection columns for the domain routing block must
+        # match what extract_domain_block() would compute from the canonical
+        # payload. Hashes must match the value extracted from payload too.
+        expected_domain = _extract_domain_block(row.payload)
+        actual_routing_conf = (
+            float(row.routing_confidence)
+            if isinstance(row.routing_confidence, Decimal)
+            else row.routing_confidence
+        )
+        if (
+            row.domain_id != expected_domain["domain_id"]
+            or row.domain_version != expected_domain["domain_version"]
+            or (row.matter_types or []) != expected_domain["matter_types"]
+            or (row.routing_metadata or {}) != expected_domain["routing_metadata"]
+            or actual_routing_conf != expected_domain["routing_confidence"]
+        ):
+            mismatches.append("prediction_domain_routing")
+        if row.forum != _extract_forum(row.payload):
+            mismatches.append("prediction_forum")
+        expected_hashes = _extract_repro_hashes(row.payload)
+        if (
+            row.domain_spec_hash != expected_hashes["domain_spec_hash"]
+            or row.prompt_pack_hash != expected_hashes["prompt_pack_hash"]
+            or row.ontology_hash != expected_hashes["ontology_hash"]
+            or row.corpus_version != expected_hashes["corpus_version"]
+        ):
+            mismatches.append("prediction_repro_hashes")
 
         issues_q = await self._s.execute(
             select(PredictionIssueRow)
