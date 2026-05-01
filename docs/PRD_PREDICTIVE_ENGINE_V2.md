@@ -246,6 +246,8 @@ class IssueRetrievalResult(BaseModel):
 
 **Fallback**: If per-issue retrieval returns < `min_cases_required` for any issue, fall back to a combined query for that issue. If still insufficient, mark issue as `uncertain`.
 
+> **Phase 2 alternative — proposition-grained retrieval (SHA-36).** A parallel retrieval mode operating on atomic propositions (Dense X / HippoRAG style) is being built as a **substrate first**, retrieval second. The substrate (proposition extraction, typed edges, quote-verified provenance, Postgres persistence) ships in PR #15; the PageRank-over-KG retrieval that consumes it is Phase 2 and will appear in §7.3 as a new ablation row alongside `RAG-only` / `KG-only`. See [`docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md`](superpowers/specs/2026-05-01-sha-36-proposition-kg.md) for the schema and Phase 2 contract.
+
 ---
 
 ### 3.4 Step 3: Per-Issue Predictor
@@ -1156,6 +1158,7 @@ Each ablation removes one component and measures degradation:
 | **V2 – Calibration** | Raw confidence only | ECE increases by 0.05–0.15 |
 | **RAG-only** | No KG at all | Drop in multi-issue handling |
 | **KG-only** | No RAG retrieval | Major accuracy drop (no precedent) |
+| **Proposition-PageRank** *(Phase 2, post SHA-36)* | Replace chunk-grained RAG with HippoRAG-style PageRank over proposition KG; substrate built in [PR #15](https://github.com/MSH4R1F/proposer/pull/15) | Hypothesised gain on multi-hop / cross-paragraph reasoning per Dense X (2312.06648) and HippoRAG (NeurIPS 2024); ablation will be RAGAS-scored (faithfulness, context precision/recall) |
 
 ### 7.4 Online Evaluation (A/B Testing)
 

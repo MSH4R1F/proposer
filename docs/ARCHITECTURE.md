@@ -350,9 +350,9 @@ SHA-102 ([PR #9](https://github.com/MSH4R1F/proposer/pull/9)) replaced all JSON-
 Router → dependencies.py (Depends(get_uow)) → Service → UnitOfWork → Repository → AsyncSession → Postgres
 ```
 
-- **`apps/api/src/db/uow.py`**: `UnitOfWork` is a request-scoped async context manager. It opens one `AsyncSession`, exposes all six repos as attributes, commits on clean `__aexit__`, and rolls back on exception.
+- **`apps/api/src/db/uow.py`**: `UnitOfWork` is a request-scoped async context manager. It opens one `AsyncSession`, exposes all seven repos as attributes, commits on clean `__aexit__`, and rolls back on exception.
 - **`apps/api/src/dependencies.py`**: `get_uow` / `get_*_service` factories wire per-request UoW into service constructors via FastAPI `Depends()`.
-- **Repositories** (`apps/api/src/db/repositories/`): 6 repos — one per aggregate. Each exposes `save`, `get`, `get_by_*`, `delete`, and `list_*` methods. Repos translate between Pydantic domain models and SQLAlchemy ORM rows.
+- **Repositories** (`apps/api/src/db/repositories/`): 7 repos — one per aggregate (the seventh, `PropositionsRepo`, was added by SHA-36 Phase 1). Each exposes `save`, `get`, `get_by_*`, `delete`, and `list_*` methods. Repos translate between Pydantic domain models and SQLAlchemy ORM rows.
 
 ### Atomic Flows
 
@@ -392,6 +392,16 @@ graph LR
     class Router,Dep,Svc,UoW,Repo,Session box
     class PG db
 ```
+
+### Proposition KG Substrate (SHA-36, Phase 1)
+
+SHA-36 adds a separate **offline corpus-ingestion path** for tribunal decisions. It is not user-case state and is not read by live mediation predictions in this phase.
+
+- **Substrate**: 4 tables — `decision_documents`, `proposition_extraction_runs`, `propositions`, `proposition_edges` — added via Alembic migration `0002_add_proposition_kg.py` (3 new enums).
+- **Ingestion**: opt-in CLIs under `scripts/ingestion/` (`select_proposition_corpus`, `ingest_propositions`). Each proposition is persisted only if its `source_passage` literally appears in the decision text (substrate-layer cite-or-abstain).
+- **Phase 2**: PageRank-driven retrieval will consume `proposition_id`, `issue_tags`, `entities`, `proposition_edges.edge_type`, and `document_id`. Phase 1 only ships the substrate so Phase 2 can be built without re-shaping it.
+
+See `docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md` for the full design rationale.
 
 ---
 

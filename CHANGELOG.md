@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **SHA-36: Proposition KG — Phase 1 substrate**
+  - **Schema**: 4 new tables + 3 new enums via Alembic migration `0002_add_proposition_kg.py`. Tables: `decision_documents` (one row per ingested decision PDF, content-hashed), `proposition_extraction_runs` (one row per ingestion attempt, with model id, prompt version, status, token + cost metrics), `propositions` (atomic claims with quote span, paragraph ref, offsets, issue tags, entities, monetary amounts, type), `proposition_edges` (typed edges between propositions in the same run).
+  - **Domain models** (`packages/kg_builder/propositions/models.py`): `Proposition`, `PropositionEdge`, `DecisionDocument`, `ExtractionRun` (Pydantic), with field-level validation for paragraph-ref shape (string, not integer — preserves `12(3)`, `Sch.1 para 4`, etc.), monetary amounts, issue-tag enum, edge-type enum.
+  - **Repository + Unit of Work**: `apps/api/src/db/repositories/propositions_repo.py` adds `PropositionsRepo` (`save_document`, `save_run`, `save_propositions`, `save_edges`, `find_succeeded_run` for CLI `--resume` support, `list_propositions_for_document`); wired into `UnitOfWork` alongside the existing six SHA-102 repos.
+  - **Extraction pipeline** under `packages/kg_builder/propositions/`: `text_loader.py` (reuses `PDFExtractor.extract_from_pdf`), `provenance.py` (`find_source_span` + `normalize_for_matching`), `extractor.py` (`LLMPropositionExtractor` calling `ClaudeClient.generate_structured`), `edge_extractor.py` (`LLMPropositionEdgeExtractor`), `graph_validator.py` (`validate_graph` rejects edges to unverified propositions, drops `supports` cycles, deduplicates parallel edges).
+  - **Quote verification + prompt-injection guard at substrate layer**: every proposition's `source_passage` must be a literal whitespace-tolerant substring of the actual decision text; propositions with unverified quotes are rejected with `reason='quote_not_found'` before persistence. This is the cite-or-abstain rule from the Stanford/Yale Legal RAG Hallucinations paper, implemented at the layer where it cannot be skipped.
+  - **Deterministic identity**: proposition `id` = `uuid5(NAMESPACE, "{document_id}|{paragraph_ref}|{source_passage_hash}|{type}|{text_hash}")`. Re-ingestion is idempotent in the common case (`test_ingestion_idempotent_on_repeat` asserts 0 duplicates on second run).
+  - **Corpus selector CLI**: `scripts/ingestion/select_proposition_corpus.py` produces a deterministic 5-document smoke manifest from `data/raw/bailii`.
+  - **Ingestion CLI**: `scripts/ingestion/ingest_propositions.py` with `--manifest`, `--dry-run`, `--commit`, `--resume`, `--force`, `--jsonl-report`, `--mock-response` flags. Per-run cost + tokens recorded to JSONL for the £/document distribution.
+  - **Phase 1 scope**: offline corpus-ingestion path only. Not wired into live mediation predictions; Phase 2 will consume the substrate via PageRank-driven retrieval (`proposition_id`, `issue_tags`, `entities`, `proposition_edges.edge_type`, `document_id`).
+  - **Test count**: ~145 new SHA-36-specific tests across `apps/api/tests/db/`, `packages/kg_builder/propositions/tests/`, and `scripts/ingestion/tests/`. Full suite: 335 passed, 10 skipped, 0 regressions.
+  - **Spec**: `docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md`. **Plan**: `docs/superpowers/plans/2026-05-01-sha-36-proposition-kg.md`.
+
 - **Comprehensive Architecture Documentation** - Created detailed system architecture documentation
   - **New File**: `docs/ARCHITECTURE.md` with complete system overview
   - **Mermaid Diagrams**:

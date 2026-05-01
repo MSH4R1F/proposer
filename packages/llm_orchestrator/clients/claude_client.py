@@ -235,12 +235,15 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
 
         # Parse JSON from response
         try:
-            # Try to extract JSON if wrapped in markdown
-            json_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", response_text)
-            if json_match:
-                json_str = json_match.group(1)
+            # Try to extract JSON if wrapped in markdown. Tolerate the case where
+            # the closing fence is missing (response truncated at max_tokens) by
+            # falling back to "everything after the opening fence".
+            closed = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", response_text)
+            if closed:
+                json_str = closed.group(1)
             else:
-                json_str = response_text.strip()
+                opened = re.search(r"```(?:json)?\s*\n?([\s\S]*)$", response_text)
+                json_str = (opened.group(1) if opened else response_text).strip()
 
             # Parse and validate
             data = json.loads(json_str)
