@@ -11,6 +11,7 @@ from apps.api.src.db.repositories import (
     KnowledgeGraphRepo,
     MediationsRepo,
     PredictionsRepo,
+    PropositionsRepo,
     SessionsRepo,
 )
 
@@ -27,6 +28,7 @@ class UnitOfWork:
         self.knowledge_graphs: KnowledgeGraphRepo
         self.mediations: MediationsRepo
         self.evidence: EvidenceRepo
+        self.propositions: PropositionsRepo
 
     async def __aenter__(self) -> "UnitOfWork":
         self.session = self._sessionmaker()
@@ -36,6 +38,7 @@ class UnitOfWork:
         self.knowledge_graphs = KnowledgeGraphRepo(self.session)
         self.mediations = MediationsRepo(self.session)
         self.evidence = EvidenceRepo(self.session)
+        self.propositions = PropositionsRepo(self.session)
         return self
 
     async def __aexit__(
