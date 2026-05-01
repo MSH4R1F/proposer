@@ -66,6 +66,13 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "completeness_score":  ("field", "ConversationState.case_file.completeness_score"),
         "role_explicitly_set": ("field", "ConversationState.role_explicitly_set"),
         "version":             ("projection_only", None),
+        # SHA-20 Phase 3: domain routing fields are real Pydantic fields on
+        # ConversationState (mirrored on case_file).
+        "domain_id":          ("field", "ConversationState.domain_id"),
+        "domain_version":     ("field", "ConversationState.domain_version"),
+        "matter_types":       ("field", "ConversationState.matter_types"),
+        "routing_confidence": ("field", "ConversationState.routing_confidence"),
+        "routing_metadata":   ("field", "ConversationState.routing_metadata"),
         "payload":             ("payload", None),
     },
     DisputeRow: {
@@ -83,6 +90,13 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "cached_prediction_id": ("projection_only", None),
         "prediction_cache_key": ("projection_only", None),
         "version":              ("projection_only", None),
+        # SHA-20 Phase 3: domain routing fields are real Pydantic fields.
+        "domain_id":          ("field", "DisputeCase.domain_id"),
+        "domain_version":     ("field", "DisputeCase.domain_version"),
+        "forum":              ("field", "DisputeCase.forum"),
+        "matter_types":       ("field", "DisputeCase.matter_types"),
+        "routing_confidence": ("field", "DisputeCase.routing_confidence"),
+        "routing_metadata":   ("field", "DisputeCase.routing_metadata"),
         "payload":              ("payload", None),
     },
     PredictionRow: {
@@ -100,6 +114,18 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "pipeline_metadata":   ("field", "PredictionResult.pipeline_metadata"),
         "citation_verification": ("field", "PredictionResult.citation_verification"),
         "metadata":            ("metadata", None),
+        # SHA-20 Phase 3: domain routing + reproducibility hashes are real
+        # Pydantic fields on PredictionResult.
+        "domain_id":          ("field", "PredictionResult.domain_id"),
+        "domain_version":     ("field", "PredictionResult.domain_version"),
+        "forum":              ("field", "PredictionResult.forum"),
+        "matter_types":       ("field", "PredictionResult.matter_types"),
+        "routing_confidence": ("field", "PredictionResult.routing_confidence"),
+        "routing_metadata":   ("field", "PredictionResult.routing_metadata"),
+        "domain_spec_hash":   ("field", "PredictionResult.domain_spec_hash"),
+        "prompt_pack_hash":   ("field", "PredictionResult.prompt_pack_hash"),
+        "ontology_hash":      ("field", "PredictionResult.ontology_hash"),
+        "corpus_version":     ("field", "PredictionResult.corpus_version"),
         "payload":             ("payload", None),
     },
     PredictionIssueRow: {
@@ -151,6 +177,17 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "relevance":        ("field", "Citation.relevance"),
         "similarity_score": ("field", "Citation.similarity_score"),
         "verified":         ("field", "Citation.verified"),
+        # SHA-20 Phase 3: PredictionCitationRow inherits domain + source
+        # provenance from its parent PredictionResult; the Citation Pydantic
+        # model itself does not carry these fields, so they remain
+        # projection-only at the citation row level.
+        "domain_id":        ("projection_only", None),
+        "source_kind":      ("projection_only", None),
+        "source_publisher": ("projection_only", None),
+        "source_id":        ("projection_only", None),
+        "namespace_id":     ("projection_only", None),
+        "canonical_url":    ("projection_only", None),
+        "source_license":   ("projection_only", None),
         "payload":          ("payload", None),
     },
     KnowledgeGraphRow: {
@@ -163,6 +200,12 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "validation_info":      ("field", "KnowledgeGraph.validation_info"),
         "is_consistent":        ("field", "KnowledgeGraph.is_consistent"),
         "data_quality_tier":    ("field", "KnowledgeGraph.data_quality_tier"),
+        # SHA-20 Phase 3: domain routing + ontology hash are real fields on
+        # KnowledgeGraph; spec hash is also surfaced at top level.
+        "domain_id":        ("field", "KnowledgeGraph.domain_id"),
+        "domain_version":   ("field", "KnowledgeGraph.domain_version"),
+        "domain_spec_hash": ("field", "KnowledgeGraph.domain_spec_hash"),
+        "ontology_hash":    ("field", "KnowledgeGraph.ontology_hash"),
         "metadata":             ("metadata", None),
         "payload":              ("payload", None),
     },
@@ -207,6 +250,10 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "settlement_amount": ("field", "MediationSession.settlement_amount"),
         "escalated_at":      ("field", "MediationSession.escalated_at"),
         "version":           ("projection_only", None),
+        # SHA-20 Phase 3: minimal domain routing (id + version) is a real
+        # field on MediationSession.
+        "domain_id":      ("field", "MediationSession.domain_id"),
+        "domain_version": ("field", "MediationSession.domain_version"),
         "payload":           ("payload", None),
     },
     MediationMessageRow: {
@@ -248,6 +295,12 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "description":       ("field", "EvidenceMetadata.description"),
         "extracted_text":    ("field", "EvidenceMetadata.extracted_text"),
         "image_description": ("field", "EvidenceMetadata.image_description"),
+        # SHA-20 Phase 3: domain routing + source provenance are real fields.
+        "domain_id":        ("field", "EvidenceMetadata.domain_id"),
+        "domain_version":   ("field", "EvidenceMetadata.domain_version"),
+        "source_kind":      ("field", "EvidenceMetadata.source_kind"),
+        "source_publisher": ("field", "EvidenceMetadata.source_publisher"),
+        "source_id":        ("field", "EvidenceMetadata.source_id"),
         "payload":           ("payload", None),
     },
 }
