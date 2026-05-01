@@ -72,6 +72,15 @@ class ConversationState(BaseModel):
     # Role tracking for button-triggered flows
     role_explicitly_set: bool = False
 
+    # SHA-20 Phase 3: domain routing metadata. Mirrors CaseFile.domain_*; the
+    # repository layer projects whichever copy is populated, falling back to
+    # the deposit defaults for legacy rows.
+    domain_id: str = Field(default="housing.deposit.v1")
+    domain_version: str = Field(default="v1")
+    matter_types: List[str] = Field(default_factory=list)
+    routing_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    routing_metadata: Dict[str, Any] = Field(default_factory=dict)
+
     @classmethod
     def new(cls, case_id: Optional[str] = None, user_role: Optional[PartyRole] = None) -> "ConversationState":
         """

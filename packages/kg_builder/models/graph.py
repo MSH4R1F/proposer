@@ -48,6 +48,14 @@ class KnowledgeGraph(BaseModel):
     is_consistent: bool = True
     data_quality_tier: str = Field(default="minimal")
 
+    # SHA-20 Phase 3: domain routing + reproducibility hashes. The KG inherits
+    # its domain from the source CaseFile; defaults preserve legacy deposit
+    # behaviour so already-persisted graphs round-trip cleanly.
+    domain_id: str = "housing.deposit.v1"
+    domain_version: str = "v1"
+    domain_spec_hash: Optional[str] = None
+    ontology_hash: Optional[str] = None
+
     # Metadata
     metadata: Dict[str, Any] = Field(default_factory=dict)
 

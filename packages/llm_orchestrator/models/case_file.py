@@ -183,6 +183,17 @@ class CaseFile(BaseModel):
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
+    # SHA-20 Phase 3: domain routing metadata.
+    # Backwards compatible defaults (`housing.deposit.v1` / `v1`) match the
+    # values that ``apps.api.src.db.repositories._domain_meta`` previously
+    # projected from the legacy payload, so existing deposit fixtures and
+    # already-persisted rows continue to deserialize unchanged.
+    domain_id: str = Field(default="housing.deposit.v1")
+    domain_version: str = Field(default="v1")
+    matter_types: List[str] = Field(default_factory=list)
+    routing_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    routing_metadata: Dict[str, Any] = Field(default_factory=dict)
+
     # Parties
     tenant_name: Optional[str] = None
     landlord_name: Optional[str] = None
