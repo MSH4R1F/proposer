@@ -13,10 +13,11 @@ from pydantic import BaseModel, Field
 from llm_orchestrator.agent_loop.context import ToolContext
 from llm_orchestrator.agent_loop.loop import AgentLoop
 from llm_orchestrator.agent_loop.trace import TraceSummary
-from llm_orchestrator.clients.claude_client import ClaudeClient
+from llm_orchestrator.clients.base import BaseLLMClient
+from llm_orchestrator.clients.types import LLMProvider
 from llm_orchestrator.tools.smoke import SMOKE_TOOLS
 
-from ..dependencies import get_agent_loop_client, get_tool_context
+from ..dependencies import get_agent_loop_client, get_agent_loop_provider, get_tool_context
 
 logger = structlog.get_logger()
 
@@ -38,13 +39,15 @@ class AgentSmokeResponse(BaseModel):
 async def agent_smoke(
     body: AgentSmokeRequest,
     ctx: ToolContext = Depends(get_tool_context),
-    client: ClaudeClient = Depends(get_agent_loop_client),
+    client: BaseLLMClient = Depends(get_agent_loop_client),
+    provider: LLMProvider = Depends(get_agent_loop_provider),
 ) -> AgentSmokeResponse:
     """Run the agent loop against SMOKE_TOOLS with a single user prompt."""
     loop = AgentLoop(
         llm_client=client,
         tool_set=SMOKE_TOOLS,
         max_turns=body.max_turns or 8,
+        provider=provider,
     )
     messages: List[Dict[str, Any]] = [
         {"role": "user", "content": body.prompt}
