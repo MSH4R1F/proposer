@@ -1,0 +1,81 @@
+# Ontology: housing.property_chamber_rro.v1
+#
+# First-tier Tribunal (Property Chamber) — Rent Repayment Orders only
+# (audit decision D4: RRO scope, no AST overlap). Extends base.v1.
+#
+# RRO claims hinge on a relevant period during which the landlord
+# committed a relevant licensing/management offence. The ontology
+# captures these explicitly so prediction prompts can reason about
+# offence type and overlap with the relevant period without re-deriving
+# the schema from raw text each time.
+
+id: housing.property_chamber.rro.v1
+schema_version: 1
+extends: base.v1
+description: "FtT Property Chamber - Rent Repayment Orders (audit D4)."
+
+node_kinds:
+  - name: RentRepaymentOrder
+    description: "Application for or grant of a rent repayment order."
+    attributes:
+      - applicant_role
+      - claimed_amount
+      - awarded_amount
+      - decision_date
+  - name: LicensingOffence
+    description: "Statutory licensing/management offence underpinning the RRO."
+    attributes:
+      - offence_code
+      - statute_reference
+      - offence_period_start
+      - offence_period_end
+      - description
+  - name: RelevantPeriod
+    description: "Twelve-month relevant period under Housing & Planning Act 2016 s.41."
+    attributes:
+      - start_date
+      - end_date
+      - rent_paid
+      - rent_paid_source
+
+edge_kinds:
+  - name: rro_for_property
+    from_kind: RentRepaymentOrder
+    to_kind: Property
+    cardinality: many_to_many
+    description: "RRO concerns a specific property."
+  - name: rro_against_party
+    from_kind: RentRepaymentOrder
+    to_kind: Party
+    cardinality: many_to_many
+    description: "RRO is sought against a specific landlord/agent."
+  - name: rro_for_offence
+    from_kind: RentRepaymentOrder
+    to_kind: LicensingOffence
+    cardinality: many_to_many
+    description: "RRO is grounded in a specific offence."
+  - name: offence_during_period
+    from_kind: LicensingOffence
+    to_kind: RelevantPeriod
+    cardinality: many_to_many
+    description: "Offence overlaps with the claimed relevant period."
+  - name: relevant_period_for_lease
+    from_kind: RelevantPeriod
+    to_kind: Lease
+    cardinality: many_to_many
+    description: "The relevant period is anchored to a particular lease."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: LicensingOffence
+    cardinality: many_to_many
+    description: "Evidence supports the existence of an offence."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: RelevantPeriod
+    cardinality: many_to_many
+    description: "Evidence supports the relevant-period dates / rent paid."
+
+cross_domain_bridges:
+  - evidence_relates_to
+  - evidence_supports
+  - evidence_refutes
