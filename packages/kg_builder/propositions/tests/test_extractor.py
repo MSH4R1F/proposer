@@ -21,6 +21,7 @@ from kg_builder.propositions.extractor import (
 from kg_builder.propositions.models import (
     PropositionType,
     deterministic_document_id,
+    normalize_for_matching,
     sha256_hex,
 )
 from kg_builder.propositions.prompts import (
@@ -86,6 +87,13 @@ async def test_extract_returns_accepted_propositions_when_quote_matches():
     assert prop.proposition_type == PropositionType.fact
     assert prop.case_reference == "X"
     assert prop.paragraph_ref == "1"
+    assert prop.source_start_char is not None
+    assert prop.source_end_char is not None
+    normalized = normalize_for_matching(loaded.full_text)
+    assert (
+        normalized[prop.source_start_char : prop.source_end_char]
+        == normalize_for_matching(quote)
+    )
     assert prop.confidence == pytest.approx(0.9)
     assert result.rejections == []
     assert result.chunks_called == 1
@@ -112,6 +120,40 @@ async def test_extract_passes_run_id_through():
         run_id=run_id,
     )
     assert result.propositions[0].run_id == run_id
+
+
+@pytest.mark.asyncio
+async def test_extract_records_document_level_source_span_for_later_chunks():
+    first_quote = "First paragraph about the tenancy deposit."
+    second_quote = "Second paragraph says the landlord returned 100 pounds."
+    loaded = _make_loaded([first_quote, second_quote])
+
+    fake_llm = AsyncMock()
+    fake_llm.generate_structured.side_effect = [
+        _make_response([]),
+        _make_response([{
+            "text": "Landlord returned 100 pounds.",
+            "source_passage": second_quote,
+            "paragraph_ref": "2",
+            "proposition_type": "fact",
+            "confidence": 0.9,
+        }]),
+    ]
+
+    ext = LLMPropositionExtractor(fake_llm, max_chars_per_chunk=80)
+    result = await ext.extract(
+        document_id=_document_id(), case_reference="X", loaded=loaded,
+    )
+
+    prop = result.propositions[0]
+    assert prop.source_start_char is not None
+    assert prop.source_end_char is not None
+    normalized = normalize_for_matching(loaded.full_text)
+    assert (
+        normalized[prop.source_start_char : prop.source_end_char]
+        == normalize_for_matching(second_quote)
+    )
+    assert prop.source_start_char > len(normalize_for_matching(first_quote))
 
 
 # ---------------------------------------------------------------------------

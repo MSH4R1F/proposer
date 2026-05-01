@@ -161,10 +161,18 @@ class LLMPropositionExtractor:
         seen_ids: set[UUID] = set()
 
         for idx, chunk in enumerate(chunks):
+            chunk_span = find_source_span(chunk, loaded.full_text)
             response = await self._call_llm(case_reference, chunk, idx, len(chunks))
             for item in response.propositions:
                 outcome = self._convert_item(
-                    item, document_id, case_reference, run_id, chunk,
+                    item,
+                    document_id,
+                    case_reference,
+                    run_id,
+                    chunk,
+                    chunk_start_char=(
+                        chunk_span.start_char if chunk_span is not None else None
+                    ),
                 )
                 if isinstance(outcome, RejectionRecord):
                     self.log.debug(
@@ -275,6 +283,7 @@ class LLMPropositionExtractor:
         case_reference: str,
         run_id: Optional[UUID],
         chunk_text: str,
+        chunk_start_char: Optional[int] = None,
     ) -> Union[Proposition, RejectionRecord]:
         """Validate one LLM item and convert to a domain Proposition,
         OR a RejectionRecord."""
@@ -300,10 +309,16 @@ class LLMPropositionExtractor:
             return RejectionRecord(reason="low_confidence", snippet=item.text[:80])
 
         # 4. quote verification — passage must be findable in the chunk
-        if find_source_span(item.source_passage, chunk_text) is None:
+        span = find_source_span(item.source_passage, chunk_text)
+        if span is None:
             return RejectionRecord(
                 reason="quote_not_found", snippet=item.source_passage[:80]
             )
+        source_start_char = span.start_char
+        source_end_char = span.end_char
+        if chunk_start_char is not None:
+            source_start_char += chunk_start_char
+            source_end_char += chunk_start_char
 
         # 5. assemble domain Proposition with deterministic id
         try:
@@ -321,6 +336,8 @@ class LLMPropositionExtractor:
                 text=item.text,
                 source_passage=item.source_passage,
                 paragraph_ref=item.paragraph_ref,
+                source_start_char=source_start_char,
+                source_end_char=source_end_char,
                 proposition_type=ptype,
                 issue_tags=list(item.issue_tags),
                 entities=list(item.entities),
