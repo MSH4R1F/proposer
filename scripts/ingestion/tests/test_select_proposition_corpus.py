@@ -91,7 +91,6 @@ def _make_case(
     decision_file = case_dir / f"decision{extension}"
     decision_file.write_text(_decision_text(text_chars), encoding="utf-8")
 
-    rel_path = decision_file.relative_to(bailii_root.parent.parent if False else bailii_root.parent.parent)
     # Use absolute path strings — selector should accept either, but absolute
     # is the simplest fixture.
     rec = {

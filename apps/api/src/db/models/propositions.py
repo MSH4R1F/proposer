@@ -177,7 +177,10 @@ class PropositionRow(Base):
         ForeignKey("proposition_extraction_runs.run_id", ondelete="SET NULL"),
         nullable=True,
     )
-    case_reference: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    # Index declared explicitly in __table_args__ below so the migration owns
+    # the index name (`ix_propositions_case_reference`); avoid `index=True`
+    # which would also auto-create one and conflict.
+    case_reference: Mapped[str] = mapped_column(String(128), nullable=False)
     text: Mapped[str] = mapped_column(String(500), nullable=False)
     source_passage: Mapped[str] = mapped_column(String(1500), nullable=False)
     paragraph_ref: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
