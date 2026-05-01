@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
 from pydantic import BaseModel
 
 from ..clients._schema import strict_json_schema
+from ..clients.types import LLMProvider
 from .context import ToolContext
 
 JSONValue = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
@@ -204,6 +205,20 @@ class ToolSet:
         replaces the other (SHA-114 spec §16.5).
         """
         return [t.to_openai_response_tool() for t in self.tools]
+
+    def schemas_for(self, provider: LLMProvider) -> List[Dict[str, Any]]:
+        """Return tool schemas in the right shape for ``provider``.
+
+        Provider-aware dispatch so the AgentLoop can hand each adapter the
+        envelope it actually accepts: Anthropic's ``input_schema`` shape vs
+        OpenAI Responses' ``function`` envelope. Added in SHA-114 step 5 so
+        OpenAI agent turns no longer receive Anthropic-shaped schemas.
+        """
+        if provider == LLMProvider.ANTHROPIC:
+            return self.anthropic_schemas()
+        if provider == LLMProvider.OPENAI:
+            return self.openai_response_tools()
+        raise ValueError(f"Unsupported provider: {provider}")
 
     async def dispatch(self, name: str, raw_args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         if name not in self._by_name:

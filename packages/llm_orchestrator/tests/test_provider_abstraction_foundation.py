@@ -39,6 +39,7 @@ from llm_orchestrator.clients.factory import (
     get_agent_turn_client,
     get_llm_client,
 )
+from llm_orchestrator.clients.openai_client import OpenAIClient
 from llm_orchestrator.clients.types import LLMProvider, LLMRole
 from llm_orchestrator.config import (
     LLMConfig,
@@ -388,18 +389,31 @@ def test_factory_wires_role_primary_and_fallback_models(clean_env) -> None:
     assert client_intake.model == "claude-3-5-haiku-20241022"
 
 
-def test_factory_raises_for_openai_role_until_step_3(clean_env) -> None:
+def test_factory_returns_openai_client_for_openai_role(clean_env) -> None:
     clean_env.setenv("LLM_PREDICTION_PROVIDER", "openai")
     clean_env.setenv("OPENAI_API_KEY", "sk-test")
     cfg = LLMConfig(anthropic_api_key="dummy")
-    with pytest.raises(NotImplementedError, match="Task 3"):
-        get_llm_client(LLMRole.PREDICTION, config=cfg)
+    client = get_llm_client(LLMRole.PREDICTION, config=cfg)
+    assert isinstance(client, OpenAIClient)
+    assert client.model == "gpt-5.5"
+    assert client.fallback_model == "gpt-5.4"
+    assert client.reasoning_effort == "high"
+    assert client.text_verbosity == "medium"
 
 
 def test_get_agent_turn_client_returns_runtime_compatible_client(clean_env) -> None:
     """The returned client must satisfy AgentTurnClient (has run_agent_turn)."""
     cfg = LLMConfig(anthropic_api_key="dummy")
     client = get_agent_turn_client(LLMRole.MEDIATOR, config=cfg)
+    assert hasattr(client, "run_agent_turn")
+
+
+def test_get_agent_turn_client_supports_openai_roles(clean_env) -> None:
+    clean_env.setenv("LLM_MEDIATOR_PROVIDER", "openai")
+    clean_env.setenv("OPENAI_API_KEY", "sk-test")
+    cfg = LLMConfig(anthropic_api_key="dummy")
+    client = get_agent_turn_client(LLMRole.MEDIATOR, config=cfg)
+    assert isinstance(client, OpenAIClient)
     assert hasattr(client, "run_agent_turn")
 
 
@@ -438,17 +452,17 @@ def test_claude_client_reset_stats_preserves_new_fields() -> None:
 
 
 # Allowlist of (file, count) pairs that are still permitted to construct
-# ClaudeClient directly. Step 5 will migrate these to the factory and shrink
-# this list to {} — at which point the guard test stops being a tripwire.
+# ClaudeClient directly after step 5. Production code must go through the
+# role-aware factory; only focused client tests and the factory itself are
+# allowed to mention the constructor directly.
 #
-# Captured 2026-05-01 by ripgrep `ClaudeClient\(` excluding the client module
-# itself. Tests live in packages/llm_orchestrator/tests/ and are exempt.
+# Captured 2026-05-01 by ripgrep `ClaudeClient\(` excluding only the
+# ClaudeClient implementation module itself.
 _ALLOWED_DIRECT_CONSTRUCTIONS: dict[str, int] = {
-    "packages/llm_orchestrator/cli.py": 2,
-    "apps/api/src/dependencies.py": 3,
-    "apps/api/src/services/mediation_service.py": 1,
-    "apps/api/src/services/intake_service.py": 1,
-    "apps/api/src/services/prediction_service.py": 1,
+    "packages/llm_orchestrator/clients/factory.py": 1,
+    "packages/llm_orchestrator/tests/test_claude_client_agent_turn.py": 1,
+    "packages/llm_orchestrator/tests/test_openai_client_agent_turn.py": 1,
+    "packages/llm_orchestrator/tests/test_provider_abstraction_foundation.py": 6,
 }
 
 
@@ -476,10 +490,9 @@ def test_guard_direct_claude_client_construction_count() -> None:
             continue
         for py in base.rglob("*.py"):
             rel = py.relative_to(root).as_posix()
-            # Skip the client module itself and the test tree.
-            if rel.startswith("packages/llm_orchestrator/clients/"):
-                continue
-            if "/tests/" in rel or rel.endswith("conftest.py"):
+            # Skip the client implementation itself; the factory and focused
+            # tests remain counted via the allowlist above.
+            if rel == "packages/llm_orchestrator/clients/claude_client.py":
                 continue
             text = py.read_text(encoding="utf-8", errors="replace")
             n = len(pattern.findall(text))
