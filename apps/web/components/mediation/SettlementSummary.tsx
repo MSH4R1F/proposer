@@ -14,6 +14,15 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
     month: 'long',
     year: 'numeric',
   });
+  const address = settlement.property?.address;
+  const postcode = settlement.property?.postcode;
+  const addressContainsPostcode =
+    address && postcode
+      ? address
+          .replace(/\s/g, '')
+          .toLowerCase()
+          .includes(postcode.replace(/\s/g, '').toLowerCase())
+      : false;
 
   return (
     <div className="space-y-4">
@@ -45,11 +54,11 @@ export function SettlementSummary({ settlement }: SettlementSummaryProps) {
           </div>
 
           {/* Property info if available */}
-          {settlement.property?.address && (
+          {address && (
             <div className="text-sm text-muted-foreground">
               <span className="font-medium text-foreground">Property: </span>
-              {settlement.property.address}
-              {settlement.property.postcode ? `, ${settlement.property.postcode}` : ''}
+              {address}
+              {postcode && !addressContainsPostcode ? `, ${postcode}` : ''}
             </div>
           )}
 

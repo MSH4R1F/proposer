@@ -55,9 +55,10 @@ This helps establish the formal arrangement.""",
 
     "deposit_details": """This is crucial for deposit protection claims. Find out:
 - How much was the deposit?
+- When was the deposit paid to the landlord or agent?
 - Which scheme was it protected with (TDS, DPS, MyDeposits) - or was it not protected?
 - Did they receive prescribed information (a certificate and information sheet)?
-- When was the deposit protected (within 30 days of tenancy start)?
+- When was the deposit protected (within 30 days of the landlord/agent receiving it)?
 
 If the deposit wasn't protected, this is very significant - acknowledge this and explain it may affect the outcome.""",
 

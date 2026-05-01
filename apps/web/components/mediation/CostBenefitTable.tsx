@@ -10,9 +10,15 @@ interface CostBenefitTableProps {
 
 function formatCost(cost: number | [number, number]): string {
   if (Array.isArray(cost)) {
-    return `£${cost[0].toLocaleString()}–£${cost[1].toLocaleString()}`;
+    return `£${formatAmount(cost[0])}–£${formatAmount(cost[1])}`;
   }
-  return `£${cost.toLocaleString()}`;
+  return `£${formatAmount(cost)}`;
+}
+
+function formatAmount(amount: number): string {
+  return amount.toLocaleString('en-GB', {
+    maximumFractionDigits: 0,
+  });
 }
 
 export function CostBenefitTable({ expectationData }: CostBenefitTableProps) {
@@ -35,7 +41,7 @@ export function CostBenefitTable({ expectationData }: CostBenefitTableProps) {
 
             <div>
               <p className="text-xl font-bold text-primary">
-                £{settlement_option.amount.toLocaleString()}
+                £{formatAmount(settlement_option.amount)}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">{settlement_option.description}</p>
             </div>
@@ -77,7 +83,7 @@ export function CostBenefitTable({ expectationData }: CostBenefitTableProps) {
               </li>
               <li className="flex items-start gap-1.5">
                 <AlertCircle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
-                Landlord costs: £{tribunal_costs.landlord_costs_min}–£{tribunal_costs.landlord_costs_max}
+                Landlord costs: £{formatAmount(tribunal_costs.landlord_costs_min)}–£{formatAmount(tribunal_costs.landlord_costs_max)}
               </li>
               <li className="flex items-start gap-1.5">
                 <AlertCircle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
