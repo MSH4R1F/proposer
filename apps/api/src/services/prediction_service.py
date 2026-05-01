@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from llm_orchestrator.clients.factory import get_llm_client
 from llm_orchestrator.clients.types import LLMRole
 from llm_orchestrator.models.prediction import PredictionResult
-from llm_orchestrator.models.prediction_v2 import PredictionMode
+from llm_orchestrator.models.prediction_v2 import PredictionMode, RetrievalStrategy
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
 
 from apps.api.src.config import config
@@ -97,6 +97,7 @@ class PredictionService:
         _ = dispute_service
 
         logger.info("prediction_service_initialized")
+        self._configure_proposition_retriever()
 
     # ------------------------------------------------------------------
     # Lazy property accessors for heavy components
@@ -107,7 +108,25 @@ class PredictionService:
         """Process-cached prediction engine (constructed on first use)."""
         if self._engine is None:
             self._engine = _build_prediction_engine()
+            self._configure_proposition_retriever()
         return self._engine
+
+    def _configure_proposition_retriever(self) -> None:
+        """Attach a sessionmaker-backed proposition retriever to cached engines."""
+        if self._engine is None or not hasattr(self._engine, "set_proposition_retriever"):
+            return
+        from unittest.mock import Mock
+
+        setter = getattr(self._engine, "set_proposition_retriever")
+        if isinstance(setter, Mock):
+            return
+        from apps.api.src.services.proposition_graph_store import (
+            PostgresPropositionGraphStore,
+        )
+        from llm_orchestrator.pipeline.proposition_retrieval import PropositionRetriever
+
+        store = PostgresPropositionGraphStore(self._sm)
+        setter(PropositionRetriever(store))
 
     @property
     def graph_builder(self) -> Any:
@@ -172,6 +191,7 @@ class PredictionService:
         case_id: str,
         include_reasoning: bool = True,
         mode_override: Optional[PredictionMode] = None,
+        retrieval_strategy_override: Optional[RetrievalStrategy] = None,
     ) -> PredictionResult:
         """
         Generate a prediction for a case.
@@ -221,6 +241,18 @@ class PredictionService:
                     configured=config.prediction_mode,
                 )
                 default_mode = PredictionMode.HYBRID
+        if retrieval_strategy_override is not None:
+            default_retrieval_strategy = retrieval_strategy_override
+        else:
+            configured_strategy = getattr(config, "retrieval_strategy", "chunk_rag")
+            try:
+                default_retrieval_strategy = RetrievalStrategy(configured_strategy)
+            except ValueError:
+                logger.warning(
+                    "invalid_retrieval_strategy_env_falling_back_to_chunk_rag",
+                    configured=configured_strategy,
+                )
+                default_retrieval_strategy = RetrievalStrategy.CHUNK_RAG
 
         # Build knowledge graph from the (already merged in Stage 1) case file.
         # No silent fallbacks: if KG construction throws, log structured event
@@ -247,14 +279,18 @@ class PredictionService:
             dispute_id=dispute_id,
             is_merged=dispute_id is not None,
             mode=mode.value,
+            retrieval_strategy=default_retrieval_strategy.value,
             kg_nodes=len(kg.nodes) if kg else 0,
             kg_edges=len(kg.edges) if kg else 0,
         )
-        prediction = await self.prediction_engine.predict(
-            case_file=case_file,
-            knowledge_graph=kg,
-            mode=mode,
-        )
+        predict_kwargs = {
+            "case_file": case_file,
+            "knowledge_graph": kg,
+            "mode": mode,
+        }
+        if default_retrieval_strategy != RetrievalStrategy.CHUNK_RAG:
+            predict_kwargs["retrieval_strategy"] = default_retrieval_strategy
+        prediction = await self.prediction_engine.predict(**predict_kwargs)
 
         if cacheable and dispute_id:
             prediction.metadata["dispute_id"] = dispute_id

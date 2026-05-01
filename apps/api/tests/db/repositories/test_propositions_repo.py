@@ -47,6 +47,8 @@ def _make_prop(
     ptype: PropositionType = PropositionType.fact,
     run_id=None,
     source_passage: str = "the source passage",
+    issue_tags: list[str] | None = None,
+    entities: list[str] | None = None,
 ) -> Proposition:
     return Proposition(
         proposition_id=deterministic_proposition_id(
@@ -59,6 +61,8 @@ def _make_prop(
         source_passage=source_passage,
         paragraph_ref=paragraph_ref,
         proposition_type=ptype,
+        issue_tags=issue_tags or [],
+        entities=entities or [],
         confidence=0.9,
     )
 
@@ -546,6 +550,97 @@ async def test_list_neighbors_filtered_by_edge_type(db_session: AsyncSession) ->
         a.proposition_id, edge_types=[PropositionEdgeType.cites]
     )
     assert {p.proposition_id for p in only_cites} == {c.proposition_id}
+
+
+@pytest.mark.asyncio
+async def test_search_by_issue_tags_matches_any_jsonb_tag(
+    db_session: AsyncSession,
+) -> None:
+    repo = PropositionsRepo(db_session)
+    doc = _make_doc()
+    await repo.upsert_document(doc)
+
+    cleaning = _make_prop(
+        doc,
+        paragraph_ref="1",
+        text="Cleaning costs were disputed.",
+        issue_tags=["cleaning", "professional_cleaning"],
+    )
+    damage = _make_prop(
+        doc,
+        paragraph_ref="2",
+        text="Damage was fair wear and tear.",
+        issue_tags=["damage"],
+    )
+    await repo.bulk_upsert_propositions([cleaning, damage])
+    await db_session.commit()
+
+    found = await repo.search_by_issue_tags(["professional_cleaning"], limit=10)
+    assert [p.proposition_id for p in found] == [cleaning.proposition_id]
+
+
+@pytest.mark.asyncio
+async def test_search_by_entities_and_text_seed_queries(
+    db_session: AsyncSession,
+) -> None:
+    repo = PropositionsRepo(db_session)
+    doc = _make_doc()
+    await repo.upsert_document(doc)
+
+    scheme = _make_prop(
+        doc,
+        paragraph_ref="1",
+        text="The deposit was protected with TDS.",
+        source_passage="The deposit was protected with TDS.",
+        entities=["tds", "deposit"],
+    )
+    inventory = _make_prop(
+        doc,
+        paragraph_ref="2",
+        text="The check-in inventory was absent.",
+        source_passage="No check-in inventory was provided.",
+        entities=["inventory"],
+    )
+    await repo.bulk_upsert_propositions([scheme, inventory])
+    await db_session.commit()
+
+    by_entity = await repo.search_by_entities(["tds"], limit=10)
+    assert [p.proposition_id for p in by_entity] == [scheme.proposition_id]
+
+    by_text = await repo.search_text("check-in inventory", limit=10)
+    assert inventory.proposition_id in {p.proposition_id for p in by_text}
+
+
+@pytest.mark.asyncio
+async def test_load_graph_read_models_for_documents_and_ids(
+    db_session: AsyncSession,
+) -> None:
+    repo = PropositionsRepo(db_session)
+    doc = _make_doc()
+    other = _make_doc(case_ref="LON_OTHER_2024")
+    await repo.upsert_document(doc)
+    await repo.upsert_document(other)
+
+    a = _make_prop(doc, paragraph_ref="1", text="A.")
+    b = _make_prop(doc, paragraph_ref="2", text="B.")
+    c = _make_prop(other, paragraph_ref="1", text="C.")
+    await repo.bulk_upsert_propositions([a, b, c])
+    edge = _make_edge(a, b, edge_type=PropositionEdgeType.applies_rule_to_fact)
+    await repo.bulk_upsert_edges([edge])
+    await db_session.commit()
+
+    loaded_props = await repo.load_propositions_by_ids([b.proposition_id, a.proposition_id])
+    assert {p.proposition_id for p in loaded_props} == {
+        a.proposition_id,
+        b.proposition_id,
+    }
+
+    loaded_edges = await repo.load_edges_for_documents([doc.document_id])
+    assert [e.edge_id for e in loaded_edges] == [edge.edge_id]
+
+    docs = await repo.load_document_metadata([doc.document_id, other.document_id])
+    assert docs[doc.document_id].case_reference == doc.case_reference
+    assert docs[other.document_id].case_reference == other.case_reference
 
 
 @pytest.mark.asyncio
