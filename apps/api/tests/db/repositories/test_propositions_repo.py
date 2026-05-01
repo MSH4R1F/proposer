@@ -229,6 +229,76 @@ async def test_finish_run_failed_records_error_message(db_session: AsyncSession)
     assert row.input_chars == run.input_chars  # untouched
 
 
+@pytest.mark.asyncio
+async def test_find_succeeded_run_returns_run_id_when_exists(
+    db_session: AsyncSession,
+) -> None:
+    repo = PropositionsRepo(db_session)
+    doc = _make_doc()
+    await repo.upsert_document(doc)
+    run = _make_run(doc)
+    await repo.create_run(run)
+    await repo.finish_run(
+        run.run_id,
+        status=ExtractionRunStatus.succeeded,
+        counts={"proposition_count": 1},
+    )
+    await db_session.commit()
+
+    found = await repo.find_succeeded_run(
+        document_id=doc.document_id,
+        extractor_version=run.extractor_version,
+        prompt_sha256=run.prompt_sha256,
+        model=run.model,
+    )
+    assert found == run.run_id
+
+
+@pytest.mark.asyncio
+async def test_find_succeeded_run_returns_none_when_only_started(
+    db_session: AsyncSession,
+) -> None:
+    repo = PropositionsRepo(db_session)
+    doc = _make_doc()
+    await repo.upsert_document(doc)
+    run = _make_run(doc)
+    await repo.create_run(run)
+    await db_session.commit()
+
+    found = await repo.find_succeeded_run(
+        document_id=doc.document_id,
+        extractor_version=run.extractor_version,
+        prompt_sha256=run.prompt_sha256,
+        model=run.model,
+    )
+    assert found is None
+
+
+@pytest.mark.asyncio
+async def test_find_succeeded_run_distinguishes_pipeline_tuple(
+    db_session: AsyncSession,
+) -> None:
+    """A succeeded run for one (extractor, prompt, model) tuple does NOT
+    match a query for a different tuple."""
+    repo = PropositionsRepo(db_session)
+    doc = _make_doc()
+    await repo.upsert_document(doc)
+    run = _make_run(doc)
+    await repo.create_run(run)
+    await repo.finish_run(
+        run.run_id, status=ExtractionRunStatus.succeeded, counts={},
+    )
+    await db_session.commit()
+
+    found = await repo.find_succeeded_run(
+        document_id=doc.document_id,
+        extractor_version=run.extractor_version,
+        prompt_sha256="0" * 64,  # different prompt sha
+        model=run.model,
+    )
+    assert found is None
+
+
 # ---------------------------------------------------------------------------
 # Bulk upserts
 # ---------------------------------------------------------------------------
