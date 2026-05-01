@@ -1,0 +1,22 @@
+{
+  "_stub": true,
+  "_note": "Realistic-shape stub. See README.md in this directory.",
+  "case_id": "regression-housing-deposit-v1-0001",
+  "nodes": [
+    {"id": "party:tenant", "type": "Party", "role": "tenant"},
+    {"id": "party:landlord", "type": "Party", "role": "landlord"},
+    {"id": "tenancy:1", "type": "Tenancy", "start_date": "2023-06-01", "end_date": "2024-06-01"},
+    {"id": "claim:cleaning", "type": "Claim", "category": "cleaning", "amount_gbp": 200},
+    {"id": "claim:carpet", "type": "Claim", "category": "carpet_damage", "amount_gbp": 400},
+    {"id": "evidence:inventory_in", "type": "Evidence", "kind": "inventory_check_in"},
+    {"id": "evidence:inventory_out", "type": "Evidence", "kind": "inventory_check_out"}
+  ],
+  "edges": [
+    {"src": "party:tenant", "dst": "tenancy:1", "rel": "TENANT_OF"},
+    {"src": "party:landlord", "dst": "tenancy:1", "rel": "LANDLORD_OF"},
+    {"src": "claim:cleaning", "dst": "tenancy:1", "rel": "ARISES_FROM"},
+    {"src": "claim:carpet", "dst": "tenancy:1", "rel": "ARISES_FROM"},
+    {"src": "evidence:inventory_in", "dst": "tenancy:1", "rel": "EVIDENCES_START_OF"},
+    {"src": "evidence:inventory_out", "dst": "tenancy:1", "rel": "EVIDENCES_END_OF"}
+  ]
+}
