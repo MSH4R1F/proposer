@@ -60,22 +60,93 @@ def run_async(coro):
     is_flag=True,
     help="Use lite mode for BM25 index (recommended for 8000+ cases, uses ~40% less RAM)"
 )
+@click.option(
+    "--domain-id",
+    type=str,
+    default=None,
+    help=(
+        "SHA-20 domain id (e.g. housing.deposit.v1). When set, the CLI "
+        "binds to the matching RetrievalNamespace from the domain registry. "
+        "Defaults to the legacy deposit binding (tribunal_cases / "
+        "data/embeddings/bm25_index.pkl)."
+    ),
+)
+@click.option(
+    "--namespace-id",
+    type=str,
+    default=None,
+    help=(
+        "SHA-20 retrieval namespace id within the chosen --domain-id. "
+        "Required only if the domain has multiple retrieval namespaces."
+    ),
+)
 @click.pass_context
-def cli(ctx, data_dir: str, verbose: bool, lite_mode: bool):
-    """RAG Engine CLI for tribunal case retrieval."""
+def cli(
+    ctx,
+    data_dir: str,
+    verbose: bool,
+    lite_mode: bool,
+    domain_id: Optional[str],
+    namespace_id: Optional[str],
+):
+    """RAG Engine CLI for tribunal case retrieval.
+
+    Without ``--domain-id``, the CLI uses the legacy deposit paths so
+    existing scripts keep working unchanged. With ``--domain-id`` it
+    resolves the matching :class:`domain_core.spec.RetrievalNamespace`
+    and opens the corresponding Chroma collection / BM25 index via
+    :meth:`RAGConfig.from_namespace`.
+    """
     ctx.ensure_object(dict)
 
     # Configure logging level
     import logging
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
-    # Create config
-    ctx.obj["config"] = RAGConfig(
+    base_config = RAGConfig(
         data_dir=Path(data_dir),
         chroma_persist_dir=Path(data_dir) / "embeddings",
         bm25_index_path=Path(data_dir) / "embeddings" / "bm25_index.pkl",
-        bm25_lite_mode=lite_mode
+        bm25_lite_mode=lite_mode,
     )
+
+    if domain_id:
+        # Resolve through the domain registry. Imports are local so the
+        # legacy CLI path doesn't pay the YAML-load cost on every invocation.
+        from domain_core.registry import get_domain_spec  # noqa: WPS433
+
+        spec = get_domain_spec(domain_id)
+        if not spec.retrieval_namespaces:
+            raise click.UsageError(
+                f"Domain {domain_id!r} declares no retrieval namespaces."
+            )
+        if namespace_id:
+            matches = [
+                ns for ns in spec.retrieval_namespaces if ns.namespace_id == namespace_id
+            ]
+            if not matches:
+                raise click.UsageError(
+                    f"namespace_id {namespace_id!r} not found in domain "
+                    f"{domain_id!r}; available: "
+                    f"{[ns.namespace_id for ns in spec.retrieval_namespaces]}"
+                )
+            namespace = matches[0]
+        elif len(spec.retrieval_namespaces) == 1:
+            namespace = spec.retrieval_namespaces[0]
+        else:
+            raise click.UsageError(
+                f"Domain {domain_id!r} has multiple namespaces; "
+                "pass --namespace-id."
+            )
+
+        project_root = Path(data_dir).resolve().parent if Path(data_dir).is_absolute() else Path.cwd()
+        ctx.obj["config"] = RAGConfig.from_namespace(
+            namespace, base=base_config, project_root=project_root
+        )
+        ctx.obj["namespace"] = namespace
+    else:
+        ctx.obj["config"] = base_config
+        ctx.obj["namespace"] = None
 
 
 @cli.command()
