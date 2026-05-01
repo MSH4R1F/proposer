@@ -146,7 +146,21 @@ def _build_role_config_from_env(role: LLMRole) -> LLMRoleConfig:
     defaults = _ROLE_DEFAULTS[role]
     role_upper = role.value.upper()
 
-    provider_str = os.getenv(f"LLM_{role_upper}_PROVIDER", "").strip().lower()
+    def _env(name: str) -> Optional[str]:
+        """Read an env var, treating missing/empty/whitespace-only as unset.
+
+        Centralised so every per-role env override falls back to the role
+        default consistently — avoids the historical split where
+        ``PRIMARY_MODEL=""`` fell back via truthiness but
+        ``REASONING_EFFORT=""`` would crash the validator.
+        """
+        raw = os.getenv(name)
+        if raw is None:
+            return None
+        stripped = raw.strip()
+        return stripped or None
+
+    provider_str = (_env(f"LLM_{role_upper}_PROVIDER") or "").lower()
     if provider_str:
         try:
             provider = LLMProvider(provider_str)
@@ -165,26 +179,33 @@ def _build_role_config_from_env(role: LLMRole) -> LLMRoleConfig:
         primary_default = defaults["openai_primary"]
         fallback_default = defaults["openai_fallback"]
 
-    primary_model = os.getenv(f"LLM_{role_upper}_PRIMARY_MODEL") or primary_default
-    fallback_model = (
-        os.getenv(f"LLM_{role_upper}_FALLBACK_MODEL") or fallback_default
-    )
+    primary_model = _env(f"LLM_{role_upper}_PRIMARY_MODEL") or primary_default
+    fallback_model = _env(f"LLM_{role_upper}_FALLBACK_MODEL") or fallback_default
 
-    max_tokens_env = os.getenv(f"LLM_{role_upper}_MAX_OUTPUT_TOKENS")
-    max_output_tokens = int(max_tokens_env) if max_tokens_env else 4096
+    max_tokens_env = _env(f"LLM_{role_upper}_MAX_OUTPUT_TOKENS")
+    if max_tokens_env is None:
+        max_output_tokens = 4096
+    else:
+        try:
+            max_output_tokens = int(max_tokens_env)
+        except ValueError as exc:
+            raise ValueError(
+                f"LLM_{role_upper}_MAX_OUTPUT_TOKENS must be a positive "
+                f"integer, got: {max_tokens_env!r}"
+            ) from exc
 
     openai_kwargs: dict = {}
-    eff = os.getenv(f"LLM_{role_upper}_REASONING_EFFORT")
+    eff = _env(f"LLM_{role_upper}_REASONING_EFFORT")
     if eff is not None:
         openai_kwargs["reasoning_effort"] = eff
     elif provider == LLMProvider.OPENAI:
         openai_kwargs["reasoning_effort"] = defaults["openai_reasoning_effort"]
-    verb = os.getenv(f"LLM_{role_upper}_TEXT_VERBOSITY")
+    verb = _env(f"LLM_{role_upper}_TEXT_VERBOSITY")
     if verb is not None:
         openai_kwargs["text_verbosity"] = verb
     elif provider == LLMProvider.OPENAI:
         openai_kwargs["text_verbosity"] = defaults["openai_text_verbosity"]
-    store_env = os.getenv(f"LLM_{role_upper}_STORE")
+    store_env = _env(f"LLM_{role_upper}_STORE")
     if store_env is not None:
         openai_kwargs["store"] = _bool_from_env(store_env)
 
