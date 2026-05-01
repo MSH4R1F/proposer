@@ -80,8 +80,10 @@ def _outcome_to_winner(outcome_value: str) -> Winner:
         return Winner.LANDLORD
     if outcome_value in ("tenant_win", "tenant_wins"):
         return Winner.TENANT
-    # split, uncertain → split (no eval-schema "uncertain")
-    return Winner.SPLIT
+    if outcome_value in ("split", "uncertain"):
+        # uncertain → split (no eval-schema "uncertain")
+        return Winner.SPLIT
+    raise ValueError(f"_outcome_to_winner received unknown outcome {outcome_value!r}")
 
 
 def _confidence_to_p_landlord(outcome_value: str, confidence: float) -> float:
@@ -89,8 +91,12 @@ def _confidence_to_p_landlord(outcome_value: str, confidence: float) -> float:
         return confidence
     if outcome_value in ("tenant_win", "tenant_wins"):
         return 1.0 - confidence
-    # split, uncertain → 0.5 (max uncertainty for binary calibration)
-    return 0.5
+    if outcome_value in ("split", "uncertain"):
+        # split, uncertain → 0.5 (max uncertainty for binary calibration)
+        return 0.5
+    raise ValueError(
+        f"_confidence_to_p_landlord received unknown outcome {outcome_value!r}"
+    )
 
 
 def _issue_type_to_str(value) -> str:

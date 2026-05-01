@@ -60,6 +60,14 @@ def _parse_predictions_arg(values: List[str]) -> Dict[str, Path]:
     return out
 
 
+def _validate_numeric_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
+    """Reject numeric CLI values that would make metric computation invalid."""
+    if args.n_resamples < 0:
+        parser.error("--n-resamples must be greater than or equal to 0")
+    if not 0.0 <= args.amount_threshold_pct <= 1.0:
+        parser.error("--amount-threshold-pct must be between 0.0 and 1.0")
+
+
 def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m eval.ablate")
     parser.add_argument(
@@ -108,6 +116,7 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         help="Tolerance for amount_within_threshold metric (default 0.20 = 20%%).",
     )
     args = parser.parse_args(argv)
+    _validate_numeric_args(args, parser)
 
     # 1. Parse --predictions mode=path pairs
     try:

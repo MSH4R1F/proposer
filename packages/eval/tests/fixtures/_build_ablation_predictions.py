@@ -54,9 +54,8 @@ _FLIP = {
 def _winner_to_p_landlord(w: Winner, conf: float) -> float:
     """Map (winner, confidence) → P(landlord wins outright).
 
-    SPLIT codes as not-landlord (binary actual=0 in calibration), so we
-    return 1 - conf for SPLIT to match the eval metric's coding when the
-    predictor "thinks" SPLIT means split-50/50 in the real world.
+    LANDLORD returns `conf`; TENANT returns `1 - conf`. SPLIT is treated as
+    maximum uncertainty for binary calibration here, so it returns 0.5.
     """
     if w is Winner.LANDLORD:
         return conf

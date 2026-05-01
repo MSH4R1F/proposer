@@ -150,4 +150,4 @@ Tracked separately; not in this PR's scope.
 - [`methodology.md`](methodology.md) §Ablation methodology
 - [`metrics.md`](metrics.md) — what each scalar means
 - [`architecture.md`](architecture.md) — module dependency graph
-- [`decision-log.md`](decision-log.md) — D-009 (bootstrap pair resampling), D-013 (Provenance model)
+- [`decision-log.md`](decision-log.md) — D-009 (bootstrap pair resampling), D-011 (Provenance model)
