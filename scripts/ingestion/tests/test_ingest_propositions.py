@@ -437,7 +437,10 @@ async def test_commit_persists_edges(db_sessionmaker, tmp_path) -> None:
     os.environ["DATABASE_URL"] = url
     try:
         from scripts.ingestion import ingest_propositions as mod
-        from scripts.ingestion.ingest_propositions import _MockLLM, _load_mock_fixture
+        from scripts.ingestion.ingest_propositions import (
+            _MockLLM,
+            _load_mock_fixture,
+        )
         mod._make_llm = lambda args: _MockLLM(_load_mock_fixture(fixture))
         rc = await main_async(["--manifest", str(manifest), "--commit"])
     finally:
@@ -645,10 +648,21 @@ async def test_jsonl_report_writes_one_line_per_document(
     try:
         from scripts.ingestion import ingest_propositions as mod
         from scripts.ingestion.ingest_propositions import _MockLLM, _load_mock_fixture
-        mod._make_llm = lambda args: _MockLLM(_load_mock_fixture(fixture))
+
+        class CountingMockLLM(_MockLLM):
+            async def generate_structured(self, **kwargs):
+                response = await super().generate_structured(**kwargs)
+                self._stats["tokens_in"] += 10
+                self._stats["tokens_out"] += 20
+                return response
+
+        mod._make_llm = lambda args: CountingMockLLM(_load_mock_fixture(fixture))
         rc = await main_async([
-            "--manifest", str(manifest), "--commit",
-            "--jsonl-report", str(report),
+            "--manifest",
+            str(manifest),
+            "--commit",
+            "--jsonl-report",
+            str(report),
         ])
     finally:
         if old_url is None:
@@ -669,6 +683,20 @@ async def test_jsonl_report_writes_one_line_per_document(
         assert "duration_seconds" in p
         assert "tokens_in" in p
         assert "tokens_out" in p
+        assert p["tokens_in"] == 20
+        assert p["tokens_out"] == 40
+
+    from sqlalchemy import select
+    from apps.api.src.db.models import PropositionExtractionRunRow
+    async with sm() as session:
+        runs = (
+            (await session.execute(select(PropositionExtractionRunRow)))
+            .scalars()
+            .all()
+        )
+    assert len(runs) == 2
+    assert {r.tokens_in for r in runs} == {20}
+    assert {r.tokens_out for r in runs} == {40}
 
 
 def test_decisions_flag_limits_processing(tmp_path):
