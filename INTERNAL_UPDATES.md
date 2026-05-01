@@ -4,6 +4,41 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-05-01 - E2E mediation conversation: two `/mediation/{id}/start` 500s + offer-cap finding
+
+Drove a full tenant ↔ landlord ↔ mediator conversation against the running stack via a scripted client (`/tmp/mediation_e2e.py`). Tenant intake → landlord joins via invite code → prediction generated (tenant_win, ~84% confidence) → mediation starts → 4 alternating turns of natural-language messages → offers + counter → settle. Surfaced two real backend bugs and one product gap.
+
+### Bug 1 — `start_mediation` 500 (`ModuleNotFoundError: aiosqlite`) when no cached prediction is on the dispute row
+
+`MediationService._fetch_prediction_data_uow` (the postgres-mode hook) fell through to the legacy `_get_prediction_data`, which calls `get_prediction_service()`. That singleton getter constructs an in-memory `sqlite+aiosqlite` engine. Our venv does not have `aiosqlite` installed (the system runs on postgres only), so the call raised before the caller could surface the intended `Prediction required before mediation` error. Result: any user starting mediation immediately after intake — without going through `/predictions/generate` — got a generic 500 instead of a structured 400.
+
+**Fix**: Rewrote the fallback in `_fetch_prediction_data_uow` to use the UoW directly: load the dispute, follow `tenant_session_id` / `landlord_session_id` → case_ids via `uow.sessions.get`, then query `uow.predictions.get_by_case_id`, return the most recent. No sqlite. Two test fixtures (`test_mediation_service.py`, `test_mediation_atomicity.py`) were patching the now-bypassed legacy hook and started failing; updated them to stub `_fetch_prediction_data_uow` (the actual code path) alongside the legacy hook. All 31 mediation tests + 125 DB tests now pass.
+
+### Bug 2 — `start_mediation` 500 (`AttributeError: 'tuple' object has no attribute 'strip'`)
+
+Once the prediction lookup worked, the next call still 500'd. `MediatorAgent.generate_opening_message` and `generate_response` return `Tuple[str, TraceSummary]`, but the postgres-mode service was assigning the tuple directly into `initial_content` / `ai_content` and passing it to `_add_ai_mediator_message`, where `_enforce_legal_disclaimer` calls `.strip()` on the tuple. The legacy in-memory paths (lines 1155, 1239) already unpacked `(content, trace)` correctly — only the postgres paths (lines 404, 556) had drifted.
+
+**Fix**: Unpack `(content, trace_summary)` and forward `trace_summary` into the persisted mediator message via `reasoning_trace=`. The trace is now persisted with the message, which previously was lost. Also adds `Optional[TraceSummary]` typing of the local.
+
+### Product finding — offer/counter amount cap excludes statutory damages
+
+`/mediation/{id}/respond` with `action=counter` validates `counter_amount <= deposit_amount`. In our tenant scenario with a £1,800 deposit and prescribed-info breach, the tenant is entitled to **statutory damages of up to 3× deposit (£5,400)** on top of the deposit refund — the prediction engine itself returns `predicted_settlement_range` reflecting this. So a tenant attempting to counter at £4,500 (which sits within the realistic ZOPA the mediator is anchoring to) gets a 400: *"Counter amount must be within 0 and 1800.00."* The mediator's framing and the offer system are now contradictory: the mediator quotes £5,400 as the reference range, but the system blocks any offer above £1,800.
+
+**Status**: not fixed in this session — flagging for product/legal review. Options: (a) raise the cap to deposit × 4 for cases where the prediction includes a deposit-protection breach; (b) split offer into "deposit refund" + "statutory damages" components; (c) keep the cap but have the mediator be explicit that statutory-damages portions can only be claimed by escalating to tribunal.
+
+### What works
+
+- Full conversation succeeded after fixes: 4 turns each side, mediator responses are substantive and reference the £5,400 settlement range.
+- Mediator does anchor to the prediction (`"The settlement range is clear: £5,400"`, `"that's the centre of what the evidence supports"`) — the cite-or-abstain framing reads correctly.
+- Final landlord offer £1,800 → tenant accept → `GET /settlement` returns `agreed_amount=1800.0, status=settled`. Settlement endpoint contract holds.
+- `GET /messages` envelope (`{messages, offers}`) holds — the prior 500 fix is still good.
+
+### Unrelated test driver issues (now fixed in `/tmp/mediation_e2e.py`)
+
+- The mediator's reply lives in `ai_response.content` not `mediator_response`; offers carry `id` not `offer_id`. Driver was looking at the wrong keys. Useful as documentation if other callers hit the same.
+
+---
+
 ## 2026-05-01 - Fix: `/mediation/{dispute_id}/messages` 500
 
 Caught during an end-to-end smoke test. The router for `GET /mediation/{dispute_id}/messages` indexed the service result as a dict (`result["messages"]`, `result["offers"]`) but `MediationService.get_messages` is contracted to return `List[Dict]` — both `_pg_get_messages` and `_legacy_get_messages` only return messages, and existing tests (`apps/api/tests/test_mediation.py::test_get_messages_polling`, `apps/api/tests/db/test_mediation_service.py::test_get_messages_respects_since_timestamp`) assert the list shape.

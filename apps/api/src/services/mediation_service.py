@@ -152,12 +152,19 @@ class MediationService:
     @staticmethod
     def _build_mediator_agent(api_key: str) -> Any:
         from llm_orchestrator.agents.mediator_agent import MediatorAgent
-        from llm_orchestrator.clients.claude_client import ClaudeClient
+        from llm_orchestrator.clients.factory import get_llm_client
+        from llm_orchestrator.clients.types import LLMProvider, LLMRole
+        from llm_orchestrator.config import LLMConfig
 
-        if api_key:
-            return MediatorAgent(ClaudeClient(api_key=api_key))
-        logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
-        return MediatorAgent(_DeterministicMediatorLLM())
+        llm_config = LLMConfig.from_env()
+        role_config = llm_config.role_config(LLMRole.MEDIATOR)
+        if role_config.provider == LLMProvider.ANTHROPIC and not api_key:
+            logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
+            return MediatorAgent(_DeterministicMediatorLLM())
+        return MediatorAgent(
+            get_llm_client(LLMRole.MEDIATOR, config=llm_config),
+            provider=role_config.provider,
+        )
 
     @staticmethod
     def _enforce_legal_disclaimer(content: str) -> str:
@@ -448,6 +455,7 @@ class MediationService:
             prediction_data=prediction_data, role="landlord"
         )
 
+        trace_summary: Optional[TraceSummary] = None
         try:
             initial_result = await self._mediator.generate_opening_message(
                 prediction=prediction,
@@ -456,9 +464,9 @@ class MediationService:
                 expectation_data_landlord=expectation_data_landlord,
             )
             if isinstance(initial_result, tuple):
-                initial_content, initial_trace = initial_result
+                initial_content, trace_summary = initial_result
             else:
-                initial_content, initial_trace = initial_result, None
+                initial_content, trace_summary = initial_result, None
         except Exception as e:
             logger.error(
                 "mediator_opening_generation_failed",
@@ -470,7 +478,7 @@ class MediationService:
                 "highlighting realistic settlement ranges, and helping both parties test "
                 "offers against comparable outcomes."
             )
-            initial_trace = None
+            trace_summary = None
 
         # ── Phase 3: write txn — create mediation + update dispute ───────────
         async with self._uow() as uow:
@@ -510,7 +518,7 @@ class MediationService:
                 content=initial_content,
                 message_type=MessageType.AI_MEDIATOR,
                 metadata={"triggered_by": role},
-                reasoning_trace=initial_trace,
+                reasoning_trace=trace_summary,
             )
             await uow.mediations.save(new_mediation)
 
@@ -606,6 +614,7 @@ class MediationService:
         if latest_offer is None and mediation.offers:
             latest_offer = mediation.offers[-1]
 
+        ai_trace: Optional[TraceSummary] = None
         try:
             ai_result = await self._mediator.generate_response(
                 messages=mediation.messages,
@@ -1087,7 +1096,8 @@ class MediationService:
 
         The cached_prediction_id is stored on DisputeRow (not on DisputeCase's
         Pydantic model payload) so we go via disputes_repo.lock_for_prediction_cache.
-        Falls back to legacy service lookup if no cached prediction exists.
+        If no cached prediction exists, fall back to the most recent prediction
+        for any case_id linked to the dispute via its tenant/landlord sessions.
         """
         locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
         if locked is None:
@@ -1096,8 +1106,28 @@ class MediationService:
             prediction = await uow.predictions.get(locked.cached_prediction_id)
             if prediction is not None:
                 return prediction.model_dump(mode="json")
-        # Fall back to legacy prediction service lookup (mirrors original behaviour)
-        return await self._get_prediction_data(dispute_id)
+
+        dispute = await uow.disputes.get(dispute_id)
+        if dispute is None:
+            return None
+        case_ids: List[str] = []
+        for session_id in (dispute.tenant_session_id, dispute.landlord_session_id):
+            if not session_id:
+                continue
+            state = await uow.sessions.get(session_id)
+            if state is not None:
+                case_ids.append(state.case_file.case_id)
+        if not case_ids:
+            return None
+
+        candidates: List[Dict[str, Any]] = []
+        for case_id in case_ids:
+            for prediction in await uow.predictions.get_by_case_id(case_id):
+                candidates.append(prediction.model_dump(mode="json"))
+        if not candidates:
+            return None
+        candidates.sort(key=lambda item: item.get("timestamp", ""), reverse=True)
+        return candidates[0]
 
     @staticmethod
     def _resolve_role(dispute: Any, session_id: str) -> str:
