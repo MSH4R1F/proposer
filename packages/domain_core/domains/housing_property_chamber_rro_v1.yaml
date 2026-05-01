@@ -1,0 +1,87 @@
+# Domain: housing.property_chamber.rro.v1
+#
+# RRO-only first slice (audit decision D4). Leasehold, rents, Tenant Fees
+# Act, park homes, building safety, and broad regulatory appeals are
+# explicitly OUT of scope for v1.
+
+id: housing.property_chamber.rro.v1
+family: housing
+domain_version: v1
+schema_version: 1
+display_name: "Housing - First-tier Property Chamber, Rent Repayment Orders (v1)"
+user_facing_name: "Rent repayment order"
+stage: research
+jurisdiction:
+  - GB-ENG
+forums:
+  - first_tier_property_chamber
+forum_profiles:
+  - forum: first_tier_property_chamber
+    source_publishers:
+      - bailii
+      - govuk
+    source_kinds:
+      - case_decision
+      - statute
+      - guidance
+    citation_kinds:
+      - retrieved_legal_source
+      - statute_or_guidance
+      - user_fact
+      - uploaded_evidence
+    matter_types:
+      - rent_repayment_order
+    remedies:
+      - rent_repayment_amount
+      - statutory_basis_finding
+      - offence_finding
+    output_framing: "First-tier Tribunal Property Chamber rent repayment order analysis"
+    citation_label: "Property Chamber decision"
+    prohibited_phrases:
+      - "the court will award"
+      - "we recommend you sue"
+    required_disclaimers:
+      - "This is legal information based on similar published Property Chamber decisions, not legal advice."
+party_roles:
+  - tenant
+  - landlord
+matter_types:
+  - rent_repayment_order
+remedies:
+  - rent_repayment_amount
+  - statutory_basis_finding
+  - offence_finding
+intake_schema_ref: ref://intake_schema/housing.property_chamber.rro.v1
+case_file_adapter_ref: ref://case_file_adapter/housing.property_chamber.rro.v1
+ontology_ref: ref://ontology/housing.property_chamber.rro.v1
+prompt_pack_ref: ref://prompt_pack/housing.property_chamber.rro.v1
+retrieval_namespaces:
+  - namespace_id: housing_property_chamber_rro_v1
+    vector_collection: property_chamber_rro_v1
+    bm25_index_path: data/embeddings/property_chamber_rro_v1_bm25.pkl
+    corpus_root: data/raw/bailii
+    chunk_kinds:
+      - document_chunk
+    source_publishers:
+      - bailii
+    source_kinds:
+      - case_decision
+    forums:
+      - first_tier_property_chamber
+    allowed_cross_namespace_ids: []
+    metadata_filters:
+      matter_type: rent_repayment_order
+    corpus_version: research_seed_2026_05
+eval_gate:
+  gold_set_path: data/gold_standard/housing_property_chamber_rro_v1.jsonl
+  min_cases: 30
+  required_metrics: {}
+  max_hallucination_rate: 0.02
+  min_citation_validity: 0.98
+  min_abstention_precision: 0.80
+safety_notes:
+  - "Audit D4: First slice is RRO only. Do NOT add leasehold, rents, Tenant Fees Act, park homes, building safety, or broad regulatory appeals here."
+temporal_law_markers:
+  - label: "Housing and Planning Act 2016, Part 2 Chapter 4 (Rent Repayment Orders)"
+    effective_date: "2017-04-06"
+    note: "Modern RRO regime - the legal basis for first-slice cases."
