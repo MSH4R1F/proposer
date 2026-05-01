@@ -24,7 +24,7 @@ See SHA-114 spec §6.2 / §14.2.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Set, Tuple, Type
+from typing import Any, Dict, FrozenSet, List, Set, Type
 
 from pydantic import BaseModel
 
@@ -33,38 +33,37 @@ from .exceptions import LLMStructuredOutputError
 __all__ = ["strict_json_schema"]
 
 
-# Keywords that are tolerated by some OpenAI surfaces but NOT enforced by
-# strict mode. We refuse to emit them — silently stripping would loosen the
-# contract without telling the team.
-_UNSUPPORTED_KEYWORDS: Tuple[str, ...] = (
-    "minimum",
-    "maximum",
-    "exclusiveMinimum",
-    "exclusiveMaximum",
-    "minLength",
-    "maxLength",
-    "pattern",
-    "format",
-    "minItems",
-    "maxItems",
-    "uniqueItems",
-    "multipleOf",
-    "minProperties",
-    "maxProperties",
-    "oneOf",
-    "allOf",
-    "not",
-    "const",
-)
-
-# Keywords that are part of the strict-mode subset and should be left alone
-# during the walk (we still recurse into them for nested objects).
-_PASSTHROUGH_CONTAINERS: Tuple[str, ...] = (
-    "properties",
-    "items",
-    "anyOf",
-    "$defs",
-    "definitions",
+# Whitelist of JSON-Schema keywords that OpenAI Structured Outputs strict mode
+# accepts. We use a whitelist (rather than a blacklist of unsupported keywords)
+# so that any new draft-2020-12 keyword Pydantic starts emitting — e.g.
+# ``prefixItems`` for tuple-typed fields — surfaces as a loud failure rather
+# than slipping through as a silently-loosened schema.
+#
+# Notes:
+#   - ``discriminator`` is NOT included. OpenAI accepts it inside ``anyOf``
+#     for tagged unions but not on bare object schemas; until we have a
+#     concrete tagged-union model with tests, we fail loud.
+#   - ``default`` is allowed because Pydantic emits it freely; strict mode
+#     ignores it without complaint.
+_ALLOWED_KEYWORDS: FrozenSet[str] = frozenset(
+    {
+        # Core type / shape
+        "type",
+        "properties",
+        "required",
+        "additionalProperties",
+        "items",
+        "anyOf",
+        "enum",
+        # References / definitions
+        "$ref",
+        "$defs",
+        "definitions",
+        # Metadata / display
+        "title",
+        "description",
+        "default",
+    }
 )
 
 
@@ -94,6 +93,27 @@ def strict_json_schema(model: Type[BaseModel]) -> Dict[str, Any]:
         rewritten_defs[name] = _walk(sub, path=f"$defs.{name}")
 
     rewritten = _walk(raw, path="")
+
+    # Self-referential root models (e.g. a tree node with children: List[Self])
+    # cause Pydantic to emit ``{"$defs": {...}, "$ref": "#/$defs/Node"}`` at
+    # the top level. OpenAI strict mode requires the outer ``parameters`` to
+    # be ``type: object`` — a bare ``$ref`` is rejected at the API boundary.
+    # Fail loud here rather than waste a request: the user must define a
+    # non-recursive root wrapper.
+    if (
+        isinstance(rewritten, dict)
+        and "$ref" in rewritten
+        and rewritten.get("type") != "object"
+        and "properties" not in rewritten
+    ):
+        raise LLMStructuredOutputError(
+            f"OpenAI strict-mode schema rewrite failed at <root>: "
+            f"top-level $ref ({rewritten['$ref']!r}) is not supported. "
+            f"Self-referential root models are rejected by OpenAI Structured "
+            f"Outputs — define a non-recursive wrapper model whose fields "
+            f"reference the recursive type instead."
+        )
+
     if rewritten_defs:
         # Preserve the original key Pydantic used.
         defs_key = "$defs" if "$defs" in raw else "definitions"
@@ -116,21 +136,42 @@ def _walk(node: Any, *, path: str) -> Any:
 
 
 def _walk_dict(node: Dict[str, Any], *, path: str) -> Dict[str, Any]:
-    # Reject unsupported keywords up front so the developer sees ALL the
-    # offending constraints, not just whichever one we'd hit during the
-    # recursive descent.
-    for kw in _UNSUPPORTED_KEYWORDS:
-        if kw in node:
+    # Reject any keyword not on the strict-mode whitelist up front so the
+    # developer sees ALL offending constraints in one pass. The whitelist
+    # approach guards against new draft-2020-12 keywords (e.g. ``prefixItems``)
+    # being silently emitted by future Pydantic versions.
+    for kw in node:
+        if kw not in _ALLOWED_KEYWORDS:
             field = path or "<root>"
             raise LLMStructuredOutputError(
                 f"OpenAI strict-mode schema rewrite failed at {field!s}: "
-                f"keyword {kw!r}={node[kw]!r} is not supported. "
+                f"unsupported schema keyword {kw!r}={node[kw]!r}. "
                 f"Remove the constraint from the Pydantic model or relax it "
                 f"into a description, then re-run the audit."
             )
 
     # Detect object-shaped node (either explicit or implicit via properties).
     is_object = node.get("type") == "object" or "properties" in node
+
+    # Catch open-dict objects (``Dict[str, V]``) before we overwrite
+    # ``additionalProperties``. Pydantic emits these as
+    # ``{"type": "object", "additionalProperties": {"type": "string"}}`` (a
+    # SCHEMA, not ``False``). Forcing ``additionalProperties: False`` would
+    # silently flip the contract from "string values allowed" to "no keys
+    # allowed at all" — exactly the kind of silent-loosening this helper
+    # exists to prevent. Fail loud and tell the user to model the dict as a
+    # closed Pydantic class or a list-of-pairs.
+    if is_object:
+        ap = node.get("additionalProperties")
+        if ap is not None and ap is not False:
+            field = path or "<root>"
+            raise LLMStructuredOutputError(
+                f"OpenAI strict-mode schema rewrite failed at {field!s}: "
+                f"open-dict objects (additionalProperties is a schema, not "
+                f"False) are not supported by OpenAI Structured Outputs. "
+                f"Replace Dict[str, V] with a closed Pydantic model or a "
+                f"list of (key, value) pairs."
+            )
 
     out: Dict[str, Any] = {}
 
@@ -172,7 +213,6 @@ def _walk_dict(node: Dict[str, Any], *, path: str) -> Dict[str, Any]:
         out["type"] = "object"
         out["additionalProperties"] = False
         if rewritten_props:
-            out["properties"] = rewritten_props
             # Strict mode requires every property in `required`. Optional
             # fields are rewritten to nullable types below.
             existing_required: Set[str] = set(node.get("required") or [])
@@ -211,16 +251,13 @@ def _make_nullable(prop_schema: Any) -> Any:
         return new_schema
 
     if "$ref" in prop_schema:
-        # Pull description/title up to the wrapping anyOf for visibility.
+        # Hoist ``description`` to the wrapper so users see it in the
+        # combined union; strict mode ignores extra metadata anyway.
         wrapper: Dict[str, Any] = {
             "anyOf": [prop_schema, {"type": "null"}],
         }
-        for k in ("description", "title"):
-            if k in prop_schema and k not in wrapper:
-                # Leave on the inner ref to avoid cluttering the wrapper —
-                # but description is more useful at the wrapper level.
-                if k == "description":
-                    wrapper["description"] = prop_schema["description"]
+        if "description" in prop_schema:
+            wrapper["description"] = prop_schema["description"]
         return wrapper
 
     if "type" in prop_schema:

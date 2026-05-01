@@ -15,12 +15,12 @@ See SHA-114 spec §6.2.
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pytest
 from pydantic import BaseModel, Field
 
-from llm_orchestrator.clients._schema import strict_json_schema
+from llm_orchestrator.clients._schema import _walk, strict_json_schema
 from llm_orchestrator.clients.exceptions import LLMStructuredOutputError
 
 
@@ -187,6 +187,86 @@ def test_strict_schema_returns_plain_dict() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Open-dict (Dict[str, V]) must be rejected, not silently flattened
+# ---------------------------------------------------------------------------
+
+
+class _ModelWithOpenDict(BaseModel):
+    """``Dict[str, str]`` is an OPEN dict — Pydantic emits
+    ``additionalProperties: {"type": "string"}``. If the rewriter naively
+    forced ``additionalProperties: False``, the schema would silently flip
+    from "string values allowed" to "no keys allowed at all". Must raise.
+    """
+
+    metadata: Dict[str, str]
+
+
+def test_strict_schema_rejects_open_dict() -> None:
+    """Regression for the silent-loosening bug where Dict[str, V] emitted
+    ``additionalProperties: <schema>`` and the helper unconditionally
+    overwrote it with ``False``. Must raise loudly so the developer
+    converts to a closed Pydantic model or list-of-pairs."""
+    with pytest.raises(LLMStructuredOutputError) as excinfo:
+        strict_json_schema(_ModelWithOpenDict)
+    msg = str(excinfo.value)
+    assert "metadata" in msg, msg
+    assert "open-dict" in msg, msg
+
+
+# ---------------------------------------------------------------------------
+# Self-referential root model (top-level $ref) must be rejected
+# ---------------------------------------------------------------------------
+
+
+class _Node(BaseModel):
+    """Self-referential root: emits ``{"$defs": {...}, "$ref": "#/$defs/_Node"}``
+    at the top level (Pydantic v2 behaviour). Strict mode requires the outer
+    ``parameters`` to be ``type: object`` — bare ``$ref`` is rejected at the
+    OpenAI API boundary."""
+
+    label: str
+    children: List["_Node"] = Field(default_factory=list)
+
+
+_Node.model_rebuild()
+
+
+def test_strict_schema_rejects_self_referential_root() -> None:
+    with pytest.raises(LLMStructuredOutputError) as excinfo:
+        strict_json_schema(_Node)
+    msg = str(excinfo.value)
+    assert "$ref" in msg or "recursive" in msg.lower() or "root" in msg.lower(), msg
+
+
+# ---------------------------------------------------------------------------
+# Whitelist enforcement — unknown keywords must raise (e.g. prefixItems)
+# ---------------------------------------------------------------------------
+
+
+def test_strict_schema_rejects_prefix_items() -> None:
+    """``prefixItems`` is a JSON Schema 2020-12 keyword that future Pydantic
+    versions might emit for tuple types. It is NOT supported by OpenAI strict
+    mode. The whitelist must reject it loudly even though Pydantic does not
+    emit it for the field shapes in this test suite today.
+
+    We hand-construct the schema dict and feed it through ``_walk`` directly
+    rather than rely on Pydantic emitting it naturally."""
+    handcrafted = {
+        "type": "object",
+        "properties": {
+            "pair": {
+                "type": "array",
+                "prefixItems": [{"type": "string"}, {"type": "number"}],
+            }
+        },
+        "required": ["pair"],
+    }
+    with pytest.raises(LLMStructuredOutputError) as excinfo:
+        _walk(handcrafted, path="")
+    assert "prefixItems" in str(excinfo.value)
+
+
+# ---------------------------------------------------------------------------
 # Production-model audit — the DoD-critical CI tripwire (spec §6.2 / §14.2).
 #
 # These models are the candidate ``response_model`` arguments for
@@ -194,81 +274,82 @@ def test_strict_schema_returns_plain_dict() -> None:
 # Each one is exercised here so a future schema change surfaces in CI rather
 # than at OpenAI's API boundary.
 #
-# Today, every one of these models carries at least one strict-mode-
-# unsupported keyword (``minimum``/``maximum`` from ``Field(ge=..., le=...)``,
-# ``minItems``/``maxItems`` from tuple length, or ``format: date``). The
-# task instructions are explicit: "do NOT modify the production model.
-# Instead xfail/skip with a clear reason." See the status report on this
-# task for the SHA-114 follow-up.
+# We pin the EXACT field path + offending keyword that the strict-mode
+# rewriter currently rejects, so:
+#   1. When the production model is fixed (range constraint removed,
+#      Tuple replaced, etc.), the corresponding test will fail with a
+#      clear "unexpected match" error and force the next reviewer to
+#      either delete the test (model now passes) or update the pin
+#      (model still fails, but on a *different* keyword).
+#   2. A future refactor that removes the originally-flagged constraint
+#      AND introduces a *different* unsupported keyword will not silently
+#      slip through (which is what bare ``xfail(strict=True)`` allowed).
+#
+# The pin uses ``pytest.raises(..., match=...)`` against the field-path
+# fragment (e.g. ``$defs.Citation.similarity_score``) which is stable across
+# Pydantic patch versions even if the surrounding error wording shifts.
 # ---------------------------------------------------------------------------
 
 
-def _audit_model(model_cls: type[BaseModel]) -> None:
-    """Helper: call strict_json_schema and re-raise with the model name."""
-    try:
-        strict_json_schema(model_cls)
-    except LLMStructuredOutputError as exc:
-        raise AssertionError(
-            f"Strict-mode schema audit failed for {model_cls.__name__}: {exc}"
-        ) from exc
-
-
-@pytest.mark.xfail(
-    reason="IssuePrediction uses Field(ge=0, le=1) and Tuple[float, float] "
-    "which emit minimum/maximum/minItems/maxItems — needs SHA-114 follow-up "
-    "to remove range constraints from the schema.",
-    strict=True,
-)
 def test_audit_issue_prediction_strict_schema() -> None:
+    """Pinned: IssuePrediction nests Citation, which has
+    ``similarity_score: Field(ge=0, le=1)`` → ``minimum``."""
     from llm_orchestrator.models.prediction_v2 import IssuePrediction
 
-    _audit_model(IssuePrediction)
+    with pytest.raises(
+        LLMStructuredOutputError,
+        match=r"\$defs\.Citation\.similarity_score",
+    ):
+        strict_json_schema(IssuePrediction)
 
 
-@pytest.mark.xfail(
-    reason="PredictionResult inherits all IssuePrediction/Citation/ReasoningStep "
-    "ge/le constraints plus Tuple[float, float] settlement range — needs "
-    "SHA-114 follow-up.",
-    strict=True,
-)
 def test_audit_prediction_result_strict_schema() -> None:
+    """Pinned: PredictionResult inherits the same Citation tree, so it trips
+    on the same ``$defs.Citation.similarity_score`` field first."""
     from llm_orchestrator.models.prediction_v2 import PredictionResult
 
-    _audit_model(PredictionResult)
+    with pytest.raises(
+        LLMStructuredOutputError,
+        match=r"\$defs\.Citation\.similarity_score",
+    ):
+        strict_json_schema(PredictionResult)
 
 
-@pytest.mark.xfail(
-    reason="ExtractionResult.updated_case_file embeds CaseFile, which uses "
-    "Field(ge=0, le=1) on confidence/completeness fields and date format on "
-    "tenancy dates — needs SHA-114 follow-up.",
-    strict=True,
-)
 def test_audit_extraction_result_strict_schema() -> None:
+    """Pinned: ExtractionResult.updated_case_file embeds CaseFile whose
+    ``events`` field is ``Dict[str, ...]`` — an open-dict that strict mode
+    cannot represent. (Once events is closed, the next failure will be
+    ``CaseFile.completeness_score`` from ``Field(ge=0, le=1)``.)"""
     from llm_orchestrator.extractors.fact_extractor import ExtractionResult
 
-    _audit_model(ExtractionResult)
+    with pytest.raises(
+        LLMStructuredOutputError,
+        match=r"\$defs\.CaseFile\.events\.items",
+    ):
+        strict_json_schema(ExtractionResult)
 
 
-@pytest.mark.xfail(
-    reason="Citation has Field(default=0.0, ge=0, le=1) on similarity_score — "
-    "needs SHA-114 follow-up.",
-    strict=True,
-)
 def test_audit_citation_strict_schema() -> None:
+    """Pinned: Citation has ``similarity_score: Field(default=0.0, ge=0, le=1)``."""
     from llm_orchestrator.models.prediction_v2 import Citation
 
-    _audit_model(Citation)
+    with pytest.raises(
+        LLMStructuredOutputError,
+        match=r"similarity_score",
+    ):
+        strict_json_schema(Citation)
 
 
-@pytest.mark.xfail(
-    reason="ReasoningStep has Field(default=0.8, ge=0, le=1) on confidence — "
-    "needs SHA-114 follow-up.",
-    strict=True,
-)
 def test_audit_reasoning_step_strict_schema() -> None:
+    """Pinned: ReasoningStep nests Citation, which trips first on
+    ``similarity_score`` before any ReasoningStep-local field."""
     from llm_orchestrator.models.prediction_v2 import ReasoningStep
 
-    _audit_model(ReasoningStep)
+    with pytest.raises(
+        LLMStructuredOutputError,
+        match=r"\$defs\.Citation\.similarity_score",
+    ):
+        strict_json_schema(ReasoningStep)
 
 
 # A clean baseline — DisputeIssue is a pure str-enum proxy via DisputeIssue

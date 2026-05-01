@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
 
 from pydantic import BaseModel
 
+from ..clients._schema import strict_json_schema
 from .context import ToolContext
 
 JSONValue = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
@@ -107,10 +108,6 @@ class Tool:
              and is rewritten via ``strict_json_schema`` to satisfy
              Structured Outputs strict mode.
         """
-        # Local import to avoid a circular dependency: clients._schema only
-        # needs Pydantic + the exception module.
-        from ..clients._schema import strict_json_schema
-
         return {
             "type": "function",
             "name": self.name,
