@@ -97,6 +97,27 @@ class Tool:
             "input_schema": input_schema,
         }
 
+    def to_openai_response_tool(self) -> Dict[str, Any]:
+        """Emit the OpenAI Responses API ``function`` tool envelope.
+
+        Differs from ``to_anthropic_schema`` in two ways (per SHA-114
+        spec §6.3):
+          1. Top-level is tagged with ``"type": "function"``.
+          2. Args schema is under ``"parameters"`` (not ``"input_schema"``)
+             and is rewritten via ``strict_json_schema`` to satisfy
+             Structured Outputs strict mode.
+        """
+        # Local import to avoid a circular dependency: clients._schema only
+        # needs Pydantic + the exception module.
+        from ..clients._schema import strict_json_schema
+
+        return {
+            "type": "function",
+            "name": self.name,
+            "description": self.description,
+            "parameters": strict_json_schema(self.args_model),
+        }
+
     async def dispatch(self, ctx: ToolContext, raw_args: Dict[str, Any]) -> ToolResult:
         # 1. Validate args
         try:
@@ -177,6 +198,15 @@ class ToolSet:
 
     def anthropic_schemas(self) -> List[Dict[str, Any]]:
         return [t.to_anthropic_schema() for t in self.tools]
+
+    def openai_response_tools(self) -> List[Dict[str, Any]]:
+        """Map the toolset to OpenAI Responses ``function`` envelopes.
+
+        Mirrors ``anthropic_schemas`` but produces the OpenAI shape (see
+        ``Tool.to_openai_response_tool``). Both methods coexist — neither
+        replaces the other (SHA-114 spec §16.5).
+        """
+        return [t.to_openai_response_tool() for t in self.tools]
 
     async def dispatch(self, name: str, raw_args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         if name not in self._by_name:
