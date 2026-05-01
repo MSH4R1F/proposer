@@ -15,6 +15,12 @@ interface AcceptancePromptProps {
   suggestedAmount: number;
 }
 
+function formatCurrency(amount: number): string {
+  return amount.toLocaleString('en-GB', {
+    maximumFractionDigits: 0,
+  });
+}
+
 export function AcceptancePrompt({
   disputeId,
   sessionId,
@@ -52,7 +58,7 @@ export function AcceptancePrompt({
           <div>
             <h3 className="font-semibold text-base">How would you like to proceed?</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              The midpoint estimate is £{suggestedAmount.toLocaleString('en-GB')}.
+              The midpoint estimate is £{formatCurrency(suggestedAmount)}.
               You can use it as negotiation context, but settlement requires both
               parties to agree.
             </p>

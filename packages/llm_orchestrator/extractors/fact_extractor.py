@@ -340,6 +340,10 @@ class FactExtractor:
                     ten["deposit_amount"]
                 )
 
+            if "deposit_received_date" in ten:
+                date_str = self._get_value(ten["deposit_received_date"])
+                case_file.tenancy.deposit_received_date = self._parse_date(date_str)
+
             if "deposit_protected" in ten:
                 case_file.tenancy.deposit_protected = self._to_optional_bool(
                     self._get_value(ten["deposit_protected"])
@@ -379,6 +383,10 @@ class FactExtractor:
                     "tenancy.deposit_amount",
                     self._get_confidence(dep["deposit_amount"]),
                 )
+            if "deposit_received_date" in dep:
+                date_str = self._get_value(dep["deposit_received_date"])
+                if date_str and case_file.tenancy.deposit_received_date is None:
+                    case_file.tenancy.deposit_received_date = self._parse_date(date_str)
             if (
                 "deposit_protected" in dep
                 and case_file.tenancy.deposit_protected is None

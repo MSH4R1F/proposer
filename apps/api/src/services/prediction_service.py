@@ -304,7 +304,8 @@ class PredictionService:
                         )
                         return cached
 
-            await uow.knowledge_graphs.save(kg)
+            if kg is not None:
+                await uow.knowledge_graphs.save(kg)
             await uow.predictions.save(prediction)
             if cacheable and dispute_id:
                 await uow.disputes.set_cached_prediction_id(

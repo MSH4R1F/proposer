@@ -8,14 +8,20 @@ interface ExpectationCardProps {
   expectationData: ExpectationData;
 }
 
+function formatCurrency(amount: number): string {
+  return amount.toLocaleString('en-GB', {
+    maximumFractionDigits: 0,
+  });
+}
+
 export function ExpectationCard({ expectationData }: ExpectationCardProps) {
   const { party_role, prediction_summary, party_framing } = expectationData;
   const { overall_confidence, suggested_amount, overall_outcome } = prediction_summary;
 
   const isTenant = party_role === 'tenant';
   const roleFramedAmount = isTenant
-    ? `You would likely recover £${suggested_amount.toLocaleString()}`
-    : `You would likely pay £${suggested_amount.toLocaleString()}`;
+    ? `You would likely recover £${formatCurrency(suggested_amount)}`
+    : `You would likely pay £${formatCurrency(suggested_amount)}`;
 
   const confidencePct = Math.round(overall_confidence * 100);
   const isTenantFavored =
