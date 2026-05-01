@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { FileText } from 'lucide-react';
+import { ExternalLink, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Citation } from '@/lib/types/prediction';
 
@@ -19,9 +19,27 @@ export function CitationCard({ citation, className }: CitationCardProps) {
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span className="font-medium text-sm">{citation.case_reference}</span>
+          {citation.source_url ? (
+            <a
+              href={citation.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-sm inline-flex items-center gap-1 text-primary hover:underline truncate"
+              title={`Open ${citation.case_reference} in BAILII`}
+            >
+              <span className="truncate">{citation.case_reference}</span>
+              <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+            </a>
+          ) : (
+            <span
+              className="font-medium text-sm text-muted-foreground truncate"
+              title="Source unavailable"
+            >
+              {citation.case_reference}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {citation.verified === false && (

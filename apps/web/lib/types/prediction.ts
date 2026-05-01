@@ -21,6 +21,7 @@ export interface Citation {
   relevance: string;
   similarity_score: number;
   verified?: boolean;
+  source_url?: string;
 }
 
 export interface ReasoningStep {

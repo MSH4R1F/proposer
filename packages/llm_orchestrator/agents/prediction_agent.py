@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 import structlog
 
 from ..clients.base import BaseLLMClient
+from ..data.citation_urls import resolve_source_url
 from ..models.case_file import CaseFile, PartyRole
 from ..models.prediction import (
     PredictionResult,
@@ -373,6 +374,9 @@ Text:
                         year=c.get("year", 2022),
                         quote=c.get("quote", ""),
                         relevance=c.get("relevance", ""),
+                        source_url=resolve_source_url(
+                            c.get("case_reference", ""), c.get("year", 2022)
+                        ),
                     )
                     for c in ip.get("supporting_cases", [])
                 ]
@@ -399,6 +403,9 @@ Text:
                         year=c.get("year", 2022),
                         quote=c.get("quote", ""),
                         relevance=c.get("relevance", ""),
+                        source_url=resolve_source_url(
+                            c.get("case_reference", ""), c.get("year", 2022)
+                        ),
                     )
                     for c in step.get("citations", [])
                 ]
