@@ -27,6 +27,7 @@ Verification commands:
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Sequence
 from unittest.mock import AsyncMock
@@ -109,9 +110,11 @@ def _build_document(pdf_path: Path, case_ref: str, full_text: str, page_count: i
     repeat ingestions of the same fixture produce the same document_id —
     this is what the idempotency test relies on.
     """
-    content_sha = sha256_hex(
-        pdf_path.read_bytes().decode("latin-1", errors="ignore")
-    )
+    # Hash raw PDF bytes directly — this matches what the production CLI does
+    # in scripts/ingestion/ingest_propositions.py (`hashlib.sha256(raw_bytes)`)
+    # so the integration test exercises the same content_sha256 contract that
+    # `--resume` and the unique-by-content-hash document upsert depend on.
+    content_sha = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     text_sha = sha256_hex(full_text)
     return DecisionDocument(
         document_id=deterministic_document_id(str(pdf_path), content_sha),

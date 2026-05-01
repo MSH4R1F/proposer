@@ -114,6 +114,19 @@ def test_split_paragraphs_handles_subref() -> None:
     assert paragraphs[0].ref == "12(3)"
 
 
+def test_split_paragraphs_handles_letter_prefixed_refs() -> None:
+    """Tribunal decisions sometimes use refs like ``A1.`` or ``AB12.`` for
+    appendices or schedules. The docstring explicitly lists ``A1.`` as a
+    supported example, so the regex must accept an optional alphabetic
+    prefix."""
+    text = "A1. Appendix paragraph one. AB12. Appendix paragraph twelve."
+
+    paragraphs = split_paragraphs(text)
+
+    refs = [p.ref for p in paragraphs]
+    assert refs == ["A1", "AB12"]
+
+
 def test_split_paragraphs_returns_empty_for_unstructured_text() -> None:
     text = (
         "The tribunal heard the matter on a sunny afternoon and considered "

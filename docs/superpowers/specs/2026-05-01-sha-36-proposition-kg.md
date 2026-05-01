@@ -182,8 +182,8 @@ The extraction prompt (`packages/kg_builder/propositions/prompts.py`) wraps the 
 This is the cite-or-abstain rule, enforced at the substrate layer not the prompt layer:
 
 - Every proposition emitted by the LLM must include a `source_passage` field — a verbatim quote from the decision text.
-- Before persistence, `find_source_span(decision_text, source_passage)` is called. It uses `normalize_for_matching` (lowercase + whitespace-collapse + unicode-normalize) to find `source_passage` as a literal substring of `decision_text`.
-- If the substring is found, the proposition is accepted and its `start_offset` / `end_offset` are recorded against the *original* (un-normalized) text.
+- Before persistence, `find_source_span(decision_text, source_passage)` is called. It uses `normalize_for_matching` (NFKC unicode-normalize + whitespace-collapse; **case- and punctuation-preserving** — does NOT lowercase) to find `source_passage` as a literal substring of `decision_text`.
+- If the substring is found, the proposition is accepted and the `SourceSpan.start_char` / `SourceSpan.end_char` offsets are recorded against the **normalized** text representation used for matching (so callers can re-locate the quote without re-normalizing).
 - If the substring is **not** found, the proposition is rejected with `reason='quote_not_found'` and dropped before it ever hits the database.
 
 The contract this gives us: **no proposition is persisted unless its source quote literally appears in the decision text.** Even if the model is jailbroken into emitting a fabricated finding, the fabricated text won't be a substring of any real document and the row is rejected at the substrate.

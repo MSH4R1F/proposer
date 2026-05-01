@@ -98,7 +98,9 @@ class ParagraphIndex:
 # every paragraph break becomes a single space, so this is the closest
 # analogue to "line-leading" we have.
 _PARAGRAPH_RE = re.compile(
-    r"(?:^|(?<=\s))(\d+(?:\([a-zA-Z0-9]+\))?)\.\s"
+    # Allow an optional alphabetic prefix so refs like "A1." and "AB12." match
+    # alongside plain digits ("12.") and parenthesised sub-ids ("12(3).").
+    r"(?:^|(?<=\s))((?:[A-Za-z]+\d+|\d+)(?:\([A-Za-z0-9]+\))?)\.\s"
 )
 
 

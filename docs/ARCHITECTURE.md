@@ -350,9 +350,9 @@ SHA-102 ([PR #9](https://github.com/MSH4R1F/proposer/pull/9)) replaced all JSON-
 Router → dependencies.py (Depends(get_uow)) → Service → UnitOfWork → Repository → AsyncSession → Postgres
 ```
 
-- **`apps/api/src/db/uow.py`**: `UnitOfWork` is a request-scoped async context manager. It opens one `AsyncSession`, exposes all six repos as attributes, commits on clean `__aexit__`, and rolls back on exception.
+- **`apps/api/src/db/uow.py`**: `UnitOfWork` is a request-scoped async context manager. It opens one `AsyncSession`, exposes all seven repos as attributes, commits on clean `__aexit__`, and rolls back on exception.
 - **`apps/api/src/dependencies.py`**: `get_uow` / `get_*_service` factories wire per-request UoW into service constructors via FastAPI `Depends()`.
-- **Repositories** (`apps/api/src/db/repositories/`): 6 repos — one per aggregate. Each exposes `save`, `get`, `get_by_*`, `delete`, and `list_*` methods. Repos translate between Pydantic domain models and SQLAlchemy ORM rows.
+- **Repositories** (`apps/api/src/db/repositories/`): 7 repos — one per aggregate (the seventh, `PropositionsRepo`, was added by SHA-36 Phase 1). Each exposes `save`, `get`, `get_by_*`, `delete`, and `list_*` methods. Repos translate between Pydantic domain models and SQLAlchemy ORM rows.
 
 ### Atomic Flows
 
