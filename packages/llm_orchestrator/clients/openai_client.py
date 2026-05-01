@@ -63,11 +63,16 @@ T = TypeVar("T", bound=BaseModel)
 # Sentinel used to detect SDK builds that don't expose ``responses.parse``.
 # We treat AttributeError + a small set of "model doesn't support text_format"
 # API errors as the trigger for the manual ``text.format`` JSON-schema fallback.
+#
+# Note: ``json_schema`` was intentionally dropped from this list — it's too
+# generic and would match unrelated errors that happen to mention json_schema
+# in their message. Prefer the structural ``exc.body.error.param/code`` check
+# in :meth:`OpenAIClient._is_text_format_unsupported`; this substring tuple is
+# only the message-only fallback for SDK errors that don't expose ``body``.
 _FALLBACK_PARSE_HINTS = (
     "text_format",
     "response_format",
     "structured outputs",
-    "json_schema",
 )
 
 
@@ -92,10 +97,10 @@ class OpenAIClient(BaseLLMClient):
             so models that don't support reasoning don't reject the request.
         text_verbosity: One of ``low|medium|high`` (or ``None`` to omit).
             Forwarded as ``text={"verbosity": ...}``.
-        store: Reserved; always sent as ``False`` regardless of this flag.
-            The argument exists so the constructor signature matches what
-            ``LLMConfig.OpenAIControls`` carries, but flipping it would
-            violate the privacy invariant — Task 5's factory will pass
+        store: Reserved; MUST be ``False``. The argument exists so the
+            constructor signature matches what ``LLMConfig.OpenAIControls``
+            carries, but passing ``True`` is a privacy-invariant violation
+            and will raise :class:`ValueError`. Task 5's factory will pass
             ``False`` always.
         client: Optional pre-built ``AsyncOpenAI`` for tests. When provided,
             ``api_key`` is unused for SDK construction.
@@ -120,13 +125,25 @@ class OpenAIClient(BaseLLMClient):
         # We construct AsyncOpenAI with the supplied key only when no client is
         # injected; tests that mock ``responses.create`` typically pass their
         # own ``AsyncOpenAI`` so this branch is skipped.
+        if store:
+            raise ValueError(
+                "OpenAIClient does not support store=True; the privacy invariant "
+                "for legal/PII workflows requires stateless requests. "
+                "If you need stateful Responses, route through a separate adapter "
+                "after a documented data-retention review."
+            )
+        # Track whether we own the underlying SDK client so ``aclose`` only
+        # closes connections we created (an injected mock/AsyncOpenAI is the
+        # caller's responsibility).
+        self._owns_client = client is None
         self.client = client if client is not None else AsyncOpenAI(api_key=api_key)
         self.model = model
         self.fallback_model = fallback_model
         self.max_retries = max(1, int(max_retries))
         self.reasoning_effort = reasoning_effort
         self.text_verbosity = text_verbosity
-        # Hard-coded for privacy. The constructor arg exists for symmetry only.
+        # Hard-coded for privacy. The constructor arg exists for symmetry only;
+        # ``store=True`` is rejected above.
         self.store = False
         self._retry_base_delay = retry_base_delay
 
@@ -200,17 +217,36 @@ class OpenAIClient(BaseLLMClient):
           3. On Pydantic ``ValidationError`` / JSON decode failure, retry ONCE
              with a repair message appended; if that also fails, raise
              :class:`LLMStructuredOutputError`.
+
+        Retry-budget caveat: each iteration of the validation-retry loop
+        delegates to :meth:`_call_with_retries_and_fallback`, which itself
+        does up to ``max_retries`` attempts on transient 5xx errors and may
+        also swap to ``fallback_model`` once on rate-limit. Worst-case
+        fan-out for a single ``generate_structured`` call is therefore
+        ``2 * max_retries`` SDK calls plus (potentially) one fallback-model
+        swap per iteration. Acceptable per spec §10 (single repair retry on
+        validation failure) but worth knowing under outage conditions.
         """
         input_items = self._convert_messages(messages)
         last_error: Optional[Exception] = None
+        # Cache the strict-mode JSON schema lazily — only the manual
+        # fallback path needs it, and the rewrite can be expensive on
+        # complex models. Computing once here means a validation-retry
+        # doesn't pay the cost twice (and a schema-rewrite error surfaces
+        # only once, on the first attempt).
+        cached_schema: Optional[Dict[str, Any]] = None
 
+        # NOTE: each iteration here delegates to _call_with_retries_and_fallback,
+        # which itself does up to max_retries on transient 5xx. See docstring
+        # for full retry-budget caveat.
         for attempt in range(2):  # one retry on validation failure
             try:
-                parsed = await self._attempt_structured_call(
+                parsed, cached_schema = await self._attempt_structured_call(
                     input_items=input_items,
                     system_prompt=system_prompt,
                     response_model=response_model,
                     max_tokens=max_tokens,
+                    cached_schema=cached_schema,
                 )
                 return parsed
             except (ValidationError, json.JSONDecodeError, LLMStructuredOutputError) as exc:
@@ -264,6 +300,20 @@ class OpenAIClient(BaseLLMClient):
         for key in self._stats:
             self._stats[key] = 0
 
+    async def aclose(self) -> None:
+        """Close the underlying ``AsyncOpenAI`` client iff we created it.
+
+        Tests/CLI that construct ``OpenAIClient(api_key=...)`` directly leak
+        the SDK's connection pool without this. An *injected* client is the
+        caller's responsibility — closing it here would surprise tests that
+        share a single ``AsyncOpenAI`` across many client instances.
+
+        Idempotent if the underlying SDK supports it; otherwise a second call
+        will surface the SDK's own error.
+        """
+        if self._owns_client:
+            await self.client.close()
+
     # ------------------------------------------------------------------ #
     # Internals                                                           #
     # ------------------------------------------------------------------ #
@@ -281,13 +331,11 @@ class OpenAIClient(BaseLLMClient):
         for m in messages:
             role = m.get("role")
             content = m.get("content")
-            if isinstance(content, str):
-                out.append({"role": role, "content": content})
-            else:
-                # Pass through structured content unchanged. Task 4 will
-                # translate ``{"type": "tool_result", ...}`` blocks; for now
-                # this lets the SDK error surface naturally if present.
-                out.append({"role": role, "content": content})
+            # Pass through string content as-is; structured content (e.g.
+            # tool-result blocks) is left unchanged and will surface any
+            # SDK errors naturally. Task 4 will translate
+            # ``{"type": "tool_result", ...}`` blocks into Responses Items.
+            out.append({"role": role, "content": content})
         return out
 
     def _build_request_kwargs(
@@ -403,10 +451,17 @@ class OpenAIClient(BaseLLMClient):
         system_prompt: str,
         response_model: Type[T],
         max_tokens: int,
-    ) -> T:
+        cached_schema: Optional[Dict[str, Any]] = None,
+    ) -> tuple[T, Optional[Dict[str, Any]]]:
         """Single attempt: try ``responses.parse``, fall back to manual schema.
 
         Increments ``calls`` once per attempt (matching ``generate``).
+
+        Returns ``(parsed, cached_schema)``; ``cached_schema`` is the
+        strict-mode JSON schema computed for the manual fallback path, or
+        ``None`` if the SDK ``responses.parse`` path succeeded and the
+        rewrite was never needed. Caller passes it back on the validation
+        retry to avoid recomputing (and re-raising on rewrite errors).
         """
         self._stats["calls"] += 1
 
@@ -427,13 +482,13 @@ class OpenAIClient(BaseLLMClient):
                 parsed = getattr(response, "output_parsed", None)
                 if parsed is not None:
                     if isinstance(parsed, response_model):
-                        return parsed
+                        return parsed, cached_schema
                     # SDK returned a dict-like — coerce via model_validate.
-                    return response_model.model_validate(parsed)
+                    return response_model.model_validate(parsed), cached_schema
                 # SDK returned no parsed object — try to recover from
                 # output_text, otherwise fall through to manual path.
                 text = self._extract_text(response)
-                return self._parse_text_into_model(text, response_model)
+                return self._parse_text_into_model(text, response_model), cached_schema
 
             except LLMAPIError as exc:
                 # Detect "this model doesn't support text_format" and retry
@@ -454,14 +509,17 @@ class OpenAIClient(BaseLLMClient):
             max_tokens=max_tokens,
         )
         # Replace any existing ``text`` block — strict-mode JSON schema is
-        # mutually exclusive with verbosity here.
-        schema = strict_json_schema(response_model)
+        # mutually exclusive with verbosity here. Compute the schema lazily
+        # and reuse it across the validation retry (cheap, but a schema
+        # rewrite that raises should only raise once).
+        if cached_schema is None:
+            cached_schema = strict_json_schema(response_model)
         kwargs["text"] = {
             "format": {
                 "type": "json_schema",
                 "name": response_model.__name__,
                 "strict": True,
-                "schema": schema,
+                "schema": cached_schema,
             }
         }
         response = await self._call_with_retries_and_fallback(
@@ -470,11 +528,41 @@ class OpenAIClient(BaseLLMClient):
         self._record_usage(response)
         self._raise_if_refused_or_incomplete(response)
         text = self._extract_text(response)
-        return self._parse_text_into_model(text, response_model)
+        return self._parse_text_into_model(text, response_model), cached_schema
 
     @staticmethod
     def _is_text_format_unsupported(exc: BaseException) -> bool:
-        """Heuristic: did this error tell us the model can't take ``text_format``?"""
+        """Heuristic: did this error tell us the model can't take ``text_format``?
+
+        Prefers the *structural* signal — OpenAI's API typically populates
+        ``exc.body = {"error": {"param": ..., "code": ..., "message": ...}}``
+        — and only falls back to substring matching on the stringified error
+        when ``body`` is missing or malformed. The structural path is robust
+        against OpenAI rewording the human-readable message; the substring
+        path is a last-resort safety net.
+        """
+        # Walk through the underlying chain in case the exception was
+        # wrapped (e.g. LLMAPIError(...) from APIStatusError).
+        candidates: List[BaseException] = []
+        cursor: Optional[BaseException] = exc
+        while cursor is not None and cursor not in candidates:
+            candidates.append(cursor)
+            cursor = cursor.__cause__ or cursor.__context__
+
+        for candidate in candidates:
+            body = getattr(candidate, "body", None)
+            if isinstance(body, dict):
+                err = body.get("error") or {}
+                if isinstance(err, dict):
+                    if err.get("param") in ("text_format", "response_format"):
+                        return True
+                    if err.get("code") in ("unsupported_parameter", "invalid_parameter"):
+                        msg = (err.get("message") or "")
+                        if any(h in msg.lower() for h in _FALLBACK_PARSE_HINTS):
+                            return True
+
+        # Fallback: the SDK didn't expose a structured body, or the body
+        # didn't match — sniff the stringified error.
         msg = str(exc).lower()
         return any(hint in msg for hint in _FALLBACK_PARSE_HINTS)
 
@@ -546,9 +634,21 @@ class OpenAIClient(BaseLLMClient):
                 reason=reason,
                 tokens_out=tokens_out,
             )
+            # Tailor the actionable hint to the actual reason. We keep the
+            # exception type as LLMIncompleteResponseError even for
+            # ``content_filter`` — the response was cut short by the
+            # moderation layer rather than flat-out refused mid-stream, so
+            # "incomplete" semantics fit better than LLMRefusalError (which
+            # is reserved for explicit refusal parts emitted by the model).
+            if reason == "max_output_tokens":
+                hint = "increase max_output_tokens"
+            elif reason == "content_filter":
+                hint = "the response was filtered by moderation"
+            else:
+                hint = "see reason field"
             raise LLMIncompleteResponseError(
                 f"Response incomplete (reason={reason}, tokens_out={tokens_out}); "
-                f"increase max_output_tokens"
+                f"{hint}"
             )
 
         if status == "failed":
