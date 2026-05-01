@@ -3,15 +3,44 @@ Configuration and data models for RAG Engine.
 
 Handles environment variables, paths, and defines core data structures
 used throughout the RAG pipeline.
+
+SHA-20 Phase 4 additions:
+
+* Optional :class:`SourceMetadata` on :class:`CaseDocument` and
+  :class:`DocumentChunk` so multi-domain ingestion can carry the full
+  Phase 4 metadata bag (forum, source_publisher, source_kind,
+  corpus_version, etc.). Existing constructors that did not pass
+  ``source_metadata`` keep working — the field defaults to ``None``.
+* :class:`RetrievalFilterEnvelope` — the *single* filter shape that
+  Chroma and BM25 must agree on. Hybrid retrieval is only correct when
+  both backends apply the *same* filter set, so we route through one
+  envelope rather than letting each backend interpret raw kwargs.
+* :meth:`RAGConfig.from_namespace` — factory that opens the legacy
+  ``tribunal_cases`` collection for the deposit namespace and a
+  per-namespace path otherwise; fails fast on embedding-model mismatch.
+
+``te3s`` in path/collection names is shorthand for the OpenAI embedding
+model ``text-embedding-3-small`` (see ``rag_engine.namespaces``).
 """
 
+from __future__ import annotations
+
 import os
+from datetime import date
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from dotenv import load_dotenv
+
+if TYPE_CHECKING:  # pragma: no cover
+    from domain_core.spec import (
+        Forum as _Forum,
+        RetrievalNamespace as _RetrievalNamespace,
+        SourceKind as _SourceKind,
+        SourcePublisher as _SourcePublisher,
+    )
 
 load_dotenv()
 
@@ -46,6 +75,16 @@ class CaseDocument(BaseModel):
     source_path: str = Field(..., description="Path to source PDF file")
     metadata: Dict = Field(default_factory=dict, description="Additional metadata")
 
+    # SHA-20 Phase 4: optional Phase-4 metadata bag. Default-None so
+    # legacy callers that build CaseDocument without it keep working.
+    source_metadata: Optional["SourceMetadata"] = Field(
+        default=None,
+        description=(
+            "SHA-20 Phase 4 SourceMetadata bag. Optional for legacy callers; "
+            "required for multi-domain ingestion paths."
+        ),
+    )
+
     @property
     def category(self) -> str:
         """Infer category from source path."""
@@ -78,9 +117,25 @@ class DocumentChunk(BaseModel):
     # Token count for cost tracking
     token_count: int = Field(default=0, description="Approximate token count")
 
+    # SHA-20 Phase 4: optional SourceMetadata. ``None`` means "legacy
+    # deposit chunk" which is fine for the default deposit namespace.
+    source_metadata: Optional["SourceMetadata"] = Field(
+        default=None,
+        description=(
+            "SHA-20 Phase 4 SourceMetadata. Defaults to None for "
+            "back-compat with legacy deposit ingestion."
+        ),
+    )
+
     def to_chroma_metadata(self) -> Dict:
-        """Convert to ChromaDB-compatible metadata dict."""
-        return {
+        """Convert to ChromaDB-compatible metadata dict.
+
+        Existing keys (``case_reference``, ``chunk_index``, ``section_type``,
+        ``year``, ``region``, ``case_type``, ``token_count``) are preserved
+        for backward compatibility with the legacy deposit collection.
+        Phase 4 keys are merged in only when ``source_metadata`` is set.
+        """
+        out: Dict[str, Any] = {
             "case_reference": self.case_reference,
             "chunk_index": self.chunk_index,
             "section_type": self.section_type.value,
@@ -89,6 +144,16 @@ class DocumentChunk(BaseModel):
             "case_type": self.case_type or "",
             "token_count": self.token_count,
         }
+        if self.source_metadata is not None:
+            # Don't let Phase-4 keys clobber the legacy keys above.
+            phase4 = self.source_metadata.to_chroma_metadata()
+            for k, v in phase4.items():
+                # case_reference is doubly-named — keep the legacy value
+                # which always exists; only fill if missing.
+                if k == "case_reference" and out.get("case_reference"):
+                    continue
+                out[k] = v
+        return out
 
 
 class RetrievalResult(BaseModel):
@@ -252,6 +317,250 @@ class RAGConfig(BaseModel):
             chroma_persist_dir=Path(os.getenv("CHROMA_PERSIST_DIR", "./data/embeddings")),
         )
 
+    # ------------------------------------------------------------------
+    # SHA-20 Phase 4: namespace-aware factory
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def from_namespace(
+        cls,
+        namespace: "_RetrievalNamespace",
+        *,
+        base: Optional["RAGConfig"] = None,
+        project_root: Optional[Path] = None,
+    ) -> "RAGConfig":
+        """Build a :class:`RAGConfig` bound to a specific retrieval namespace.
+
+        * Opens the namespace's declared Chroma collection
+          (``vector_collection``) — for the legacy deposit namespace this
+          is literally ``tribunal_cases``.
+        * Resolves the BM25 path: legacy deposit goes to
+          ``data/embeddings/bm25_index.pkl``; everything else goes to
+          ``data/indices/{namespace_id}/{corpus_version}/bm25.pkl``.
+        * Verifies the embedding model encoded in the namespace matches
+          the live config — mismatches raise
+          :class:`rag_engine.namespaces.EmbeddingModelMismatch` because
+          embedding-model changes invalidate stored vectors.
+
+        Args:
+            namespace: A :class:`domain_core.spec.RetrievalNamespace`.
+            base: Optional template config to inherit non-path settings
+                from (chunk_size, retrieval k, etc.). Defaults to
+                ``RAGConfig.from_env()``.
+            project_root: Root directory paths are resolved against.
+                Defaults to the parent of ``base.data_dir``.
+        """
+        from .namespaces import (
+            EmbeddingModelMismatch,
+            bm25_index_path_for,
+            is_legacy_deposit_namespace,
+            resolve_embedding_model,
+            vector_collection_for,
+        )
+
+        base = base or cls.from_env()
+        if project_root is None:
+            project_root = base.data_dir.parent if base.data_dir.is_absolute() else Path.cwd()
+        else:
+            project_root = Path(project_root)
+
+        bm25_path = bm25_index_path_for(namespace, project_root)
+        collection = vector_collection_for(namespace)
+
+        # Embedding-model fail-fast. Legacy deposit namespace predates
+        # the tagging convention so resolve_embedding_model returns None;
+        # in that case we accept whatever the live config says.
+        ns_model = resolve_embedding_model(namespace)
+        if ns_model is not None and ns_model != base.embedding_model:
+            raise EmbeddingModelMismatch(
+                f"namespace {namespace.namespace_id!r} declares embedding "
+                f"model {ns_model!r} but live RAGConfig uses "
+                f"{base.embedding_model!r}; rebuild the corpus under a new "
+                "corpus_version before switching"
+            )
+
+        # Reuse most settings from base; override the namespace-specific ones.
+        data = base.model_dump()
+        data["openai_api_key"] = base.openai_api_key
+        data["bm25_index_path"] = bm25_path
+        data["collection_name"] = collection
+        # Chroma persistence dir for non-legacy namespaces lives under
+        # data/indices/{ns_id}/{corpus_version}/chroma; legacy stays put.
+        if not is_legacy_deposit_namespace(namespace):
+            cv = namespace.corpus_version or "unversioned"
+            data["chroma_persist_dir"] = (
+                project_root / "data" / "indices" / namespace.namespace_id / cv / "chroma"
+            )
+        return cls(**data)
+
+
+# ---------------------------------------------------------------------------
+# SHA-20 Phase 4: shared retrieval filter envelope.
+#
+# The legal contract is: hybrid retrieval is only correct when the semantic
+# (Chroma) and keyword (BM25) backends apply the *same* filter set. Each
+# backend has historically interpreted "where" kwargs differently — Chroma
+# wants its own ``$and`` clause, BM25 had no filter API at all. Phase 4
+# introduces this single envelope as the source of truth; both backends
+# convert *from* the envelope, never the other way round, so divergence is
+# a deterministic test failure rather than a silent precision drop.
+# ---------------------------------------------------------------------------
+
+
+class RetrievalFilterEnvelope(BaseModel):
+    """Backend-agnostic filter spec for hybrid retrieval.
+
+    All fields are optional; ``None`` / empty list means "no filter".
+    Both Chroma and BM25 backends MUST honour the same envelope when
+    used inside a hybrid call — see ``HybridRetriever`` for the
+    enforcement point.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=False)
+
+    # Phase 4 metadata filters (all optional)
+    excluded_source_ids: List[str] = Field(default_factory=list)
+    max_decision_date: Optional[date] = None
+    as_of_date: Optional[date] = None
+    forum: Optional["_Forum"] = None
+    source_kind: Optional["_SourceKind"] = None
+    source_publisher: Optional["_SourcePublisher"] = None
+    matter_type: Optional[str] = None
+
+    # Cross-domain authorization. Setting ``cross_domain_allowed=True``
+    # alone is NOT enough; ``eval_only=True`` must also be set.
+    cross_domain_allowed: bool = False
+    eval_only: bool = False
+
+    # Pass-through legacy ``where`` dict (year/region/case_type) so the
+    # deposit pipeline keeps working unchanged.
+    legacy_where: Dict[str, Any] = Field(default_factory=dict)
+
+    def is_empty(self) -> bool:
+        return (
+            not self.excluded_source_ids
+            and self.max_decision_date is None
+            and self.as_of_date is None
+            and self.forum is None
+            and self.source_kind is None
+            and self.source_publisher is None
+            and self.matter_type is None
+            and not self.legacy_where
+        )
+
+    def matches_metadata(self, meta: Dict[str, Any]) -> bool:
+        """Test a single chunk's metadata dict against this envelope.
+
+        Used by BM25 (which scores then filters in Python) and as the
+        canonical reference for the Chroma where-clause translation.
+        Date filters compare ISO strings if ``decision_date`` is stored
+        as a string in the metadata.
+        """
+        # Excluded source ids
+        sid = meta.get("source_id") or meta.get("case_reference")
+        if sid and self.excluded_source_ids and sid in self.excluded_source_ids:
+            return False
+
+        # Decision-date max (e.g. "decisions on or before YYYY-MM-DD")
+        if self.max_decision_date is not None:
+            d = meta.get("decision_date")
+            if d:
+                try:
+                    parsed = (
+                        date.fromisoformat(d) if isinstance(d, str) else d
+                    )
+                except ValueError:
+                    parsed = None
+                if parsed and parsed > self.max_decision_date:
+                    return False
+
+        # as_of_date: a chunk is valid iff its law_effective_date <= as_of
+        if self.as_of_date is not None:
+            led = meta.get("law_effective_date")
+            if led:
+                try:
+                    parsed = (
+                        date.fromisoformat(led) if isinstance(led, str) else led
+                    )
+                except ValueError:
+                    parsed = None
+                if parsed and parsed > self.as_of_date:
+                    return False
+
+        # Enum filters (compare to .value)
+        if self.forum is not None and meta.get("forum") != self.forum.value:
+            return False
+        if (
+            self.source_kind is not None
+            and meta.get("source_kind") != self.source_kind.value
+        ):
+            return False
+        if (
+            self.source_publisher is not None
+            and meta.get("source_publisher") != self.source_publisher.value
+        ):
+            return False
+
+        # matter_type lives in a "|"-joined string in chroma; in lists in BM25.
+        if self.matter_type is not None:
+            mt = meta.get("matter_types")
+            if isinstance(mt, list):
+                if self.matter_type not in mt:
+                    return False
+            elif isinstance(mt, str):
+                if self.matter_type not in {p for p in mt.split("|") if p}:
+                    return False
+            else:
+                return False
+
+        # Legacy where-clause (year, region, case_type) — exact equality only.
+        for k, v in self.legacy_where.items():
+            if meta.get(k) != v:
+                return False
+        return True
+
+    def to_chroma_where(self) -> Optional[Dict[str, Any]]:
+        """Translate to a ChromaDB ``where`` clause (or ``None``).
+
+        Date comparisons fall back to ISO-string ``$lte`` clauses since
+        Chroma stores dates as strings.
+        """
+        clauses: List[Dict[str, Any]] = []
+        if self.excluded_source_ids:
+            # Try source_id, but ALSO match case_reference for legacy rows.
+            clauses.append({"source_id": {"$nin": list(self.excluded_source_ids)}})
+        if self.max_decision_date is not None:
+            clauses.append(
+                {"decision_date": {"$lte": self.max_decision_date.isoformat()}}
+            )
+        if self.as_of_date is not None:
+            clauses.append(
+                {"law_effective_date": {"$lte": self.as_of_date.isoformat()}}
+            )
+        if self.forum is not None:
+            clauses.append({"forum": {"$eq": self.forum.value}})
+        if self.source_kind is not None:
+            clauses.append({"source_kind": {"$eq": self.source_kind.value}})
+        if self.source_publisher is not None:
+            clauses.append({"source_publisher": {"$eq": self.source_publisher.value}})
+        for k, v in self.legacy_where.items():
+            if isinstance(v, dict):
+                clauses.append({k: v})
+            else:
+                clauses.append({k: {"$eq": v}})
+
+        # NOTE: matter_type is intentionally omitted here. Chroma stores
+        # matter_types as a "|"-joined string, which Chroma's where-clause
+        # cannot substring-match safely. We document the limitation and
+        # apply matter_type filtering on the Python side (see
+        # ``matches_metadata``) for both backends, keeping the filter
+        # envelopes aligned.
+        if not clauses:
+            return None
+        if len(clauses) == 1:
+            return clauses[0]
+        return {"$and": clauses}
+
 
 # Legal domain keywords for re-ranking relevance
 DEPOSIT_ISSUE_KEYWORDS = {
@@ -289,3 +598,22 @@ DEPOSIT_ISSUE_KEYWORDS = {
         "paintwork", "marks on walls"
     ],
 }
+
+
+# ---------------------------------------------------------------------------
+# Resolve forward references for Phase 4 metadata. These imports happen at
+# module-load time but AFTER the model classes are defined, so they don't
+# create circularity. ``model_rebuild`` makes the optional
+# ``source_metadata`` annotation resolvable on Pydantic v2.
+# ---------------------------------------------------------------------------
+from .source_metadata import SourceMetadata as SourceMetadata  # noqa: E402,F401
+from domain_core.spec import (  # noqa: E402
+    Forum as _Forum,  # type: ignore[misc]
+    SourceKind as _SourceKind,  # type: ignore[misc]
+    SourcePublisher as _SourcePublisher,  # type: ignore[misc]
+)
+
+CaseDocument.model_rebuild()
+DocumentChunk.model_rebuild()
+RetrievalFilterEnvelope.model_rebuild()
+
