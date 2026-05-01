@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -382,7 +383,7 @@ class TestCli:
     (`python -m eval.dataset audit ...`) rather than mocking argparse."""
 
     REPO_ROOT = Path(__file__).resolve().parents[3]
-    VENV_PY = "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/bin/python"
+    VENV_PY = sys.executable
 
     @classmethod
     def _run(cls, *args, cwd=None):
@@ -442,6 +443,22 @@ class TestCli:
         self._write_corpus(path, cases)
         proc = self._run("audit", str(path), "--strict")
         assert proc.returncode == 0, proc.stderr
+
+    def test_cli_audit_strict_fails_on_load_errors(self, tmp_path):
+        from eval.schema import ClaimType
+        path = tmp_path / "housing_v1.jsonl"
+        cases = [
+            gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
+            for t in ClaimType
+            for i in range(5)
+        ]
+        self._write_corpus(path, cases)
+        with path.open("a") as f:
+            f.write(json.dumps(gold_case_dict(case_id="BROKEN", decision_date="2018-01-01")))
+            f.write("\n")
+        proc = self._run("audit", str(path), "--strict")
+        assert proc.returncode == 1
+        assert "Load error" in proc.stderr
 
     def test_cli_audit_json_output(self, tmp_path):
         path = tmp_path / "housing_v1.jsonl"

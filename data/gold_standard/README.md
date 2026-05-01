@@ -20,7 +20,7 @@ python scripts/eval/annotate.py append my_case.json
 ## How to audit
 
 ```bash
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl
 ```
 
 Reports leakage violations, under-stratified claim types, and region/case-size distributions. `--strict` makes the exit code non-zero when not clean (CI gate).

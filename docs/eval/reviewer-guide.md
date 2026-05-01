@@ -41,7 +41,7 @@ Don't cherry-pick. The 50-case corpus must be **stratified**:
 | Regions | London should be ~30%, rest of UK ~70%. |
 | Case size | Small (≤ £1500 disputed) ~30%, Large (> £1500) ~70%. |
 
-Mohamed will hand you a tracking spreadsheet listing which slots remain open. Don't worry about hitting the targets exactly — get the cases done; the audit (`python -m eval.dataset audit data/gold_standard/housing_v1.jsonl`) will report any imbalance and we adjust the next batch.
+Mohamed will hand you a tracking spreadsheet listing which slots remain open. Don't worry about hitting the targets exactly — get the cases done; the audit (`PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl`) will report any imbalance and we adjust the next batch.
 
 ## Field-by-field guidance
 

@@ -2,9 +2,9 @@
 bootstrap CI, emit JSON report.
 
 Usage:
-    python -m eval.run --metric accuracy --gold ... --predictions ...
-    python -m eval.run --metric brier   --gold ... --predictions ... --out report.json
-    python -m eval.run --metric ece     --gold ... --predictions ... --no-bootstrap
+    PYTHONPATH=packages python -m eval.run --metric accuracy --gold ... --predictions ...
+    PYTHONPATH=packages python -m eval.run --metric brier   --gold ... --predictions ... --out report.json
+    PYTHONPATH=packages python -m eval.run --metric ece     --gold ... --predictions ... --no-bootstrap
 """
 from __future__ import annotations
 
@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Optional, Sequence
+
+from pydantic import ValidationError
 
 from eval.dataset import load
 from eval.metrics import (
@@ -158,11 +160,19 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     metric_fn = _METRICS[args.metric]
-    gold_load = load(args.gold.stem, base_dir=args.gold.parent)
+    try:
+        gold_load = load(args.gold.stem, base_dir=args.gold.parent, strict=True)
+    except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
+        print(f"Gold set load error: {e}", file=sys.stderr)
+        return 1
     if not gold_load.cases:
         print(f"Gold set at {args.gold} contains no valid cases.", file=sys.stderr)
         return 1
-    predictions = _load_predictions(args.predictions)
+    try:
+        predictions = _load_predictions(args.predictions)
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
+        print(f"Predictions load error: {e}", file=sys.stderr)
+        return 1
 
     try:
         _check_alignment(gold_load.cases, predictions)

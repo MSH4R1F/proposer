@@ -32,18 +32,18 @@ End-to-end reproducibility:
 
 ```bash
 # 1. Audit the gold set
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict --evidence
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict --evidence
 
 # 2. Run a metric with bootstrap CIs
-python -m eval.run --metric accuracy \
+PYTHONPATH=packages python -m eval.run --metric accuracy \
   --gold data/gold_standard/housing_v1.jsonl \
   --predictions eval/predictions/<run-id>.jsonl \
   --seed 42 \
   --out eval/results/accuracy_$(date +%F).json
 
 # 3. Same for Brier, ECE
-python -m eval.run --metric brier --gold ... --predictions ... --seed 42 --out ...
-python -m eval.run --metric ece   --gold ... --predictions ... --seed 42 --out ...
+PYTHONPATH=packages python -m eval.run --metric brier --gold ... --predictions ... --seed 42 --out ...
+PYTHONPATH=packages python -m eval.run --metric ece   --gold ... --predictions ... --seed 42 --out ...
 ```
 
 Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (per-phase coverage, audit JSON) lives at `.sisyphus/evidence/eval/`.

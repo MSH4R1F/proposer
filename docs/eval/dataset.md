@@ -62,10 +62,10 @@ Pure function. Returns:
 ## CLI
 
 ```bash
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --json eval/results/audit.json
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --evidence
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --json eval/results/audit.json
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --evidence
 ```
 
 | Flag | Effect |
@@ -85,7 +85,7 @@ Pilot phase needs forgiveness: a half-broken corpus is the normal state during a
 |---|---|
 | Annotation CLI (Phase 3) | Lenient — skip-and-log so the annotator can keep iterating. |
 | Metrics in development (Phase 4) | Lenient — fixtures are tiny and stratification is meaningless. |
-| Production metric run on the real gold set | Strict — `python -m eval.dataset audit ... --strict` as a CI step before any Brier/accuracy reporting. |
+| Production metric run on the real gold set | Strict — `PYTHONPATH=packages python -m eval.dataset audit ... --strict` as a CI step before any Brier/accuracy reporting. |
 | Ablation runner (Phase 5) | Strict — a corrupt corpus invalidates every ablation comparison. |
 
 ## What this enables
@@ -96,7 +96,7 @@ Pilot phase needs forgiveness: a half-broken corpus is the normal state during a
 | Phase 4 accuracy / Brier / ECE | `train(cases)`, `test(cases)` | run metrics on the right split |
 | Phase 4 hallucination audit | `train(cases)` | resampling on the train split for bootstrap CIs |
 | Phase 5 ablation runner | `load(strict=True)`, `audit(cases)` | reproducible numbers, leakage-free |
-| CI nightly | `python -m eval.dataset audit ... --strict --evidence` | fail fast, archive evidence |
+| CI nightly | `PYTHONPATH=packages python -m eval.dataset audit ... --strict --evidence` | fail fast, archive evidence |
 
 ## What this does NOT do
 
