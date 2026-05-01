@@ -56,8 +56,41 @@ class KnowledgeGraph(BaseModel):
     domain_spec_hash: Optional[str] = None
     ontology_hash: Optional[str] = None
 
+    # SHA-20 Phase 5: ontology routing. ``ontology_id`` is set when the
+    # graph is built/validated against a specific ontology spec; it
+    # defaults to ``None`` so already-persisted graphs round-trip.
+    ontology_id: Optional[str] = None
+
     # Metadata
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    # ------------------------------------------------------------------ #
+    # SHA-61 / SHA-119: ontology + domain helpers
+    # ------------------------------------------------------------------ #
+
+    @property
+    def primary_domain_id(self) -> str:
+        """The graph's primary domain id.
+
+        Reads the top-level ``domain_id`` field and mirrors any value
+        present under ``metadata['domain_id']`` for backward compat.
+        """
+        # Prefer top-level field; fall back to legacy metadata mirror.
+        if self.domain_id:
+            return self.domain_id
+        meta_domain = self.metadata.get("domain_id") if isinstance(self.metadata, dict) else None
+        return meta_domain or "housing.deposit.v1"
+
+    def set_primary_domain(self, domain_id: str) -> None:
+        """Set the primary domain id and mirror it into metadata.
+
+        Mirrors are kept for backwards compat with code that read
+        ``kg.metadata['domain_id']`` before SHA-20 Phase 3.
+        """
+        self.domain_id = domain_id
+        if not isinstance(self.metadata, dict):
+            self.metadata = {}
+        self.metadata["domain_id"] = domain_id
 
     def add_node(self, node: BaseNode) -> bool:
         """

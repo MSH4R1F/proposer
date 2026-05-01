@@ -115,16 +115,22 @@ class LLMKGBuilder:
         llm_client: Any,
         min_confidence: float = 0.5,
         validate: bool = True,
+        domain_id: Optional[str] = None,
     ):
         """
         Args:
             llm_client: BaseLLMClient — the same client type used elsewhere.
             min_confidence: drop extracted items below this confidence threshold.
             validate: run KGValidator after enrichment (raises per SHA-35).
+            domain_id: optional domain to stamp onto LLM-extracted nodes
+                and edges. If None, falls back to the input KG's
+                ``primary_domain_id`` at enrich-time. Existing call sites
+                that don't pass this arg keep the legacy default.
         """
         self.llm = llm_client
         self.min_confidence = min_confidence
         self.validate = validate
+        self.domain_id = domain_id
 
     async def enrich(
         self,
@@ -187,6 +193,15 @@ class LLMKGBuilder:
 
         added_events = self._add_event_nodes(kg, extraction.events)
         added_edges = self._add_evidence_claim_edges(kg, extraction.evidence_supports_claims)
+
+        # SHA-61 / SHA-119: stamp domain_id onto newly added nodes/edges
+        # without touching anything that already carries explicit domain
+        # routing (cross-domain Evidence bridges, etc.).
+        from .graph_builder import propagate_domain_metadata
+
+        if self.domain_id is not None and kg.primary_domain_id != self.domain_id:
+            kg.set_primary_domain(self.domain_id)
+        propagate_domain_metadata(kg)
 
         logger.info(
             "llm_kg_enrich_complete",

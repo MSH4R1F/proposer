@@ -37,6 +37,16 @@ class BaseNode(BaseModel):
     created_at: str = Field(default_factory=lambda: date.today().isoformat())
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+    # SHA-61 / SHA-119: ontology-aware routing metadata. All defaulted so
+    # that existing call sites and persisted JSON continue to deserialize
+    # without modification. Populated at attach-time by the GraphBuilder
+    # (or set explicitly for cross-domain Evidence bridges).
+    domain_id: Optional[str] = None
+    forum: Optional[str] = None
+    source_ref: Optional[str] = None  # opaque pointer to RAG/citation source
+    source_domain: Optional[str] = None  # cross-domain bridge marker
+    provenance: Dict[str, Any] = Field(default_factory=dict)
+
 
 class PartyNode(BaseNode):
     """Represents a party in the dispute (tenant, landlord, agent)."""

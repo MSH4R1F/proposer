@@ -98,6 +98,10 @@ def _json_safe(value: Any) -> Any:
     return json.loads(json.dumps(value, default=str))
 
 
+_DEFAULT_DOMAIN_ID = "housing.deposit.v1"
+_DEFAULT_DOMAIN_VERSION = "v1"
+
+
 def serialize_knowledge_graph(kg: KnowledgeGraph) -> dict[str, Any]:
     """Convert a KnowledgeGraph to a fully serializable dict.
 
@@ -116,12 +120,23 @@ def serialize_knowledge_graph(kg: KnowledgeGraph) -> dict[str, Any]:
         "validation_info": _json_safe(kg.validation_info),
         "is_consistent": kg.is_consistent,
         "data_quality_tier": kg.data_quality_tier,
+        # SHA-20 Phase 3 + Phase 5: domain + ontology routing.
+        "domain_id": kg.domain_id,
+        "domain_version": kg.domain_version,
+        "domain_spec_hash": kg.domain_spec_hash,
+        "ontology_id": kg.ontology_id,
+        "ontology_hash": kg.ontology_hash,
         "metadata": _json_safe(kg.metadata),
     }
 
 
 def deserialize_knowledge_graph(data: dict[str, Any]) -> KnowledgeGraph:
-    """Reconstruct a KnowledgeGraph from a serialized dict."""
+    """Reconstruct a KnowledgeGraph from a serialized dict.
+
+    Back-compat: serialized graphs that pre-date SHA-20 (no domain_id /
+    ontology_id) get the legacy defaults (``housing.deposit.v1``, ``v1``)
+    so callers don't have to special-case missing fields.
+    """
     nodes: list[BaseNode] = []
     for node_data in data.get("nodes", []):
         node = deserialize_node(node_data)
@@ -136,6 +151,18 @@ def deserialize_knowledge_graph(data: dict[str, Any]) -> KnowledgeGraph:
         except Exception as e:
             logger.warning("edge_deserialize_failed", error=str(e))
 
+    metadata = data.get("metadata", {}) or {}
+    # Backfill domain_id from metadata mirror if top-level missing.
+    legacy_meta_domain = (
+        metadata.get("domain_id") if isinstance(metadata, dict) else None
+    )
+    domain_id = (
+        data.get("domain_id")
+        or legacy_meta_domain
+        or _DEFAULT_DOMAIN_ID
+    )
+    domain_version = data.get("domain_version") or _DEFAULT_DOMAIN_VERSION
+
     return KnowledgeGraph(
         graph_id=data.get("graph_id", ""),
         case_id=data.get("case_id", ""),
@@ -148,5 +175,10 @@ def deserialize_knowledge_graph(data: dict[str, Any]) -> KnowledgeGraph:
         validation_info=data.get("validation_info", []),
         is_consistent=data.get("is_consistent", True),
         data_quality_tier=data.get("data_quality_tier", "minimal"),
-        metadata=data.get("metadata", {}),
+        domain_id=domain_id,
+        domain_version=domain_version,
+        domain_spec_hash=data.get("domain_spec_hash"),
+        ontology_id=data.get("ontology_id"),
+        ontology_hash=data.get("ontology_hash"),
+        metadata=metadata,
     )
