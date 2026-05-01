@@ -20,8 +20,6 @@ contract so step 5 can swap the factory wiring confidently.
 from __future__ import annotations
 
 import re
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -229,6 +227,44 @@ def test_llm_config_invalid_provider_env_value(clean_env) -> None:
         LLMConfig()
 
 
+def test_llm_config_empty_string_env_vars_fall_back_to_defaults(clean_env) -> None:
+    """``FOO=""`` must be treated as unset for every per-role env override —
+    not just the model-name ones that fall back via truthiness. Previously,
+    ``LLM_INTAKE_REASONING_EFFORT=""`` would be forwarded to the validator
+    and crash."""
+    clean_env.setenv("LLM_INTAKE_PRIMARY_MODEL", "")
+    clean_env.setenv("LLM_INTAKE_FALLBACK_MODEL", "")
+    clean_env.setenv("LLM_INTAKE_REASONING_EFFORT", "")
+    clean_env.setenv("LLM_INTAKE_TEXT_VERBOSITY", "")
+    clean_env.setenv("LLM_INTAKE_STORE", "")
+    clean_env.setenv("LLM_INTAKE_MAX_OUTPUT_TOKENS", "")
+
+    cfg = LLMConfig()
+    # Default Anthropic models for INTAKE per §7.
+    assert cfg.intake.provider == LLMProvider.ANTHROPIC
+    assert cfg.intake.primary_model == "claude-3-5-haiku-20241022"
+    assert cfg.intake.fallback_model == "claude-3-5-haiku-20241022"
+    assert cfg.intake.max_output_tokens == 4096
+    # Anthropic role -> OpenAI knobs default to None / False.
+    assert cfg.intake.openai.reasoning_effort is None
+    assert cfg.intake.openai.text_verbosity is None
+    assert cfg.intake.openai.store is False
+
+
+def test_llm_config_invalid_max_output_tokens_env_raises_role_named_error(
+    clean_env,
+) -> None:
+    """Bad ``LLM_<ROLE>_MAX_OUTPUT_TOKENS`` must raise a clear, role-named
+    error — previously it leaked a bare ``invalid literal for int()`` from
+    Python's stdlib with no context about which role was misconfigured."""
+    clean_env.setenv("LLM_INTAKE_MAX_OUTPUT_TOKENS", "abc")
+    with pytest.raises((ValueError, ValidationError)) as excinfo:
+        LLMConfig()
+    msg = str(excinfo.value)
+    assert "LLM_INTAKE_MAX_OUTPUT_TOKENS" in msg
+    assert "abc" in msg
+
+
 def test_llm_config_role_config_lookup(clean_env) -> None:
     cfg = LLMConfig()
     assert cfg.role_config(LLMRole.PREDICTION) is cfg.prediction
@@ -280,6 +316,35 @@ def test_pricing_lookup_unknown_model_returns_none() -> None:
     assert (
         _pricing.get_model_pricing(LLMProvider.ANTHROPIC, "no-such-model") is None
     )
+
+
+def test_pricing_lookup_unknown_model_warns_once_per_process(monkeypatch) -> None:
+    """A missing pricing entry must surface exactly one warning per (provider, model)
+    so a model-name typo doesn't make cost tracking go silently dark — but also
+    doesn't spam the log on every ``get_stats()`` call."""
+    _pricing.load_pricing.cache_clear()
+    _pricing._warned_missing_pricing.clear()
+
+    calls: list[dict] = []
+
+    def fake_warning(event: str, **kw) -> None:
+        calls.append({"event": event, **kw})
+
+    monkeypatch.setattr(_pricing._logger, "warning", fake_warning)
+
+    assert (
+        _pricing.get_model_pricing(LLMProvider.ANTHROPIC, "definitely-not-a-model")
+        is None
+    )
+    assert (
+        _pricing.get_model_pricing(LLMProvider.ANTHROPIC, "definitely-not-a-model")
+        is None
+    )
+
+    pricing_warnings = [c for c in calls if c["event"] == "pricing_missing_for_model"]
+    assert len(pricing_warnings) == 1, pricing_warnings
+    assert pricing_warnings[0]["provider"] == "anthropic"
+    assert pricing_warnings[0]["model"] == "definitely-not-a-model"
 
 
 def test_anthropic_pricing_table_shape_matches_legacy() -> None:

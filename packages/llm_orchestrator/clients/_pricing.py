@@ -18,6 +18,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+import structlog
 import yaml
 
 from .types import LLMProvider
@@ -27,6 +28,13 @@ from .types import LLMProvider
 PRICING_YAML_PATH = (
     Path(__file__).resolve().parent.parent / "config" / "pricing.yaml"
 )
+
+_logger = structlog.get_logger()
+
+# Module-level dedupe set: emit ``pricing_missing_for_model`` warning at most
+# once per ``(provider, model)`` per process so a typo doesn't spam every
+# stats call. Cleared by tests via ``_warned_missing_pricing.clear()``.
+_warned_missing_pricing: set[tuple[str, str]] = set()
 
 
 @lru_cache(maxsize=1)
@@ -61,11 +69,31 @@ def get_model_pricing(
     data = load_pricing(path)
     provider_block = data.get(provider.value)
     if not isinstance(provider_block, dict):
+        _warn_missing_once(provider, model)
         return None
     model_pricing = provider_block.get(model)
     if not isinstance(model_pricing, dict):
+        _warn_missing_once(provider, model)
         return None
     return dict(model_pricing)
+
+
+def _warn_missing_once(provider: LLMProvider, model: str) -> None:
+    """Emit ``pricing_missing_for_model`` warning at most once per (provider, model).
+
+    Without this dedupe, a single model-name typo would spam the log on every
+    ``get_stats()`` call. Surfacing it once is enough to alert that cost
+    tracking has gone dark for that model.
+    """
+    key = (str(provider.value), model)
+    if key in _warned_missing_pricing:
+        return
+    _warned_missing_pricing.add(key)
+    _logger.warning(
+        "pricing_missing_for_model",
+        provider=provider.value,
+        model=model,
+    )
 
 
 def get_anthropic_pricing_table(

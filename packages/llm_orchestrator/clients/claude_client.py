@@ -13,7 +13,7 @@ from anthropic import AsyncAnthropic, APIError, RateLimitError
 from pydantic import BaseModel, ValidationError
 
 from ..agent_loop.loop import AgentTurnResponse
-from ._pricing import get_anthropic_pricing_table
+from ._pricing import get_anthropic_pricing_table, get_model_pricing
 from .base import BaseLLMClient
 from .exceptions import LLMAPIError, LLMRateLimitError
 from .types import LLMProvider
@@ -462,9 +462,12 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
         stats["provider"] = LLMProvider.ANTHROPIC.value
         stats["model"] = self.model
 
-        # Calculate costs
-        if self.model in self.PRICING:
-            pricing = self.PRICING[self.model]
+        # Calculate costs. Routing through ``get_model_pricing`` (rather than
+        # the ``self.PRICING`` proxy) ensures the loader's
+        # ``pricing_missing_for_model`` warning fires once when the model is
+        # absent from the YAML — otherwise cost-tracking goes silently dark.
+        pricing = get_model_pricing(LLMProvider.ANTHROPIC, self.model)
+        if pricing is not None:
             stats["estimated_cost_usd"] = (
                 (stats["tokens_in"] / 1_000_000) * pricing["input"]
                 + (stats["tokens_out"] / 1_000_000) * pricing["output"]
