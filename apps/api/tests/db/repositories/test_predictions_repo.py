@@ -93,6 +93,51 @@ async def test_save_replaces_children_on_upsert(db_session: AsyncSession) -> Non
 
 
 @pytest.mark.asyncio
+async def test_projection_mismatch_detects_domain_routing_drift(db_session: AsyncSession) -> None:
+    """SHA-124 phase 2: tampering with the domain projection columns must
+    surface as a mismatch against the canonical payload."""
+    from sqlalchemy import update
+    from apps.api.src.db.models import PredictionRow
+
+    repo = PredictionsRepo(db_session)
+    p = _make_prediction(prediction_id="p-domain-drift", case_id="case-X")
+    await repo.save(p)
+    await db_session.commit()
+
+    # Drift: change the projection column without updating the canonical payload.
+    await db_session.execute(
+        update(PredictionRow)
+        .where(PredictionRow.prediction_id == p.prediction_id)
+        .values(domain_id="employment.unfair_dismissal.v1")
+    )
+    await db_session.commit()
+
+    mismatches = await repo.projection_mismatches(p.prediction_id)
+    assert "prediction_domain_routing" in mismatches
+
+
+@pytest.mark.asyncio
+async def test_projection_mismatch_detects_repro_hash_drift(db_session: AsyncSession) -> None:
+    from sqlalchemy import update
+    from apps.api.src.db.models import PredictionRow
+
+    repo = PredictionsRepo(db_session)
+    p = _make_prediction(prediction_id="p-hash-drift", case_id="case-Y")
+    await repo.save(p)
+    await db_session.commit()
+
+    await db_session.execute(
+        update(PredictionRow)
+        .where(PredictionRow.prediction_id == p.prediction_id)
+        .values(domain_spec_hash="deadbeef")
+    )
+    await db_session.commit()
+
+    mismatches = await repo.projection_mismatches(p.prediction_id)
+    assert "prediction_repro_hashes" in mismatches
+
+
+@pytest.mark.asyncio
 async def test_get_by_case_id_returns_only_matching(db_session: AsyncSession) -> None:
     repo = PredictionsRepo(db_session)
     p1 = _make_prediction(prediction_id="p1", case_id="case-A")
