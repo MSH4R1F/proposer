@@ -1,5 +1,6 @@
 """Phase 11.0: DB target preflight script."""
 import subprocess
+import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -7,7 +8,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 def _run(*args, env=None):
     return subprocess.run(
-        ["python", "-m", "scripts.migrations.print_db_target", *args],
+        [sys.executable, "-m", "scripts.migrations.print_db_target", *args],
         cwd=REPO_ROOT, capture_output=True, text=True, env=env,
     )
 
