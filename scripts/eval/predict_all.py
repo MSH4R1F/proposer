@@ -118,6 +118,9 @@ def _run(
                     unmapped_total[ct] += 1
                 pred_result = predict_fn(recon.case_file, mode_enum)
                 eval_pred = from_prediction_result(pred_result)
+                _apply_gold_issue_label_alignment(
+                    eval_pred, recon.gold_issue_labels_by_claim_type
+                )
                 f.write(json.dumps(_serialise_prediction(eval_pred)) + "\n")
         cases_done = len(gold_cases)
 
@@ -126,6 +129,24 @@ def _run(
         "modes": len(modes),
         "unmapped_claim_types": dict(unmapped_total),
     }
+
+
+def _apply_gold_issue_label_alignment(pred, label_map: dict[str, str]) -> None:
+    """Rewrite eval ClaimType issue keys to the gold case's claimed labels.
+
+    Gold per-issue metrics join on `ground_truth_outcome.per_issue[].issue`,
+    which is a free-text claimed-amount label. `eval.adapter` can only normalise
+    orchestrator enum values to eval `ClaimType` values. The reconstructor
+    supplies a one-to-one map from pre-decision claimed labels when that map is
+    unambiguous; otherwise this is a no-op and metrics count missing labels in
+    the usual conservative way.
+    """
+    if not label_map:
+        return
+    for issue_prediction in pred.per_issue:
+        issue_prediction.issue = label_map.get(
+            issue_prediction.issue, issue_prediction.issue
+        )
 
 
 def _cli_main(argv: Optional[Sequence[str]] = None) -> int:

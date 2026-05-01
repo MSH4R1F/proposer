@@ -243,8 +243,8 @@ class TestPerIssueMapping:
 
         assert winners["cleaning"] is Winner.LANDLORD
         assert probs["cleaning"] == pytest.approx(0.9)
-        assert winners["damage"] is Winner.TENANT
-        assert probs["damage"] == pytest.approx(1 - 0.9)
+        assert winners["damages"] is Winner.TENANT
+        assert probs["damages"] == pytest.approx(1 - 0.9)
         assert winners["rent_arrears"] is Winner.SPLIT
         assert probs["rent_arrears"] == pytest.approx(0.5)
         assert winners["garden"] is Winner.SPLIT
@@ -264,8 +264,8 @@ class TestPerIssueMapping:
         prediction = from_prediction_result(result)
         assert prediction.per_issue[0].predicted_amount_gbp == Decimal("0")
 
-    def test_per_issue_uses_string_value_of_issue_type_enum(self):
-        """`IssueType` is a Pydantic enum; eval expects a plain string."""
+    def test_per_issue_normalises_orchestrator_issue_to_eval_claim_type(self):
+        """The metrics join per-issue predictions to gold by eval ClaimType."""
         IssueOutcome, _, _, _ = _orchestrator_imports()
         issues = [
             _build_orchestrator_issue(
@@ -277,7 +277,22 @@ class TestPerIssueMapping:
         ]
         result = _build_orchestrator_prediction(issue_predictions=issues)
         prediction = from_prediction_result(result)
-        assert prediction.per_issue[0].issue == "deposit_protection"
+        assert prediction.per_issue[0].issue == "deposit_non_protection"
+
+    def test_unmappable_orchestrator_issue_passes_through(self):
+        """Orchestrator-only values remain visible and score as missing."""
+        IssueOutcome, _, _, _ = _orchestrator_imports()
+        issues = [
+            _build_orchestrator_issue(
+                issue_type="garden",
+                outcome=IssueOutcome.LANDLORD_WINS,
+                confidence=0.6,
+                predicted_amount=0.0,
+            ),
+        ]
+        result = _build_orchestrator_prediction(issue_predictions=issues)
+        prediction = from_prediction_result(result)
+        assert prediction.per_issue[0].issue == "garden"
 
 
 class TestCalibratedConfidencePreference:

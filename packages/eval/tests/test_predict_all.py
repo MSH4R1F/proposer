@@ -126,6 +126,26 @@ class TestStubModeWritesPerModeJsonl:
             lines = [line for line in f if line.strip()]
         assert len(lines) == 3
 
+    def test_unambiguous_gold_issue_labels_are_used_for_metric_join(self, tmp_path):
+        mod = _import_script_module()
+        rc = mod._cli_main(
+            [
+                "--gold",
+                str(GOLD_PATH),
+                "--out-dir",
+                str(tmp_path),
+                "--engine",
+                "stub",
+                "--limit",
+                "1",
+                "--modes",
+                "hybrid",
+            ]
+        )
+        assert rc == 0
+        row = json.loads((tmp_path / "hybrid.jsonl").read_text().splitlines()[0])
+        assert row["per_issue"][0]["issue"] == "primary_issue"
+
 
 class TestAlignmentReport:
     def test_summary_reports_unmappable_claim_types(self, tmp_path, capsys):

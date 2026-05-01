@@ -343,7 +343,7 @@ The Phase 4a scope (no heavy ML deps) is fully usable on its own — accuracy an
 **Why:**
 1. **Don't shrink the corpus arbitrarily.** Roughly 20–30% of housing-tribunal cases involve disrepair; dropping them would meaningfully change the corpus distribution and make the thesis harder to defend on representativeness grounds.
 2. **`OTHER` is honest.** The engine sees that *something* is in dispute, just without a tighter category — same as a real intake user who picks "other" from the dropdown.
-3. **Surface the gap, don't hide it.** The runner emits the per-eval-value tally to stdout and persists it in the runner summary, so SHA-68's thesis chapter can quantify the alignment loss alongside the headline numbers.
+3. **Surface the gap, don't hide it.** The runner emits the per-eval-value tally to stdout and returns it in the in-process summary, so SHA-68's thesis chapter can quantify the alignment loss alongside the headline numbers.
 
 **Rejected alternatives:**
 - **Drop unmappable cases.** Rejected for distribution-bias reasons above.

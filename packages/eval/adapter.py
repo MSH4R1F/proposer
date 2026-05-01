@@ -16,15 +16,18 @@ Mapping policy:
 - total_predicted_gbp = (tenant_recovery or 0) + (landlord_recovery or 0)
 - per-issue calibrated_confidence wins over raw_confidence when set
 - per-issue predicted_amount=None → Decimal("0")
+- per-issue issue labels are normalised from orchestrator `DisputeIssue`
+  values into eval `ClaimType` values where a clean mapping exists
 
-This module is the only place in `packages/eval/` that imports from
-`packages/llm_orchestrator/`. All other eval code stays decoupled.
+This module imports orchestrator types only for adaptation; it does not call
+the prediction pipeline.
 """
 from __future__ import annotations
 
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
+from eval.issue_alignment import UnmappableIssue, orchestrator_to_eval
 from eval.metrics.types import IssuePrediction, Prediction
 from eval.schema import Winner
 
@@ -100,6 +103,16 @@ def _confidence_to_p_landlord(outcome_value: str, confidence: float) -> float:
 
 
 def _issue_type_to_str(value) -> str:
-    """`IssueType` is a Pydantic str-Enum; `.value` gives the canonical key
-    that gold cases use. Strings pass through unchanged."""
-    return getattr(value, "value", value)
+    """Return the eval/gold issue key when the orchestrator issue maps cleanly.
+
+    `PredictionResult` uses orchestrator `DisputeIssue` labels (`damage`,
+    `deposit_protection`). Gold cases use eval `ClaimType` labels (`damages`,
+    `deposit_non_protection`). Normalising here prevents mapped predictions
+    from being counted as missing by issue-level metrics. Orchestrator-only
+    values pass through and will be scored as missing when no gold label exists.
+    """
+    raw = getattr(value, "value", value)
+    try:
+        return orchestrator_to_eval(raw).value
+    except UnmappableIssue:
+        return str(raw)

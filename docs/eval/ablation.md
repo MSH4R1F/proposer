@@ -26,7 +26,7 @@ The mode flag is wired into `PredictionEngineV2.predict(case_file, mode=...)` (S
 ## What ships in Phase 5b (live-runner follow-up)
 
 - `eval.issue_alignment` — bidirectional `ClaimType` ↔ `DisputeIssue` map; `UnmappableIssue` exception for the gaps (`disrepair`, `end_of_tenancy`, orchestrator-only values like `garden`).
-- `eval.case_file_adapter.gold_case_to_case_file(gold) → LossyReconstruction` — reconstructs a *pre-decision* CaseFile from a *post-decision* GoldCase, dropping every artifact that would let the engine cheat (`ground_truth_outcome`, `key_reasoning_quotes`, tribunal `statutory_basis`, tribunal `cited_authorities`, `decision_date`).
+- `eval.case_file_adapter.gold_case_to_case_file(gold) → LossyReconstruction` — reconstructs a *pre-decision* CaseFile from a *post-decision* GoldCase, dropping every artifact that would let the engine cheat (`ground_truth_outcome`, `key_reasoning_quotes`, tribunal `statutory_basis`, tribunal `cited_authorities`, `decision_date`). It also records a non-leaky `ClaimType → claimed_amounts.issue` map when the labels are one-to-one, so runner output can join against gold per-issue labels.
 - `eval._stub_prediction.make_stub_prediction(case_file, mode)` — deterministic per-mode `PredictionResult` stand-in (no LLM); used by `--engine stub` so CI exercises the full chain.
 - `scripts/eval/predict_all.py` — loops `(gold_case, mode)` through reconstruction → predict → adapt → JSONL. `--engine stub` (CI default) and `--engine live` (deferred, raises until an LLM client is wired in). Stdout reports per-mode counts and unmappable claim-type tallies (alignment diagnostics).
 
@@ -155,9 +155,13 @@ This is conservative — formal pairwise hypothesis testing (e.g. paired bootstr
 
 ## Vocabulary mismatch — issue alignment caveat
 
-The orchestrator's `DisputeIssue` enum (the issue vocabulary the prediction engine emits) and the eval `ClaimType` enum (the gold-set vocabulary) are not identical. For example, `disrepair` exists in eval but not in the orchestrator's `DisputeIssue`. When live predictions land in Phase 6, the runner will need a vocab map (`packages/eval/issue_alignment.py` or similar) to align the two — otherwise per-issue accuracy is artificially low because the predicted issue label literally isn't in the gold set's vocabulary.
+The orchestrator's `DisputeIssue` enum (the issue vocabulary the prediction engine emits), the eval `ClaimType` enum (the stratification vocabulary), and the gold `claimed_amounts.issue` labels (free-text per-issue metric keys) are not identical. Phase 5b handles the deterministic parts:
 
-Tracked separately; not in this PR's scope.
+- `eval.issue_alignment` maps clean enum pairs (`damage` ↔ `damages`, `deposit_protection` ↔ `deposit_non_protection`).
+- `gold_case_to_case_file` records an unambiguous `ClaimType → claimed_amounts.issue` map when the pre-decision labels are one-to-one.
+- `predict_all.py` applies that map before writing JSONL, so metrics join on the gold issue labels where the mapping is safe.
+
+Ambiguous cases are deliberately left unmapped and score through the existing "missing prediction" path. That is conservative: it makes alignment loss visible instead of manufacturing a fake per-issue match.
 
 ## Reproducibility
 

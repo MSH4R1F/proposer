@@ -258,16 +258,16 @@ PYTHONPATH=packages python -m eval.run --metric brier \
 | `tests/test_metrics_accuracy.py` (14 tests) | `issue_winner_accuracy` perfect/wrong/partial, missing predictions, unapportioned path; `amount_within_threshold` default + custom thresholds + zero-actual edge. |
 | `tests/test_metrics_calibration.py` (12 tests) | Brier perfect/coin-flip/hand-computed; ECE well-calibrated/over-confident/n_bins=1; reliability diagram PNG output verified by signature; end-to-end against synthetic corpus. |
 | `tests/test_run_cli.py` (14 tests) | `eval.run` against synthetic corpus + predictions for every metric, `--no-bootstrap`, `--out`, `--seed`, alignment failure, in-process coverage. |
-| `tests/test_adapter.py` (19 tests) | `from_prediction_result` mappings: outcome→Winner, confidence→P(landlord), unknown-outcome fail-fast, amount aggregation, calibrated_confidence override, IssueType-enum unwrap, case_id round-trip. |
+| `tests/test_adapter.py` (20 tests) | `from_prediction_result` mappings: outcome→Winner, confidence→P(landlord), unknown-outcome fail-fast, amount aggregation, calibrated_confidence override, issue-vocabulary normalisation, case_id round-trip. |
 | `tests/test_compare.py` (15 tests) | `build_comparison_report` shape, metric correctness on perfect/coinflip predictions, ranking by alias, bootstrap integration + seed determinism, dominance check. |
 | `tests/test_ablate_cli.py` (16 tests) | `eval.ablate` CLI: arg parsing (`mode=path`), in-process orchestration, numeric flag validation, two-mode aggregation, ranking, alignment failure, seed recording, subprocess entry point. |
 | `tests/test_ablation_fixtures.py` (4 tests) | Regression check on the synthetic per-mode prediction fixtures — locks the accuracy ranking `hybrid > rag_only > kg_only > llm_only`. |
 | `tests/test_issue_alignment.py` (16 tests) | `eval_to_orchestrator` / `orchestrator_to_eval` clean pairs, `UnmappableIssue` for `disrepair`/`end_of_tenancy`/orchestrator-only values, round-trip on every clean pair. |
-| `tests/test_case_file_adapter.py` (15 tests) | `gold_case_to_case_file` identity preservation, party population, issue mapping with OTHER fallback, narrative routing, deliberate drops (no verdict leak), evidence + claim split, all-cases smoke. |
+| `tests/test_case_file_adapter.py` (17 tests) | `gold_case_to_case_file` identity preservation, party population, issue mapping with OTHER fallback, gold issue-label map, narrative routing, deliberate drops (no verdict leak), evidence + claim split, all-cases smoke. |
 | `tests/test_stub_prediction.py` (10 tests) | `make_stub_prediction` schema validity, determinism per `(case_id, mode)`, mode-differentiated confidence anchors, no-issue edge case. |
-| `tests/test_predict_all.py` (8 tests) | `scripts/eval/predict_all.py` in-process + subprocess: per-mode JSONL writes, `--modes` filter, `--limit`, alignment summary on stdout, `--engine live` raises clearly, end-to-end (predict_all → eval.ablate → ComparisonReport). |
+| `tests/test_predict_all.py` (9 tests) | `scripts/eval/predict_all.py` in-process + subprocess: per-mode JSONL writes, `--modes` filter, `--limit`, gold issue-label alignment, alignment summary on stdout, `--engine live` raises clearly, end-to-end (predict_all → eval.ablate → ComparisonReport). |
 
-297 tests total. ~99% line coverage on `packages/eval/`.
+301 tests total. ~99% line coverage on `packages/eval/`.
 
 ## Phase boundaries
 
@@ -281,5 +281,5 @@ schema.py    │  dataset.py      │ scripts/eval/   │ metrics/{accuracy │ 
              │                  │  + 10-case      │  + metrics doc    │   fixtures     │ + E2E test        │ wiring (5c)
              │                  │   fixture       │                   │ + ablation doc │ + D-019/D-020     │
              ▼                  ▼                 ▼                   ▼                  ▼                   ▼
-        53 tests             80 tests         133 tests            181 tests          248 tests           297 tests
+        53 tests             80 tests         133 tests            181 tests          248 tests           301 tests
 ```

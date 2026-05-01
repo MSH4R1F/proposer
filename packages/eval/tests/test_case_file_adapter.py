@@ -99,6 +99,15 @@ class TestIssueMapping:
         out = gold_case_to_case_file(case)
         assert "end_of_tenancy" in out.unmapped_claim_types
 
+    def test_unambiguous_claimed_issue_label_map_recorded(self, first_gold_case):
+        out = gold_case_to_case_file(first_gold_case)
+        assert out.gold_issue_labels_by_claim_type == {"cleaning": "primary_issue"}
+
+    def test_ambiguous_claimed_issue_label_map_left_empty(self, synthetic_gold_cases):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-MULTI"))
+        out = gold_case_to_case_file(case)
+        assert out.gold_issue_labels_by_claim_type == {}
+
 
 class TestNarrativePopulated:
     def test_facts_become_tenant_narrative(self, first_gold_case):
