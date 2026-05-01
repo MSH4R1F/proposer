@@ -351,37 +351,20 @@ class OpenAIClient(BaseLLMClient):
 
         self._record_usage(response)
 
-        # Refusal must raise; an "incomplete" response must NOT raise here
-        # (the agent loop handles termination). We therefore inline the
-        # refusal/failed checks instead of calling
-        # _raise_if_refused_or_incomplete which would also raise on incomplete.
-        for item in getattr(response, "output", None) or []:
-            for part in getattr(item, "content", None) or []:
-                if getattr(part, "type", None) == "refusal":
-                    refusal_text = getattr(part, "refusal", "") or ""
-                    self._stats["errors"] += 1
-                    logger.error(
-                        "openai_run_agent_turn_refusal",
-                        refusal=refusal_text[:200],
-                    )
-                    raise LLMRefusalError(
-                        f"Model refused to answer: {refusal_text or '<no refusal text>'}"
-                    )
+        # Refusal + failed must raise; an "incomplete" response must NOT
+        # raise here — the agent loop owns termination and surfaces partial
+        # text via stop_reason="max_tokens" via _normalize_stop_reason below.
+        self._raise_if_refused_or_incomplete(response, raise_on_incomplete=False)
 
-        status = getattr(response, "status", None)
-        if status == "failed":
+        try:
+            content_blocks = self._openai_response_to_blocks(response)
+        except LLMStructuredOutputError:
+            # Bump errors counter to keep stats consistent with all other
+            # error paths (rate-limit-exhausted, 5xx-exhausted, refusal,
+            # incomplete, failed). The helper itself is a @staticmethod so
+            # it can't bump self._stats inline.
             self._stats["errors"] += 1
-            err = getattr(response, "error", None)
-            err_msg = (
-                getattr(err, "message", None) or str(err)
-                if err
-                else "unknown error"
-            )
-            raise LLMAPIError(
-                f"OpenAI Responses API returned failed status: {err_msg}"
-            )
-
-        content_blocks = self._openai_response_to_blocks(response)
+            raise
         has_tool_calls = any(
             b.get("type") == "tool_use" for b in content_blocks
         )
@@ -479,8 +462,14 @@ class OpenAIClient(BaseLLMClient):
                             t = block.get("text", "")
                             if isinstance(t, str) and t:
                                 text_parts.append(t)
-                        # Unknown block types are dropped — adding them as
-                        # opaque items would surprise the API.
+                        else:
+                            # Unknown block types are dropped — adding them
+                            # as opaque items would surprise the API.
+                            logger.debug(
+                                "openai_dropping_unknown_block",
+                                role="user",
+                                block_type=btype,
+                            )
                     if text_parts:
                         out.append(
                             {"role": "user", "content": "".join(text_parts)}
@@ -531,7 +520,13 @@ class OpenAIClient(BaseLLMClient):
                                     "arguments": args_str,
                                 }
                             )
-                        # Unknown block types dropped (see above).
+                        else:
+                            # Unknown block types dropped (see above).
+                            logger.debug(
+                                "openai_dropping_unknown_block",
+                                role="assistant",
+                                block_type=btype,
+                            )
                     _flush_text()
                     continue
 
@@ -925,7 +920,9 @@ class OpenAIClient(BaseLLMClient):
             reasoning = getattr(out_details, "reasoning_tokens", 0) or 0
             self._stats["reasoning_tokens_out"] += int(reasoning)
 
-    def _raise_if_refused_or_incomplete(self, response: Any) -> None:
+    def _raise_if_refused_or_incomplete(
+        self, response: Any, *, raise_on_incomplete: bool = True
+    ) -> None:
         """Translate Responses-API status flags into our neutral exceptions.
 
         Refusal: any output message whose content list contains a
@@ -935,6 +932,11 @@ class OpenAIClient(BaseLLMClient):
 
         Incomplete: ``status == "incomplete"`` or
         ``incomplete_details.reason == "max_output_tokens"``.
+
+        ``raise_on_incomplete`` lets ``run_agent_turn`` reuse the refusal /
+        failed branches without raising on incomplete (the agent loop owns
+        termination policy and surfaces partial text via
+        ``stop_reason="max_tokens"`` instead).
         """
         status = getattr(response, "status", None)
         incomplete_details = getattr(response, "incomplete_details", None)
@@ -952,7 +954,13 @@ class OpenAIClient(BaseLLMClient):
                         f"Model refused to answer: {refusal_text or '<no refusal text>'}"
                     )
 
-        if status == "incomplete":
+        if status == "failed":
+            self._stats["errors"] += 1
+            err = getattr(response, "error", None)
+            err_msg = getattr(err, "message", None) or str(err) if err else "unknown error"
+            raise LLMAPIError(f"OpenAI Responses API returned failed status: {err_msg}")
+
+        if raise_on_incomplete and status == "incomplete":
             reason = getattr(incomplete_details, "reason", None) if incomplete_details else None
             self._stats["errors"] += 1
             tokens_out = getattr(getattr(response, "usage", None), "output_tokens", None)
@@ -977,12 +985,6 @@ class OpenAIClient(BaseLLMClient):
                 f"Response incomplete (reason={reason}, tokens_out={tokens_out}); "
                 f"{hint}"
             )
-
-        if status == "failed":
-            self._stats["errors"] += 1
-            err = getattr(response, "error", None)
-            err_msg = getattr(err, "message", None) or str(err) if err else "unknown error"
-            raise LLMAPIError(f"OpenAI Responses API returned failed status: {err_msg}")
 
     @staticmethod
     def _extract_text(response: Any) -> str:

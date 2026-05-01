@@ -464,6 +464,46 @@ async def test_malformed_function_call_arguments_raises_structured_error() -> No
             tool_schemas=[],
         )
     assert "call_BAD" in str(exc_info.value)
+    # Stats consistency: errors counter must be bumped on this failure
+    # path so it matches every other error path in the client.
+    assert client._stats["errors"] == 1
+
+
+# ---------------------------------------------------------------------------
+# 8b. Pre-parsed dict arguments (some SDK builds skip the JSON-string step)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_function_call_with_already_parsed_dict_arguments() -> None:
+    """Defensive: some SDK builds expose ``arguments`` as a parsed dict
+    rather than a JSON string. The conversion helper must passthrough
+    without trying to ``json.loads`` it.
+    """
+    client = _make_client()
+    fake = _response(
+        output=[
+            _function_call_item(
+                call_id="call_PRE",
+                name="foo",
+                arguments={"x": 1},  # type: ignore[arg-type]  # dict, not str
+            )
+        ],
+    )
+    client.client.responses.create.return_value = fake
+
+    result = await client.run_agent_turn(
+        system_prompt="s",
+        messages=[{"role": "user", "content": "hi"}],
+        tool_schemas=[],
+    )
+    assert result.stop_reason == "tool_use"
+    assert len(result.content_blocks) == 1
+    block = result.content_blocks[0]
+    assert block["type"] == "tool_use"
+    assert block["id"] == "call_PRE"
+    assert block["input"] == {"x": 1}
+    assert isinstance(block["input"], dict)
 
 
 # ---------------------------------------------------------------------------
