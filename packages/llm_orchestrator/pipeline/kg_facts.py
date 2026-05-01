@@ -80,9 +80,12 @@ def derive_kg_facts(kg: Any, issue_type: IssueType) -> KGFacts:
     prescribed_late_by: Optional[int] = None
 
     if lease is not None:
+        receipt_date = getattr(lease, "deposit_received_date", None) or (
+            _find_deposit_receipt_date(kg)
+        )
         deposit_scheme = getattr(lease, "deposit_scheme", None)
         protected = getattr(lease, "deposit_protected", None)
-        start = getattr(lease, "start_date", None)
+        start = receipt_date or getattr(lease, "start_date", None)
         protection_date = getattr(lease, "protection_date", None)
 
         if protected is False:
@@ -91,7 +94,7 @@ def derive_kg_facts(kg: Any, issue_type: IssueType) -> KGFacts:
             days = (protection_date - start).days
             if days > 30:
                 deposit_status = "protected_late"
-                deposit_late_by = days
+                deposit_late_by = days - 30
             else:
                 deposit_status = "protected_on_time"
         elif protected is True:
@@ -105,7 +108,7 @@ def derive_kg_facts(kg: Any, issue_type: IssueType) -> KGFacts:
             days = (prescribed_date - start).days
             if days > 30:
                 prescribed_status = "provided_late"
-                prescribed_late_by = days
+                prescribed_late_by = days - 30
             else:
                 prescribed_status = "provided_on_time"
         elif prescribed is True:
@@ -128,3 +131,20 @@ def derive_kg_facts(kg: Any, issue_type: IssueType) -> KGFacts:
         prescribed_late_by_days=prescribed_late_by,
         check_in_inventory_baseline=inventory,
     )
+
+
+def _find_deposit_receipt_date(kg: Any) -> Optional[Any]:
+    try:
+        from kg_builder.models.nodes import NodeType
+    except ImportError:
+        return None
+
+    receipt_event_types = {"deposit_paid", "deposit_lodged", "deposit_received"}
+    event_nodes = kg.get_nodes_by_type(NodeType.EVENT)
+    dates = [
+        getattr(event, "event_date", None)
+        for event in event_nodes
+        if getattr(event, "event_type", None) in receipt_event_types
+        and getattr(event, "event_date", None) is not None
+    ]
+    return min(dates) if dates else None

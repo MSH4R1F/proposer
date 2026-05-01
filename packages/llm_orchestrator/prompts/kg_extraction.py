@@ -27,8 +27,8 @@ Critical rules:
 - DO NOT extract Party / Property / Lease facts — those go through the regular CaseFile extractor.
 
 Hard temporal-logic constraints (the validator will REJECT outputs that violate these):
-- An event's date cannot be before the tenancy start date when the event_type is anything other than 'tenancy_start' or 'deposit_protected'.
-- A deposit_protected event cannot be before the deposit was paid (which usually equals tenancy start).
+- An event's date cannot be before the tenancy start date when the event_type is anything other than 'tenancy_start', 'deposit_paid', 'deposit_lodged', 'deposit_received', or 'deposit_protected'.
+- A deposit_protected event cannot be before the deposit was paid or received. The 30-day deadline runs from deposit receipt, not tenancy start.
 
 If you would need to violate these constraints to fit the user's account, leave the date off the event and lower its confidence to <0.5.
 

@@ -85,16 +85,28 @@ def test_temporal_logic_tenancy_start_event_exempt():
     assert kg.validation_errors == []
 
 
-def test_temporal_logic_protection_before_start_raises():
-    """Deposit protected before tenancy started is chronologically impossible."""
+def test_temporal_logic_protection_before_receipt_raises():
+    """Deposit protected before the deposit was received is chronologically impossible."""
     kg = _kg_with_lease(
         date(2023, 6, 1),
-        protection_date=date(2023, 1, 1),  # before start
+        deposit_received_date=date(2023, 5, 1),
+        protection_date=date(2023, 1, 1),
         deposit_protected=True,
     )
     with pytest.raises(KGValidationError) as exc:
         KGValidator(raise_on_error=True).validate(kg)
-    assert any("protected before tenancy start" in e.lower() for e in exc.value.errors)
+    assert any("protected before deposit receipt" in e.lower() for e in exc.value.errors)
+
+
+def test_temporal_logic_protection_before_start_allowed_when_receipt_unknown():
+    """Protection can predate move-in if the deposit was received before move-in."""
+    kg = _kg_with_lease(
+        date(2023, 6, 1),
+        protection_date=date(2023, 5, 20),
+        deposit_protected=True,
+    )
+    KGValidator(raise_on_error=True).validate(kg)
+    assert kg.validation_errors == []
 
 
 def test_temporal_logic_late_protection_is_warning_not_error():
@@ -109,16 +121,17 @@ def test_temporal_logic_late_protection_is_warning_not_error():
     assert any("> 30 day limit" in w for w in kg.validation_warnings)
 
 
-def test_temporal_logic_prescribed_info_before_start_raises():
+def test_temporal_logic_prescribed_info_before_receipt_raises():
     kg = _kg_with_lease(
         date(2023, 6, 1),
+        deposit_received_date=date(2023, 5, 1),
         prescribed_info_date=date(2023, 1, 1),
         prescribed_info_provided=True,
     )
     with pytest.raises(KGValidationError) as exc:
         KGValidator(raise_on_error=True).validate(kg)
     assert any(
-        "prescribed information date is before tenancy start" in e.lower()
+        "prescribed information date is before deposit receipt" in e.lower()
         for e in exc.value.errors
     )
 
@@ -287,7 +300,8 @@ def test_validate_collects_multiple_errors_into_one_exception():
     kg = _kg_with_lease(
         date(2024, 1, 1),
         date(2023, 1, 1),  # end < start
-        protection_date=date(2023, 6, 1),  # before start (will trigger second error)
+        deposit_received_date=date(2023, 7, 1),
+        protection_date=date(2023, 6, 1),  # before receipt (second error)
         deposit_protected=True,
     )
     with pytest.raises(KGValidationError) as exc:
