@@ -4,13 +4,37 @@ API configuration and settings.
 
 import os
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 from urllib.parse import parse_qs, urlparse
 
 from pydantic import BaseModel, Field, model_validator
 import structlog
 
 logger = structlog.get_logger()
+
+
+def _parse_csv_env(value: str) -> List[str]:
+    """Parse a comma-separated env value with whitespace tolerance + dedupe.
+
+    Returns the entries in the order they first appear. Empty entries
+    (created by trailing/leading commas or blank fields) are dropped.
+    """
+    if not value:
+        return []
+    seen: set[str] = set()
+    out: List[str] = []
+    for raw in value.split(","):
+        item = raw.strip()
+        if not item:
+            continue
+        if item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+    return out
+
+
+_DEFAULT_DOMAIN = "housing.deposit.v1"
 
 
 class APIConfig(BaseModel):
@@ -75,6 +99,65 @@ class APIConfig(BaseModel):
         default_factory=lambda: os.getenv("PREDICTION_MODE", "hybrid").lower()
     )
 
+    # SHA-20 Phase 3: Multi-domain runtime flags
+    # ---------------------------------------------------------------
+    # `enabled_domains`: domain ids permitted to run as the default routed
+    #   domain. Comma-separated env: ENABLED_DOMAINS. Phase 3 only enables
+    #   `housing.deposit.v1`; other domains return "domain unavailable" until
+    #   their launch gate is signed (Phase 8).
+    # `default_domain`: domain used when a request omits `domain_id`.
+    # `domain_router_enabled`: future toggle for router-based domain
+    #   selection (Phase 6+); Phase 3 defaults to False.
+    # `domain_cross_retrieval_allowed`: future toggle for cross-namespace
+    #   retrieval; default False until Phase 4.
+    # `domain_beta_allowlist_user_ids`: stable user IDs (Supabase UUIDs once
+    #   auth is enabled) permitted to run beta-stage domains. Comma-separated.
+    # `domain_employment_beta_allowlist_user_ids`: family-specific beta
+    #   allowlist for employment.* research domains.
+    # `domain_strict_eval_gates`: Phase 8 fail-closed launch gate enforcement
+    #   toggle. Phase 3 leaves it on; gate enforcement itself is partial.
+    # `domain_gate_artifact_dir`: directory holding signed launch-gate
+    #   artifacts (resolved by Phase 8 / SHA-122).
+    enabled_domains: List[str] = Field(
+        default_factory=lambda: _parse_csv_env(
+            os.getenv("ENABLED_DOMAINS", _DEFAULT_DOMAIN)
+        )
+    )
+    default_domain: str = Field(
+        default_factory=lambda: os.getenv("DEFAULT_DOMAIN", _DEFAULT_DOMAIN)
+    )
+    domain_router_enabled: bool = Field(
+        default_factory=lambda: os.getenv("DOMAIN_ROUTER_ENABLED", "false").lower()
+        == "true"
+    )
+    domain_cross_retrieval_allowed: bool = Field(
+        default_factory=lambda: os.getenv(
+            "DOMAIN_CROSS_RETRIEVAL_ALLOWED", "false"
+        ).lower()
+        == "true"
+    )
+    domain_beta_allowlist_user_ids: List[str] = Field(
+        default_factory=lambda: _parse_csv_env(
+            os.getenv("DOMAIN_BETA_ALLOWLIST_USER_IDS", "")
+        )
+    )
+    domain_employment_beta_allowlist_user_ids: List[str] = Field(
+        default_factory=lambda: _parse_csv_env(
+            os.getenv("DOMAIN_EMPLOYMENT_BETA_ALLOWLIST_USER_IDS", "")
+        )
+    )
+    domain_strict_eval_gates: bool = Field(
+        default_factory=lambda: os.getenv("DOMAIN_STRICT_EVAL_GATES", "true").lower()
+        == "true"
+    )
+    domain_gate_artifact_dir: Path = Field(
+        default_factory=lambda: Path(
+            os.getenv(
+                "DOMAIN_GATE_ARTIFACT_DIR", "data/eval_artifacts/domain_gates"
+            )
+        )
+    )
+
     # Environment + Database
     app_env: str = Field(default_factory=lambda: os.getenv("APP_ENV", "local"))
     database_url: str = Field(
@@ -83,6 +166,45 @@ class APIConfig(BaseModel):
             "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
         )
     )
+
+    @model_validator(mode="after")
+    def validate_domain_settings(self) -> "APIConfig":
+        """Reject unknown domain ids in ENABLED_DOMAINS / DEFAULT_DOMAIN at startup.
+
+        Validation defers to ``domain_core``'s registry; if registry loading
+        itself fails (e.g. corrupt YAML) we surface that as a config error too.
+        """
+        try:
+            from domain_core import list_domain_specs  # type: ignore
+
+            registered = {str(s.id) for s in list_domain_specs()}
+        except Exception as exc:  # pragma: no cover - registry failure is config error
+            raise ValueError(
+                f"Failed to load domain registry while validating config: {exc}"
+            ) from exc
+
+        # default_domain must be a known id.
+        if self.default_domain not in registered:
+            raise ValueError(
+                f"DEFAULT_DOMAIN={self.default_domain!r} is not a registered "
+                f"domain id. Registered: {sorted(registered)}"
+            )
+
+        # default_domain must be in enabled_domains (otherwise no routing works).
+        if self.default_domain not in self.enabled_domains:
+            raise ValueError(
+                f"DEFAULT_DOMAIN={self.default_domain!r} must be present in "
+                f"ENABLED_DOMAINS={self.enabled_domains!r}"
+            )
+
+        # every entry in enabled_domains must be a known id.
+        unknown = [d for d in self.enabled_domains if d not in registered]
+        if unknown:
+            raise ValueError(
+                f"ENABLED_DOMAINS contains unknown domain id(s) {unknown!r}. "
+                f"Registered: {sorted(registered)}"
+            )
+        return self
 
     @model_validator(mode="after")
     def validate_database_url_for_environment(self) -> "APIConfig":
