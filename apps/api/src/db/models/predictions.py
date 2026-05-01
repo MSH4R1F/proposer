@@ -43,6 +43,29 @@ class PredictionRow(Base):
     metadata_: Mapped[Optional[dict[str, Any]]] = mapped_column("metadata", JSONB, nullable=True)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
+    # SHA-124 phase 2: domain routing + reproducibility metadata.
+    # NOT NULL on the routing block after revision 0003. Hashes stay nullable
+    # until the deterministic pipeline upstream is wired in.
+    domain_id: Mapped[str] = mapped_column(
+        Text, nullable=False, default="housing.deposit.v1",
+        server_default="housing.deposit.v1",
+    )
+    domain_version: Mapped[str] = mapped_column(
+        Text, nullable=False, default="v1", server_default="v1",
+    )
+    forum: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    matter_types: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list, server_default="[]",
+    )
+    routing_confidence: Mapped[Optional[float]] = mapped_column(Numeric, nullable=True)
+    routing_metadata: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, default=dict, server_default="{}",
+    )
+    domain_spec_hash: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    prompt_pack_hash: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    ontology_hash: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    corpus_version: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
     __table_args__ = (
         CheckConstraint(
             "overall_confidence >= 0 AND overall_confidence <= 1",
@@ -52,6 +75,7 @@ class PredictionRow(Base):
             "rag_confidence IS NULL OR (rag_confidence >= 0 AND rag_confidence <= 1)",
             name="ck_predictions_rag_confidence_range",
         ),
+        Index("ix_predictions_domain_created_at", "domain_id", "created_at"),
     )
 
 
@@ -139,6 +163,21 @@ class PredictionCitationRow(Base):
     verified: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
+    # SHA-124 phase 2: domain id + structured source provenance for cited material.
+    # ``domain_id`` becomes NOT NULL after revision 0003. The other columns stay
+    # nullable until the corpus + citation pipeline emits structured provenance
+    # (Phase 4 of the SHA-20 plan).
+    domain_id: Mapped[str] = mapped_column(
+        Text, nullable=False, default="housing.deposit.v1",
+        server_default="housing.deposit.v1",
+    )
+    source_kind: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    source_publisher: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    source_id: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    namespace_id: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    canonical_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    source_license: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
     __table_args__ = (
         ForeignKeyConstraint(
             ["prediction_id", "reasoning_step_id"],
@@ -162,4 +201,5 @@ class PredictionCitationRow(Base):
             "issue_ordinal",
             "ordinal",
         ),
+        Index("ix_prediction_citations_source_id", "source_id"),
     )

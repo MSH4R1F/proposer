@@ -36,6 +36,19 @@ class KnowledgeGraphRow(Base):
     metadata_: Mapped[Optional[dict[str, Any]]] = mapped_column("metadata", JSONB, nullable=True)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
+    # SHA-124 phase 2: domain id + ontology hash. NOT NULL on the routing
+    # block after revision 0003. Hashes stay nullable until the deterministic
+    # ontology build pipeline is wired in.
+    domain_id: Mapped[str] = mapped_column(
+        Text, nullable=False, default="housing.deposit.v1",
+        server_default="housing.deposit.v1",
+    )
+    domain_version: Mapped[str] = mapped_column(
+        Text, nullable=False, default="v1", server_default="v1",
+    )
+    domain_spec_hash: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    ontology_hash: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
 
 class KGNodeRow(Base):
     __tablename__ = "kg_nodes"

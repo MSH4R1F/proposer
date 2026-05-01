@@ -8,6 +8,9 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.models import IntakeSessionRow
+from apps.api.src.db.repositories._domain_meta import (
+    extract_domain_block as _extract_domain_block,
+)
 from packages.llm_orchestrator.models.conversation import ConversationState
 
 
@@ -27,6 +30,7 @@ class SessionsRepo:
 
     async def save(self, state: ConversationState, *, expected_version: Optional[int] = None) -> None:
         payload = state.model_dump(mode="json")
+        domain = _extract_domain_block(payload)
         values = dict(
             session_id=state.session_id,
             case_id=state.case_file.case_id,
@@ -38,6 +42,11 @@ class SessionsRepo:
             intake_complete=bool(state.case_file.intake_complete),
             completeness_score=float(state.case_file.completeness_score or 0.0),
             role_explicitly_set=bool(state.role_explicitly_set),
+            domain_id=domain["domain_id"],
+            domain_version=domain["domain_version"],
+            matter_types=domain["matter_types"],
+            routing_confidence=domain["routing_confidence"],
+            routing_metadata=domain["routing_metadata"],
             payload=payload,
         )
         if expected_version is not None:

@@ -24,3 +24,20 @@ class IntakeSessionRow(Base):
     role_explicitly_set: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+
+    # SHA-124 phase 2: domain routing metadata. NOT NULL after revision 0003.
+    # Defaults match the backfill (housing.deposit.v1 / v1 / [] / {}).
+    domain_id: Mapped[str] = mapped_column(
+        Text, nullable=False, default="housing.deposit.v1",
+        server_default="housing.deposit.v1",
+    )
+    domain_version: Mapped[str] = mapped_column(
+        Text, nullable=False, default="v1", server_default="v1",
+    )
+    matter_types: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list, server_default="[]",
+    )
+    routing_confidence: Mapped[Optional[float]] = mapped_column(Numeric, nullable=True)
+    routing_metadata: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, default=dict, server_default="{}",
+    )

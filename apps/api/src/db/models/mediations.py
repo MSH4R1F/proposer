@@ -39,6 +39,16 @@ class MediationSessionRow(Base):
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
+    # SHA-124 phase 2: domain id (a mediation inherits its dispute's domain).
+    # NOT NULL after revision 0003.
+    domain_id: Mapped[str] = mapped_column(
+        Text, nullable=False, default="housing.deposit.v1",
+        server_default="housing.deposit.v1",
+    )
+    domain_version: Mapped[str] = mapped_column(
+        Text, nullable=False, default="v1", server_default="v1",
+    )
+
 
 class MediationMessageRow(Base):
     __tablename__ = "mediation_messages"
