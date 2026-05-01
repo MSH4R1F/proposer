@@ -23,6 +23,7 @@ from .prediction import (
     VerificationResult,
     PipelineMetadata,
     Counterfactual,
+    RetrievalStrategy,
 )
 
 __all__ = [
@@ -51,4 +52,5 @@ __all__ = [
     "VerificationResult",
     "PipelineMetadata",
     "Counterfactual",
+    "RetrievalStrategy",
 ]

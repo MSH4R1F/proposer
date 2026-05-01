@@ -1,7 +1,7 @@
 """Typed edge extractor for proposition graphs (SHA-36 Task 7).
 
 Pure component: takes accepted propositions from one document plus an LLM
-client (duck-typed to ``ClaudeClient.generate_structured``) and emits
+client (duck-typed to ``BaseLLMClient.generate_structured``) and emits
 validated :class:`~kg_builder.propositions.models.PropositionEdge`
 objects with deterministic ids.
 
