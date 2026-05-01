@@ -8,6 +8,8 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
 
 from pydantic import BaseModel
 
+from ..clients._schema import strict_json_schema
+from ..clients.types import LLMProvider
 from .context import ToolContext
 
 JSONValue = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
@@ -97,6 +99,23 @@ class Tool:
             "input_schema": input_schema,
         }
 
+    def to_openai_response_tool(self) -> Dict[str, Any]:
+        """Emit the OpenAI Responses API ``function`` tool envelope.
+
+        Differs from ``to_anthropic_schema`` in two ways (per SHA-114
+        spec §6.3):
+          1. Top-level is tagged with ``"type": "function"``.
+          2. Args schema is under ``"parameters"`` (not ``"input_schema"``)
+             and is rewritten via ``strict_json_schema`` to satisfy
+             Structured Outputs strict mode.
+        """
+        return {
+            "type": "function",
+            "name": self.name,
+            "description": self.description,
+            "parameters": strict_json_schema(self.args_model),
+        }
+
     async def dispatch(self, ctx: ToolContext, raw_args: Dict[str, Any]) -> ToolResult:
         # 1. Validate args
         try:
@@ -177,6 +196,29 @@ class ToolSet:
 
     def anthropic_schemas(self) -> List[Dict[str, Any]]:
         return [t.to_anthropic_schema() for t in self.tools]
+
+    def openai_response_tools(self) -> List[Dict[str, Any]]:
+        """Map the toolset to OpenAI Responses ``function`` envelopes.
+
+        Mirrors ``anthropic_schemas`` but produces the OpenAI shape (see
+        ``Tool.to_openai_response_tool``). Both methods coexist — neither
+        replaces the other (SHA-114 spec §16.5).
+        """
+        return [t.to_openai_response_tool() for t in self.tools]
+
+    def schemas_for(self, provider: LLMProvider) -> List[Dict[str, Any]]:
+        """Return tool schemas in the right shape for ``provider``.
+
+        Provider-aware dispatch so the AgentLoop can hand each adapter the
+        envelope it actually accepts: Anthropic's ``input_schema`` shape vs
+        OpenAI Responses' ``function`` envelope. Added in SHA-114 step 5 so
+        OpenAI agent turns no longer receive Anthropic-shaped schemas.
+        """
+        if provider == LLMProvider.ANTHROPIC:
+            return self.anthropic_schemas()
+        if provider == LLMProvider.OPENAI:
+            return self.openai_response_tools()
+        raise ValueError(f"Unsupported provider: {provider}")
 
     async def dispatch(self, name: str, raw_args: Dict[str, Any], ctx: ToolContext) -> ToolResult:
         if name not in self._by_name:

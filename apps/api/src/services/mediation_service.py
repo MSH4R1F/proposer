@@ -152,12 +152,19 @@ class MediationService:
     @staticmethod
     def _build_mediator_agent(api_key: str) -> Any:
         from llm_orchestrator.agents.mediator_agent import MediatorAgent
-        from llm_orchestrator.clients.claude_client import ClaudeClient
+        from llm_orchestrator.clients.factory import get_llm_client
+        from llm_orchestrator.clients.types import LLMProvider, LLMRole
+        from llm_orchestrator.config import LLMConfig
 
-        if api_key:
-            return MediatorAgent(ClaudeClient(api_key=api_key))
-        logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
-        return MediatorAgent(_DeterministicMediatorLLM())
+        llm_config = LLMConfig.from_env()
+        role_config = llm_config.role_config(LLMRole.MEDIATOR)
+        if role_config.provider == LLMProvider.ANTHROPIC and not api_key:
+            logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
+            return MediatorAgent(_DeterministicMediatorLLM())
+        return MediatorAgent(
+            get_llm_client(LLMRole.MEDIATOR, config=llm_config),
+            provider=role_config.provider,
+        )
 
     @staticmethod
     def _enforce_legal_disclaimer(content: str) -> str:
