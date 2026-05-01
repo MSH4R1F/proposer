@@ -4,6 +4,16 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-05-01 - Fix: `/mediation/{dispute_id}/messages` 500
+
+Caught during an end-to-end smoke test. The router for `GET /mediation/{dispute_id}/messages` indexed the service result as a dict (`result["messages"]`, `result["offers"]`) but `MediationService.get_messages` is contracted to return `List[Dict]` — both `_pg_get_messages` and `_legacy_get_messages` only return messages, and existing tests (`apps/api/tests/test_mediation.py::test_get_messages_polling`, `apps/api/tests/db/test_mediation_service.py::test_get_messages_respects_since_timestamp`) assert the list shape.
+
+The web client (`apps/web/lib/api/mediation.ts:145`) and the router's own logging both expect the `{messages, offers}` envelope, so the fix is in the router: it now calls `svc.get_messages()` for the filtered messages and `svc.get_session()` for offers, returning `{messages, offers}`. Empty-mediation case returns `{"messages": [], "offers": []}` rather than 404, matching the previous list-shape behavior. Service signature and all 19 mediation tests untouched. (`apps/api/src/routers/mediation.py`)
+
+End-to-end check after the fix: chat-start → bulk-intake (completeness 1.0, 4 issues extracted) → predictions/generate (tenant_win, 89% confidence, £7,200 estimated recovery) → all `/mediation/{id}/{messages,settlement,escalation,expectation}` API endpoints and web pages return 200.
+
+---
+
 ## 2026-05-01 - SHA-102: Postgres-backed user-facing storage
 
 ### Overview

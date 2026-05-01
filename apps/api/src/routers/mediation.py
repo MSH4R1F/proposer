@@ -13,7 +13,10 @@ import structlog
 
 from apps.api.src.dependencies import get_mediation_service
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
-from apps.api.src.services.mediation_service import MediationService
+from apps.api.src.services.mediation_service import (
+    MediationNotFoundError,
+    MediationService,
+)
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/mediation", tags=["mediation"])
@@ -186,12 +189,19 @@ async def get_messages(
     """
     logger.debug("get_messages_request", dispute_id=dispute_id, since=since)
     try:
-        result = await svc.get_messages(dispute_id, since)
+        messages = await svc.get_messages(dispute_id, since)
+        offers: List[Dict[str, Any]] = []
+        try:
+            session = await svc.get_session(dispute_id)
+            offers = session.get("offers") or []
+        except (MediationNotFoundError, ValueError):
+            offers = []
+        result = {"messages": messages, "offers": offers}
         logger.debug(
             "get_messages_success",
             dispute_id=dispute_id,
-            message_count=len(result["messages"]),
-            offer_count=len(result["offers"]),
+            message_count=len(messages),
+            offer_count=len(offers),
         )
         return result
     except HTTPException:
