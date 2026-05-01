@@ -72,6 +72,8 @@ class IntakeAgent(BaseAgent):
         self,
         llm_client: BaseLLMClient,
         fact_extractor: Optional[FactExtractor] = None,
+        *,
+        prompt_pack: Optional[Any] = None,
     ):
         """
         Initialize the intake agent.
@@ -79,9 +81,14 @@ class IntakeAgent(BaseAgent):
         Args:
             llm_client: LLM client for conversation
             fact_extractor: Extractor for parsing facts (optional, will create if not provided)
+            prompt_pack: Optional SHA-20 prompt pack. When set, its
+                ``intake_system`` REPLACES the role-specific tenant/landlord
+                system prompt. When None, the legacy tenant/landlord intake
+                prompts are used (deposit baseline).
         """
         self.llm = llm_client
         self.extractor = fact_extractor or FactExtractor(llm_client)
+        self._prompt_pack = prompt_pack
         self._stats = {"messages_processed": 0, "sessions_completed": 0}
 
     async def process_message(
@@ -405,13 +412,22 @@ class IntakeAgent(BaseAgent):
             session_id=conversation.session_id,
             current_stage=conversation.current_stage.value,
         )
-        # Get role-specific prompts
+        # Get role-specific prompts.
         if conversation.case_file.user_role == PartyRole.LANDLORD:
             system_prompt = LANDLORD_SYSTEM_PROMPT
             stage_prompts = LANDLORD_STAGE_PROMPTS
         else:
             system_prompt = TENANT_SYSTEM_PROMPT
             stage_prompts = TENANT_STAGE_PROMPTS
+
+        # SHA-20 Phase 6: pack overrides the role-specific system prompt when
+        # set. Stage prompts (which carry per-step UX guidance) remain in
+        # place because they are deposit-flow specific; multi-domain stage
+        # tuning lands in a follow-up.
+        if self._prompt_pack is not None and getattr(
+            self._prompt_pack, "intake_system", None
+        ):
+            system_prompt = self._prompt_pack.intake_system
 
         # Get stage-specific guidance
         stage_guidance = stage_prompts.get(
@@ -466,6 +482,12 @@ class IntakeAgent(BaseAgent):
             system_prompt = TENANT_SYSTEM_PROMPT  # Default
             stage_prompt = """Start with a warm greeting. Explain that you help with tenancy deposit disputes.
 Ask them to first tell you whether they are a tenant or a landlord, and then briefly describe their situation."""
+
+        # SHA-20 Phase 6: pack-driven greeting system prompt when set.
+        if self._prompt_pack is not None and getattr(
+            self._prompt_pack, "intake_system", None
+        ):
+            system_prompt = self._prompt_pack.intake_system
 
         response = await self.llm.generate(
             messages=[{"role": "user", "content": "Start the conversation"}],
