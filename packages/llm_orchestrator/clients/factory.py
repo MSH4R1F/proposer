@@ -1,14 +1,16 @@
 """Provider-neutral factory for LLM clients.
 
-For SHA-114 step 1 (foundation), the factory always returns a ``ClaudeClient``
-because the OpenAI adapter does not exist yet — this file is the single
-construction point that step 5 will replace with real provider dispatch. By
-introducing it now, call sites that migrate ahead of step 5 (or new callers)
-do not need to change again later.
+Single construction point for every LLM client in the system. Call sites pass
+an :class:`LLMRole` and receive a configured :class:`BaseLLMClient` whose
+provider and model are determined by ``LLMConfig`` (which in turn reads the
+``LLM_<ROLE>_*`` env vars). This is what lets a single env-var flip
+(``LLM_PREDICTION_PROVIDER=openai``) swap the prediction LLM without touching
+service code.
 
-If a role's config selects ``LLMProvider.OPENAI``, the factory raises
-``NotImplementedError`` — this is intentional, matches §14.1 of the spec, and
-will be replaced in step 3 when ``OpenAIClient`` lands.
+For SHA-114 step 5, OpenAI dispatch is now wired: an OpenAI-backed role
+returns a configured :class:`OpenAIClient`. Anthropic-backed roles continue
+to return :class:`ClaudeClient`. ``store=True`` is rejected at the
+:class:`OpenAIClient` constructor (privacy invariant).
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ from typing import Optional, TYPE_CHECKING
 
 from .base import BaseLLMClient
 from .claude_client import ClaudeClient
+from .openai_client import OpenAIClient
 from .types import LLMProvider, LLMRole
 
 if TYPE_CHECKING:
@@ -38,9 +41,10 @@ def get_llm_client(
 ) -> BaseLLMClient:
     """Return a configured ``BaseLLMClient`` for the given role.
 
-    Step 1: always returns a ``ClaudeClient`` for Anthropic-backed roles, with
-    the role's primary/fallback model wired through from config. Raises
-    ``NotImplementedError`` for OpenAI-backed roles (lands in step 3).
+    Dispatches to the right provider per the role's config. Anthropic roles
+    return a :class:`ClaudeClient`; OpenAI roles return an
+    :class:`OpenAIClient` with the role's reasoning/verbosity controls
+    forwarded through.
 
     Args:
         role: One of the four ``LLMRole`` values.
@@ -48,7 +52,7 @@ def get_llm_client(
             built from environment variables.
 
     Returns:
-        A configured ``BaseLLMClient``. Today this is always ``ClaudeClient``.
+        A configured ``BaseLLMClient``.
     """
     cfg = _resolve_config(config)
     role_cfg = cfg.role_config(role)
@@ -61,9 +65,17 @@ def get_llm_client(
         )
 
     if role_cfg.provider == LLMProvider.OPENAI:
-        raise NotImplementedError(
-            "OpenAIClient lands in Task 3 of SHA-114; "
-            f"role={role.value} requested provider=openai"
+        # ``OpenAIClient.__init__`` rejects ``store=True``; the role config's
+        # default is ``False`` and the env override is bool-coerced — no extra
+        # guard needed here.
+        return OpenAIClient(
+            api_key=cfg.openai_api_key,
+            model=role_cfg.primary_model,
+            fallback_model=role_cfg.fallback_model,
+            reasoning_effort=role_cfg.openai.reasoning_effort,
+            text_verbosity=role_cfg.openai.text_verbosity,
+            store=role_cfg.openai.store,
+            max_retries=3,
         )
 
     raise ValueError(f"Unknown provider: {role_cfg.provider!r}")
@@ -74,11 +86,10 @@ def get_agent_turn_client(
 ) -> "AgentTurnClient":
     """Return an ``AgentTurnClient``-shaped client for the given role.
 
-    For step 1 this is the same ``ClaudeClient`` instance ``get_llm_client``
-    returns — ``ClaudeClient`` already implements the ``AgentTurnClient``
-    protocol via its ``run_agent_turn`` method.
+    Both :class:`ClaudeClient` and :class:`OpenAIClient` implement the
+    :class:`~llm_orchestrator.agent_loop.loop.AgentTurnClient` protocol via
+    their ``run_agent_turn`` methods, so this is a thin alias around
+    :func:`get_llm_client`.
     """
     client = get_llm_client(role, config=config)
-    # The runtime check on AgentTurnClient verifies `run_agent_turn` is present
-    # — ClaudeClient satisfies that, but step 3's OpenAIClient must too.
     return client  # type: ignore[return-value]

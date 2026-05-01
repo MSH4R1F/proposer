@@ -2,21 +2,24 @@
 
 Intentionally thin. get_tool_context composes request metadata and the
 minimum dependencies a tool needs; get_agent_loop_client returns a cached
-ClaudeClient for the debug smoke endpoint.
+role-aware LLM client for the debug smoke endpoint.
 """
 from __future__ import annotations
 
 import uuid
-from functools import lru_cache
 from collections.abc import AsyncIterator
-from typing import Any, Optional
+from functools import lru_cache
+from typing import Any
 
 from fastapi import Request
 
 from apps.api.src.db.uow import UnitOfWork
 from llm_orchestrator.agent_loop.context import ToolContext
 from llm_orchestrator.agent_loop.trace import LangFuseTraceLogger, TraceLogger
-from llm_orchestrator.clients.claude_client import ClaudeClient
+from llm_orchestrator.clients.base import BaseLLMClient
+from llm_orchestrator.clients.factory import get_llm_client
+from llm_orchestrator.clients.types import LLMProvider, LLMRole
+from llm_orchestrator.config import LLMConfig
 
 from .config import config
 
@@ -46,13 +49,28 @@ def get_tool_context(request: Request) -> ToolContext:
 
 
 @lru_cache(maxsize=1)
-def _cached_agent_loop_client() -> ClaudeClient:
-    return ClaudeClient(api_key=config.anthropic_api_key)
+def _cached_agent_loop_client() -> BaseLLMClient:
+    # The /api/dev agent-smoke endpoint is a generic debug surface — it has
+    # no role-specific behaviour, so we route through the PREDICTION role's
+    # config (the most likely role to be flipped to OpenAI in dev/eval).
+    # Operators can swap providers via ``LLM_PREDICTION_PROVIDER=openai``
+    # without touching this file.
+    return get_llm_client(LLMRole.PREDICTION)
 
 
-def get_agent_loop_client() -> ClaudeClient:
-    """Return a process-cached ClaudeClient for the agent loop smoke path."""
+@lru_cache(maxsize=1)
+def _cached_agent_loop_provider() -> LLMProvider:
+    return LLMConfig().role_config(LLMRole.PREDICTION).provider
+
+
+def get_agent_loop_client() -> BaseLLMClient:
+    """Return a process-cached LLM client for the agent loop smoke path."""
     return _cached_agent_loop_client()
+
+
+def get_agent_loop_provider() -> LLMProvider:
+    """Return the provider backing the generic debug agent-loop client."""
+    return _cached_agent_loop_provider()
 
 
 async def get_uow(request: Request) -> AsyncIterator[UnitOfWork]:
@@ -75,21 +93,21 @@ async def get_uow(request: Request) -> AsyncIterator[UnitOfWork]:
 
 from apps.api.src.services.dispute_service import (  # noqa: E402
     DisputeService,
-    get_dispute_service as _legacy_get_dispute_service,
+    get_dispute_service as _legacy_get_dispute_service,  # noqa: F401
 )
 from apps.api.src.services.intake_service import (  # noqa: E402
     IntakeService,
-    get_intake_service as _legacy_get_intake_service,  # kept for rollback
+    get_intake_service as _legacy_get_intake_service,  # noqa: F401
 )
 from llm_orchestrator.agents.intake_agent import IntakeAgent  # noqa: E402
 from apps.api.src.services.mediation_service import (  # noqa: E402
     MediationService,
-    get_mediation_service as _legacy_get_mediation_service,
+    get_mediation_service as _legacy_get_mediation_service,  # noqa: F401
 )
 from apps.api.src.services.prediction_service import (  # noqa: E402
     PredictionService,
     _build_prediction_engine,
-    get_prediction_service as _legacy_get_prediction_service,
+    get_prediction_service as _legacy_get_prediction_service,  # noqa: F401
 )
 from apps.api.src.services.storage_service import StorageService  # noqa: E402
 
@@ -97,11 +115,7 @@ from apps.api.src.services.storage_service import StorageService  # noqa: E402
 @lru_cache(maxsize=1)
 def _cached_intake_agent() -> IntakeAgent:
     """Process-level cache for the heavy LLM agent (avoids per-request client construction)."""
-    from llm_orchestrator.clients.claude_client import ClaudeClient
-    from llm_orchestrator.config import LLMConfig
-
-    cfg = LLMConfig.from_env()
-    return IntakeAgent(ClaudeClient(api_key=cfg.anthropic_api_key))
+    return IntakeAgent(get_llm_client(LLMRole.INTAKE))
 
 
 def get_intake_service(request: Request) -> IntakeService:
@@ -141,11 +155,12 @@ def get_storage_service(request: Request) -> StorageService:
 def _cached_mediator_agent() -> Any:
     """Process-level cache for the heavy LLM mediator agent."""
     from llm_orchestrator.agents.mediator_agent import MediatorAgent
-    from llm_orchestrator.clients.claude_client import ClaudeClient
-    from llm_orchestrator.config import LLMConfig
 
-    cfg = LLMConfig.from_env()
-    return MediatorAgent(ClaudeClient(api_key=cfg.anthropic_api_key))
+    llm_config = LLMConfig()
+    return MediatorAgent(
+        get_llm_client(LLMRole.MEDIATOR, config=llm_config),
+        provider=llm_config.role_config(LLMRole.MEDIATOR).provider,
+    )
 
 
 def get_mediation_service(request: Request) -> MediationService:

@@ -6,6 +6,7 @@ from typing import Dict, Optional, Protocol, Tuple, Union, runtime_checkable
 from ..agent_loop.context import ToolContext
 from ..agent_loop.loop import AgentLoop, AgentTurnClient
 from ..agent_loop.trace import TraceSummary
+from ..clients.types import LLMProvider
 from ..models.dispute import DisputeCase
 from ..models.mediation import MediationMessage, StructuredOffer
 from ..models.prediction_v2 import PredictionResult
@@ -22,8 +23,14 @@ MessageLike = Union[MediationMessage, Dict[str, str], str]
 
 
 class MediatorAgent:
-    def __init__(self, llm_client: AgentTurnClient):
+    def __init__(
+        self,
+        llm_client: AgentTurnClient,
+        *,
+        provider: LLMProvider = LLMProvider.ANTHROPIC,
+    ):
         self.llm: AgentTurnClient = llm_client
+        self.provider = provider
         self._stats: Dict[str, int] = {"messages_processed": 0}
 
     async def generate_opening_message(
@@ -60,6 +67,7 @@ class MediatorAgent:
             tool_set=MEDIATOR_TOOLS,
             max_turns=6,
             max_tokens=900,
+            provider=self.provider,
         )
         result = await loop.run(
             system_prompt=MEDIATOR_SYSTEM_PROMPT,
@@ -117,6 +125,7 @@ class MediatorAgent:
             tool_set=MEDIATOR_TOOLS,
             max_turns=8,
             max_tokens=900,
+            provider=self.provider,
         )
         result = await loop.run(
             system_prompt=MEDIATOR_SYSTEM_PROMPT,

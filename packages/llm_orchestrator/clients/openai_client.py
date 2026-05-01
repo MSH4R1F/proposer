@@ -29,7 +29,7 @@ Anthropic-flavoured content blocks and OpenAI Responses *Items* is
 deliberately verbose (see ``_internal_to_openai_input`` /
 ``_openai_response_to_blocks``) — getting ``call_id`` plumbing wrong silently
 breaks tool round-trips, so the helpers favour explicit shape checks over
-"clever" passthrough. NO factory wiring yet — that lands in Task 5.
+"clever" passthrough.
 """
 
 from __future__ import annotations
@@ -326,14 +326,9 @@ class OpenAIClient(BaseLLMClient):
         Refusal during an agent turn raises :class:`LLMRefusalError` and does
         NOT swap to ``fallback_model`` (parity with ``generate``).
 
-        Note: ``tool_schemas`` is forwarded verbatim as ``tools=...``. Today
-        the loop hands us **Anthropic-shaped** schemas (it currently calls
-        ``ToolSet.anthropic_schemas()`` unconditionally — see
-        ``agent_loop/loop.py:150``). Task 5 will branch on provider and pass
-        ``ToolSet.openai_response_tools()`` here. Until then, integration
-        with the real loop will fail at the OpenAI API boundary; *unit*
-        tests pass OpenAI-shaped schemas directly. This is a deliberate
-        Task 5 hand-off point.
+        Note: ``tool_schemas`` is forwarded verbatim as ``tools=...``. The
+        agent loop is responsible for selecting OpenAI-shaped tool envelopes
+        via ``ToolSet.schemas_for(LLMProvider.OPENAI)``.
         """
         self._stats["calls"] += 1
 
