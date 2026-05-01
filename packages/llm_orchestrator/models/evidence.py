@@ -22,3 +22,12 @@ class EvidenceMetadata(BaseModel):
     extracted_text: Optional[str] = None
     image_description: Optional[str] = None
     created_at: Optional[str] = None
+
+    # SHA-20 Phase 3: domain routing + source provenance metadata.
+    # Defaults match the deposit baseline so older evidence rows
+    # round-trip identically.
+    domain_id: str = "housing.deposit.v1"
+    domain_version: str = "v1"
+    source_kind: Optional[str] = None
+    source_publisher: Optional[str] = None
+    source_id: Optional[str] = None
