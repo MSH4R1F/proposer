@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any, Optional, Sequence
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import or_, select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,6 +41,56 @@ _RUN_COUNT_COLUMNS = {
     "tokens_in",
     "tokens_out",
 }
+
+
+def _normalize_search_values(values: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    normalized: list[str] = []
+    for value in values:
+        item = str(value).strip().lower()
+        if not item or item in seen:
+            continue
+        seen.add(item)
+        normalized.append(item)
+    return normalized
+
+
+def _normalize_uuid_values(values: Sequence[UUID]) -> list[UUID]:
+    seen: set[UUID] = set()
+    normalized: list[UUID] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        normalized.append(value)
+    return normalized
+
+
+def _tokenize_text_query(query: str, *, max_terms: int = 12) -> list[str]:
+    stopwords = {
+        "and",
+        "case",
+        "deposit",
+        "dispute",
+        "for",
+        "from",
+        "the",
+        "this",
+        "tenancy",
+        "tribunal",
+        "with",
+    }
+    seen: set[str] = set()
+    terms: list[str] = []
+    for raw in str(query).lower().replace("|", " ").split():
+        term = "".join(ch for ch in raw if ch.isalnum() or ch in {"_", "-"})
+        if len(term) < 3 or term in stopwords or term in seen:
+            continue
+        seen.add(term)
+        terms.append(term)
+        if len(terms) >= max_terms:
+            break
+    return terms
 
 
 class PropositionsRepo:
@@ -253,6 +303,179 @@ class PropositionsRepo:
         )
         result = await self._s.execute(stmt)
         return [self._row_to_prop(r) for r in result.scalars()]
+
+    async def search_by_issue_tags(
+        self,
+        tags: Sequence[str],
+        *,
+        limit: int = 50,
+    ) -> list[Proposition]:
+        """Return quote-backed propositions matching any issue tag.
+
+        The `issue_tags` column is JSONB, so each tag is queried via
+        containment (`@> ["tag"]`). Matching any tag is enough at retrieval
+        time; the retriever applies source-specific weights later.
+        """
+        normalized = _normalize_search_values(tags)
+        if not normalized or limit <= 0:
+            return []
+
+        predicates = [
+            PropositionRow.issue_tags.contains([tag])
+            for tag in normalized
+        ]
+        stmt = (
+            select(PropositionRow)
+            .where(or_(*predicates))
+            .where(PropositionRow.source_passage != "")
+            .where(PropositionRow.case_reference != "")
+            .order_by(
+                PropositionRow.confidence.desc(),
+                PropositionRow.created_at.desc(),
+                PropositionRow.proposition_id.asc(),
+            )
+            .limit(limit)
+        )
+        result = await self._s.execute(stmt)
+        return [self._row_to_prop(r) for r in result.scalars()]
+
+    async def search_by_entities(
+        self,
+        entities: Sequence[str],
+        *,
+        limit: int = 50,
+    ) -> list[Proposition]:
+        """Return quote-backed propositions matching any extracted entity."""
+        normalized = _normalize_search_values(entities)
+        if not normalized or limit <= 0:
+            return []
+
+        predicates = [
+            PropositionRow.entities.contains([entity])
+            for entity in normalized
+        ]
+        stmt = (
+            select(PropositionRow)
+            .where(or_(*predicates))
+            .where(PropositionRow.source_passage != "")
+            .where(PropositionRow.case_reference != "")
+            .order_by(
+                PropositionRow.confidence.desc(),
+                PropositionRow.created_at.desc(),
+                PropositionRow.proposition_id.asc(),
+            )
+            .limit(limit)
+        )
+        result = await self._s.execute(stmt)
+        return [self._row_to_prop(r) for r in result.scalars()]
+
+    async def search_text(self, query: str, *, limit: int = 50) -> list[Proposition]:
+        """Lightweight SQL text search over proposition text and quotes.
+
+        This is intentionally dependency-free for Phase 2 MVP. It is good
+        enough for seed discovery and can be replaced with full-text/BM25 once
+        retrieval eval tells us where the bottleneck is.
+        """
+        terms = _tokenize_text_query(query)
+        if not terms or limit <= 0:
+            return []
+
+        predicates = []
+        for term in terms:
+            pattern = f"%{term}%"
+            predicates.append(PropositionRow.text.ilike(pattern))
+            predicates.append(PropositionRow.source_passage.ilike(pattern))
+            predicates.append(PropositionRow.case_reference.ilike(pattern))
+
+        stmt = (
+            select(PropositionRow)
+            .where(or_(*predicates))
+            .where(PropositionRow.source_passage != "")
+            .where(PropositionRow.case_reference != "")
+            .order_by(
+                PropositionRow.confidence.desc(),
+                PropositionRow.created_at.desc(),
+                PropositionRow.proposition_id.asc(),
+            )
+            .limit(limit)
+        )
+        result = await self._s.execute(stmt)
+        return [self._row_to_prop(r) for r in result.scalars()]
+
+    async def load_edges_for_documents(
+        self,
+        document_ids: Sequence[UUID],
+    ) -> list[PropositionEdge]:
+        normalized = _normalize_uuid_values(document_ids)
+        if not normalized:
+            return []
+        result = await self._s.execute(
+            select(PropositionEdgeRow)
+            .where(PropositionEdgeRow.document_id.in_(normalized))
+            .order_by(
+                PropositionEdgeRow.document_id.asc(),
+                PropositionEdgeRow.edge_type.asc(),
+                PropositionEdgeRow.edge_id.asc(),
+            )
+        )
+        return [self._row_to_edge(r) for r in result.scalars()]
+
+    async def load_propositions_by_ids(
+        self,
+        proposition_ids: Sequence[UUID],
+    ) -> list[Proposition]:
+        normalized = _normalize_uuid_values(proposition_ids)
+        if not normalized:
+            return []
+        result = await self._s.execute(
+            select(PropositionRow)
+            .where(PropositionRow.proposition_id.in_(normalized))
+            .order_by(PropositionRow.proposition_id.asc())
+        )
+        return [self._row_to_prop(r) for r in result.scalars()]
+
+    async def load_propositions_for_documents(
+        self,
+        document_ids: Sequence[UUID],
+        *,
+        limit_per_document: int = 25,
+    ) -> list[Proposition]:
+        """Load a capped same-document neighborhood for graph expansion."""
+        normalized = _normalize_uuid_values(document_ids)
+        if not normalized or limit_per_document <= 0:
+            return []
+
+        rows: list[Proposition] = []
+        for document_id in normalized:
+            result = await self._s.execute(
+                select(PropositionRow)
+                .where(PropositionRow.document_id == document_id)
+                .where(PropositionRow.source_passage != "")
+                .where(PropositionRow.case_reference != "")
+                .order_by(
+                    PropositionRow.confidence.desc(),
+                    PropositionRow.paragraph_ref.asc().nulls_last(),
+                    PropositionRow.proposition_id.asc(),
+                )
+                .limit(limit_per_document)
+            )
+            rows.extend(self._row_to_prop(r) for r in result.scalars())
+        return rows
+
+    async def load_document_metadata(
+        self,
+        document_ids: Sequence[UUID],
+    ) -> dict[UUID, DecisionDocument]:
+        normalized = _normalize_uuid_values(document_ids)
+        if not normalized:
+            return {}
+        result = await self._s.execute(
+            select(DecisionDocumentRow)
+            .where(DecisionDocumentRow.document_id.in_(normalized))
+            .order_by(DecisionDocumentRow.document_id.asc())
+        )
+        docs = [self._row_to_doc(r) for r in result.scalars()]
+        return {doc.document_id: doc for doc in docs}
 
     # ------------------------------------------------------------------
     # Domain ↔ Row mapping

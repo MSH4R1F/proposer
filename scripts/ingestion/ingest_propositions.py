@@ -72,7 +72,7 @@ from kg_builder.propositions.prompts import (  # noqa: E402
 log = logging.getLogger("ingest_propositions")
 
 
-_DEFAULT_MODEL = "claude-haiku-4-5"  # matches ClaudeClient default
+_DEFAULT_MODEL = "role-configured extraction model"
 _EXTRACTOR_VERSION = (
     f"prop-{PROPOSITION_EXTRACTION_PROMPT_VERSION}"
     f"+edge-{EDGE_EXTRACTION_PROMPT_VERSION}"
@@ -131,23 +131,34 @@ def _make_llm(args: argparse.Namespace):
     """Build the LLM client based on CLI args.
 
     --mock-response → in-process stub.
-    Otherwise → real ClaudeClient (requires ANTHROPIC_API_KEY).
+    Otherwise → role-configured provider client for LLMRole.EXTRACTION.
     """
     if args.mock_response is not None:
         fixture = _load_mock_fixture(Path(args.mock_response))
         return _MockLLM(fixture)
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        raise SystemExit(
-            "ANTHROPIC_API_KEY is required (or use --mock-response with --dry-run)"
-        )
-    # Imported lazily so --dry-run --mock-response doesn't pull in
-    # `anthropic` (and isn't blocked by an unset key during import).
-    from llm_orchestrator.clients.claude_client import ClaudeClient
+    # Imported lazily so --dry-run --mock-response doesn't pull provider SDKs
+    # and isn't blocked by unset keys during import.
+    from llm_orchestrator.clients.factory import get_llm_client
+    from llm_orchestrator.clients.types import LLMProvider, LLMRole
+    from llm_orchestrator.config import LLMConfig
 
-    model = args.model or _DEFAULT_MODEL
-    return ClaudeClient(api_key=api_key, model=model)
+    try:
+        llm_config = LLMConfig()
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+
+    role_cfg = llm_config.role_config(LLMRole.EXTRACTION)
+    if args.model:
+        role_cfg.primary_model = args.model
+
+    if role_cfg.provider == LLMProvider.ANTHROPIC and not llm_config.anthropic_api_key:
+        raise SystemExit(
+            "ANTHROPIC_API_KEY is required for Anthropic extraction "
+            "(or set LLM_EXTRACTION_PROVIDER=openai / use --mock-response)"
+        )
+
+    return get_llm_client(LLMRole.EXTRACTION, config=llm_config)
 
 
 # ---------------------------------------------------------------------------
@@ -712,7 +723,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--force", action="store_true",
                    help="Opposite of --resume: always create a new run.")
     p.add_argument("--model", type=str, default=None,
-                   help="Override Claude model (default: ClaudeClient default).")
+                   help="Override the configured extraction-role model.")
     p.add_argument("--min-confidence", type=float, default=0.5,
                    help="Confidence threshold for propositions + edges.")
     p.add_argument("--max-chars-per-chunk", type=int, default=12000,

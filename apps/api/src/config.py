@@ -74,6 +74,14 @@ class APIConfig(BaseModel):
     prediction_mode: str = Field(
         default_factory=lambda: os.getenv("PREDICTION_MODE", "hybrid").lower()
     )
+    # Retrieval strategy (SHA-36 Phase 2). Valid values:
+    # chunk_rag / proposition_direct / proposition_pagerank /
+    # hybrid_chunk_proposition. Defaults to current production behaviour.
+    retrieval_strategy: str = Field(
+        default_factory=lambda: os.getenv(
+            "RETRIEVAL_STRATEGY", "chunk_rag"
+        ).lower()
+    )
 
     # Environment + Database
     app_env: str = Field(default_factory=lambda: os.getenv("APP_ENV", "local"))
