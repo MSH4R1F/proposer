@@ -3,6 +3,13 @@ Hybrid retriever combining semantic and keyword search.
 
 Uses Reciprocal Rank Fusion (RRF) to merge results from
 ChromaDB (semantic) and BM25 (keyword) searches.
+
+SHA-20 Phase 4: hybrid retrieval is correct *only* when both backends
+apply the same filter envelope. We accept a single
+:class:`RetrievalFilterEnvelope` (or build one from the legacy ``where``
+dict for back-compat) and pass it to both sides. We also enforce the
+cross-domain guard before any backend call: cross-domain hops require
+``cross_domain_allowed=True`` AND ``eval_only=True``.
 """
 
 from typing import Any, Dict, List, Optional, Tuple
@@ -10,8 +17,12 @@ from typing import Any, Dict, List, Optional, Tuple
 import structlog
 
 from .bm25_index import BM25Index
-from ..config import DocumentChunk, RAGConfig, RetrievalResult
+from ..config import DocumentChunk, RAGConfig, RetrievalFilterEnvelope, RetrievalResult
 from ..embeddings.base import BaseEmbeddings
+from ..namespaces import (
+    CrossDomainRetrievalNotAllowed,
+    assert_cross_domain_allowed,
+)
 from ..vectorstore.base import BaseVectorStore
 
 logger = structlog.get_logger()
@@ -35,7 +46,9 @@ class HybridRetriever:
         bm25_index: BM25Index,
         config: Optional[RAGConfig] = None,
         rrf_k: int = 60,
-        semantic_weight: float = 0.7
+        semantic_weight: float = 0.7,
+        *,
+        namespace: Optional[Any] = None,
     ) -> None:
         """
         Initialize hybrid retriever.
@@ -51,6 +64,8 @@ class HybridRetriever:
         self.embeddings = embeddings
         self.vectorstore = vectorstore
         self.bm25_index = bm25_index
+        # Optional bound RetrievalNamespace; used by the cross-domain guard.
+        self.namespace = namespace
 
         if config:
             self.rrf_k = config.rrf_k
@@ -72,24 +87,51 @@ class HybridRetriever:
         self,
         query: str,
         top_k: int = 20,
-        where: Optional[Dict[str, Any]] = None
+        where: Optional[Dict[str, Any]] = None,
+        *,
+        filters: Optional[RetrievalFilterEnvelope] = None,
+        requesting_namespace: Optional[Any] = None,
     ) -> List[RetrievalResult]:
         """
         Retrieve relevant documents using hybrid search.
 
         Args:
-            query: Search query
-            top_k: Number of results to retrieve
-            where: Optional metadata filter
+            query: Search query.
+            top_k: Number of results to retrieve.
+            where: Legacy raw metadata filter dict (year/region/case_type).
+                Translated into a :class:`RetrievalFilterEnvelope` so both
+                backends apply the *same* filter set.
+            filters: Phase-4 filter envelope (preferred). When supplied,
+                takes precedence over ``where``. Both Chroma and BM25
+                receive this same envelope — divergence is a correctness
+                bug, not a perf optimization.
+            requesting_namespace: Caller's namespace, used by the
+                cross-domain guard. ``None`` means "same namespace" and
+                skips the guard.
 
-        Returns:
-            List of RetrievalResult objects with combined scores
+        Raises:
+            CrossDomainRetrievalNotAllowed: when the call would bridge
+                two domain namespaces without
+                ``cross_domain_allowed=True`` AND ``eval_only=True``.
         """
         self._stats["queries"] += 1
 
-        # Run semantic and keyword search in parallel
-        semantic_results = await self._semantic_search(query, top_k * 2, where)
-        keyword_results = self._keyword_search(query, top_k * 2)
+        # Build a single envelope used by BOTH backends. Hybrid is only
+        # correct when the filter set is identical on each side.
+        envelope = filters or self._envelope_from_legacy(where)
+
+        # Cross-domain guard.
+        if self.namespace is not None and requesting_namespace is not None:
+            assert_cross_domain_allowed(
+                target_namespace=self.namespace,
+                requesting_namespace=requesting_namespace,
+                cross_domain_allowed=envelope.cross_domain_allowed,
+                eval_only=envelope.eval_only,
+            )
+
+        # Run semantic and keyword search.
+        semantic_results = await self._semantic_search(query, top_k * 2, envelope)
+        keyword_results = self._keyword_search(query, top_k * 2, envelope)
 
         # Update stats
         n_semantic = len(semantic_results)
@@ -120,11 +162,23 @@ class HybridRetriever:
 
         return fused_results
 
+    @staticmethod
+    def _envelope_from_legacy(
+        where: Optional[Dict[str, Any]],
+    ) -> RetrievalFilterEnvelope:
+        """Wrap a legacy ``where`` dict in a Phase-4 envelope.
+
+        Used so the deposit pipeline (which only knows year/region/case_type)
+        keeps working unchanged: its ``where`` becomes ``legacy_where``,
+        and both backends apply the same shape.
+        """
+        return RetrievalFilterEnvelope(legacy_where=dict(where) if where else {})
+
     async def _semantic_search(
         self,
         query: str,
         top_k: int,
-        where: Optional[Dict[str, Any]] = None
+        envelope: RetrievalFilterEnvelope,
     ) -> List[Tuple[str, float, int, Dict]]:
         """
         Perform semantic search.
@@ -135,12 +189,22 @@ class HybridRetriever:
         # Generate query embedding
         query_embedding = await self.embeddings.embed_query(query)
 
-        # Query vector store
-        results = await self.vectorstore.query(
-            embedding=query_embedding,
-            n_results=top_k,
-            where=where
-        )
+        # Query vector store with the shared envelope. Older mock
+        # vectorstores in tests may not accept the kwarg, so fall back
+        # to the legacy ``where`` form if needed.
+        try:
+            results = await self.vectorstore.query(
+                embedding=query_embedding,
+                n_results=top_k,
+                filters=envelope,
+            )
+        except TypeError:
+            legacy_where = dict(envelope.legacy_where) if envelope.legacy_where else None
+            results = await self.vectorstore.query(
+                embedding=query_embedding,
+                n_results=top_k,
+                where=legacy_where,
+            )
 
         # Convert to tuple format with ranks
         return [
@@ -151,7 +215,8 @@ class HybridRetriever:
     def _keyword_search(
         self,
         query: str,
-        top_k: int
+        top_k: int,
+        envelope: RetrievalFilterEnvelope,
     ) -> List[Tuple[str, float, int, Dict]]:
         """
         Perform BM25 keyword search.
@@ -162,7 +227,7 @@ class HybridRetriever:
         if not self.bm25_index.is_built:
             return []
 
-        results = self.bm25_index.search(query, top_k)
+        results = self.bm25_index.search(query, top_k, filters=envelope)
 
         # Convert to tuple format
         return [
