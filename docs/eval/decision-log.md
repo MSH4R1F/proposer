@@ -279,6 +279,43 @@ The Phase 4a scope (no heavy ML deps) is fully usable on its own — accuracy an
 
 ---
 
+## D-017 — Defer live LLM runner; Phase 5 ships fixture-fed comparison machinery only
+
+**Linear:** SHA-32 (Phase 5 scope decision)
+**Decision:** Phase 5 ships `eval.adapter`, `eval.compare`, and `python -m eval.ablate` plus four hand-crafted synthetic per-mode prediction JSONLs. The live runner (loops `PredictionEngineV2.predict()` over real cases, writes per-mode JSONL) is deferred to a follow-up PR.
+
+**Why:**
+1. **No real corpus yet.** Phase 6 produces the 50-case annotated set. Running the live runner against the synthetic corpus would test the wiring but not the science — and the wiring is unit-testable on hand-crafted prediction fixtures already.
+2. **`GoldCase → CaseFile` is lossy.** Gold cases carry post-decision facts (the tribunal's reasoning, awarded amounts). `CaseFile` is the pre-decision intake state the production engine expects. Reconstruction is a non-trivial lossy mapping that deserves its own Codex sparring round before code lands.
+3. **PR size discipline.** Bundling the live runner doubles the surface area: subprocess shape, LLM client management, dry-run stub, vocab alignment. Reviewer fatigue produces missed bugs.
+
+**Rejected alternatives:**
+- **Ship live runner against synthetic corpus.** Rejected — no `CaseFile` data exists for synthetic gold cases. Would require synthesising fake intake state, which is the same engineering as the deferred reconstructor.
+- **Block Phase 5 on Phase 6.** Rejected — the comparison machinery is independent of corpus size and unblocks the thesis-table format work *now*. The follow-up PR can land within an hour of Phase 6 completing.
+
+**Trigger to revisit:** when Phase 6 (50-case corpus) lands, open the follow-up PR with `scripts/eval/predict_all.py` + `eval/case_file_adapter.py` + Codex sparring round on the lossy mapping.
+
+---
+
+## D-018 — Dominance via non-overlapping bootstrap CIs, not paired hypothesis tests
+
+**Linear:** SHA-32 (Phase 5 design decision)
+**Decision:** `summarise_dominance(a, b)` decides "X significantly better than Y" by checking whether the two modes' bootstrap CIs are disjoint. Higher-is-better metrics: `a.lower_95 > b.upper_95`. Lower-is-better metrics (Brier, ECE): `a.upper_95 < b.lower_95`.
+
+**Why:**
+1. **Interpretability.** "The hybrid CI sits entirely above the RAG-only CI" reads cleanly in the thesis and on a slide. A McNemar p-value or paired-bootstrap p-value adds precision but is harder to explain to a non-statistical examiner.
+2. **Conservative.** Non-overlapping CIs is a strictly stronger criterion than a paired test at α=0.05 — claims that survive this test will also survive a paired test, but not vice versa. We prefer the false-negative direction over the false-positive direction in a thesis context.
+3. **Reuses existing machinery.** Bootstrap CIs are already produced by `bootstrap_ci()` for every metric. Adding a hypothesis test would mean a parallel resampling loop (paired) plus a new statistical-machinery API surface in `eval.compare`.
+
+**Rejected alternatives:**
+- **McNemar's test.** Categorical-only (winner accuracy), can't be applied to Brier/ECE. Would require bolting on a second framework.
+- **Paired bootstrap with point-estimate-difference CI.** More powerful than overlap-check, but requires a custom resampling shape and a separate dataclass to communicate the difference's CI. Higher complexity for marginal gain when n=50.
+- **No significance test, just point estimates.** Rejected — the interim report claims hybrid > RAG-only, and an examiner will ask "by how much, and how confident are you?".
+
+**Trigger to revisit:** if Phase 6 lands an n=100 corpus and CI overlap blocks a true hybrid > RAG-only claim, add a paired-bootstrap fallback path. Until then, overlap-check is the correct conservative choice.
+
+---
+
 ## How this log relates to the Codex sparring record
 
 `.sisyphus/codex/sha-28-schema-2026-04-27.md` records Codex's findings and our triage. This log records the *implemented* decisions. Some decisions don't appear in Codex (e.g. D-001 Pydantic vs JSON Schema, D-009 pair-vs-issue bootstrap) — those are pure design choices with no Codex input. Conversely, every Codex HIGH that we accepted produced a decision entry here (D-005 through D-008, D-011, D-014, D-015).

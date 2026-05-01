@@ -25,6 +25,7 @@ This index maps every doc in `docs/eval/` to its audience and purpose.
 | [`metrics.md`](metrics.md) | Per-metric definitions, the bootstrap CI shape, the thesis-claim survival rule, CLI worked example. |
 | [`reviewer-guide.md`](reviewer-guide.md) | Paralegal onboarding. TL;DR loop, field-by-field, common mistakes, adjudication workflow. |
 | [`reviewer-log.md`](reviewer-log.md) | Adjudication log template. One row per double-annotation disagreement. |
+| [`ablation.md`](ablation.md) | The RQ1 ablation runner. CLI, methodology, dominance check via non-overlapping CIs, worked example. |
 
 ## For someone reproducing the work
 
@@ -44,6 +45,16 @@ PYTHONPATH=packages python -m eval.run --metric accuracy \
 # 3. Same for Brier, ECE
 PYTHONPATH=packages python -m eval.run --metric brier --gold ... --predictions ... --seed 42 --out ...
 PYTHONPATH=packages python -m eval.run --metric ece   --gold ... --predictions ... --seed 42 --out ...
+
+# 4. Run the ablation across all four prediction modes
+PYTHONPATH=packages python -m eval.ablate \
+  --gold data/gold_standard/housing_v1.jsonl \
+  --predictions hybrid=eval/predictions/hybrid.jsonl \
+  --predictions rag_only=eval/predictions/rag_only.jsonl \
+  --predictions kg_only=eval/predictions/kg_only.jsonl \
+  --predictions llm_only=eval/predictions/llm_only.jsonl \
+  --seed 42 \
+  --out eval/results/ablation_$(date +%F).json
 ```
 
 Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (per-phase coverage, audit JSON) lives at `.sisyphus/evidence/eval/`.
@@ -57,7 +68,8 @@ Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (p
 | 3 — Annotation CLI + reviewer onboarding | **Done** ([PR #8](https://github.com/MSH4R1F/proposer/pull/8)) | SHA-103 | `scripts/eval/annotate.py`, reviewer guide, synthetic corpus |
 | 4a — Accuracy + calibration + bootstrap CI | **Done** ([PR #8](https://github.com/MSH4R1F/proposer/pull/8)) | SHA-104, SHA-30, SHA-97 (partial) | `packages/eval/metrics/`, `eval.run` CLI |
 | 4b — NLI hallucination + RAGAS | Deferred | SHA-31, SHA-29 | Heavy ML deps; depends on SHA-94 schema |
-| 5 — Ablation runner | Pending | SHA-32 | Depends on Track B SHA-33 (KG mode flag — landed) |
+| 5 — Ablation runner | **Done (this PR)** | SHA-32 | `eval.adapter`, `eval.compare`, `python -m eval.ablate`, synthetic per-mode fixtures, `docs/eval/ablation.md` |
+| 5b — Live runner + GoldCase→CaseFile | Deferred | follow-up | Blocks on Phase 6 real corpus; lossy reconstruction needs Codex sparring |
 | 6 — Push to 50 cases + Cohen's κ | Pending | SHA-28 DoD | Depends on reviewer assignment (SHA-96) |
 
 ## Source of truth pointers
@@ -65,7 +77,10 @@ Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (p
 - **Pydantic schema:** `packages/eval/schema.py`
 - **Loader + audit:** `packages/eval/dataset.py`
 - **Metrics:** `packages/eval/metrics/{accuracy,calibration,uncertainty,types}.py`
-- **CLI orchestrator:** `packages/eval/run.py`
+- **CLI orchestrator (single metric):** `packages/eval/run.py`
+- **Adapter (orchestrator → eval):** `packages/eval/adapter.py`
+- **Comparison report:** `packages/eval/compare.py`
+- **Ablation CLI (multi-mode):** `packages/eval/ablate.py`
 - **Annotation CLI:** `scripts/eval/annotate.py`
 - **Tests:** `packages/eval/tests/`
 - **Synthetic fixtures:** `packages/eval/tests/fixtures/`
