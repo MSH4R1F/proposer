@@ -153,9 +153,9 @@ Four modes, evaluated on the same gold set:
 | `hybrid` | Both — the production path |
 | `llm-only` | No context at all (controls for raw LLM capability) |
 
-Each mode produces a predictions JSONL. The runner calls `PYTHONPATH=packages python -m eval.run --metric X` four times and assembles a comparison table.
+Each mode produces a predictions JSONL. `python -m eval.ablate` (Phase 5) loads the gold set + every mode's predictions in one run, computes accuracy / amount-within-threshold / Brier / ECE per mode under bootstrap CIs, and emits a single `ComparisonReport` JSON for the thesis to consume.
 
-The hybrid > RAG-only and hybrid > KG-only claims (the thesis's headline novelty contributions) are ablation-runner outputs. The thesis-claim survival rule applies to the *difference* between two modes, not just the absolute number — a 2-point hybrid advantage with overlapping CIs is no thesis claim.
+The hybrid > RAG-only and hybrid > KG-only claims (the thesis's headline novelty contributions) are ablation-runner outputs. The thesis-claim survival rule applies to the *difference* between two modes, not just the absolute number — a 2-point hybrid advantage with overlapping CIs is no thesis claim. Phase 5 ships `summarise_dominance(a, b)` which decides per-metric significance via non-overlapping bootstrap CIs (mirrored for lower-is-better metrics like Brier and ECE). See [`ablation.md`](ablation.md) for the worked example.
 
 ## 8. Reproducibility
 

@@ -4,7 +4,7 @@
 
 ## Top-level data flow
 
-```
+```text
 ┌─────────────────────────┐
 │ Tribunal PDFs           │  raw decisions, OCR'd
 │ data/raw/bailii/*.pdf   │
@@ -68,7 +68,7 @@ list[GoldCase]                         AuditReport
 
 ## Module dependency graph
 
-```
+```text
                         ┌─────────────────┐
                         │ eval.schema     │
                         │   GoldCase,     │
@@ -111,7 +111,7 @@ list[GoldCase]                         AuditReport
 
 **Direction of dependency:** every arrow points from "depends on" to "depended-upon". Nothing in `eval/` reaches outside the package, except the production CLI scripts which load from `eval/`.
 
-**Decoupling:** `eval.metrics.types.Prediction` is intentionally NOT a re-export of `packages/llm_orchestrator/PredictionResult`. The Phase 5 ablation runner is responsible for the adapter layer. This is so:
+**Decoupling:** `eval.metrics.types.Prediction` is intentionally NOT a re-export of `packages/llm_orchestrator/PredictionResult`. The Phase 5 adapter — `eval.adapter.from_prediction_result` — is the only file in `packages/eval/` that imports from `llm_orchestrator`. This is so:
 - `packages/eval/` can be tested without spinning up the orchestrator stack.
 - Schema changes in either package don't ripple into the other.
 
@@ -127,11 +127,49 @@ list[GoldCase]                         AuditReport
 | `packages/rag_engine/**` | Track C (read-only for us) | Retrieval — Phase 5 talks to it via `PredictionEngineV2` |
 | `packages/kg_builder/**` | Track B (read-only for us) | KG — same as above |
 
-The boundary rule: nothing in `packages/eval/` ever directly imports from rag_engine, kg_builder, or `prediction_engine_v2`. Phase 5 will build a thin adapter at `packages/eval/predictions.py` (or scripts/) that calls `PredictionEngineV2.predict()` and emits the `Prediction` shape.
+The boundary rule: nothing in `packages/eval/` ever directly imports from rag_engine, kg_builder, or `prediction_engine_v2` — *except* `eval.adapter`, which imports the orchestrator's `PredictionResult` type to convert engine outputs into the `Prediction` shape. The follow-up live-runner (deferred) will call `PredictionEngineV2.predict()` outside the eval package and pipe results through `eval.adapter`.
+
+## Phase 5 ablation pipeline
+
+```text
+                 list[GoldCase]
+                       │
+                       ├── shared across all modes ──┐
+                       ▼                              ▼
+        ┌──────────────────────────────────┐    ┌─────────────────┐
+        │  predictions per mode            │    │ eval.compare    │
+        │  ─ hybrid.jsonl                  │───►│  build_…_report │
+        │  ─ rag_only.jsonl                │    │   loops:        │
+        │  ─ kg_only.jsonl                 │    │     accuracy,   │
+        │  ─ llm_only.jsonl                │    │     amount_…,   │
+        └──────────────────────────────────┘    │     brier, ece  │
+                       ▲                         │   per mode      │
+                       │ adapted from            └────────┬────────┘
+                       │ PredictionResult                 │
+                       │ via eval.adapter         each metric wrapped in
+                       │                          bootstrap_ci(seed=42)
+                       │                                  ▼
+                       │                         ┌─────────────────┐
+                       │                         │ ComparisonReport│
+                       │                         │  (n_cases, seed,│
+                       │                         │   modes:[Mode…])│
+                       │                         └────────┬────────┘
+                       │                                  │
+        ┌──────────────────────────────────┐              │ JSON
+        │ live runner (DEFERRED to follow- │              ▼
+        │ up PR; blocks on Phase 6 corpus  │     python -m eval.ablate
+        │ + GoldCase→CaseFile constructor) │     → eval/results/ablation_*.json
+        │   PredictionEngineV2.predict(    │              │
+        │     mode=PredictionMode.HYBRID,  │              ▼
+        │     case_file=…)                 │     SHA-68 RQ1 thesis table +
+        └──────────────────────────────────┘     summarise_dominance() check
+```
+
+`summarise_dominance(a, b)` answers "X significantly better than Y" via non-overlapping bootstrap CIs. Higher-is-better metrics: `a.lower_95 > b.upper_95`. Lower-is-better metrics: `a.upper_95 < b.lower_95`. Overlap → `no_dominance`.
 
 ## Lifecycle of a single annotated case
 
-```
+```text
 [Reviewer reads PDF]
         │
         │ sha256sum data/raw/bailii/case.pdf
@@ -161,7 +199,7 @@ The boundary rule: nothing in `packages/eval/` ever directly imports from rag_en
 
 ## Lifecycle of a single metric run
 
-```
+```text
 [CI nightly] OR [Researcher local]
         │
         ▼
@@ -204,21 +242,25 @@ PYTHONPATH=packages python -m eval.run --metric brier \
 | `tests/test_metrics_uncertainty.py` (10 tests) | `bootstrap_ci` determinism, length-invariance, monotonicity, edge cases. |
 | `tests/test_metrics_accuracy.py` (14 tests) | `issue_winner_accuracy` perfect/wrong/partial, missing predictions, unapportioned path; `amount_within_threshold` default + custom thresholds + zero-actual edge. |
 | `tests/test_metrics_calibration.py` (12 tests) | Brier perfect/coin-flip/hand-computed; ECE well-calibrated/over-confident/n_bins=1; reliability diagram PNG output verified by signature; end-to-end against synthetic corpus. |
-| `tests/test_run_cli.py` (12 tests) | `eval.run` against synthetic corpus + predictions for every metric, `--no-bootstrap`, `--out`, `--seed`, alignment failure, in-process coverage. |
+| `tests/test_run_cli.py` (14 tests) | `eval.run` against synthetic corpus + predictions for every metric, `--no-bootstrap`, `--out`, `--seed`, alignment failure, in-process coverage. |
+| `tests/test_adapter.py` (19 tests) | `from_prediction_result` mappings: outcome→Winner, confidence→P(landlord), unknown-outcome fail-fast, amount aggregation, calibrated_confidence override, IssueType-enum unwrap, case_id round-trip. |
+| `tests/test_compare.py` (15 tests) | `build_comparison_report` shape, metric correctness on perfect/coinflip predictions, ranking by alias, bootstrap integration + seed determinism, dominance check. |
+| `tests/test_ablate_cli.py` (16 tests) | `eval.ablate` CLI: arg parsing (`mode=path`), in-process orchestration, numeric flag validation, two-mode aggregation, ranking, alignment failure, seed recording, subprocess entry point. |
+| `tests/test_ablation_fixtures.py` (4 tests) | Regression check on the synthetic per-mode prediction fixtures — locks the accuracy ranking `hybrid > rag_only > kg_only > llm_only`. |
 
-181 tests total. ~99% line coverage on `packages/eval/`.
+248 tests total. ~99% line coverage on `packages/eval/`.
 
 ## Phase boundaries
 
-```
-Phase 1 ─────┬─── Phase 2 ─────┬─── Phase 3 ─────┬─── Phase 4a ────┬─── Phase 4b (deferred)
-             │                  │                 │                 │
-schema.py    │  dataset.py      │ scripts/eval/   │ metrics/{accuracy │ metrics/{citations,
-+ tests      │  + tests + CLI   │  annotate.py    │  ,calibration,    │  ragas}, atomic
-+ schema doc │  + dataset doc   │  + reviewer     │  uncertainty}     │  claims schema
-             │                  │  guide          │  + run.py         │  redesign
-             │                  │  + 10-case      │  + metrics doc    │
-             │                  │   fixture       │                   │
-             ▼                  ▼                 ▼                   ▼
-        53 tests             80 tests         133 tests            181 tests   →   …Phase 5,6
+```text
+Phase 1 ─────┬─── Phase 2 ─────┬─── Phase 3 ─────┬─── Phase 4a ────┬─── Phase 5 ────┬─── Phase 4b/5b
+             │                  │                 │                 │                  │  (deferred)
+schema.py    │  dataset.py      │ scripts/eval/   │ metrics/{accuracy │ adapter.py     │ NLI hallucination,
++ tests      │  + tests + CLI   │  annotate.py    │  ,calibration,    │ compare.py     │ RAGAS, atomic
++ schema doc │  + dataset doc   │  + reviewer     │  uncertainty}     │ ablate.py CLI  │ claims schema;
+             │                  │  guide          │  + run.py         │ + per-mode     │ live runner +
+             │                  │  + 10-case      │  + metrics doc    │   fixtures     │ GoldCase→
+             │                  │   fixture       │                   │ + ablation doc │ CaseFile
+             ▼                  ▼                 ▼                   ▼                  ▼
+        53 tests             80 tests         133 tests            181 tests          248 tests
 ```
