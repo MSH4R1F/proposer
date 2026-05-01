@@ -1,7 +1,7 @@
 """Structured proposition extractor (SHA-36 Task 6).
 
 Pure component: takes a loaded decision text plus an LLM client (duck-typed
-to ``ClaudeClient.generate_structured``) and emits validated atomic
+to ``BaseLLMClient.generate_structured``) and emits validated atomic
 :class:`~kg_builder.propositions.models.Proposition` objects with
 provenance preserved.
 

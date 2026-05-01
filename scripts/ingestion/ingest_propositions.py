@@ -72,7 +72,7 @@ from kg_builder.propositions.prompts import (  # noqa: E402
 log = logging.getLogger("ingest_propositions")
 
 
-_DEFAULT_MODEL = "claude-haiku-4-5"  # matches ClaudeClient default
+_DEFAULT_MODEL = "role-configured extraction model"
 _EXTRACTOR_VERSION = (
     f"prop-{PROPOSITION_EXTRACTION_PROMPT_VERSION}"
     f"+edge-{EDGE_EXTRACTION_PROMPT_VERSION}"
@@ -131,23 +131,35 @@ def _make_llm(args: argparse.Namespace):
     """Build the LLM client based on CLI args.
 
     --mock-response → in-process stub.
-    Otherwise → real ClaudeClient (requires ANTHROPIC_API_KEY).
+    Otherwise → role-configured provider client for LLMRole.EXTRACTION.
     """
     if args.mock_response is not None:
         fixture = _load_mock_fixture(Path(args.mock_response))
-        return _MockLLM(fixture)
+        return _MockLLM(fixture), args.model or "mock"
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
+    # Imported lazily so --dry-run --mock-response doesn't pull provider SDKs
+    # and isn't blocked by unset keys during import.
+    from llm_orchestrator.clients.factory import get_llm_client
+    from llm_orchestrator.clients.types import LLMProvider, LLMRole
+    from llm_orchestrator.config import LLMConfig
+
+    try:
+        llm_config = LLMConfig()
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+
+    role_cfg = llm_config.role_config(LLMRole.EXTRACTION)
+    if args.model:
+        role_cfg.primary_model = args.model
+    resolved_model = role_cfg.primary_model
+
+    if role_cfg.provider == LLMProvider.ANTHROPIC and not llm_config.anthropic_api_key:
         raise SystemExit(
-            "ANTHROPIC_API_KEY is required (or use --mock-response with --dry-run)"
+            "ANTHROPIC_API_KEY is required for Anthropic extraction "
+            "(or set LLM_EXTRACTION_PROVIDER=openai / use --mock-response)"
         )
-    # Imported lazily so --dry-run --mock-response doesn't pull in
-    # `anthropic` (and isn't blocked by an unset key during import).
-    from llm_orchestrator.clients.claude_client import ClaudeClient
 
-    model = args.model or _DEFAULT_MODEL
-    return ClaudeClient(api_key=api_key, model=model)
+    return get_llm_client(LLMRole.EXTRACTION, config=llm_config), resolved_model
 
 
 # ---------------------------------------------------------------------------
@@ -216,18 +228,17 @@ def _build_doc(
     )
 
 
-def _compute_prompt_sha(min_confidence: float) -> str:
-    """SHA-256 of (prop prompt + edge prompt + str(min_confidence)).
+def _compute_prompt_sha(min_confidence: float, max_chars_per_chunk: int) -> str:
+    """SHA-256 of prompts plus extraction-affecting parameters.
 
-    Any change to either prompt or to the threshold invalidates --resume,
-    forcing a fresh extraction. This is intentional: the threshold
-    affects which propositions get accepted, so a different threshold is
-    a different pipeline.
+    Any change to either prompt, confidence threshold, or chunking limit
+    invalidates --resume, forcing a fresh extraction.
     """
     blob = (
         PROPOSITION_EXTRACTION_SYSTEM_PROMPT
         + EDGE_EXTRACTION_SYSTEM_PROMPT
         + str(min_confidence)
+        + str(max_chars_per_chunk)
     )
     return sha256_hex(blob)
 
@@ -586,7 +597,7 @@ async def _run_async(args: argparse.Namespace) -> int:
 
     # 3) Build the LLM client (or mock) and resolve the model name we'll record.
     try:
-        llm = _make_llm(args)
+        llm_result = _make_llm(args)
     except SystemExit as exc:
         # _make_llm raises SystemExit with a message string; exit code 2
         # because this is a CLI-arg / environment configuration problem.
@@ -596,13 +607,17 @@ async def _run_async(args: argparse.Namespace) -> int:
         if msg:
             print(f"error: {msg}", file=sys.stderr)
         return 2
-    if isinstance(llm, _MockLLM):
-        model = args.model or "mock"
+    if isinstance(llm_result, tuple):
+        llm, model = llm_result
     else:
-        model = getattr(llm, "model", args.model or _DEFAULT_MODEL)
+        llm = llm_result
+        model = args.model or ("mock" if isinstance(llm, _MockLLM) else _DEFAULT_MODEL)
 
     # 4) Compute prompt sha once.
-    prompt_sha = _compute_prompt_sha(args.min_confidence)
+    prompt_sha = _compute_prompt_sha(
+        args.min_confidence,
+        args.max_chars_per_chunk,
+    )
 
     report_path = (
         Path(args.jsonl_report) if args.jsonl_report else None
@@ -712,7 +727,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--force", action="store_true",
                    help="Opposite of --resume: always create a new run.")
     p.add_argument("--model", type=str, default=None,
-                   help="Override Claude model (default: ClaudeClient default).")
+                   help="Override the configured extraction-role model.")
     p.add_argument("--min-confidence", type=float, default=0.5,
                    help="Confidence threshold for propositions + edges.")
     p.add_argument("--max-chars-per-chunk", type=int, default=12000,

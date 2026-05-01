@@ -84,7 +84,7 @@ IRAC_JSON_SCHEMA = """Output your prediction as a single JSON object with this e
     "reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>",
     "key_factors": ["factor1", "factor2", "factor3"],
     "supporting_cases": [
-        {"case_reference": "CHI/xxx", "year": 2023, "quote": "relevant quote from case", "relevance": "why this case is relevant"}
+        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}
     ],
     "counterfactuals": [
         {"condition": "If X were different", "alternative_outcome": "outcome would be Y", "confidence_shift": -0.2}
@@ -100,5 +100,6 @@ Rules for the JSON:
 - "predicted_amount" should be a positive number (the amount the winning party recovers for this issue) or null
 - For deposit_protection penalty issues, "predicted_amount" should be the penalty amount (1x-3x deposit)
 - Include at least 1 supporting case citation
+- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation
 - Include at least 1 counterfactual scenario
 """

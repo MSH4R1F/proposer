@@ -515,6 +515,9 @@ class IssuePredictor:
                             year=resolved_year,
                             region=self._to_optional_str(citation.get("region")),
                             paragraph=self._to_optional_str(citation.get("paragraph")),
+                            proposition_id=self._to_optional_str(
+                                citation.get("proposition_id")
+                            ),
                             quote=str(citation.get("quote", "")),
                             relevance=str(citation.get("relevance", "")),
                             similarity_score=self._to_probability(
