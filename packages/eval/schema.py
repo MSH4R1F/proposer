@@ -11,7 +11,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Optional, Tuple
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _MIN_DECISION_DATE = date(2019, 1, 1)
@@ -70,7 +70,11 @@ class RegionUK(str, Enum):
     NORTHERN_IRELAND = "northern_ireland"
 
 
-class Provenance(BaseModel):
+class StrictBaseModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class Provenance(StrictBaseModel):
     """Structured location of a quote, evidence item, or authority within
     the source PDF. Replaces the unstructured `paragraph_ref` strings that
     were unverifiable under noisy OCR (Codex finding [12] / SHA-100).
@@ -83,25 +87,37 @@ class Provenance(BaseModel):
     paragraph: int = Field(ge=1)
     text_span: Optional[Tuple[int, int]] = None
 
+    @model_validator(mode="after")
+    def _validate_text_span(self) -> "Provenance":
+        if self.text_span is None:
+            return self
+        start, end = self.text_span
+        if start < 0 or end < 0 or start >= end:
+            raise ValueError(
+                "text_span must be (char_start, char_end) with "
+                "0 <= char_start < char_end"
+            )
+        return self
 
-class Party(BaseModel):
+
+class Party(StrictBaseModel):
     role: PartyRole
     represented: bool
 
 
-class Evidence(BaseModel):
+class Evidence(StrictBaseModel):
     kind: str = Field(min_length=1)
     description: str = Field(min_length=1)
     provenance: Optional[Provenance] = None
 
 
-class StatutoryReference(BaseModel):
+class StatutoryReference(StrictBaseModel):
     statute: str = Field(min_length=1)
     section: str = Field(min_length=1)
     provenance: Optional[Provenance] = None
 
 
-class Authority(BaseModel):
+class Authority(StrictBaseModel):
     """A case-law authority cited by the tribunal in this decision.
 
     `cited_date` is the decision date of the *cited* authority (e.g. when
@@ -117,24 +133,24 @@ class Authority(BaseModel):
     provenance: Optional[Provenance] = None
 
 
-class ClaimedAmount(BaseModel):
+class ClaimedAmount(StrictBaseModel):
     issue: str = Field(min_length=1)
     amount_gbp: Decimal = Field(ge=0)
     by_party: PartyRole
 
 
-class IssueOutcome(BaseModel):
+class IssueOutcome(StrictBaseModel):
     issue: str = Field(min_length=1)
     winner: Winner
     awarded_gbp: Decimal = Field(ge=0)
 
 
-class ReasoningQuote(BaseModel):
+class ReasoningQuote(StrictBaseModel):
     text: str = Field(min_length=1)
     provenance: Provenance
 
 
-class GroundTruthOutcome(BaseModel):
+class GroundTruthOutcome(StrictBaseModel):
     """Ground-truth outcome of a tribunal decision.
 
     Two paths are permitted:
@@ -157,6 +173,8 @@ class GroundTruthOutcome(BaseModel):
     @model_validator(mode="after")
     def _validate_apportionment(self) -> "GroundTruthOutcome":
         if self.unapportioned_reason is not None:
+            if not self.unapportioned_reason.strip():
+                raise ValueError("unapportioned_reason must be a non-empty string")
             if self.per_issue:
                 raise ValueError(
                     "unapportioned_reason is set but per_issue is non-empty; "
@@ -177,7 +195,7 @@ class GroundTruthOutcome(BaseModel):
         return self
 
 
-class GoldCase(BaseModel):
+class GoldCase(StrictBaseModel):
     """A single annotated tribunal case in the gold-standard evaluation set.
 
     Field-level constraints are declared inline. Cross-field invariants are
@@ -221,6 +239,11 @@ class GoldCase(BaseModel):
                 "parties must include at least one tenant and one landlord; "
                 f"got roles={sorted(r.value for r in roles)}"
             )
+        if len(set(self.claim_types)) != len(self.claim_types):
+            raise ValueError(
+                "claim_types must not contain duplicates; each type should "
+                "count at most once per case"
+            )
         # INV-4: source_pdf_sha256 is 64 lowercase hex chars
         if not _SHA256_RE.match(self.source_pdf_sha256):
             raise ValueError(
@@ -231,6 +254,20 @@ class GoldCase(BaseModel):
         # an explicit unavailability reason. Empty WITHOUT a reason is rejected
         # (silent omission risk per Codex finding [11] / SHA-99). Reason WITH
         # non-empty list is also rejected — reason is for empty lists only.
+        if (
+            self.evidence_unavailable_reason is not None
+            and not self.evidence_unavailable_reason.strip()
+        ):
+            raise ValueError(
+                "evidence_unavailable_reason must be a non-empty string"
+            )
+        if (
+            self.statutory_basis_unavailable_reason is not None
+            and not self.statutory_basis_unavailable_reason.strip()
+        ):
+            raise ValueError(
+                "statutory_basis_unavailable_reason must be a non-empty string"
+            )
         if self.evidence and self.evidence_unavailable_reason is not None:
             raise ValueError(
                 "evidence is non-empty but evidence_unavailable_reason is set; "

@@ -165,7 +165,7 @@ The boundary rule: nothing in `packages/eval/` ever directly imports from rag_en
 [CI nightly] OR [Researcher local]
         │
         ▼
-python -m eval.run --metric brier \
+PYTHONPATH=packages python -m eval.run --metric brier \
     --gold     data/gold_standard/housing_v1.jsonl \
     --predictions  eval/predictions/<run>.jsonl \
     --seed 42 \

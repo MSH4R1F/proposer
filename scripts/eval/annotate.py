@@ -124,7 +124,14 @@ def _cmd_append(args: argparse.Namespace) -> int:
     corpus_path = base_dir / f"{args.corpus}.jsonl"
 
     if corpus_path.exists():
-        existing = load(args.corpus, base_dir=base_dir)
+        try:
+            existing = load(args.corpus, base_dir=base_dir, strict=True)
+        except Exception as e:
+            print(
+                f"Refusing to append: existing corpus {corpus_path} is invalid: {e}",
+                file=sys.stderr,
+            )
+            return 1
         if any(c.case_id == gc.case_id for c in existing.cases):
             print(
                 f"Refusing to append: case_id {gc.case_id!r} already in {corpus_path}",

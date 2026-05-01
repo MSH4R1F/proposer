@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -17,7 +18,7 @@ from eval.tests.conftest import gold_case_dict, write_jsonl  # type: ignore[impo
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_VENV_PY = "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/bin/python"
+_VENV_PY = sys.executable
 _SCRIPT = _REPO_ROOT / "scripts" / "eval" / "annotate.py"
 
 
@@ -94,6 +95,17 @@ class TestAppend:
         proc = _run("append", str(draft), "--corpus", "housing_v1", cwd=tmp_path)
         assert proc.returncode == 1
         assert "DUP" in proc.stderr
+
+    def test_append_refuses_invalid_existing_corpus(self, tmp_path):
+        gold_dir = tmp_path / "data" / "gold_standard"
+        gold_dir.mkdir(parents=True)
+        existing = gold_dir / "housing_v1.jsonl"
+        existing.write_text("{not json\n")
+        draft = tmp_path / "case.json"
+        draft.write_text(json.dumps(gold_case_dict(case_id="SAFE")))
+        proc = _run("append", str(draft), "--corpus", "housing_v1", cwd=tmp_path)
+        assert proc.returncode == 1
+        assert "existing corpus" in proc.stderr
 
     def test_append_creates_corpus_if_absent(self, tmp_path):
         (tmp_path / "data" / "gold_standard").mkdir(parents=True)

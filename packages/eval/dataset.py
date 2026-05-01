@@ -315,7 +315,11 @@ def _cli_main(argv=None) -> int:
 
     if args.cmd == "audit":
         version = args.path.stem
-        result = load(version, base_dir=args.path.parent)
+        try:
+            result = load(version, base_dir=args.path.parent, strict=args.strict)
+        except (json.JSONDecodeError, ValidationError) as e:
+            print(f"Load error: {e}", file=sys.stderr)
+            return 1
         if result.errors:
             print(f"Load errors ({len(result.errors)}):", file=sys.stderr)
             for err in result.errors:
@@ -332,7 +336,9 @@ def _cli_main(argv=None) -> int:
             )
             evidence_path.parent.mkdir(parents=True, exist_ok=True)
             evidence_path.write_text(json.dumps(_report_to_dict(report), indent=2))
-        return 1 if (args.strict and not report.is_clean) else 0
+        if args.strict and (result.errors or not report.is_clean):
+            return 1
+        return 0
 
     return 2  # unreachable
 

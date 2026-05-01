@@ -327,6 +327,16 @@ class TestUnapportionedOutcome:
                 unapportioned_reason="Judge declined to break it down.",
             )
 
+    def test_unapportioned_reason_empty_string_rejected(self):
+        from eval.schema import GroundTruthOutcome, Winner
+        with pytest.raises(ValidationError, match="unapportioned_reason"):
+            GroundTruthOutcome(
+                overall_winner=Winner.SPLIT,
+                total_awarded_gbp=Decimal("100"),
+                per_issue=[],
+                unapportioned_reason=" ",
+            )
+
     def test_unapportioned_bypasses_inv5_per_issue_match(self):
         # When unapportioned, per_issue is empty so INV-5 is vacuously satisfied
         from eval.schema import GoldCase
@@ -504,6 +514,24 @@ class TestInv10EvidenceStatutoryAvailability:
         gc = GoldCase.model_validate(case)
         assert gc.statutory_basis == []
 
+    def test_empty_evidence_reason_must_be_non_empty(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "evidence": [],
+            "evidence_unavailable_reason": " ",
+        }
+        with pytest.raises(ValidationError, match="evidence_unavailable_reason"):
+            GoldCase.model_validate(case)
+
+    def test_empty_statutory_basis_reason_must_be_non_empty(self):
+        from eval.schema import GoldCase
+        case = self._base() | {
+            "statutory_basis": [],
+            "statutory_basis_unavailable_reason": "",
+        }
+        with pytest.raises(ValidationError, match="statutory_basis_unavailable_reason"):
+            GoldCase.model_validate(case)
+
     def test_non_empty_evidence_with_reason_rejected(self):
         from eval.schema import GoldCase
         case = self._base() | {
@@ -532,6 +560,16 @@ class TestProvenance:
         from eval.schema import Provenance
         p = Provenance(page=2, paragraph=3, text_span=(120, 240))
         assert p.text_span == (120, 240)
+
+    def test_text_span_rejects_negative_values(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError, match="text_span"):
+            Provenance(page=2, paragraph=3, text_span=(-1, 10))
+
+    def test_text_span_rejects_reversed_range(self):
+        from eval.schema import Provenance
+        with pytest.raises(ValidationError, match="text_span"):
+            Provenance(page=2, paragraph=3, text_span=(240, 120))
 
     def test_page_min_1(self):
         from eval.schema import Provenance
@@ -606,6 +644,12 @@ class TestClaimTypesIsList:
         gc = GoldCase.model_validate(case)
         assert set(gc.claim_types) == {ClaimType.CLEANING, ClaimType.DAMAGES}
 
+    def test_claim_types_rejects_duplicates(self):
+        from eval.schema import GoldCase
+        case = self._base() | {"claim_types": ["cleaning", "cleaning"]}
+        with pytest.raises(ValidationError, match="claim_types"):
+            GoldCase.model_validate(case)
+
     def test_claim_types_rejects_empty_list(self):
         from eval.schema import GoldCase
         case = self._base() | {"claim_types": []}
@@ -621,17 +665,28 @@ class TestClaimTypesIsList:
 
 class TestAuthority:
     def test_valid_authority(self):
-        from eval.schema import Authority
+        from eval.schema import Authority, Provenance
         from datetime import date as _date
         a = Authority(
             name="Howard de Walden Estates Ltd v Aggio",
             court="UKSC",
             cited_date=_date(2008, 6, 25),
-            paragraph_ref="para 12",
+            provenance=Provenance(page=2, paragraph=12),
         )
         assert a.name.startswith("Howard")
         assert a.court == "UKSC"
         assert a.cited_date.year == 2008
+        assert a.provenance.paragraph == 12
+
+    def test_legacy_paragraph_ref_rejected(self):
+        from eval.schema import Authority
+        from datetime import date as _date
+        with pytest.raises(ValidationError, match="paragraph_ref|Extra"):
+            Authority(
+                name="Howard de Walden Estates Ltd v Aggio",
+                cited_date=_date(2008, 6, 25),
+                paragraph_ref="para 12",
+            )
 
     def test_optional_fields_default(self):
         from eval.schema import Authority
@@ -663,7 +718,7 @@ class TestGoldCaseAuthorities:
                     "name": "Howard de Walden Estates Ltd v Aggio",
                     "court": "UKSC",
                     "cited_date": "2008-06-25",
-                    "paragraph_ref": "para 12",
+                    "provenance": {"page": 2, "paragraph": 12},
                 }
             ]
         }

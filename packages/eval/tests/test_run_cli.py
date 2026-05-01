@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -13,7 +14,7 @@ from eval.tests.conftest import gold_case_dict, write_jsonl  # type: ignore[impo
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_VENV_PY = "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/bin/python"
+_VENV_PY = sys.executable
 _FIXTURES = Path(__file__).parent / "fixtures"
 
 
@@ -123,6 +124,46 @@ class TestRunCli:
         proc = _run("--metric", "accuracy", "--gold", str(gold_path), "--predictions", str(pred_path))
         assert proc.returncode == 1
         assert "case_id mismatch" in proc.stderr or "length mismatch" in proc.stderr
+
+    def test_invalid_gold_row_exits_one_instead_of_silent_drop(self, tmp_path):
+        gold_path = tmp_path / "gold.jsonl"
+        gold_path.write_text(
+            json.dumps(gold_case_dict(case_id="A")) + "\n"
+            + json.dumps(gold_case_dict(case_id="BROKEN", decision_date="2018-01-01")) + "\n"
+        )
+        pred_path = tmp_path / "preds.jsonl"
+        pred_path.write_text(json.dumps({
+            "case_id": "A",
+            "overall_winner": "tenant",
+            "overall_win_probability": 0.5,
+            "total_predicted_gbp": "100.00",
+            "per_issue": [],
+        }) + "\n")
+        proc = _run("--metric", "accuracy", "--gold", str(gold_path), "--predictions", str(pred_path))
+        assert proc.returncode == 1
+        assert "Gold set load error" in proc.stderr
+
+    def test_invalid_prediction_probability_exits_one(self, tmp_path):
+        gold_path = tmp_path / "gold.jsonl"
+        write_jsonl(gold_path, [gold_case_dict(case_id="A")])
+        pred_path = tmp_path / "preds.jsonl"
+        pred_path.write_text(json.dumps({
+            "case_id": "A",
+            "overall_winner": "tenant",
+            "overall_win_probability": 2.0,
+            "total_predicted_gbp": "100.00",
+            "per_issue": [
+                {
+                    "issue": "carpet_cleaning",
+                    "predicted_winner": "tenant",
+                    "win_probability": 2.0,
+                    "predicted_amount_gbp": "100.00",
+                }
+            ],
+        }) + "\n")
+        proc = _run("--metric", "brier", "--gold", str(gold_path), "--predictions", str(pred_path))
+        assert proc.returncode == 1
+        assert "Predictions load error" in proc.stderr
 
     def test_deterministic_seed(self, synthetic_corpus):
         gold, preds = synthetic_corpus

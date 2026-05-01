@@ -64,18 +64,18 @@ Implementation of the claim-survival audit lives at `scripts/eval/thesis_audit.p
 
 ```bash
 # Default: bootstrap with n=1000, seed=42
-python -m eval.run --metric accuracy \
+PYTHONPATH=packages python -m eval.run --metric accuracy \
   --gold data/gold_standard/housing_v1.jsonl \
   --predictions eval/predictions/v1_run_001.jsonl
 
 # Skip bootstrap (fast iteration during development)
-python -m eval.run --metric brier ... --no-bootstrap
+PYTHONPATH=packages python -m eval.run --metric brier ... --no-bootstrap
 
 # Write report to file instead of stdout
-python -m eval.run --metric ece ... --out eval/results/ece_2026-04-29.json
+PYTHONPATH=packages python -m eval.run --metric ece ... --out eval/results/ece_2026-04-29.json
 
 # Reproducible: pin the seed
-python -m eval.run --metric accuracy ... --seed 7
+PYTHONPATH=packages python -m eval.run --metric accuracy ... --seed 7
 ```
 
 Output JSON:
@@ -101,7 +101,7 @@ Exit codes: `0` = success, `1` = alignment error or empty gold, `2` = unknown me
 ## Worked example — synthetic 10-case fixture
 
 ```bash
-$ python -m eval.run --metric brier \
+$ PYTHONPATH=packages python -m eval.run --metric brier \
     --gold packages/eval/tests/fixtures/synthetic_corpus_10.jsonl \
     --predictions packages/eval/tests/fixtures/predictions_for_synthetic_corpus_10.jsonl \
     --no-bootstrap
@@ -125,10 +125,10 @@ The synthetic predictions are deliberately noisy — Brier 0.185 is between perf
 A nightly job runs:
 
 ```bash
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict
-python -m eval.run --metric accuracy --gold ... --predictions ... --out eval/results/accuracy_$(date +%F).json
-python -m eval.run --metric brier    --gold ... --predictions ... --out eval/results/brier_$(date +%F).json
-python -m eval.run --metric ece      --gold ... --predictions ... --out eval/results/ece_$(date +%F).json
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict
+PYTHONPATH=packages python -m eval.run --metric accuracy --gold ... --predictions ... --out eval/results/accuracy_$(date +%F).json
+PYTHONPATH=packages python -m eval.run --metric brier    --gold ... --predictions ... --out eval/results/brier_$(date +%F).json
+PYTHONPATH=packages python -m eval.run --metric ece      --gold ... --predictions ... --out eval/results/ece_$(date +%F).json
 ```
 
 The thesis-claim survival audit (Phase 4b) consumes those JSON reports. Brier-regression guard in CI (>0.05 vs main) is also Phase 4b.

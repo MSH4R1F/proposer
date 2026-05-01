@@ -17,7 +17,7 @@ The thesis poses four research questions. The evaluation harness is built specif
 
 Three commitments shape every methodology choice. They are visible in the schema, the loader, and the metric implementations.
 
-1. **Falsifiability first.** Every thesis number must be a function of the gold set + the predictions + a deterministic seed. No hand-aggregated numbers. No "we observed informally that…". The CLI orchestrator (`python -m eval.run`) emits one JSON file per metric per run. The harness exists so the next reviewer can reproduce every figure in the thesis from first principles.
+1. **Falsifiability first.** Every thesis number must be a function of the gold set + the predictions + a deterministic seed. No hand-aggregated numbers. No "we observed informally that…". The CLI orchestrator (`PYTHONPATH=packages python -m eval.run`) emits one JSON file per metric per run. The harness exists so the next reviewer can reproduce every figure in the thesis from first principles.
 2. **Pre-register, then measure.** Design decisions (stratification floor, train/test cutoff, threshold percentages, claim-type taxonomy) are locked in the schema before annotation starts. Changing them mid-stream invalidates the corpus. The schema versioning policy ([SHA-95](https://linear.app/sharifbuilders/issue/SHA-95)) enforces this: `v1` is mutable until pilot batch and HIGH Codex items resolve, then frozen.
 3. **Lenient defaults, strict CI gates.** Iterating on a half-broken corpus during annotation has to be possible; shipping a half-broken corpus into a published number must not. Every loader and CLI defaults to lenient (warn-and-continue) for development and exposes `--strict` for the production path.
 
@@ -153,7 +153,7 @@ Four modes, evaluated on the same gold set:
 | `hybrid` | Both — the production path |
 | `llm-only` | No context at all (controls for raw LLM capability) |
 
-Each mode produces a predictions JSONL. The runner calls `python -m eval.run --metric X` four times and assembles a comparison table.
+Each mode produces a predictions JSONL. The runner calls `PYTHONPATH=packages python -m eval.run --metric X` four times and assembles a comparison table.
 
 The hybrid > RAG-only and hybrid > KG-only claims (the thesis's headline novelty contributions) are ablation-runner outputs. The thesis-claim survival rule applies to the *difference* between two modes, not just the absolute number — a 2-point hybrid advantage with overlapping CIs is no thesis claim.
 
@@ -169,7 +169,7 @@ The gold set is versioned in the filename: `data/gold_standard/housing_v1.jsonl`
 
 ### 8.3 Evidence trail
 
-Per-phase coverage and audit reports are committed at `.sisyphus/evidence/eval/`. CI nightly writes the per-day audit report to `.sisyphus/evidence/eval/audit_<YYYY-MM-DD>.json` via `python -m eval.dataset audit ... --evidence`.
+Per-phase coverage and audit reports are committed at `.sisyphus/evidence/eval/`. CI nightly writes the per-day audit report to `.sisyphus/evidence/eval/audit_<YYYY-MM-DD>.json` via `PYTHONPATH=packages python -m eval.dataset audit ... --evidence`.
 
 ### 8.4 Reproducing every thesis number
 
@@ -178,10 +178,10 @@ The thesis-claim audit script (Phase 4b — `scripts/eval/thesis_audit.py`) read
 ```bash
 git checkout <thesis-tag>
 pip install -r requirements.txt
-python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict
-python -m eval.run --metric accuracy --gold ... --predictions ... --seed 42 --out eval/results/accuracy.json
-python -m eval.run --metric brier    --gold ... --predictions ... --seed 42 --out eval/results/brier.json
-python -m eval.run --metric ece      --gold ... --predictions ... --seed 42 --out eval/results/ece.json
+PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.jsonl --strict
+PYTHONPATH=packages python -m eval.run --metric accuracy --gold ... --predictions ... --seed 42 --out eval/results/accuracy.json
+PYTHONPATH=packages python -m eval.run --metric brier    --gold ... --predictions ... --seed 42 --out eval/results/brier.json
+PYTHONPATH=packages python -m eval.run --metric ece      --gold ... --predictions ... --seed 42 --out eval/results/ece.json
 python scripts/eval/thesis_audit.py eval/results/  # Phase 4b
 ```
 

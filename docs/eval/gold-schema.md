@@ -32,7 +32,8 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `schema_version` | enum `SchemaVersion` | Always `"v1"` at present. Bumped on any breaking field change. |
 | `case_id` | string, non-empty | Stable identifier across regenerations (e.g. `"FTT-PR-2023-0042"`). |
 | `decision_date` | ISO date | Must fall in `2019-01-01 .. 2024-12-31` (PILOT window). |
-| `region` | string | Free text region label, e.g. `"London"`, `"North West"`, `"Wales"`. Used for the 30/70 stratification audit. |
+| `region` | enum `RegionUK` | Normalised UK region, e.g. `"london"`, `"north_west"`, `"wales"`. Used for the 30/70 stratification audit. |
+| `region_source` | string | Verbatim region text from the source PDF, kept for reviewer provenance. |
 | `case_size` | enum `CaseSize` | `"small"` if `disputed_amount_gbp` ≤ £1500, else `"large"`. Cross-validated against `disputed_amount_gbp` (INV-7), not against summed `claimed_amounts` (which can double-count mirrored claim/counterclaim entries). |
 | `disputed_amount_gbp` | `Decimal`, ≥0 | Canonical dispute value, independent of any one party's claim. Drives stratification — see [SHA-91](https://linear.app/sharifbuilders/issue/SHA-91) for why this is independent of `claimed_amounts`. |
 | `claim_types` | list of enum `ClaimType`, ≥1 | One or more of `cleaning`, `damages`, `deposit_non_protection`, `disrepair`, `end_of_tenancy`. Multi-type cases are common (a single decision can hit cleaning + damages + disrepair). Stratification target ("≥5 cases per claim type") is computed as: for each type `t`, `t in case.claim_types` for ≥5 cases. See [SHA-92](https://linear.app/sharifbuilders/issue/SHA-92). |
@@ -45,7 +46,7 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `cited_authorities` | list of `Authority`, default `[]` | Case-law authorities cited by the tribunal. Empty list permitted (some decisions cite none). Phase 2 `dataset.audit()` uses this for the temporal-leakage check: a training case must not cite an authority decided after the train-window cutoff. See [SHA-90](https://linear.app/sharifbuilders/issue/SHA-90). |
 | `claimed_amounts` | list of `ClaimedAmount`, ≥1 | Each is `(issue, amount_gbp, by_party)`. The `issue` field is a free-text label that **must match** the `issue` on every `IssueOutcome` in `ground_truth_outcome.per_issue` (INV-5). |
 | `ground_truth_outcome` | `GroundTruthOutcome` | The judge's actual decision. |
-| `key_reasoning_quotes` | list of `ReasoningQuote`, ≥1 | Quotes lifted from the decision text. Every quote must carry a `paragraph_ref` so reviewers can locate it in the source PDF. |
+| `key_reasoning_quotes` | list of `ReasoningQuote`, ≥1 | Quotes lifted from the decision text. Every quote must carry structured `provenance` so reviewers can locate it in the source PDF. |
 
 ## Sub-models
 
@@ -62,7 +63,7 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 |---|---|---|
 | `kind` | string | Free text: e.g. `photo`, `invoice`, `tenancy_agreement`, `inspection_report`, `bank_statement`. |
 | `description` | string | Plain-English description. |
-| `paragraph_ref` | string or `null` | Where in the decision PDF this evidence is discussed. |
+| `provenance` | `Provenance` or `null` | Structured `{page, paragraph, optional text_span}` location in the decision PDF. |
 
 ### `StatutoryReference`
 
@@ -70,7 +71,7 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 |---|---|
 | `statute` | e.g. `"Housing Act 2004"` |
 | `section` | e.g. `"s.213"` |
-| `paragraph_ref` | optional |
+| `provenance` | `Provenance` or `null` |
 
 ### `Authority`
 
@@ -79,7 +80,7 @@ The schema is the load-bearing contract for every downstream metric — accuracy
 | `name` | string, non-empty | e.g. `"Howard de Walden Estates Ltd v Aggio"`. |
 | `court` | string or `null` | e.g. `"UKSC"`, `"EWCA Civ"`, `"FTT(PC)"`. |
 | `cited_date` | ISO date | Decision date of the **cited** authority (not of the current case). Used by the temporal-leakage audit. |
-| `paragraph_ref` | string or `null` | Where in the *current* decision this authority is cited. |
+| `provenance` | `Provenance` or `null` | Where in the *current* decision this authority is cited. |
 
 ### `ClaimedAmount`
 
@@ -111,12 +112,20 @@ Two paths are permitted:
 | `per_issue` | list of `IssueOutcome`, default `[]` | Apportioned: ≥1. Unapportioned: must be `[]`. |
 | `unapportioned_reason` | string or `null` | Set iff the case is unapportioned. Records *why* the tribunal declined to break the award down. |
 
+### `Provenance`
+
+| Field | Type | Notes |
+|---|---|---|
+| `page` | int, ≥1 | 1-indexed source PDF page. |
+| `paragraph` | int, ≥1 | 1-indexed paragraph or reviewer paragraph marker. |
+| `text_span` | `[start, end]` or `null` | Optional character span in normalised page text; must satisfy `0 <= start < end`. |
+
 ### `ReasoningQuote`
 
 | Field | Type | Notes |
 |---|---|---|
 | `text` | string, ≥1 char | Verbatim quote from decision. |
-| `paragraph_ref` | string, ≥1 char | **Required** — every quote must be locatable in source PDF. |
+| `provenance` | `Provenance` | **Required** — every quote must be locatable in source PDF. |
 
 ## Cross-field invariants
 
@@ -133,6 +142,7 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
 | INV-7 | `case_size == small` iff `disputed_amount_gbp <= £1500` | `GoldCase` | The 30/70 stratification audit is run from the corpus alone. Defined against the canonical dispute value rather than `sum(claimed_amounts)`, which can double-count mirrored claims. |
 | INV-8 | `Decimal` amounts never negative | `Field(ge=0)` on `ClaimedAmount`, `IssueOutcome`, `GroundTruthOutcome`, `GoldCase.disputed_amount_gbp` | Tribunal awards cannot be negative; negative values are sign errors. |
 | INV-9 | `overall_winner` agrees with the `per_issue.winner` aggregate (apportioned path only). Aggregation rule: if every per-issue winner is the same value V, then `overall_winner == V`; otherwise `overall_winner == split`. Skipped when `unapportioned_reason` is set. | `GoldCase` | Without this, a `winner=tenant` case can validate while every per-issue outcome favours landlord, silently corrupting the headline accuracy label. See [SHA-93](https://linear.app/sharifbuilders/issue/SHA-93). |
+| INV-10 | `evidence` and `statutory_basis` must each be non-empty, or carry a non-empty `*_unavailable_reason`. A reason cannot be set when the corresponding list is non-empty. | `GoldCase` | Prevents silent omission of source support while still allowing decisions with no published evidence/statutory basis. |
 
 ## Canonical example
 
@@ -141,7 +151,8 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
   "schema_version": "v1",
   "case_id": "SYNTH-2023-0001",
   "decision_date": "2023-06-15",
-  "region": "London",
+  "region": "london",
+  "region_source": "London",
   "case_size": "small",
   "disputed_amount_gbp": "400.00",
   "claim_types": ["cleaning"],
@@ -153,10 +164,10 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
   ],
   "facts": "Tenant occupied flat from 2022-01-01 to 2023-05-31; landlord retained 400 GBP of the 1200 GBP deposit citing carpet cleaning and disputed the deduction.",
   "evidence": [
-    {"kind": "invoice", "description": "Carpet cleaning invoice for 180 GBP", "paragraph_ref": "para 7"}
+    {"kind": "invoice", "description": "Carpet cleaning invoice for 180 GBP", "provenance": {"page": 1, "paragraph": 7}}
   ],
   "statutory_basis": [
-    {"statute": "Housing Act 2004", "section": "s.213", "paragraph_ref": "para 12"}
+    {"statute": "Housing Act 2004", "section": "s.213", "provenance": {"page": 1, "paragraph": 12}}
   ],
   "claimed_amounts": [
     {"issue": "carpet_cleaning", "amount_gbp": "400.00", "by_party": "landlord"}
@@ -169,7 +180,7 @@ These are enforced by `@model_validator(mode="after")` on `GoldCase` (and `Groun
     ]
   },
   "key_reasoning_quotes": [
-    {"text": "The landlord adduced no evidence beyond a single invoice.", "paragraph_ref": "para 14"}
+    {"text": "The landlord adduced no evidence beyond a single invoice.", "provenance": {"page": 2, "paragraph": 14}}
   ]
 }
 ```
@@ -188,9 +199,8 @@ This is the same JSON committed at `packages/eval/tests/fixtures/gold_case_minim
 
 ## Known limitations / future work
 
-- `region` is free text. Once we have ≥30 cases we should normalise to a closed enum.
+- `evidence.kind` is free text — same closed-enum question as `region` had before SHA-98.
 <!-- (former `claim_type` single-valued limitation resolved in SHA-92) -->
-- `evidence.kind` is free text — same closed-enum question as `region`.
 - Per-party representation captured as a single bool; reviewer noted that "self-represented but with paid McKenzie friend" is a real category. Defer until corpus shows ≥5 such cases.
 
 These limitations are surfaced in the Codex sparring template at `.sisyphus/codex/sha-28-schema-2026-04-27.md`.

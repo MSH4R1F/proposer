@@ -116,3 +116,28 @@ class TestPredictionTypes:
         )
         assert p.case_id == "X"
         assert p.per_issue[0].issue == "cleaning"
+
+    def test_issue_prediction_rejects_probability_outside_unit_interval(self):
+        from decimal import Decimal
+        from eval.metrics import IssuePrediction
+        from eval.schema import Winner
+        with pytest.raises(ValueError, match="win_probability"):
+            IssuePrediction(
+                issue="cleaning",
+                predicted_winner=Winner.TENANT,
+                win_probability=2.0,
+                predicted_amount_gbp=Decimal("100.00"),
+            )
+
+    def test_prediction_rejects_probability_outside_unit_interval(self):
+        from decimal import Decimal
+        from eval.metrics import Prediction
+        from eval.schema import Winner
+        with pytest.raises(ValueError, match="overall_win_probability"):
+            Prediction(
+                case_id="X",
+                overall_winner=Winner.TENANT,
+                overall_win_probability=-0.1,
+                total_predicted_gbp=Decimal("100.00"),
+                per_issue=[],
+            )
