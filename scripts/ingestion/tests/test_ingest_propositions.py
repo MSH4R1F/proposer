@@ -229,6 +229,19 @@ def _import_main():
     return main_async
 
 
+def test_prompt_sha_changes_when_chunk_size_changes() -> None:
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
+    if str(REPO_ROOT / "packages") not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT / "packages"))
+    from scripts.ingestion.ingest_propositions import _compute_prompt_sha
+
+    small_chunks = _compute_prompt_sha(0.5, 12000)
+    large_chunks = _compute_prompt_sha(0.5, 20000)
+
+    assert small_chunks != large_chunks
+
+
 # ---------------------------------------------------------------------------
 # 1. Argv / env-handling tests (subprocess)
 # ---------------------------------------------------------------------------

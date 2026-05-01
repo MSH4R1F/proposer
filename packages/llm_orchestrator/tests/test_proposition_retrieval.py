@@ -164,15 +164,29 @@ class FakePropositionRepo:
         self,
         document_ids: Sequence[UUID],
     ) -> list[PropositionEdge]:
-        wanted = set(document_ids)
-        return [edge for edge in self.edges if edge.document_id in wanted]
+        out = []
+        seen = set()
+        for document_id in document_ids:
+            if document_id in seen:
+                continue
+            seen.add(document_id)
+            out.extend(edge for edge in self.edges if edge.document_id == document_id)
+        return out
 
     async def load_propositions_by_ids(
         self,
         proposition_ids: Sequence[UUID],
     ) -> list[Proposition]:
-        wanted = set(proposition_ids)
-        return [prop for prop in self.props if prop.proposition_id in wanted]
+        out = []
+        seen = set()
+        for proposition_id in proposition_ids:
+            if proposition_id in seen:
+                continue
+            seen.add(proposition_id)
+            out.extend(
+                prop for prop in self.props if prop.proposition_id == proposition_id
+            )
+        return out
 
     async def load_propositions_for_documents(
         self,
@@ -180,9 +194,12 @@ class FakePropositionRepo:
         *,
         limit_per_document: int = 25,
     ) -> list[Proposition]:
-        wanted = set(document_ids)
         out = []
-        for document_id in wanted:
+        seen = set()
+        for document_id in document_ids:
+            if document_id in seen:
+                continue
+            seen.add(document_id)
             out.extend(
                 [prop for prop in self.props if prop.document_id == document_id][
                     :limit_per_document
@@ -339,3 +356,46 @@ async def test_issue_retriever_dispatches_to_proposition_strategy_without_rag() 
 
     assert result.is_sufficient is True
     assert prop.calls[0][2]["use_pagerank"] is True
+
+
+@pytest.mark.asyncio
+async def test_issue_retriever_falls_back_to_chunk_when_proposition_path_raises() -> None:
+    class BrokenRetriever:
+        async def retrieve(self, *args, **kwargs):
+            raise RuntimeError("temporary graph outage")
+
+    class FakeRag:
+        async def retrieve(self, *, query, top_k, query_region=None):
+            return {
+                "confidence": 0.8,
+                "results": [
+                    {
+                        "case_reference": "LON_CHUNK_2024_0001",
+                        "year": 2024,
+                        "text": "Cleaning deduction chunk.",
+                        "semantic_score": 0.9,
+                        "bm25_score": 0.7,
+                    }
+                ],
+            }
+
+    retriever = IssueRetriever(
+        rag_pipeline=FakeRag(),
+        min_cases_required=1,
+        proposition_retriever=BrokenRetriever(),
+    )
+    case_file = CaseFile(
+        user_role=PartyRole.TENANT,
+        issues=[DisputeIssue.CLEANING],
+    )
+    issue = IssueContext(issue_type=DisputeIssue.CLEANING)
+
+    result = await retriever._retrieve_for_issue(
+        issue,
+        case_file,
+        top_k=1,
+        retrieval_strategy=RetrievalStrategy.PROPOSITION_DIRECT,
+    )
+
+    assert result.is_sufficient is True
+    assert result.results[0]["case_reference"] == "LON_CHUNK_2024_0001"

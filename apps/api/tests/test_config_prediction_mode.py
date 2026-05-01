@@ -48,6 +48,14 @@ def test_retrieval_strategy_env_lowercased(monkeypatch):
     assert cfg.retrieval_strategy == "proposition_pagerank"
 
 
+def test_retrieval_strategy_rejects_unknown_value(monkeypatch):
+    monkeypatch.setenv("RETRIEVAL_STRATEGY", "typo_mode")
+    from apps.api.src.config import APIConfig
+
+    with pytest.raises(ValueError, match="retrieval_strategy"):
+        APIConfig()
+
+
 @pytest.mark.skip(
     reason="Legacy-architecture test: SHA-102 made graph_builder/prediction_engine "
     "read-only @properties; service reads now go through a UnitOfWork. "
