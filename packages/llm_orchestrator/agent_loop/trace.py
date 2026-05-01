@@ -4,9 +4,9 @@ import re
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 TraceStepKind = Literal["model_turn", "tool_call", "tool_error", "termination"]
 
@@ -37,6 +37,10 @@ class TraceSummary(BaseModel):
     total_tokens_in: int
     total_tokens_out: int
     steps: List[TraceStep]
+    # SHA-20 Phase 3: free-form trace-level metadata (e.g. domain tags) so
+    # callers can preserve routing context past Phase 8's full launch-gate
+    # work. Defaults to empty so existing serialised traces still validate.
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 _EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}")
@@ -60,6 +64,7 @@ class TraceLogger:
     def __init__(self) -> None:
         self._trace_id: str = ""
         self._steps: List[TraceStep] = []
+        self._metadata: Dict[str, Any] = {}
 
     @classmethod
     def no_op(cls) -> TraceLogger:
@@ -69,6 +74,9 @@ class TraceLogger:
     def start_trace(self, *, trace_id: Optional[str] = None, tags: Optional[dict] = None) -> None:
         self._trace_id = trace_id or str(uuid.uuid4())
         self._steps = []
+        # SHA-20 Phase 3: preserve trace-level tags as metadata so they make
+        # it into the returned TraceSummary even on the no-op path.
+        self._metadata = dict(tags or {})
 
     def record_step(self, step: TraceStep) -> None:
         self._steps.append(step)
@@ -83,6 +91,7 @@ class TraceLogger:
             total_tokens_in=sum(s.tokens_in or 0 for s in self._steps),
             total_tokens_out=sum(s.tokens_out or 0 for s in self._steps),
             steps=list(self._steps),
+            metadata=dict(self._metadata),
         )
 
 

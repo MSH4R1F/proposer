@@ -143,7 +143,14 @@ class AgentLoop:
         messages: List[Dict[str, Any]],
         ctx: ToolContext,
     ) -> AgentLoopResult:
-        ctx.trace_logger.start_trace(trace_id=ctx.request_id)
+        # SHA-20 Phase 3: forward domain tags into the trace so LangFuse
+        # spans + the no-op TraceSummary metadata both carry the routing
+        # context. ``ctx.domain_tags`` is empty when no domain runtime has
+        # been resolved (legacy / test paths).
+        ctx.trace_logger.start_trace(
+            trace_id=ctx.request_id,
+            tags=dict(ctx.domain_tags) if ctx.domain_tags else None,
+        )
 
         # Don't mutate the caller's list.
         local_messages: List[Dict[str, Any]] = list(messages)
