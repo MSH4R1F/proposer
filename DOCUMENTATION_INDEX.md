@@ -313,6 +313,22 @@ The following technical documents are mentioned in the main README but located i
 
 ---
 
+#### `docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md`
+**Status**: ✅ **Exists** (PR #15 — Phase 1 substrate landing on `feature/sha-36-proposition-kg`)
+**Purpose**: Design spec for SHA-36 Phase 1 — the proposition KG substrate. Covers schema rationale for the 4 new tables (`decision_documents`, `proposition_extraction_runs`, `propositions`, `proposition_edges`), why `paragraph_ref` is a string not an int, deterministic UUID5 design and known brittleness on near-duplicate text, prompt-injection + quote-verification controls, the Phase 2 PageRank contract (out of scope here), evaluation rubric, cost ceiling, and SOTA basis (Dense X Retrieval, HippoRAG NeurIPS 2024, GraphRAG-Bench, Stanford legal RAG hallucinations, RAGAS).
+
+**Target Audience**: Engineers reviewing PR #15 / implementing Phase 2 PageRank retrieval; thesis readers wanting the academic justification.
+
+---
+
+#### `docs/superpowers/plans/2026-05-01-sha-36-proposition-kg.md`
+**Status**: ✅ **Exists** (orchestrator-owned, not part of PR #15)
+**Purpose**: Implementation plan for SHA-36 Phase 1. 11 tasks (preflight → domain models → Postgres schema → Alembic migration → repo + UoW → text loader + provenance → proposition extractor → edge extractor + graph validator → corpus selector → ingestion CLI → integration test → docs) with exact file paths, failing test code, and acceptance gates. Each task ends in one commit.
+
+**Target Audience**: Developers executing SHA-36 work; post-merge historical reference for understanding the substrate-then-retrieval split.
+
+---
+
 #### `docs/API_DOCUMENTATION.md`
 **Status**: ✅ **Exists** (mentioned in TODO.md and CHANGELOG)
 **Content** (based on TODO.md):
