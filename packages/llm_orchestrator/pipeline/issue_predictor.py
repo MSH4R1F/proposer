@@ -7,6 +7,7 @@ from datetime import date as _date_type
 from typing import Any, Dict, List, Optional
 
 from ..clients.base import BaseLLMClient
+from ..data.citation_urls import resolve_source_url
 from ..models.prediction_v2 import (
     Citation,
     EvidenceStrength,
@@ -506,12 +507,12 @@ class IssuePredictor:
                     if not isinstance(citation, dict):
                         continue
                     year = self._to_int(citation.get("year"), 2024)
+                    case_ref = str(citation.get("case_reference", "Unknown"))
+                    resolved_year = year if year is not None else 2024
                     citations.append(
                         Citation(
-                            case_reference=str(
-                                citation.get("case_reference", "Unknown")
-                            ),
-                            year=year if year is not None else 2024,
+                            case_reference=case_ref,
+                            year=resolved_year,
                             region=self._to_optional_str(citation.get("region")),
                             paragraph=self._to_optional_str(citation.get("paragraph")),
                             quote=str(citation.get("quote", "")),
@@ -520,6 +521,7 @@ class IssuePredictor:
                                 citation.get("similarity_score", 0.0)
                             ),
                             verified=bool(citation.get("verified", False)),
+                            source_url=resolve_source_url(case_ref, resolved_year),
                         )
                     )
 
