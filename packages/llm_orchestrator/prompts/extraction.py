@@ -33,6 +33,7 @@ CATEGORIES TO EXTRACT:
 
 **Deposit Details:**
 - deposit_amount: Total deposit paid
+- deposit_received_date: When the landlord or agent received the deposit
 - deposit_protected: true/false/unknown
 - deposit_scheme: TDS, DPS, MyDeposits, or unknown
 - protection_date: When deposit was protected
@@ -141,6 +142,7 @@ CATEGORIES TO EXTRACT:
 - monthly_rent: Monthly rent amount (number)
 - tenancy_type: AST, periodic, etc.
 - deposit_amount: Total deposit paid (number)
+- deposit_received_date: When the landlord or agent received the deposit (YYYY-MM-DD)
 - deposit_protected: true/false/null (null if not mentioned)
 - deposit_scheme: TDS, DPS, MyDeposits, or null
 - protection_date: When deposit was protected (YYYY-MM-DD)

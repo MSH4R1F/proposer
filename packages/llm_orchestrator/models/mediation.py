@@ -117,19 +117,19 @@ class MediationSession(BaseModel):
         proposed_by_role: str,
         amount: float,
         deposit_amount: Optional[float] = None,
+        max_amount: Optional[float] = None,
     ) -> StructuredOffer:
         """
         Submit a new offer during mediation.
 
-        Validates amount >= 0 (and <= deposit_amount if provided).
+        Validates amount >= 0 (and <= max_amount/deposit_amount if provided).
         Creates a StructuredOffer, appends to self.offers, creates an OFFER message.
         """
         if amount < 0:
             raise ValueError(f"Offer amount must be >= 0, got {amount}")
-        if deposit_amount is not None and amount > deposit_amount:
-            raise ValueError(
-                f"Offer amount {amount} exceeds deposit amount {deposit_amount}"
-            )
+        limit = max_amount if max_amount is not None else deposit_amount
+        if limit is not None and amount > limit:
+            raise ValueError(f"Offer amount {amount} exceeds allowed amount {limit}")
 
         offer = StructuredOffer(
             amount=amount,

@@ -70,6 +70,7 @@ class LeaseNode(BaseNode):
     tenancy_type: Optional[str] = None  # AST, periodic
     monthly_rent: Optional[float] = None
     deposit_amount: Optional[float] = None
+    deposit_received_date: Optional[date] = None
     deposit_protected: Optional[bool] = None
     deposit_scheme: Optional[str] = None
     protection_date: Optional[date] = None

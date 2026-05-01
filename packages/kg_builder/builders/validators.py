@@ -143,50 +143,73 @@ class KGValidator:
                     f"Tenancy duration seems unusually long: {duration} days"
                 )
 
-        # Check deposit protection timing
-        # Impossible: protected before tenancy started → ERROR (raises)
-        # Late but possible: > 30 days → WARNING (data-quality flag, not raised)
-        if lease.protection_date and lease.start_date:
-            days_to_protect = (lease.protection_date - lease.start_date).days
+        deposit_receipt_date = getattr(lease, "deposit_received_date", None) or (
+            self._find_deposit_receipt_date(event_nodes)
+        )
+        deposit_deadline_anchor = deposit_receipt_date or lease.start_date
 
-            if days_to_protect < 0:
+        # Check deposit protection timing. The statutory 30-day clock runs from
+        # deposit receipt; tenancy start is only a fallback when receipt is unknown.
+        if lease.protection_date and deposit_deadline_anchor:
+            days_to_protect = (lease.protection_date - deposit_deadline_anchor).days
+
+            if deposit_receipt_date and days_to_protect < 0:
                 kg.validation_errors.append(
-                    "Deposit protected before tenancy start date "
+                    "Deposit protected before deposit receipt date "
                     f"(protection_date={lease.protection_date}, "
-                    f"tenancy_start={lease.start_date})"
+                    f"deposit_receipt_date={deposit_deadline_anchor})"
                 )
             elif days_to_protect > 30:
+                anchor_label = (
+                    "deposit receipt" if deposit_receipt_date else "tenancy start fallback"
+                )
                 kg.validation_warnings.append(
-                    f"Deposit protected {days_to_protect} days after tenancy start (> 30 day limit)"
+                    f"Deposit protected {days_to_protect} days after {anchor_label} (> 30 day limit)"
                 )
 
-        # Same impossibility check for prescribed_info_date
-        if lease.prescribed_info_date and lease.start_date:
-            pi_days = (lease.prescribed_info_date - lease.start_date).days
-            if pi_days < 0:
+        # Same timing check for prescribed_info_date.
+        if lease.prescribed_info_date and deposit_deadline_anchor:
+            pi_days = (lease.prescribed_info_date - deposit_deadline_anchor).days
+            if deposit_receipt_date and pi_days < 0:
                 kg.validation_errors.append(
-                    "Prescribed information date is before tenancy start date "
+                    "Prescribed information date is before deposit receipt date "
                     f"(prescribed_info_date={lease.prescribed_info_date}, "
-                    f"tenancy_start={lease.start_date})"
+                    f"deposit_receipt_date={deposit_deadline_anchor})"
                 )
 
         # Check events are within tenancy period.
         # An event with a real type (damage, inspection, etc.) cannot occur
         # before the tenancy started — that's a hard logic contradiction.
-        # tenancy_start and deposit_protected are exempt because they may
-        # legitimately predate the lease start (preliminary deposit, lease
-        # signed with deferred start).
+        # tenancy_start and deposit/payment/protection events are exempt because
+        # deposits may legitimately be paid and protected before move-in.
+        allowed_pre_tenancy_events = {
+            "tenancy_start",
+            "deposit_paid",
+            "deposit_lodged",
+            "deposit_received",
+            "deposit_protected",
+        }
         for event in event_nodes:
             if not event.event_date:
                 continue
 
             if lease.start_date and event.event_date < lease.start_date:
-                if event.event_type not in ["tenancy_start", "deposit_protected"]:
+                if event.event_type not in allowed_pre_tenancy_events:
                     kg.validation_errors.append(
                         f"Event '{event.event_type}' occurred before tenancy started "
                         f"(event_date={event.event_date}, "
                         f"tenancy_start={lease.start_date})"
                     )
+
+    @staticmethod
+    def _find_deposit_receipt_date(event_nodes: list) -> Optional[date]:
+        receipt_event_types = {"deposit_paid", "deposit_lodged", "deposit_received"}
+        dates = [
+            event.event_date
+            for event in event_nodes
+            if event.event_type in receipt_event_types and event.event_date
+        ]
+        return min(dates) if dates else None
 
     def _validate_deposit_protection(self, kg: KnowledgeGraph) -> None:
         """Validate deposit protection logic."""

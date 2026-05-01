@@ -389,6 +389,26 @@ async def test_submit_offer_and_accept_settles(
 
 
 @pytest.mark.asyncio
+async def test_submit_offer_allows_prediction_range_above_deposit(
+    mediation_service: MediationService,
+    seeded_dispute,
+) -> None:
+    """Deposit-penalty settlements may exceed the original deposit."""
+    dispute_id = seeded_dispute.dispute_id
+    tenant_session = seeded_dispute.tenant_session_id
+    mediation_service._get_prediction_data.return_value = {
+        **_FAKE_PREDICTION,
+        "predicted_settlement_range": [1500, 3000],
+    }
+
+    await mediation_service.start_mediation(dispute_id, tenant_session)
+    offer = await mediation_service.submit_offer(dispute_id, tenant_session, 2500.0)
+
+    assert offer.amount == 2500.0
+    assert offer.status.value == "pending"
+
+
+@pytest.mark.asyncio
 async def test_get_session_returns_messages_and_offers(
     mediation_service: MediationService,
     seeded_dispute,
