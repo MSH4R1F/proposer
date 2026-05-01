@@ -11,7 +11,7 @@ import math
 import re
 from collections import defaultdict
 from datetime import date
-from typing import Any, Dict, Iterable, List, Optional, Protocol, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Protocol, Sequence, Union
 from uuid import UUID
 
 import numpy as np
@@ -638,8 +638,12 @@ class PropositionRetriever:
         return "current"
 
 
-def canonical_issue_tags(issue_type: DisputeIssue) -> set[str]:
-    return {tag.lower() for tag in ISSUE_TAG_ALIASES.get(issue_type, set())}
+def canonical_issue_tags(issue_type: Union[IssueType, DisputeIssue, str]) -> set[str]:
+    issue_value = getattr(issue_type, "value", str(issue_type))
+    for key, tags in ISSUE_TAG_ALIASES.items():
+        if key.value == issue_value:
+            return {tag.lower() for tag in tags}
+    return set()
 
 
 def build_proposition_query(issue: IssueContext, case_file: CaseFile) -> str:

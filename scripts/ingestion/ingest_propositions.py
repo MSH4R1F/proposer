@@ -135,7 +135,7 @@ def _make_llm(args: argparse.Namespace):
     """
     if args.mock_response is not None:
         fixture = _load_mock_fixture(Path(args.mock_response))
-        return _MockLLM(fixture)
+        return _MockLLM(fixture), args.model or "mock"
 
     # Imported lazily so --dry-run --mock-response doesn't pull provider SDKs
     # and isn't blocked by unset keys during import.
@@ -151,6 +151,7 @@ def _make_llm(args: argparse.Namespace):
     role_cfg = llm_config.role_config(LLMRole.EXTRACTION)
     if args.model:
         role_cfg.primary_model = args.model
+    resolved_model = role_cfg.primary_model
 
     if role_cfg.provider == LLMProvider.ANTHROPIC and not llm_config.anthropic_api_key:
         raise SystemExit(
@@ -158,7 +159,7 @@ def _make_llm(args: argparse.Namespace):
             "(or set LLM_EXTRACTION_PROVIDER=openai / use --mock-response)"
         )
 
-    return get_llm_client(LLMRole.EXTRACTION, config=llm_config)
+    return get_llm_client(LLMRole.EXTRACTION, config=llm_config), resolved_model
 
 
 # ---------------------------------------------------------------------------
@@ -227,18 +228,17 @@ def _build_doc(
     )
 
 
-def _compute_prompt_sha(min_confidence: float) -> str:
-    """SHA-256 of (prop prompt + edge prompt + str(min_confidence)).
+def _compute_prompt_sha(min_confidence: float, max_chars_per_chunk: int) -> str:
+    """SHA-256 of prompts plus extraction-affecting parameters.
 
-    Any change to either prompt or to the threshold invalidates --resume,
-    forcing a fresh extraction. This is intentional: the threshold
-    affects which propositions get accepted, so a different threshold is
-    a different pipeline.
+    Any change to either prompt, confidence threshold, or chunking limit
+    invalidates --resume, forcing a fresh extraction.
     """
     blob = (
         PROPOSITION_EXTRACTION_SYSTEM_PROMPT
         + EDGE_EXTRACTION_SYSTEM_PROMPT
         + str(min_confidence)
+        + str(max_chars_per_chunk)
     )
     return sha256_hex(blob)
 
@@ -597,7 +597,7 @@ async def _run_async(args: argparse.Namespace) -> int:
 
     # 3) Build the LLM client (or mock) and resolve the model name we'll record.
     try:
-        llm = _make_llm(args)
+        llm_result = _make_llm(args)
     except SystemExit as exc:
         # _make_llm raises SystemExit with a message string; exit code 2
         # because this is a CLI-arg / environment configuration problem.
@@ -607,13 +607,17 @@ async def _run_async(args: argparse.Namespace) -> int:
         if msg:
             print(f"error: {msg}", file=sys.stderr)
         return 2
-    if isinstance(llm, _MockLLM):
-        model = args.model or "mock"
+    if isinstance(llm_result, tuple):
+        llm, model = llm_result
     else:
-        model = getattr(llm, "model", args.model or _DEFAULT_MODEL)
+        llm = llm_result
+        model = args.model or ("mock" if isinstance(llm, _MockLLM) else _DEFAULT_MODEL)
 
     # 4) Compute prompt sha once.
-    prompt_sha = _compute_prompt_sha(args.min_confidence)
+    prompt_sha = _compute_prompt_sha(
+        args.min_confidence,
+        args.max_chars_per_chunk,
+    )
 
     report_path = (
         Path(args.jsonl_report) if args.jsonl_report else None

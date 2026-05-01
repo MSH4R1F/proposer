@@ -132,25 +132,41 @@ class IssueRetriever:
     ) -> IssueRetrievalResult:
         query = self._build_issue_query(issue, case_file)
         if retrieval_strategy == RetrievalStrategy.PROPOSITION_DIRECT:
-            prop_result = await self._retrieve_propositions(
-                issue,
-                case_file,
-                query=query,
-                top_k=top_k,
-                use_pagerank=False,
-            )
+            try:
+                prop_result = await self._retrieve_propositions(
+                    issue,
+                    case_file,
+                    query=query,
+                    top_k=top_k,
+                    use_pagerank=False,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "proposition_retrieval_failed_in_direct_strategy",
+                    issue_type=issue.issue_type.value,
+                    error=str(exc),
+                )
+                prop_result = None
             if prop_result is not None:
                 return prop_result
             return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
 
         if retrieval_strategy == RetrievalStrategy.PROPOSITION_PAGERANK:
-            prop_result = await self._retrieve_propositions(
-                issue,
-                case_file,
-                query=query,
-                top_k=top_k,
-                use_pagerank=True,
-            )
+            try:
+                prop_result = await self._retrieve_propositions(
+                    issue,
+                    case_file,
+                    query=query,
+                    top_k=top_k,
+                    use_pagerank=True,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "proposition_retrieval_failed_in_pagerank_strategy",
+                    issue_type=issue.issue_type.value,
+                    error=str(exc),
+                )
+                prop_result = None
             if prop_result is not None:
                 return prop_result
             return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)

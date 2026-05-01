@@ -81,7 +81,9 @@ class CitationVerifier:
                     valid_propositions_by_id,
                     valid_proposition_results,
                 )
-                if proposition_verified or normalized in valid_chunk_refs:
+                if proposition_verified or (
+                    not citation.proposition_id and normalized in valid_chunk_refs
+                ):
                     citation.verified = True
                     verified_citations.append(citation)
                     kept.append(citation)
@@ -187,7 +189,7 @@ class CitationVerifier:
         )
         if not result_quote:
             return False
-        return citation_quote in result_quote or result_quote in citation_quote
+        return citation_quote in result_quote
 
 
 def _normalize_quote(text: str) -> str:

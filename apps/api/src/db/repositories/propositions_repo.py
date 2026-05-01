@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any, Optional, Sequence
 from uuid import UUID
 
-from sqlalchemy import or_, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -445,22 +445,40 @@ class PropositionsRepo:
         if not normalized or limit_per_document <= 0:
             return []
 
-        rows: list[Proposition] = []
-        for document_id in normalized:
-            result = await self._s.execute(
-                select(PropositionRow)
-                .where(PropositionRow.document_id == document_id)
-                .where(PropositionRow.source_passage != "")
-                .where(PropositionRow.case_reference != "")
-                .order_by(
-                    PropositionRow.confidence.desc(),
-                    PropositionRow.paragraph_ref.asc().nulls_last(),
-                    PropositionRow.proposition_id.asc(),
+        ranked = (
+            select(
+                PropositionRow.proposition_id.label("proposition_id"),
+                PropositionRow.document_id.label("document_id"),
+                func.row_number()
+                .over(
+                    partition_by=PropositionRow.document_id,
+                    order_by=(
+                        PropositionRow.confidence.desc(),
+                        PropositionRow.paragraph_ref.asc().nulls_last(),
+                        PropositionRow.proposition_id.asc(),
+                    ),
                 )
-                .limit(limit_per_document)
+                .label("rn"),
             )
-            rows.extend(self._row_to_prop(r) for r in result.scalars())
-        return rows
+            .where(PropositionRow.document_id.in_(normalized))
+            .where(PropositionRow.source_passage != "")
+            .where(PropositionRow.case_reference != "")
+            .subquery()
+        )
+        result = await self._s.execute(
+            select(PropositionRow)
+            .join(
+                ranked,
+                PropositionRow.proposition_id == ranked.c.proposition_id,
+            )
+            .where(ranked.c.rn <= limit_per_document)
+            .order_by(
+                ranked.c.document_id.asc(),
+                ranked.c.rn.asc(),
+                PropositionRow.proposition_id.asc(),
+            )
+        )
+        return [self._row_to_prop(r) for r in result.scalars()]
 
     async def load_document_metadata(
         self,
