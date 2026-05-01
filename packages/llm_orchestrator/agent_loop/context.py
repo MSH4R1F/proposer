@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from .trace import TraceLogger
 
@@ -23,3 +23,8 @@ class ToolContext:
     trace_logger: TraceLogger = field(default_factory=TraceLogger.no_op)
     redact_pii: bool = True
     prediction: Optional[PredictionResult] = None
+    # SHA-20 Phase 3: per-request domain trace tags. Populated by the API
+    # layer when a domain runtime context has been resolved; consumed by
+    # ``trace_logger.start_trace(tags=...)`` callers to preserve domain
+    # routing context in LangFuse / no-op trace output.
+    domain_tags: Dict[str, str] = field(default_factory=dict)
