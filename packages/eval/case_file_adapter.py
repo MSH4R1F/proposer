@@ -31,7 +31,8 @@ Other reconstruction is lossy in benign ways:
 
 `LossyReconstruction.case_file` is the consumable artifact. The other
 fields are introspection — the runner uses them to log per-case
-reconstruction quality.
+reconstruction quality and, where possible, to map enum-style prediction
+issue labels back to the gold case's pre-decision claimed-amount labels.
 """
 from __future__ import annotations
 
@@ -56,6 +57,7 @@ class LossyReconstruction:
     statutory_basis_count: int = 0
     cited_authorities_count: int = 0
     evidence_items_dropped: int = 0
+    gold_issue_labels_by_claim_type: dict[str, str] = field(default_factory=dict)
 
 
 # Crude mapping from gold Evidence.kind strings to orchestrator EvidenceType.
@@ -163,4 +165,33 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
         statutory_basis_count=len(gold.statutory_basis),
         cited_authorities_count=len(gold.cited_authorities),
         evidence_items_dropped=dropped_count,
+        gold_issue_labels_by_claim_type=_gold_issue_label_map(gold),
     )
+
+
+def _gold_issue_label_map(gold: GoldCase) -> dict[str, str]:
+    """Best-effort non-leaky map from `ClaimType` to gold issue label.
+
+    Eval metrics join per-issue predictions to `ground_truth_outcome.per_issue`
+    by free-text issue label. The predictor, however, emits enum-like issue
+    types. When the pre-decision `claimed_amounts` labels have a one-to-one
+    shape with `claim_types`, we can safely map e.g. `cleaning` →
+    `carpet_cleaning` without reading the tribunal outcome. Ambiguous cases are
+    left unmapped so metrics surface them as missing rather than guessing.
+    """
+    labels = _unique_preserving_order(ca.issue for ca in gold.claimed_amounts)
+    claim_types = [ct.value for ct in gold.claim_types]
+    if len(labels) != len(claim_types):
+        return {}
+    return dict(zip(claim_types, labels))
+
+
+def _unique_preserving_order(values) -> list[str]:
+    seen = set()
+    out: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        out.append(value)
+    return out

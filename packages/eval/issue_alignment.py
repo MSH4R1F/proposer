@@ -14,9 +14,10 @@ but not perfectly:
   eval equivalent (eval doesn't track these as distinct claim types)
 
 When a value can't be mapped, raise `UnmappableIssue` and let the caller
-decide. The Phase 5b live runner currently drops unmappable predictions
-from the per-issue list (since they can't be scored against gold) and
-logs a count for the alignment report.
+decide. The Phase 5b live runner currently falls eval-only values back to
+`DisputeIssue.OTHER` for prediction while logging a count for the alignment
+report; the adapter lets orchestrator-only prediction labels pass through so
+they score as missing rather than being coerced into a fake gold label.
 """
 from __future__ import annotations
 
