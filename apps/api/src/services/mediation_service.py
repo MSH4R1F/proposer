@@ -400,8 +400,9 @@ class MediationService:
             prediction_data=prediction_data, role="landlord"
         )
 
+        trace_summary: Optional[TraceSummary] = None
         try:
-            initial_content = await self._mediator.generate_opening_message(
+            initial_content, trace_summary = await self._mediator.generate_opening_message(
                 prediction=prediction,
                 dispute=dispute,
                 expectation_data_tenant=expectation_data_tenant,
@@ -457,6 +458,7 @@ class MediationService:
                 content=initial_content,
                 message_type=MessageType.AI_MEDIATOR,
                 metadata={"triggered_by": role},
+                reasoning_trace=trace_summary,
             )
             await uow.mediations.save(new_mediation)
 
@@ -552,8 +554,9 @@ class MediationService:
         if latest_offer is None and mediation.offers:
             latest_offer = mediation.offers[-1]
 
+        ai_trace: Optional[TraceSummary] = None
         try:
-            ai_content = await self._mediator.generate_response(
+            ai_content, ai_trace = await self._mediator.generate_response(
                 messages=mediation.messages,
                 prediction=prediction,
                 dispute=dispute,
@@ -581,6 +584,7 @@ class MediationService:
                 session=mediation,
                 content=ai_content,
                 message_type=MessageType.AI_MEDIATOR,
+                reasoning_trace=ai_trace,
             )
             await uow.mediations.save(
                 mediation, expected_version=versioned.version
@@ -1020,7 +1024,8 @@ class MediationService:
 
         The cached_prediction_id is stored on DisputeRow (not on DisputeCase's
         Pydantic model payload) so we go via disputes_repo.lock_for_prediction_cache.
-        Falls back to legacy service lookup if no cached prediction exists.
+        If no cached prediction exists, fall back to the most recent prediction
+        for any case_id linked to the dispute via its tenant/landlord sessions.
         """
         locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
         if locked is None:
@@ -1029,8 +1034,28 @@ class MediationService:
             prediction = await uow.predictions.get(locked.cached_prediction_id)
             if prediction is not None:
                 return prediction.model_dump(mode="json")
-        # Fall back to legacy prediction service lookup (mirrors original behaviour)
-        return await self._get_prediction_data(dispute_id)
+
+        dispute = await uow.disputes.get(dispute_id)
+        if dispute is None:
+            return None
+        case_ids: List[str] = []
+        for session_id in (dispute.tenant_session_id, dispute.landlord_session_id):
+            if not session_id:
+                continue
+            state = await uow.sessions.get(session_id)
+            if state is not None:
+                case_ids.append(state.case_file.case_id)
+        if not case_ids:
+            return None
+
+        candidates: List[Dict[str, Any]] = []
+        for case_id in case_ids:
+            for prediction in await uow.predictions.get_by_case_id(case_id):
+                candidates.append(prediction.model_dump(mode="json"))
+        if not candidates:
+            return None
+        candidates.sort(key=lambda item: item.get("timestamp", ""), reverse=True)
+        return candidates[0]
 
     @staticmethod
     def _resolve_role(dispute: Any, session_id: str) -> str:

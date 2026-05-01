@@ -143,6 +143,10 @@ async def mediation_service(db_sessionmaker, seeded_dispute):
     agent = _make_mock_agent()
     svc = MediationService(sessionmaker=db_sessionmaker, mediator_agent=agent)
     # Stub out prediction lookup (no prediction rows seeded in DB).
+    # _fetch_prediction_data_uow is the actual code path used by the
+    # postgres-mode service; the legacy _get_prediction_data hook is kept
+    # for in-memory rollback paths only.
+    svc._fetch_prediction_data_uow = AsyncMock(return_value=_FAKE_PREDICTION)
     svc._get_prediction_data = AsyncMock(return_value=_FAKE_PREDICTION)
     return svc
 
