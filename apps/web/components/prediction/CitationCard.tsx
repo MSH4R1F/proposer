@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { ExternalLink, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Citation } from '@/lib/types/prediction';
+import { forumLabelFor, sourceKindLabelFor } from '@/lib/types/domain';
 
 interface CitationCardProps {
   citation: Citation;
@@ -10,6 +11,11 @@ interface CitationCardProps {
 
 export function CitationCard({ citation, className }: CitationCardProps) {
   const similarityPercentage = Math.round(citation.similarity_score * 100);
+  // SHA-20 Phase 9: render plain-English forum + source-kind labels.
+  // The raw enum values (e.g. `first_tier_tribunal_property_chamber`)
+  // never reach the DOM.
+  const forumLabel = forumLabelFor(citation.forum ?? null);
+  const sourceKindLabel = sourceKindLabelFor(citation.source_kind ?? null);
 
   return (
     <div
@@ -41,10 +47,20 @@ export function CitationCard({ citation, className }: CitationCardProps) {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {citation.verified === false && (
             <Badge variant="destructive" className="text-xs">
               Removed
+            </Badge>
+          )}
+          {sourceKindLabel && (
+            <Badge variant="outline" className="text-xs">
+              {sourceKindLabel}
+            </Badge>
+          )}
+          {forumLabel && (
+            <Badge variant="secondary" className="text-xs">
+              {forumLabel}
             </Badge>
           )}
           {citation.year && (

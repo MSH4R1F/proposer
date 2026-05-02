@@ -184,4 +184,9 @@ export interface BulkIntakeResponse {
   missing_info: string[];
   extraction_successful: boolean;
   dispute?: DisputeInfo;
+  /**
+   * SHA-20 Phase 9: domain routing decision (only present when
+   * DOMAIN_ROUTER_ENABLED=true on the server).
+   */
+  routing?: import('./domain').RoutingMetadata | null;
 }
