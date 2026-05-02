@@ -4,7 +4,7 @@ Disputes router for managing linked dispute cases.
 Handles dispute creation, invite codes, and joining.
 """
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
@@ -82,6 +82,10 @@ class DisputeStatusResponse(BaseModel):
     has_both_parties: bool
     is_ready_for_prediction: bool
     waiting_message: Optional[str] = None
+    # SHA-20 Phase 9: domain provenance for the linked dispute. ``None``
+    # when the dispute predates the routing rollout.
+    domain_id: Optional[str] = None
+    routing_metadata: Optional[Dict[str, Any]] = None
 
 
 class DisputeListItem(BaseModel):
@@ -258,6 +262,8 @@ async def get_dispute_by_session(
         has_both_parties=dispute.has_both_parties,
         is_ready_for_prediction=dispute.is_ready_for_prediction,
         waiting_message=dispute.get_waiting_message(current_role),
+        domain_id=getattr(dispute, "domain_id", None),
+        routing_metadata=getattr(dispute, "routing_metadata", None),
     )
 
 
@@ -291,6 +297,8 @@ async def get_dispute(
         has_both_parties=dispute.has_both_parties,
         is_ready_for_prediction=dispute.is_ready_for_prediction,
         waiting_message=None,
+        domain_id=getattr(dispute, "domain_id", None),
+        routing_metadata=getattr(dispute, "routing_metadata", None),
     )
 
 
