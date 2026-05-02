@@ -10,7 +10,10 @@ interface CitationCardProps {
 }
 
 export function CitationCard({ citation, className }: CitationCardProps) {
-  const similarityPercentage = Math.round(citation.similarity_score * 100);
+  const similarityPercentage =
+    citation.similarity_score > 0
+      ? Math.round(citation.similarity_score * 100)
+      : null;
   // SHA-20 Phase 9: render plain-English forum + source-kind labels.
   // The raw enum values (e.g. `first_tier_tribunal_property_chamber`)
   // never reach the DOM.
@@ -90,9 +93,15 @@ export function CitationCard({ citation, className }: CitationCardProps) {
 
       <div className="flex items-center justify-between pt-1">
         <p className="text-xs text-muted-foreground">{citation.relevance}</p>
-        <span className="text-xs font-medium">
-          {similarityPercentage}% similar
-        </span>
+        {similarityPercentage !== null ? (
+          <span className="text-xs font-medium">
+            {similarityPercentage}% similar
+          </span>
+        ) : (
+          <span className="text-xs font-medium text-muted-foreground">
+            Cited precedent
+          </span>
+        )}
       </div>
     </div>
   );

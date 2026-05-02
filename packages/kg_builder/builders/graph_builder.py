@@ -272,6 +272,7 @@ class GraphBuilder:
                 ten.start_date,
                 ten.end_date,
                 ten.deposit_amount is not None,
+                ten.deposit_received_date,
                 ten.deposit_protected is not None,
                 ten.monthly_rent is not None,
                 ten.tenancy_type,
@@ -290,6 +291,7 @@ class GraphBuilder:
             tenancy_type=ten.tenancy_type,
             monthly_rent=ten.monthly_rent,
             deposit_amount=ten.deposit_amount,
+            deposit_received_date=ten.deposit_received_date,
             deposit_protected=ten.deposit_protected,
             deposit_scheme=ten.deposit_scheme,
             protection_date=ten.protection_date,
@@ -445,6 +447,17 @@ class GraphBuilder:
                 event_type="tenancy_end",
                 event_date=case_file.tenancy.end_date,
                 description="Tenancy ended",
+                source="user_input",
+            )
+            nodes.append(node)
+
+        # Deposit receipt event
+        if case_file.tenancy.deposit_received_date:
+            node = EventNode(
+                node_id="event_deposit_received",
+                event_type="deposit_received",
+                event_date=case_file.tenancy.deposit_received_date,
+                description="Deposit received by landlord or agent",
                 source="user_input",
             )
             nodes.append(node)

@@ -17,6 +17,7 @@ from ..models.prediction_v2 import (
     PipelineMetadata,
     PredictionMode,
     PredictionResult,
+    RetrievalStrategy,
 )
 from .citation_verifier import CitationVerifier
 from .issue_decomposer import IssueDecomposer
@@ -42,6 +43,8 @@ class PredictionEngineV2:
         rag_pipeline: Optional[Any] = None,
         min_confidence: float = 0.5,
         min_cases_required: int = 3,
+        proposition_retriever: Optional[Any] = None,
+        retrieval_strategy: RetrievalStrategy = RetrievalStrategy.CHUNK_RAG,
         *,
         prompt_pack: Optional[Any] = None,
     ):
@@ -49,6 +52,8 @@ class PredictionEngineV2:
         self.rag = rag_pipeline
         self.min_confidence = min_confidence
         self.min_cases_required = min_cases_required
+        self.proposition_retriever = proposition_retriever
+        self.retrieval_strategy = retrieval_strategy
         # SHA-20 Phase 6: optional prompt pack. When None, the legacy IRAC
         # prompts are used (deposit baseline). When set, the pack's
         # prediction_system text takes over and downstream callers can read
@@ -56,14 +61,30 @@ class PredictionEngineV2:
         self.prompt_pack = prompt_pack
 
         self.issue_decomposer = IssueDecomposer()
-        self.issue_retriever = IssueRetriever(rag_pipeline, min_cases_required)
+        self.issue_retriever = IssueRetriever(
+            rag_pipeline,
+            min_cases_required,
+            proposition_retriever=proposition_retriever,
+        )
         self.issue_predictor = IssuePredictor(llm_client, prompt_pack=prompt_pack)
         self.citation_verifier = CitationVerifier()
         self.output_assembler = OutputAssembler()
 
     def set_rag_pipeline(self, rag_pipeline: Any) -> None:
         self.rag = rag_pipeline
-        self.issue_retriever = IssueRetriever(rag_pipeline, self.min_cases_required)
+        self.issue_retriever = IssueRetriever(
+            rag_pipeline,
+            self.min_cases_required,
+            proposition_retriever=self.proposition_retriever,
+        )
+
+    def set_proposition_retriever(self, proposition_retriever: Any) -> None:
+        self.proposition_retriever = proposition_retriever
+        self.issue_retriever = IssueRetriever(
+            self.rag,
+            self.min_cases_required,
+            proposition_retriever=proposition_retriever,
+        )
 
     async def predict(
         self,
@@ -71,16 +92,22 @@ class PredictionEngineV2:
         knowledge_graph: Optional[Any] = None,
         top_k: int = 10,
         mode: PredictionMode = PredictionMode.HYBRID,
+        retrieval_strategy: Optional[RetrievalStrategy] = None,
         *,
         matter_type: Optional[str] = None,
     ) -> PredictionResult:
         start_time = time.time()
-        metadata = PipelineMetadata(mode=mode.value)
+        strategy = retrieval_strategy or self.retrieval_strategy
+        metadata = PipelineMetadata(
+            mode=mode.value,
+            retrieval_strategy=strategy.value,
+        )
 
         logger.info(
             "prediction_v2_starting",
             case_id=case_file.case_id,
             mode=mode.value,
+            retrieval_strategy=strategy.value,
         )
 
         # KG visibility per mode: only HYBRID and KG_ONLY pass the graph downstream.
@@ -146,17 +173,34 @@ class PredictionEngineV2:
                 matter_type=matter_type,
             )
 
-        # ── Step 2: Per-Issue Retrieval (parallel RAG calls) ──
-        if not self.rag:
+        # ── Step 2: Per-Issue Retrieval (parallel retriever calls) ──
+        needs_chunk_rag = strategy in (
+            RetrievalStrategy.CHUNK_RAG,
+            RetrievalStrategy.HYBRID_CHUNK_PROPOSITION,
+        )
+        needs_propositions = strategy in (
+            RetrievalStrategy.PROPOSITION_DIRECT,
+            RetrievalStrategy.PROPOSITION_PAGERANK,
+            RetrievalStrategy.HYBRID_CHUNK_PROPOSITION,
+        )
+        if needs_chunk_rag and not self.rag and not (
+            needs_propositions and self.proposition_retriever is not None
+        ):
             return PredictionResult.create_uncertain(
                 case_id=case_file.case_id,
                 reason="RAG pipeline not available.",
+            )
+        if needs_propositions and self.proposition_retriever is None and not self.rag:
+            return PredictionResult.create_uncertain(
+                case_id=case_file.case_id,
+                reason="Proposition retriever not available.",
             )
 
         retrieval_results = await self.issue_retriever.retrieve_all(
             issues, case_file, top_k,
             kg_facts_by_issue=kg_facts_by_issue,
             mode=mode,
+            retrieval_strategy=strategy,
         )
         sufficient_count = sum(1 for r in retrieval_results.values() if r.is_sufficient)
         metadata.issues_with_sufficient_cases = sufficient_count
@@ -167,6 +211,7 @@ class PredictionEngineV2:
             case_id=case_file.case_id,
             total_issues=len(issues),
             sufficient=sufficient_count,
+            retrieval_strategy=strategy.value,
         )
 
         if sufficient_count == 0:

@@ -11,18 +11,16 @@ JSONGraphStore is no longer used.  The legacy singleton getter is kept
 for rollback compatibility.
 """
 
-from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from llm_orchestrator.config import LLMConfig
-from llm_orchestrator.clients.claude_client import ClaudeClient
-from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+from llm_orchestrator.clients.factory import get_llm_client
+from llm_orchestrator.clients.types import LLMRole
 from llm_orchestrator.models.prediction import PredictionResult
-from llm_orchestrator.models.prediction_v2 import PredictionMode
+from llm_orchestrator.models.prediction_v2 import PredictionMode, RetrievalStrategy
 from llm_orchestrator.models.case_file import CaseFile, merge_case_files
 
 from apps.api.src.config import config
@@ -191,12 +189,9 @@ def _build_prediction_engine() -> Any:
     cache it at process level via lru_cache without importing the engine at
     module-import time.
     """
-    from llm_orchestrator.config import LLMConfig
-    from llm_orchestrator.clients.claude_client import ClaudeClient
     from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
 
-    llm_config = LLMConfig.from_env()
-    llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
+    llm_client = get_llm_client(LLMRole.PREDICTION)
     engine = PredictionEngineV2(llm_client=llm_client, rag_pipeline=None)
 
     # Try to attach RAG pipeline.
@@ -247,6 +242,7 @@ class PredictionService:
         _ = dispute_service
 
         logger.info("prediction_service_initialized")
+        self._configure_proposition_retriever()
 
     # ------------------------------------------------------------------
     # Lazy property accessors for heavy components
@@ -257,7 +253,25 @@ class PredictionService:
         """Process-cached prediction engine (constructed on first use)."""
         if self._engine is None:
             self._engine = _build_prediction_engine()
+            self._configure_proposition_retriever()
         return self._engine
+
+    def _configure_proposition_retriever(self) -> None:
+        """Attach a sessionmaker-backed proposition retriever to cached engines."""
+        if self._engine is None or not hasattr(self._engine, "set_proposition_retriever"):
+            return
+        from unittest.mock import Mock
+
+        setter = getattr(self._engine, "set_proposition_retriever")
+        if isinstance(setter, Mock):
+            return
+        from apps.api.src.services.proposition_graph_store import (
+            PostgresPropositionGraphStore,
+        )
+        from llm_orchestrator.pipeline.proposition_retrieval import PropositionRetriever
+
+        store = PostgresPropositionGraphStore(self._sm)
+        setter(PropositionRetriever(store))
 
     @property
     def graph_builder(self) -> Any:
@@ -322,6 +336,7 @@ class PredictionService:
         case_id: str,
         include_reasoning: bool = True,
         mode_override: Optional[PredictionMode] = None,
+        retrieval_strategy_override: Optional[RetrievalStrategy] = None,
         *,
         domain_runtime: Optional[DomainRuntimeContext] = None,
     ) -> PredictionResult:
@@ -391,6 +406,18 @@ class PredictionService:
                     configured=config.prediction_mode,
                 )
         default_mode = effective_mode
+        if retrieval_strategy_override is not None:
+            default_retrieval_strategy = retrieval_strategy_override
+        else:
+            configured_strategy = getattr(config, "retrieval_strategy", "chunk_rag")
+            try:
+                default_retrieval_strategy = RetrievalStrategy(configured_strategy)
+            except ValueError:
+                logger.warning(
+                    "invalid_retrieval_strategy_env_falling_back_to_chunk_rag",
+                    configured=configured_strategy,
+                )
+                default_retrieval_strategy = RetrievalStrategy.CHUNK_RAG
 
         # Build knowledge graph from the (already merged in Stage 1) case file.
         # No silent fallbacks: if KG construction throws, log structured event
@@ -417,14 +444,18 @@ class PredictionService:
             dispute_id=dispute_id,
             is_merged=dispute_id is not None,
             mode=mode.value,
+            retrieval_strategy=default_retrieval_strategy.value,
             kg_nodes=len(kg.nodes) if kg else 0,
             kg_edges=len(kg.edges) if kg else 0,
         )
-        prediction = await self.prediction_engine.predict(
-            case_file=case_file,
-            knowledge_graph=kg,
-            mode=mode,
-        )
+        predict_kwargs = {
+            "case_file": case_file,
+            "knowledge_graph": kg,
+            "mode": mode,
+        }
+        if default_retrieval_strategy != RetrievalStrategy.CHUNK_RAG:
+            predict_kwargs["retrieval_strategy"] = default_retrieval_strategy
+        prediction = await self.prediction_engine.predict(**predict_kwargs)
 
         if cacheable and dispute_id:
             prediction.metadata["dispute_id"] = dispute_id
@@ -513,7 +544,8 @@ class PredictionService:
                         )
                         return cached
 
-            await uow.knowledge_graphs.save(kg)
+            if kg is not None:
+                await uow.knowledge_graphs.save(kg)
             await uow.predictions.save(prediction)
             if cacheable and dispute_id:
                 await uow.disputes.set_cached_prediction_id(

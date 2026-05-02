@@ -9,6 +9,7 @@ from ..models.prediction_v2 import (
     IssueRetrievalResult,
     IssueType,
     PredictionMode,
+    RetrievalStrategy,
 )
 from .kg_facts import KGFacts
 
@@ -70,9 +71,15 @@ def temporal_relevance_score(
 
 
 class IssueRetriever:
-    def __init__(self, rag_pipeline: Any, min_cases_required: int = 3):
+    def __init__(
+        self,
+        rag_pipeline: Any,
+        min_cases_required: int = 3,
+        proposition_retriever: Optional[Any] = None,
+    ):
         self.rag = rag_pipeline
         self.min_cases_required = min_cases_required
+        self.proposition_retriever = proposition_retriever
 
     async def retrieve_all(
         self,
@@ -81,6 +88,7 @@ class IssueRetriever:
         top_k: int = 10,
         kg_facts_by_issue: Optional[Dict[IssueType, KGFacts]] = None,
         mode: PredictionMode = PredictionMode.HYBRID,
+        retrieval_strategy: RetrievalStrategy = RetrievalStrategy.CHUNK_RAG,
     ) -> Dict[IssueType, IssueRetrievalResult]:
         kg_facts_by_issue = kg_facts_by_issue or {}
         tasks = [
@@ -90,6 +98,7 @@ class IssueRetriever:
                 top_k,
                 kg_facts=kg_facts_by_issue.get(issue.issue_type, KGFacts()),
                 mode=mode,
+                retrieval_strategy=retrieval_strategy,
             )
             for issue in issues
         ]
@@ -119,8 +128,106 @@ class IssueRetriever:
         top_k: int,
         kg_facts: KGFacts = KGFacts(),
         mode: PredictionMode = PredictionMode.HYBRID,
+        retrieval_strategy: RetrievalStrategy = RetrievalStrategy.CHUNK_RAG,
     ) -> IssueRetrievalResult:
         query = self._build_issue_query(issue, case_file)
+        if retrieval_strategy == RetrievalStrategy.PROPOSITION_DIRECT:
+            try:
+                prop_result = await self._retrieve_propositions(
+                    issue,
+                    case_file,
+                    query=query,
+                    top_k=top_k,
+                    use_pagerank=False,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "proposition_retrieval_failed_in_direct_strategy",
+                    issue_type=issue.issue_type.value,
+                    error=str(exc),
+                )
+                prop_result = None
+            if prop_result is not None:
+                return prop_result
+            return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
+
+        if retrieval_strategy == RetrievalStrategy.PROPOSITION_PAGERANK:
+            try:
+                prop_result = await self._retrieve_propositions(
+                    issue,
+                    case_file,
+                    query=query,
+                    top_k=top_k,
+                    use_pagerank=True,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "proposition_retrieval_failed_in_pagerank_strategy",
+                    issue_type=issue.issue_type.value,
+                    error=str(exc),
+                )
+                prop_result = None
+            if prop_result is not None:
+                return prop_result
+            return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
+
+        if retrieval_strategy == RetrievalStrategy.HYBRID_CHUNK_PROPOSITION:
+            chunk_task = self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
+            prop_task = self._retrieve_propositions(
+                issue,
+                case_file,
+                query=query,
+                top_k=top_k,
+                use_pagerank=True,
+            )
+            chunk_result, prop_result = await asyncio.gather(
+                chunk_task, prop_task, return_exceptions=True
+            )
+            if isinstance(chunk_result, BaseException):
+                logger.warning(
+                    "chunk_retrieval_failed_in_hybrid_strategy",
+                    issue_type=issue.issue_type.value,
+                    error=str(chunk_result),
+                )
+                chunk_result = IssueRetrievalResult(
+                    issue_type=issue.issue_type,
+                    query_used=query,
+                    is_sufficient=False,
+                )
+            if isinstance(prop_result, BaseException):
+                logger.warning(
+                    "proposition_retrieval_failed_in_hybrid_strategy",
+                    issue_type=issue.issue_type.value,
+                    error=str(prop_result),
+                )
+                prop_result = None
+            if prop_result is None:
+                return chunk_result
+            return self._merge_hybrid_results(
+                issue,
+                query=query,
+                chunk_result=chunk_result,
+                proposition_result=prop_result,
+                top_k=top_k,
+            )
+
+        return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
+
+    async def _retrieve_chunk_rag(
+        self,
+        issue: IssueContext,
+        case_file: CaseFile,
+        top_k: int,
+        kg_facts: KGFacts,
+        mode: PredictionMode,
+    ) -> IssueRetrievalResult:
+        query = self._build_issue_query(issue, case_file)
+        if self.rag is None:
+            return IssueRetrievalResult(
+                issue_type=issue.issue_type,
+                query_used=query,
+                is_sufficient=False,
+            )
         rag_result = await self.rag.retrieve(
             query=query,
             top_k=top_k + 5,
@@ -153,6 +260,93 @@ class IssueRetriever:
             temporal_distribution=temporal_distribution,
             legislative_regime=legislative_regime,
             is_sufficient=len(trimmed_results) >= self.min_cases_required,
+        )
+
+    async def _retrieve_propositions(
+        self,
+        issue: IssueContext,
+        case_file: CaseFile,
+        *,
+        query: str,
+        top_k: int,
+        use_pagerank: bool,
+    ) -> Optional[IssueRetrievalResult]:
+        if self.proposition_retriever is None:
+            logger.warning(
+                "proposition_retriever_not_configured",
+                issue_type=issue.issue_type.value,
+            )
+            return None
+        return await self.proposition_retriever.retrieve(
+            issue,
+            case_file,
+            top_k=top_k,
+            use_pagerank=use_pagerank,
+            query=query,
+            min_cases_required=self.min_cases_required,
+        )
+
+    def _merge_hybrid_results(
+        self,
+        issue: IssueContext,
+        *,
+        query: str,
+        chunk_result: IssueRetrievalResult,
+        proposition_result: IssueRetrievalResult,
+        top_k: int,
+    ) -> IssueRetrievalResult:
+        combined = [
+            *self._extract_results(chunk_result),
+            *self._extract_results(proposition_result),
+        ]
+        scored = []
+        seen: set[tuple[str, str, str]] = set()
+        for result in combined:
+            key = (
+                str(self._get_value(result, "kind", "chunk")),
+                str(self._get_value(result, "case_reference", "")),
+                str(
+                    self._get_value(
+                        result,
+                        "proposition_id",
+                        self._get_value(result, "chunk_id", id(result)),
+                    )
+                ),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            score = self._to_float(
+                self._get_value(
+                    result,
+                    "combined_score",
+                    self._get_value(result, "final_score", 0.0),
+                )
+            )
+            scored.append((score, result))
+        scored.sort(key=lambda item: item[0], reverse=True)
+        trimmed = [result for _, result in scored[:top_k]]
+
+        temporal_distribution: Dict[int, int] = {}
+        for result in trimmed:
+            year = self._extract_year(result)
+            if year is not None:
+                temporal_distribution[year] = temporal_distribution.get(year, 0) + 1
+
+        confidences = [
+            chunk_result.rag_confidence,
+            proposition_result.rag_confidence,
+        ]
+        rag_confidence = sum(confidences) / len(confidences)
+
+        return IssueRetrievalResult(
+            issue_type=issue.issue_type,
+            query_used=query,
+            results=trimmed,
+            rag_confidence=rag_confidence,
+            temporal_distribution=temporal_distribution,
+            legislative_regime=self._determine_legislative_regime(trimmed, issue),
+            is_sufficient=len(trimmed) >= self.min_cases_required,
         )
 
     def _build_issue_query(self, issue: IssueContext, case_file: CaseFile) -> str:

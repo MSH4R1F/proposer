@@ -10,6 +10,7 @@ from .issue_retrieval import IssueRetriever
 from .issue_predictor import IssuePredictor
 from .citation_verifier import CitationVerifier
 from .output_assembler import OutputAssembler
+from .proposition_retrieval import PropositionRetriever, PropositionRetrieverConfig
 
 __all__ = [
     "PredictionEngineV2",
@@ -18,4 +19,6 @@ __all__ = [
     "IssuePredictor",
     "CitationVerifier",
     "OutputAssembler",
+    "PropositionRetriever",
+    "PropositionRetrieverConfig",
 ]

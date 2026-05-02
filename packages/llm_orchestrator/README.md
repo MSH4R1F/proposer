@@ -79,9 +79,11 @@ python scripts/intake.py chat
 
 ### Python
 ```python
-from llm_orchestrator import IntakeAgent, ClaudeClient
+from llm_orchestrator import IntakeAgent
+from llm_orchestrator.clients.factory import get_llm_client
+from llm_orchestrator.clients.types import LLMRole
 
-client = ClaudeClient(api_key="sk-ant-...")
+client = get_llm_client(LLMRole.PREDICTION)
 agent = IntakeAgent(llm_client=client, role="tenant")
 
 response = await agent.process_message("I'm disputing my deposit")

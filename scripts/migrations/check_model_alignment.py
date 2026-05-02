@@ -26,6 +26,7 @@ sys.path.insert(0, str(REPO_ROOT / "packages"))
 
 
 from apps.api.src.db.models import (
+    DecisionDocumentRow,
     DisputeRow,
     EvidenceMetadataRow,
     IntakeSessionRow,
@@ -38,6 +39,9 @@ from apps.api.src.db.models import (
     PredictionIssueRow,
     PredictionReasoningStepRow,
     PredictionRow,
+    PropositionEdgeRow,
+    PropositionExtractionRunRow,
+    PropositionRow,
     StructuredOfferRow,
 )
 
@@ -302,6 +306,74 @@ PROJECTION_MAP: dict[type, dict[str, tuple[str, str | None]]] = {
         "source_publisher": ("field", "EvidenceMetadata.source_publisher"),
         "source_id":        ("field", "EvidenceMetadata.source_id"),
         "payload":           ("payload", None),
+    },
+    # SHA-36 Phase 1: proposition KG. Each ORM column projects 1-to-1 to a
+    # Pydantic field on the corresponding kg_builder.propositions model;
+    # there is no canonical JSONB payload column for these tables (columns
+    # are the source of truth, not a JSON dump).
+    DecisionDocumentRow: {
+        "document_id":       ("field", "DecisionDocument.document_id"),
+        "case_reference":    ("field", "DecisionDocument.case_reference"),
+        "source_url":        ("field", "DecisionDocument.source_url"),
+        "local_path":        ("field", "DecisionDocument.local_path"),
+        "year":              ("field", "DecisionDocument.year"),
+        "category":          ("field", "DecisionDocument.category"),
+        "case_type_code":    ("field", "DecisionDocument.case_type_code"),
+        "region_code":       ("field", "DecisionDocument.region_code"),
+        "decision_date":     ("field", "DecisionDocument.decision_date"),
+        "content_sha256":    ("field", "DecisionDocument.content_sha256"),
+        "text_sha256":       ("field", "DecisionDocument.text_sha256"),
+        "char_count":        ("field", "DecisionDocument.char_count"),
+        "page_count":        ("field", "DecisionDocument.page_count"),
+        "extraction_method": ("field", "DecisionDocument.extraction_method"),
+        "metadata":          ("metadata", None),
+        "created_at":        ("field", "DecisionDocument.created_at"),
+    },
+    PropositionExtractionRunRow: {
+        "run_id":             ("field", "PropositionExtractionRun.run_id"),
+        "document_id":        ("field", "PropositionExtractionRun.document_id"),
+        "extractor_version":  ("field", "PropositionExtractionRun.extractor_version"),
+        "prompt_version":     ("field", "PropositionExtractionRun.prompt_version"),
+        "prompt_sha256":      ("field", "PropositionExtractionRun.prompt_sha256"),
+        "model":              ("field", "PropositionExtractionRun.model"),
+        "status":             ("field", "PropositionExtractionRun.status"),
+        "input_chars":        ("field", "PropositionExtractionRun.input_chars"),
+        "chunk_count":        ("field", "PropositionExtractionRun.chunk_count"),
+        "proposition_count":  ("field", "PropositionExtractionRun.proposition_count"),
+        "edge_count":         ("field", "PropositionExtractionRun.edge_count"),
+        "rejected_count":     ("field", "PropositionExtractionRun.rejected_count"),
+        "tokens_in":          ("field", "PropositionExtractionRun.tokens_in"),
+        "tokens_out":         ("field", "PropositionExtractionRun.tokens_out"),
+        "error_message":      ("field", "PropositionExtractionRun.error_message"),
+        "created_at":         ("field", "PropositionExtractionRun.created_at"),
+    },
+    PropositionRow: {
+        "proposition_id":    ("field", "Proposition.proposition_id"),
+        "document_id":       ("field", "Proposition.document_id"),
+        "run_id":            ("field", "Proposition.run_id"),
+        "case_reference":    ("field", "Proposition.case_reference"),
+        "text":              ("field", "Proposition.text"),
+        "source_passage":    ("field", "Proposition.source_passage"),
+        "paragraph_ref":     ("field", "Proposition.paragraph_ref"),
+        "source_start_char": ("field", "Proposition.source_start_char"),
+        "source_end_char":   ("field", "Proposition.source_end_char"),
+        "page_start":        ("field", "Proposition.page_start"),
+        "page_end":          ("field", "Proposition.page_end"),
+        "proposition_type":  ("field", "Proposition.proposition_type"),
+        "issue_tags":        ("field", "Proposition.issue_tags"),
+        "entities":          ("field", "Proposition.entities"),
+        "confidence":        ("field", "Proposition.confidence"),
+        "created_at":        ("field", "Proposition.created_at"),
+    },
+    PropositionEdgeRow: {
+        "edge_id":             ("field", "PropositionEdge.edge_id"),
+        "from_proposition_id": ("field", "PropositionEdge.from_proposition_id"),
+        "to_proposition_id":   ("field", "PropositionEdge.to_proposition_id"),
+        "document_id":         ("field", "PropositionEdge.document_id"),
+        "edge_type":           ("field", "PropositionEdge.edge_type"),
+        "rationale":           ("field", "PropositionEdge.rationale"),
+        "confidence":          ("field", "PropositionEdge.confidence"),
+        "created_at":          ("field", "PropositionEdge.created_at"),
     },
 }
 

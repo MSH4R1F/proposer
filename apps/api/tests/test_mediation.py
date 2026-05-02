@@ -89,6 +89,20 @@ async def test_submit_invalid_offer_exceeds_deposit(mediation_service):
 
 
 @pytest.mark.asyncio
+async def test_submit_offer_can_exceed_deposit_when_prediction_range_supports_it(
+    mediation_service,
+    test_prediction,
+):
+    test_prediction["predicted_settlement_range"] = [1500, 3000]
+    await _start(mediation_service)
+
+    offer = await mediation_service.submit_offer(DISPUTE_ID, TENANT_SESSION, 2500)
+
+    assert offer.amount == 2500
+    assert offer.status.value == "pending"
+
+
+@pytest.mark.asyncio
 async def test_submit_offer_zero(mediation_service):
     await _start(mediation_service)
     offer = await mediation_service.submit_offer(DISPUTE_ID, TENANT_SESSION, 0)

@@ -14,6 +14,7 @@ import socket
 import subprocess
 import uuid
 from pathlib import Path
+from typing import AsyncIterator
 
 import pytest
 import pytest_asyncio
@@ -88,3 +89,16 @@ async def db_sessionmaker(postgresql_proc, _migrated_template):
     await engine.dispose()
     with psycopg.connect(admin_url, autocommit=True) as conn:
         conn.execute(f"DROP DATABASE IF EXISTS {db_name} WITH (FORCE)")
+
+
+@pytest_asyncio.fixture
+async def db_session(db_sessionmaker) -> AsyncIterator[AsyncSession]:
+    """One AsyncSession from the per-test DB.
+
+    Mirrors apps/api/tests/db/conftest.py — integration tests that touch a
+    repo directly (e.g. SHA-36 proposition ingestion round-trip) want a raw
+    session rather than wrapping every call in a UnitOfWork.
+    """
+    async with db_sessionmaker() as session:
+        yield session
+        await session.rollback()

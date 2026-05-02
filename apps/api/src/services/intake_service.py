@@ -11,12 +11,13 @@ import structlog
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from llm_orchestrator.config import LLMConfig
-from llm_orchestrator.clients.claude_client import ClaudeClient
 from llm_orchestrator.agents.intake_agent import IntakeAgent
+from llm_orchestrator.clients.factory import get_llm_client
+from llm_orchestrator.clients.types import LLMRole
+from llm_orchestrator.config import LLMConfig
 from llm_orchestrator.models.case_file import CaseFile, PartyRole
 from llm_orchestrator.models.conversation import ConversationState
-from llm_orchestrator.models.dispute import DisputeCase, DisputeStatus, generate_invite_code
+from llm_orchestrator.models.dispute import DisputeCase, generate_invite_code
 
 from apps.api.src.db.uow import UnitOfWork
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
@@ -55,13 +56,14 @@ class IntakeService:
 
         if agent is None:
             llm_config = LLMConfig.from_env()
+            role_config = llm_config.role_config(LLMRole.INTAKE)
             logger.debug(
                 "llm_config_loaded",
-                has_anthropic_key=bool(llm_config.anthropic_api_key),
-                primary_model=llm_config.primary_model,
-                fallback_model=llm_config.fallback_model,
+                provider=role_config.provider.value,
+                primary_model=role_config.primary_model,
+                fallback_model=role_config.fallback_model,
             )
-            llm_client = ClaudeClient(api_key=llm_config.anthropic_api_key)
+            llm_client = get_llm_client(LLMRole.INTAKE, config=llm_config)
             agent = IntakeAgent(llm_client)
 
         self.agent = agent

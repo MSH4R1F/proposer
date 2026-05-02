@@ -6,6 +6,7 @@ from typing import Dict, Optional, Protocol, Tuple, Union, runtime_checkable
 from ..agent_loop.context import ToolContext
 from ..agent_loop.loop import AgentLoop, AgentTurnClient
 from ..agent_loop.trace import TraceSummary
+from ..clients.types import LLMProvider
 from ..models.dispute import DisputeCase
 from ..models.mediation import MediationMessage, StructuredOffer
 from ..models.prediction_v2 import PredictionResult
@@ -26,9 +27,11 @@ class MediatorAgent:
         self,
         llm_client: AgentTurnClient,
         *,
+        provider: LLMProvider = LLMProvider.ANTHROPIC,
         prompt_pack: object | None = None,
     ):
         self.llm: AgentTurnClient = llm_client
+        self.provider = provider
         self._stats: Dict[str, int] = {"messages_processed": 0}
         # SHA-20 Phase 6: when set, the pack's mediator_system replaces the
         # legacy MEDIATOR_SYSTEM_PROMPT for this agent. When None, the
@@ -77,6 +80,7 @@ class MediatorAgent:
             tool_set=MEDIATOR_TOOLS,
             max_turns=6,
             max_tokens=900,
+            provider=self.provider,
         )
         result = await loop.run(
             system_prompt=self._mediator_system_prompt,
@@ -134,6 +138,7 @@ class MediatorAgent:
             tool_set=MEDIATOR_TOOLS,
             max_turns=8,
             max_tokens=900,
+            provider=self.provider,
         )
         result = await loop.run(
             system_prompt=self._mediator_system_prompt,

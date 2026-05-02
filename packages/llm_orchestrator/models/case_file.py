@@ -156,6 +156,7 @@ class TenancyDetails(BaseModel):
     tenancy_type: Optional[str] = None  # AST, periodic, etc.
     monthly_rent: Optional[float] = None
     deposit_amount: Optional[float] = None
+    deposit_received_date: Optional[date] = None
     deposit_protected: Optional[bool] = None
     deposit_scheme: Optional[str] = None  # TDS, DPS, MyDeposits
     protection_date: Optional[date] = None
@@ -163,9 +164,10 @@ class TenancyDetails(BaseModel):
     prescribed_info_date: Optional[date] = None
 
     def deposit_protection_valid(self) -> Optional[bool]:
-        """Check if deposit was protected within 30 days."""
-        if self.start_date and self.protection_date:
-            days_to_protect = (self.protection_date - self.start_date).days
+        """Check if deposit was protected within 30 days of receipt."""
+        anchor_date = self.deposit_received_date or self.start_date
+        if anchor_date and self.protection_date:
+            days_to_protect = (self.protection_date - anchor_date).days
             return days_to_protect <= 30
         return None
 

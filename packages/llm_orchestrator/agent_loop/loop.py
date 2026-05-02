@@ -28,6 +28,7 @@ from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 from pydantic import BaseModel
 
+from ..clients.types import LLMProvider
 from .context import ToolContext
 from .tool import ToolResult, ToolSet, UnknownToolError
 from .trace import (
@@ -147,12 +148,20 @@ class AgentLoop:
         model: Optional[str] = None,
         max_turns: int = 8,
         max_tokens: int = 1024,
+        provider: LLMProvider = LLMProvider.ANTHROPIC,
     ) -> None:
+        # ``provider`` selects the tool-schema shape ``ToolSet.schemas_for``
+        # emits for each model turn. Defaults to ANTHROPIC so existing call
+        # sites (and tests that construct AgentLoop with an Anthropic-shaped
+        # fake client) keep working unchanged. OpenAI-backed callers must
+        # opt in explicitly — typically via ``provider=role_cfg.provider``
+        # at construction time.
         self.llm_client = llm_client
         self.tool_set = tool_set
         self.model = model
         self.max_turns = max_turns
         self.max_tokens = max_tokens
+        self.provider = provider
 
     async def run(
         self,
@@ -184,7 +193,7 @@ class AgentLoop:
 
         # Don't mutate the caller's list.
         local_messages: List[Dict[str, Any]] = list(messages)
-        tool_schemas = self.tool_set.anthropic_schemas()
+        tool_schemas = self.tool_set.schemas_for(self.provider)
 
         step_index = 0
 

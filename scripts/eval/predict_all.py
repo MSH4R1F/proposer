@@ -81,11 +81,19 @@ def _live_predict_fn_factory(client_name: str) -> Callable:
     from llm_orchestrator import PredictionEngineV2
     from llm_orchestrator.prompts.packs import get_prompt_pack
 
-    if client_name == "claude":
-        from llm_orchestrator.clients.claude import ClaudeClient
+    # Route through the SHA-114 provider factory so every direct client
+    # construction in the codebase remains accounted for by
+    # ``test_guard_direct_claude_client_construction_count``.
+    from llm_orchestrator.clients.factory import get_llm_client
+    from llm_orchestrator.config import LLMRole
 
-        llm = ClaudeClient()
+    if client_name == "claude":
+        llm = get_llm_client(LLMRole.PREDICT)
     else:  # openai
+        # Force the OpenAI path. The factory returns whichever provider the
+        # role config selects; for live eval we want explicit selection so
+        # tests are reproducible. Override via env var if the default role
+        # is currently configured for Anthropic.
         from llm_orchestrator.clients.openai import OpenAIClient
 
         llm = OpenAIClient()

@@ -57,8 +57,9 @@ This establishes the formal context.""",
 
     "deposit_details": """This is crucial. Find out about deposit protection:
 - How much was the deposit?
+- When did you or your agent receive the deposit?
 - Which scheme did you protect it with (TDS, DPS, MyDeposits)?
-- When was it protected (within 30 days of tenancy start)?
+- When was it protected (within 30 days of receiving the deposit)?
 - Did you provide the prescribed information to the tenant?
 - Do you have proof of protection and service of prescribed information?
 
@@ -120,7 +121,7 @@ Offer to generate the analysis when they're ready.""",
 
 LANDLORD_CLARIFICATION_PROMPTS = {
     "protection_compliance": """Deposit protection compliance is crucial. To be clear:
-1. Was the deposit protected within 30 days of the tenancy starting?
+1. Was the deposit protected within 30 days of you or your agent receiving it?
 2. Did you personally serve the prescribed information, or did your agent?
 3. Do you have dated proof of both?
 
