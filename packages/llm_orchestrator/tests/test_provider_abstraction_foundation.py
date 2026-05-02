@@ -460,6 +460,12 @@ def test_claude_client_reset_stats_preserves_new_fields() -> None:
 # ClaudeClient implementation module itself.
 _ALLOWED_DIRECT_CONSTRUCTIONS: dict[str, int] = {
     "packages/llm_orchestrator/clients/factory.py": 1,
+    # SHA-28 Phase 4: the labeling pipeline's dual-provider helper
+    # constructs ClaudeClient/OpenAIClient directly. Codex finding [4]
+    # explicitly forbids routing through ``get_llm_client(LLMRole.EXTRACTION)``
+    # — that role-keyed factory cannot prove provider independence at the
+    # call site. See packages/llm_orchestrator/clients/labeler_factory.py.
+    "packages/llm_orchestrator/clients/labeler_factory.py": 1,
     "packages/llm_orchestrator/tests/test_claude_client_agent_turn.py": 1,
     "packages/llm_orchestrator/tests/test_openai_client_agent_turn.py": 1,
     "packages/llm_orchestrator/tests/test_provider_abstraction_foundation.py": 6,
