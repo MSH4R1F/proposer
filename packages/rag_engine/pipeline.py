@@ -203,6 +203,12 @@ class RAGPipeline:
 
         # Rebuild BM25 index with all chunks
         logger.info("rebuilding_bm25_index")
+        existing_chunks = (
+            self.bm25_index.get_all_chunks() if self.bm25_index.is_built else []
+        )
+        chunks_by_id = {chunk.chunk_id: chunk for chunk in existing_chunks}
+        chunks_by_id.update({chunk.chunk_id: chunk for chunk in all_chunks})
+        self.bm25_index.build_index(list(chunks_by_id.values()))
         await self._rebuild_bm25_index()
 
         # Initialize retriever
@@ -262,10 +268,13 @@ class RAGPipeline:
 
         # Update BM25 index
         if self.bm25_index.is_built:
-            # Rebuild with new chunks
-            existing_docs = list(self.bm25_index._documents)
-            existing_docs.extend(chunks)
-            self.bm25_index.build_index(existing_docs)
+            # Rebuild with existing + new chunks. ``get_all_chunks`` works in
+            # both full and lite modes, unlike the private ``_documents`` list.
+            chunks_by_id = {
+                chunk.chunk_id: chunk for chunk in self.bm25_index.get_all_chunks()
+            }
+            chunks_by_id.update({chunk.chunk_id: chunk for chunk in chunks})
+            self.bm25_index.build_index(list(chunks_by_id.values()))
         else:
             self.bm25_index.build_index(chunks)
 

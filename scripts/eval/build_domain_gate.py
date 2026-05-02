@@ -91,11 +91,11 @@ def _resolve_hashes(domain_id: str) -> dict:
 
     try:
         from kg_builder.ontology.registry import (
-            get_ontology_spec,
+            get_ontology,
             hash_ontology_spec,
         )
 
-        ont = get_ontology_spec(domain_id)
+        ont = get_ontology(domain_id)
         out["ontology_hash"] = hash_ontology_spec(ont)
     except Exception as e:
         print(f"warn: ontology_hash unavailable: {e}", file=sys.stderr)

@@ -527,8 +527,11 @@ class RetrievalFilterEnvelope(BaseModel):
         """
         clauses: List[Dict[str, Any]] = []
         if self.excluded_source_ids:
-            # Try source_id, but ALSO match case_reference for legacy rows.
-            clauses.append({"source_id": {"$nin": list(self.excluded_source_ids)}})
+            # Do not push this into Chroma. New rows use source_id while
+            # legacy deposit rows use case_reference; Chroma cannot express
+            # that OR safely. The shared Python post-filter applies the
+            # exclusion for both backends after retrieval.
+            pass
         if self.max_decision_date is not None:
             clauses.append(
                 {"decision_date": {"$lte": self.max_decision_date.isoformat()}}
@@ -616,4 +619,3 @@ from domain_core.spec import (  # noqa: E402
 CaseDocument.model_rebuild()
 DocumentChunk.model_rebuild()
 RetrievalFilterEnvelope.model_rebuild()
-

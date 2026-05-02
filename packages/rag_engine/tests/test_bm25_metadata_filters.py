@@ -66,14 +66,13 @@ def _chunk(
     )
 
 
-@pytest.fixture
-def index() -> BM25Index:
+def _chunks() -> list[DocumentChunk]:
     # BM25 IDF goes to zero (or negative) when a term appears in more than
     # half the corpus. We make each target doc share a hit term but have
     # a distinctive "anchor" word, then we query for the union — the
     # anchor terms drive the score above zero. The filler docs ensure
     # the shared term is not majority-frequency.
-    chunks = [
+    return [
         _chunk(
             "a_0",
             "tenancy alpha alpha alpha alpha alpha case-a anchor",
@@ -118,6 +117,11 @@ def index() -> BM25Index:
         _chunk("f_3", "rent arrears outstanding payment", case_reference="filler4", metadata=_meta(source_id="filler4")),
         _chunk("f_4", "eviction notice possession claim", case_reference="filler5", metadata=_meta(source_id="filler5")),
     ]
+
+
+@pytest.fixture
+def index() -> BM25Index:
+    chunks = _chunks()
     idx = BM25Index(lite_mode=False)
     idx.build_index(chunks)
     return idx
@@ -182,3 +186,21 @@ class TestMatterTypeFilter:
         # case_c has matter_types=["disrepair"] so should be excluded.
         assert "c_0" not in ids
         assert "a_0" in ids
+
+
+class TestLiteModeMetadataFilters:
+    def test_lite_mode_preserves_phase4_metadata_for_filters(self):
+        idx = BM25Index(lite_mode=True)
+        idx.build_index(_chunks())
+
+        env = RetrievalFilterEnvelope(
+            forum=Forum.HOUSING_OMBUDSMAN,
+            matter_type="disrepair",
+        )
+        results = idx.search(QUERY, top_k=10, filters=env)
+        assert {chunk.chunk_id for chunk, _, _ in results} == {"c_0"}
+
+        chunk = idx.get_chunk_by_id("c_0")
+        assert chunk is not None
+        assert chunk.source_metadata is not None
+        assert chunk.source_metadata.source_id == "case_c"

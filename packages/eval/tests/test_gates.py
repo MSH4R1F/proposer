@@ -171,6 +171,16 @@ class TestVerifyGateArtifact:
         assert result.passed is False
         assert any("missing" in r for r in result.reasons)
 
+    def test_malformed_json_fails_closed_without_crashing(self, tmp_path):
+        path = tmp_path / "broken.json"
+        path.write_text("{not valid json")
+
+        result = verify_gate_artifact(path)
+
+        assert result.passed is False
+        assert result.domain_id == "<unknown>"
+        assert any("failed to parse artifact" in r for r in result.reasons)
+
     def test_all_pass_research_artifact_succeeds(self, tmp_path):
         # research stage: no reviewer requirement, signature optional.
         art = _artifact(stage_requested="research")

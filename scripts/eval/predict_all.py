@@ -216,11 +216,11 @@ def _resolve_run_context(g, *, engine: str, client: Optional[str]) -> Dict[str, 
         pass
     try:
         from kg_builder.ontology.registry import (
-            get_ontology_spec,
+            get_ontology,
             hash_ontology_spec,
         )
 
-        ont = get_ontology_spec(g.domain_id)
+        ont = get_ontology(g.domain_id)
         ctx["ontology_id"] = getattr(ont, "id", None)
         ctx["ontology_hash"] = hash_ontology_spec(ont)
     except Exception:

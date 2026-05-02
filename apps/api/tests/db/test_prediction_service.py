@@ -15,6 +15,11 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import select
 
+from apps.api.src.domain_runtime import (
+    DomainAllowlistStatus,
+    DomainGateStatus,
+    DomainRuntimeContext,
+)
 from apps.api.src.db.models.disputes import DisputeRow
 from apps.api.src.db.uow import UnitOfWork
 from apps.api.src.services.prediction_service import (
@@ -34,6 +39,8 @@ from packages.llm_orchestrator.models.prediction_v2 import (
     PredictionResult,
     ReasoningStep,
 )
+from domain_core import get_domain_spec
+from kg_builder.builders.graph_builder import GraphBuilder
 from packages.kg_builder.models.graph import KnowledgeGraph
 
 
@@ -179,6 +186,57 @@ async def test_generate_prediction_for_one_party_case_does_not_cache(
 
     # mock_engine.predict must have been called exactly once.
     mock_engine.predict.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_generate_prediction_stamps_domain_runtime_on_kg_and_prediction(
+    db_sessionmaker,
+    mock_engine: AsyncMock,
+) -> None:
+    """Domain runtime must flow into the built KG and persisted prediction."""
+    case_id = "repairs-domain-case"
+    pred_id = "repairs-domain-pred"
+    domain_id = "housing.repairs_social.v1"
+    runtime = DomainRuntimeContext(
+        domain_spec=get_domain_spec(domain_id),
+        gate_status=DomainGateStatus.ENABLED,
+        allowlist_status=DomainAllowlistStatus.UNRESTRICTED,
+        routing_metadata={"router": "test"},
+        prediction_mode="research",
+    )
+    pred = _make_prediction(prediction_id=pred_id, case_id=case_id)
+    mock_engine.predict.return_value = pred
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        await uow.sessions.save(
+            _make_session(session_id="sess-repairs-domain", case_id=case_id)
+        )
+
+    svc = PredictionService(
+        sessionmaker=db_sessionmaker,
+        engine=mock_engine,
+        graph_builder=GraphBuilder(validate=False),
+    )
+
+    result = await svc.generate_prediction(case_id, domain_runtime=runtime)
+
+    assert result.domain_id == domain_id
+    assert result.domain_spec_hash == runtime.domain_spec_hash
+    call_kwargs = mock_engine.predict.await_args.kwargs
+    kg_seen_by_engine = call_kwargs["knowledge_graph"]
+    assert kg_seen_by_engine.primary_domain_id == domain_id
+
+    async with UnitOfWork(db_sessionmaker) as uow:
+        saved_pred = await uow.predictions.get(pred_id)
+        saved_kg = await uow.knowledge_graphs.get(case_id)
+
+    assert saved_pred is not None
+    assert saved_pred.domain_id == domain_id
+    assert saved_pred.domain_spec_hash == runtime.domain_spec_hash
+    assert saved_kg is not None
+    assert saved_kg.primary_domain_id == domain_id
+    assert saved_kg.domain_spec_hash == runtime.domain_spec_hash
+    assert saved_kg.ontology_hash
 
 
 # ---------------------------------------------------------------------------
