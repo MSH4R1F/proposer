@@ -204,3 +204,49 @@ This is the same JSON committed at `packages/eval/tests/fixtures/gold_case_minim
 - Per-party representation captured as a single bool; reviewer noted that "self-represented but with paid McKenzie friend" is a real category. Defer until corpus shows ≥5 such cases.
 
 These limitations are surfaced in the Codex sparring template at `.sisyphus/codex/sha-28-schema-2026-04-27.md`.
+
+## Labeling provenance (sparring plan §6)
+
+When a `GoldCase` row is produced by the LLM-assisted labeling pipeline (`packages/eval/auto_label/runner.py`), it carries a `labeling_provenance: LabelingProvenance` field that captures the full audit trail needed to replay the decision once labeler models, OCR engines, or authority indexes drift. Rows that pre-date the pipeline (legacy hand-annotated cases) leave `labeling_provenance = None`.
+
+The schema is split across three Pydantic classes in `packages/eval/schema.py`:
+
+### `LabelerModel`
+
+A single labeling pass's `provider` (`"anthropic"` or `"openai"`), `model` string, and optional `api_version`. Recorded per case so a published gold set can be re-derived from the raw LLM outputs (frozen in the run artifact, see below) even after the live model is retired.
+
+### `FieldLabelProvenance`
+
+Per-cell audit trail for a single `GoldCase` field. Fields:
+
+- `field_path` — a granular identifier for the cell, using the notation defined in §4 of the sparring plan (e.g. `"per_issue[issue=damages].winner"`, `"key_reasoning_quotes[0].text"`). The canonical builder will live in `packages/eval/auto_label/disagreement.py`.
+- `source` — one of the closed `_PROVENANCE_SOURCES` literal values:
+  - `deterministic_manifest` — value came from the corpus manifest, not from any LLM.
+  - `model_agreement` — both labeler models agreed and the auto-grounder accepted the cell.
+  - `human_mandatory_review` — adjudicator reviewed and confirmed the cell because the field is in the MandatoryReviewSet (§1 of the sparring plan), regardless of model agreement.
+  - `human_disagreement_adjudication` — adjudicator broke a model-vs-model tie.
+  - `human_agreed_cell_audit` — cell was sampled into the 10% audit overlay and confirmed (or flipped — see `LabelingProvenance.audit_flip_rate`).
+  - `human_only_anchor` — case is part of the 10–20-case human-only anchor set; no LLM was consulted.
+- `source_spans` — list of `Provenance` triples grounding the cell to the source PDF.
+- `match_strategy` — when set, names the span-matcher strategy that grounded the cell (`"canonical_exact"`, `"bounded_fuzzy"`, ...).
+- `reviewer_rationale` — optional free-text note from the human adjudicator.
+
+### `LabelingProvenance`
+
+Per-case audit trail. Carries every hash and version needed to replay a labeling decision. Notable fields:
+
+- `run_id`, `labeled_at` — when this case was labeled and under which run.
+- `labeler_models` — at least one `LabelerModel`. Two-pass dual-LLM runs record both.
+- Reproducibility hashes / versions: `source_pdf_sha256`, `ocr_text_sha256`, `prompt_template_hash`, `gold_schema_hash`, `corpus_manifest_hash`, `canonicalizer_version`, `grounder_version`, plus optional fields for OCR engine, prompt pack, domain spec, and authority/statute index identifiers.
+- `audit_seed` — the deterministic random seed for the 10% audit sample.
+- Human-control flags: `is_human_only_anchor`, `anchor_set_id`, `mandatory_review_completed_at`, `human_adjudicator`, `adjudicated_fields`.
+- Reported metrics — all in the `[0, 1]` interval, all **raw rates** rather than Cohen's kappa: `inter_model_agreement_rate`, `grounding_pass_rate`, `audit_flip_rate`, `mandatory_review_flip_rate`. The decision log entry D-019 documents why kappa is not reported here.
+- `field_provenance` — list of `FieldLabelProvenance` rows, one per non-default cell.
+
+### Where the raw LLM outputs live
+
+`LabelingProvenance` does **not** store the raw labeler responses or the rendered prompts. Those live in the per-case run artifact under `data/eval_artifacts/labeling/<run_id>/<case_id>.json` (schema described in sparring plan §7). The split keeps `data/gold_standard/housing_v1.jsonl` rows readable and diffable while preserving the full reproducibility trail in a separate, auditable file.
+
+### Invariant: `labeling_provenance is None` semantics
+
+A `None` value means the row predates the auto-label pipeline. The real-gold append gate (`packages/eval/auto_label/append_gate.py`, Phase 6) refuses to append any new real-gold row whose `labeling_provenance` is `None`, so the absence of provenance can only persist for legacy rows already in `housing_v1.jsonl`.
