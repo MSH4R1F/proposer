@@ -234,6 +234,63 @@ class FieldLabelProvenance(StrictBaseModel):
     reviewer_rationale: Optional[str] = None
 
 
+class LabelingProvenance(StrictBaseModel):
+    """Per-case audit trail produced by ``packages/eval/auto_label/runner.py``.
+
+    Carries every hash and version needed to replay a labeling decision
+    once labeler models, OCR engines, or authority indexes drift. Raw LLM
+    outputs are NOT stored here — they live in the per-case run artifact
+    under ``data/eval_artifacts/labeling/<run_id>/<case_id>.json``. This
+    keeps ``housing_v1.jsonl`` rows readable and diffable.
+    """
+
+    run_id: str = Field(min_length=1)
+    labeled_at: datetime
+    labeler_models: list[LabelerModel] = Field(min_length=1)
+
+    # Reproducibility hashes / versions
+    source_pdf_sha256: str
+    ocr_text_sha256: str
+    ocr_engine: Optional[str] = None
+    ocr_engine_version: Optional[str] = None
+    prompt_template_hash: str = Field(min_length=1)
+    prompt_pack_hash: Optional[str] = None
+    gold_schema_hash: str = Field(min_length=1)
+    corpus_manifest_hash: str = Field(min_length=1)
+    domain_spec_hash: Optional[str] = None
+    authority_index_id: Optional[str] = None
+    authority_index_hash: Optional[str] = None
+    statute_index_id: Optional[str] = None
+    statute_index_hash: Optional[str] = None
+    canonicalizer_version: str = Field(min_length=1)
+    grounder_version: str = Field(min_length=1)
+    audit_seed: int
+
+    # Human-control status
+    is_human_only_anchor: bool = False
+    anchor_set_id: Optional[str] = None
+    mandatory_review_completed_at: Optional[datetime] = None
+    human_adjudicator: Optional[str] = None
+    adjudicated_fields: list[str] = Field(default_factory=list)
+
+    # Reported metrics — raw rates, NOT Cohen's kappa.
+    inter_model_agreement_rate: float = Field(ge=0.0, le=1.0)
+    grounding_pass_rate: float = Field(ge=0.0, le=1.0)
+    audit_flip_rate: float = Field(ge=0.0, le=1.0)
+    mandatory_review_flip_rate: float = Field(ge=0.0, le=1.0)
+    field_provenance: list[FieldLabelProvenance] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _validate_sha256_fields(self) -> "LabelingProvenance":
+        for field_name in ("source_pdf_sha256", "ocr_text_sha256"):
+            value = getattr(self, field_name)
+            if not _SHA256_RE.match(value):
+                raise ValueError(
+                    f"{field_name} must be 64 lowercase hex chars; got {value!r}"
+                )
+        return self
+
+
 class GoldCase(StrictBaseModel):
     """A single annotated tribunal case in the gold-standard evaluation set.
 
