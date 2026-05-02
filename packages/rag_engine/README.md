@@ -1,8 +1,8 @@
 # RAG Engine for Proposer
 
-**Retrieval-Augmented Generation pipeline for UK tribunal case retrieval**
+**Retrieval-Augmented Generation pipeline for domain-scoped UK legal source retrieval**
 
-A production-ready RAG system that retrieves semantically similar tribunal cases to support legal outcome prediction for tenancy deposit disputes.
+A production-ready RAG system that retrieves semantically similar and keyword-matching legal sources to support domain-specific outcome prediction. The legacy deposit corpus remains supported, but retrieval now understands domain namespaces, source metadata, forum filters, matter types, corpus versions, and leakage controls for adjacent housing and research employment domains.
 
 ---
 
@@ -14,11 +14,15 @@ A production-ready RAG system that retrieves semantically similar tribunal cases
 flowchart TB
     subgraph Input["📄 Data Sources"]
         PDF[("PDF Documents<br/>(BAILII Cases)")]
+        GOV["GOV.UK / Tribunal<br/>Decision Pages"]
+        OMB["Housing Ombudsman<br/>Determinations"]
+        LAW["Legislation / Guidance"]
     end
 
     subgraph Ingestion["⚙️ Ingestion Pipeline"]
         Extract["PDF Extractor<br/>(PyMuPDF)"]
         Clean["Text Cleaner<br/>(PII Redaction)"]
+        Metadata["SourceMetadata<br/>(forum, kind, publisher,<br/>matter type, corpus version)"]
         Chunk["Legal Chunker<br/>(Section-Aware)"]
         Embed["OpenAI Embeddings<br/>(text-embedding-3-small)"]
     end
@@ -30,6 +34,7 @@ flowchart TB
 
     subgraph Retrieval["🔍 Retrieval Pipeline"]
         Query["User Query"]
+        Filters["RetrievalFilterEnvelope<br/>(domain/forum/source filters)"]
         Semantic["Semantic Search<br/>(Cosine Similarity)"]
         Keyword["BM25 Search<br/>(TF-IDF)"]
         Fusion["Hybrid Fusion<br/>(RRF k=60)"]
@@ -41,12 +46,17 @@ flowchart TB
         Results["Top 5 Cases<br/>+ Scores<br/>+ Explanations"]
     end
 
-    PDF --> Extract --> Clean --> Chunk --> Embed
+    PDF --> Extract
+    GOV --> Extract
+    OMB --> Extract
+    LAW --> Extract
+    Extract --> Clean --> Metadata --> Chunk --> Embed
     Embed --> Chroma
     Chunk --> BM25
 
-    Query --> Semantic
-    Query --> Keyword
+    Query --> Filters
+    Filters --> Semantic
+    Filters --> Keyword
     Chroma --> Semantic
     BM25 --> Keyword
     Semantic --> Fusion
@@ -91,15 +101,18 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    Query["🔎 User Query<br/>'deposit not protected<br/>within 30 days'"]
+    Query["🔎 User Query<br/>'damp mould repairs<br/>housing association'"]
 
     subgraph Embed["1️⃣ Query Embedding"]
         Query --> QueryEmbed["OpenAI API<br/>text-embedding-3-small"]
     end
 
     subgraph Search["2️⃣ Dual Search"]
-        QueryEmbed --> SemanticSearch["Semantic Search<br/>(ChromaDB)"]
-        Query --> BM25Search["BM25 Search<br/>(Keyword Match)"]
+        Filters["RetrievalFilterEnvelope<br/>(forum, source kind,<br/>matter, leakage)"]
+        QueryEmbed --> Filters
+        Query --> Filters
+        Filters --> SemanticSearch["Semantic Search<br/>(ChromaDB)"]
+        Filters --> BM25Search["BM25 Search<br/>(Keyword Match)"]
 
         SemanticSearch --> SemResults["Top 20 by<br/>Cosine Similarity"]
         BM25Search --> BM25Results["Top 20 by<br/>TF-IDF Score"]
@@ -114,11 +127,13 @@ flowchart TB
     subgraph Rerank["4️⃣ Domain Reranking"]
         Combined --> IssueMatch["Issue Type<br/>Match (0.4)"]
         Combined --> Temporal["Temporal<br/>Score (0.2)"]
+        Combined --> Forum["Forum / Source<br/>Kind Match"]
         Combined --> Region["Region<br/>Match (0.1)"]
         Combined --> Evidence["Evidence<br/>Match (0.2)"]
 
         IssueMatch --> FinalScore
         Temporal --> FinalScore
+        Forum --> FinalScore
         Region --> FinalScore
         Evidence --> FinalScore
         FinalScore["Weighted<br/>Final Score"]
@@ -234,7 +249,8 @@ score = 0.7 * (1/(k + semantic_rank)) + 0.3 * (1/(k + bm25_rank))
 
 **Why not just use hybrid scores?**
 - Legal domain requires domain-specific relevance:
-  - **Issue type match**: Cleaning disputes should match cleaning cases
+  - **Issue type match**: Cleaning disputes should match cleaning cases; repairs disputes should match repairs sources
+  - **Forum/source match**: Ombudsman determinations, Property Chamber decisions, legislation, and guidance are not interchangeable
   - **Temporal relevance**: 2023 cases more relevant than 2018 for current law
   - **Regional preference**: Same tribunal region may have consistent judges
   - **Evidence similarity**: Cases with inventory evidence match inventory queries
@@ -249,6 +265,15 @@ score = 0.7 * (1/(k + semantic_rank)) + 0.3 * (1/(k + bm25_rank))
 **Thresholds**:
 - Confidence < 0.5 → Flag as uncertain
 - Top semantic score < 0.3 → "No similar cases found"
+
+#### 7. **Domain Namespace Isolation**
+
+**Why not one big vector collection?**
+- Housing Ombudsman determinations, Property Chamber RRO decisions, deposit adjudication-style facts, county-court-style penalties, and Employment Tribunal judgments have different remedies and citation rules.
+- Eval cases must exclude their own target decision and future decisions to prevent leakage.
+- Each namespace carries `namespace_id`, `corpus_version`, embedding model, forum/source filters, and cross-domain permissions.
+
+Cross-domain retrieval is disabled by default and only allowed for explicit eval-only runs.
 
 ---
 
