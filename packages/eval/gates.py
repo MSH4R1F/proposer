@@ -253,13 +253,18 @@ def verify_gate_artifact(
             artifact_path=artifact_path,
         )
 
+    payload: Any = {}
     try:
         payload = json.loads(artifact_path.read_text())
         artifact = DomainGateArtifact.model_validate(payload)
     except Exception as e:  # pragma: no cover - guarded but surface the error
         return GateVerificationResult(
             passed=False,
-            domain_id=str(payload.get("domain_id", "<unknown>")) if isinstance(payload, dict) else "<unknown>",
+            domain_id=(
+                str(payload.get("domain_id", "<unknown>"))
+                if isinstance(payload, dict)
+                else "<unknown>"
+            ),
             stage_requested="<unknown>",
             reasons=[f"failed to parse artifact: {e}"],
             artifact_path=artifact_path,

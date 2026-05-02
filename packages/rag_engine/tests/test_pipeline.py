@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from rag_engine.config import CaseDocument, RAGConfig, SectionType
+from rag_engine.config import CaseDocument, DocumentChunk, RAGConfig, SectionType
 from rag_engine.pipeline import RAGPipeline
 
 
@@ -118,6 +118,43 @@ class TestRAGPipelineIngestion:
 
         # Verify embeddings were generated
         mock_pipeline.embeddings.embed_texts.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_ingest_document_preserves_existing_bm25_chunks_in_lite_mode(
+        self, mock_pipeline, sample_chunks
+    ):
+        """Lite-mode single-doc ingest must not drop existing BM25 chunks."""
+        from rag_engine.retrieval.bm25_index import BM25Index
+
+        existing_chunk = sample_chunks[0]
+        new_chunk = DocumentChunk(
+            chunk_id="NEW_CASE_0",
+            case_reference="NEW_CASE",
+            chunk_index=0,
+            text="The tribunal considered a new deposit protection dispute.",
+            section_type=SectionType.REASONING,
+            year=2022,
+            region="LON",
+            case_type="HMF",
+            token_count=9,
+        )
+        mock_pipeline.bm25_index = BM25Index(lite_mode=True)
+        mock_pipeline.bm25_index.build_index([existing_chunk])
+        mock_pipeline.chunker.chunk_document = MagicMock(return_value=[new_chunk])
+        mock_pipeline.embeddings.embed_texts = AsyncMock(return_value=[[0.1] * 1536])
+
+        doc = CaseDocument(
+            case_reference="NEW_CASE",
+            year=2022,
+            full_text="New deposit protection dispute.",
+            source_path="/test/new_case.pdf",
+        )
+
+        result = await mock_pipeline.ingest_document(doc)
+
+        assert result["status"] == "complete"
+        assert mock_pipeline.bm25_index.get_chunk_by_id(existing_chunk.chunk_id)
+        assert mock_pipeline.bm25_index.get_chunk_by_id(new_chunk.chunk_id)
 
 
 class TestRAGPipelineRetrieval:

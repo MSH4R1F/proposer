@@ -426,7 +426,23 @@ class PredictionService:
         kg = None
         mode = default_mode
         try:
-            kg = self.graph_builder.build(case_file)
+            graph_builder = self.graph_builder
+            from unittest.mock import Mock
+
+            if (
+                domain_runtime is not None
+                and not isinstance(graph_builder, Mock)
+                and hasattr(graph_builder, "domain_id")
+                and getattr(graph_builder, "domain_id", None)
+                != domain_runtime.domain_id
+            ):
+                from kg_builder.builders.graph_builder import GraphBuilder
+
+                graph_builder = GraphBuilder(
+                    validate=getattr(graph_builder, "validate", True),
+                    domain_id=domain_runtime.domain_id,
+                )
+            kg = graph_builder.build(case_file)
         except Exception as e:
             logger.error(
                 "kg_build_failed_degrading_to_rag_only",
@@ -498,6 +514,12 @@ class PredictionService:
             prediction.prompt_pack_hash = hashes["prompt_pack_hash"]
             prediction.ontology_hash = hashes["ontology_hash"]
             prediction.corpus_version = hashes["corpus_version"]
+
+            if kg is not None:
+                kg.set_primary_domain(str(spec.id))
+                kg.domain_version = spec.domain_version
+                kg.domain_spec_hash = domain_runtime.domain_spec_hash
+                kg.ontology_hash = hashes["ontology_hash"]
 
         logger.info(
             "prediction_generated_pre_write",

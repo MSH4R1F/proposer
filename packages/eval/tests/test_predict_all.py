@@ -17,6 +17,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -213,6 +214,24 @@ class TestLiveModeRequiresExplicitClient:
         )
         assert rc == 0
         assert (tmp_path / "hybrid.jsonl").exists()
+
+
+class TestRunContextHashInputs:
+    def test_domain_run_context_resolves_ontology_hash(self):
+        mod = _import_script_module()
+        ctx = mod._resolve_run_context(
+            SimpleNamespace(
+                domain_id="housing.deposit.v1",
+                corpus_version="legacy_2025_pre_sha20",
+                retrieval_namespace_id="housing_deposit_v1_legacy",
+            ),
+            engine="stub",
+            client="stub",
+        )
+
+        assert ctx["ontology_id"] == "housing.deposit.v1"
+        assert ctx["ontology_hash"]
+        assert len(ctx["ontology_hash"]) == 64
 
 
 # ---------- Subprocess (real entry point) ----------
