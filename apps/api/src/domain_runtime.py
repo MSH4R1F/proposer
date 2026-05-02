@@ -1,28 +1,34 @@
-"""SHA-20 Phase 3: API-layer runtime resolution for domain specs.
+"""SHA-20 Phase 3 + Phase 8: API-layer runtime resolution for domain specs.
 
-This module is the *composition* point for ``domain_core.DomainRuntimeContext``.
-``domain_core`` declares the shape (spec + optional implementation handles);
-this module adds the gate / allowlist / routing-metadata bookkeeping that the
-HTTP layer needs to decide whether a request may proceed under a given domain.
+Phase 3 introduced the resolver and the simple gate-status enum. Phase 8
+adds:
 
-Phase 3 scope:
+- :class:`DomainGateChecker`, which loads a signed launch-gate artifact
+  from disk via :func:`eval.gates.load_gate_artifact` and verifies it
+  against the domain's eval-gate thresholds via
+  :func:`eval.gates.verify_gate_artifact`.
+- Stage-aware resolution (``LaunchStage`` -> allowed ``requested_mode``).
+- Allowlist policy that requires authenticated user IDs in production
+  (no anonymous access for ``beta``/``research`` domains).
+- Strict-eval-gates fail-closed enforcement (``DOMAIN_STRICT_EVAL_GATES``).
+  Even ``housing.deposit.v1`` (the configured ``DEFAULT_DOMAIN``) is
+  rejected when strict gates are on AND no passing artifact is on disk.
+- Compatibility carve-out: when strict gates are OFF (e.g. local dev) the
+  default deposit baseline still resolves to ``unrestricted`` even if the
+  YAML stage is ``research``.
 
-- Resolution honours ``ENABLED_DOMAINS`` (gate enabled/disabled) and the
-  configured beta allowlists for ``stage=research`` domains.
-- Full launch-gate enforcement (signed artifact, freshness checks, eval-gate
-  thresholds) lands in Phase 8 / SHA-122. The placeholder enum values
-  ``gate_missing`` / ``gate_stale`` are reserved here so callers can already
-  branch on them.
-- ``housing.deposit.v1`` MUST resolve to ``gate_status=enabled`` whenever
-  ``DEFAULT_DOMAIN`` is the deposit baseline (compatibility invariant from
-  the SHA-20 plan).
+The Phase 8 implementation must not break the Phase 3 contract:
+``housing.deposit.v1`` keeps resolving to ``gate_status=enabled`` whenever
+strict gates are off, and existing trace tags + cache-key segments are
+unchanged.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from domain_core import (
     DomainNotFoundError,
@@ -44,8 +50,12 @@ from apps.api.src.config import config as _global_config
 class DomainGateStatus(str, Enum):
     """Status of the launch gate for a resolved domain.
 
-    Phase 3 only emits ``enabled`` / ``disabled``. The remaining values are
-    reserved for the Phase 8 launch-gate enforcement work (SHA-122).
+    * ``enabled`` — the gate is open: domain is in ``ENABLED_DOMAINS`` and
+      (if strict gates are on) a passing artifact is on disk.
+    * ``disabled`` — domain is registered but not in ``ENABLED_DOMAINS``.
+    * ``gate_missing`` — strict gates are on but no artifact exists.
+    * ``gate_stale`` — artifact loads but verification fails (hash
+      mismatch, threshold violation, missing reviewer fields, …).
     """
 
     ENABLED = "enabled"
@@ -85,19 +95,35 @@ class DomainUnavailableError(Exception):
 
 
 # ---------------------------------------------------------------------------
+# Stage / mode policy
+# ---------------------------------------------------------------------------
+
+
+# What ``requested_mode`` values may run for each ``LaunchStage``.
+# - ``production`` stage: serves all three modes.
+# - ``beta`` stage: never production traffic.
+# - ``research`` stage: research only (eval runners + internal tools).
+# - ``disabled`` stage: nothing.
+_STAGE_MODES: Dict[LaunchStage, set[str]] = {
+    LaunchStage.PRODUCTION: {"production", "beta", "research"},
+    LaunchStage.BETA: {"beta", "research"},
+    LaunchStage.RESEARCH: {"research"},
+    LaunchStage.DISABLED: set(),
+}
+
+
+def _mode_allowed_for_stage(stage: LaunchStage, requested_mode: str) -> bool:
+    return requested_mode in _STAGE_MODES.get(stage, set())
+
+
+# ---------------------------------------------------------------------------
 # Composed runtime context
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class DomainRuntimeContext:
-    """Composed runtime context for a single resolved domain.
-
-    Wraps ``domain_core.DomainRuntimeContext`` with API-layer status fields.
-    The ``core`` attribute is what tooling (intake schema, prompt pack, etc.)
-    will eventually attach; we keep it here so that the rest of the API can
-    type-hint a single context object.
-    """
+    """Composed runtime context for a single resolved domain."""
 
     domain_spec: DomainSpec
     gate_status: DomainGateStatus
@@ -106,6 +132,10 @@ class DomainRuntimeContext:
     core: Optional[_CoreRuntimeContext] = None
     prediction_mode: str = "production"
     cross_domain_retrieval: bool = False
+    # Phase 8: artifact identifiers carried through to traces. ``None`` when
+    # no artifact was loaded (strict gates off OR file missing).
+    gate_artifact_id: Optional[str] = None
+    gate_artifact_hash: Optional[str] = None
 
     # ------------------------------------------------------------------
     # Convenience properties
@@ -132,35 +162,160 @@ class DomainRuntimeContext:
     # ------------------------------------------------------------------
 
     def domain_tags(self) -> Dict[str, str]:
-        """Return Phase-3 domain tags for trace logging.
+        """Return the SHA-20 Phase 8 trace-tag superset.
 
-        Includes the Phase-8 superset where the data is already available
-        (gate / allowlist) so traces are forward-compatible.
+        Tags whose values are unknown at trace-start (e.g. per-citation
+        ``source.publisher``) are simply omitted; the trace logger drops
+        ``None`` values.
         """
-        tags: Dict[str, str] = {
+        spec = self.domain_spec
+        ns = spec.retrieval_namespaces
+        namespace_id = ns[0].namespace_id if ns else None
+        forum_value = spec.forums[0].value if spec.forums else None
+        tags: Dict[str, Optional[str]] = {
             "domain.id": self.domain_id,
-            "domain.family": self.domain_spec.family.value,
-            "domain.domain_version": self.domain_spec.domain_version,
-            "domain.stage": self.domain_spec.stage.value,
-            "domain.gate_status": self.gate_status.value,
-            "domain.allowlist_status": self.allowlist_status.value,
+            "domain.family": spec.family.value,
+            "domain.domain_version": spec.domain_version,
+            "domain.stage": spec.stage.value,
+            "forum": forum_value,
+            "retrieval.namespace": namespace_id,
+            "prompt_pack.id": str(spec.id),  # one pack per domain in Phase 6
+            "ontology.id": str(spec.id),  # one ontology per domain in Phase 5
+            "eval_suite.id": str(spec.id),
             "prediction_mode": self.prediction_mode,
             "cross_domain_retrieval": "true" if self.cross_domain_retrieval else "false",
+            # ``llm.role`` / ``llm.provider`` / ``source.*`` are populated by
+            # tools at call-time, not at trace start.
+            "llm.role": None,
+            "llm.provider": None,
+            "source.publisher": None,
+            "source.kind": None,
+            "domain_gate.artifact_id": self.gate_artifact_id,
+            "domain_gate.artifact_hash": self.gate_artifact_hash,
+            # Compatibility tags retained from Phase 3 callers.
+            "domain.gate_status": self.gate_status.value,
+            "domain.allowlist_status": self.allowlist_status.value,
         }
-        return tags
+        # Drop ``None`` so the LangFuse / no-op metadata doesn't carry empty
+        # values into the trace store.
+        return {k: v for k, v in tags.items() if v is not None}
 
 
 # ---------------------------------------------------------------------------
-# Resolution
+# Gate checker (Phase 8)
 # ---------------------------------------------------------------------------
 
 
-def _allowlist_for_family(family: str) -> list[str]:
-    """Return the configured beta allowlist for a given domain family.
+@dataclass
+class DomainGateCheckResult:
+    """Outcome of :meth:`DomainGateChecker.check`.
 
-    Phase 3 supports the generic ``DOMAIN_BETA_ALLOWLIST_USER_IDS`` plus a
-    per-family override for ``employment``. Other families fall back to the
-    generic list.
+    ``status`` mirrors :class:`DomainGateStatus` plus a small compatibility
+    layer for callers that only need a yes/no answer.
+    """
+
+    status: DomainGateStatus
+    artifact_id: Optional[str] = None
+    artifact_hash: Optional[str] = None
+    reasons: List[str] = field(default_factory=list)
+
+
+class DomainGateChecker:
+    """Loads + verifies a domain's launch-gate artifact.
+
+    Stateless wrapper around :func:`eval.gates.load_gate_artifact` /
+    :func:`eval.gates.verify_gate_artifact` that maps the verifier's
+    structured result onto :class:`DomainGateStatus`. Kept in the apps
+    layer (rather than ``packages/eval``) so the ``eval`` package stays
+    importable from offline scripts.
+    """
+
+    def __init__(self, *, gate_dir: Path) -> None:
+        self.gate_dir = Path(gate_dir)
+
+    def check(
+        self,
+        spec: DomainSpec,
+        *,
+        requested_mode: str,
+    ) -> DomainGateCheckResult:
+        """Return the gate status for ``spec`` at ``requested_mode``.
+
+        The artifact's ``stage_requested`` must match the requested mode
+        for the gate to count as passing. ``research`` mode is the only
+        mode that can run without a passing artifact (callers gate that
+        themselves via ``DOMAIN_STRICT_EVAL_GATES``).
+        """
+        # Local imports to avoid pulling ``eval`` at module import time.
+        from eval.gates import (
+            GateThresholds,
+            load_gate_artifact,
+            verify_gate_artifact,
+        )
+
+        domain_id = str(spec.id)
+
+        try:
+            artifact = load_gate_artifact(domain_id, gate_dir=self.gate_dir)
+        except Exception as exc:  # corrupt JSON, bad pydantic, etc.
+            return DomainGateCheckResult(
+                status=DomainGateStatus.GATE_STALE,
+                reasons=[f"failed to load gate artifact: {exc}"],
+            )
+
+        if artifact is None:
+            return DomainGateCheckResult(
+                status=DomainGateStatus.GATE_MISSING,
+                reasons=[
+                    f"no gate artifact at {self.gate_dir}/{domain_id}.json"
+                ],
+            )
+
+        # The artifact must explicitly target the requested mode. A
+        # production gate does NOT vouch for beta runs and vice versa.
+        if artifact.stage_requested != requested_mode:
+            return DomainGateCheckResult(
+                status=DomainGateStatus.GATE_STALE,
+                artifact_id=domain_id,
+                artifact_hash=artifact.artifact_hash,
+                reasons=[
+                    f"artifact stage_requested={artifact.stage_requested!r} "
+                    f"does not match requested_mode={requested_mode!r}"
+                ],
+            )
+
+        thresholds = GateThresholds.from_eval_gate(spec.eval_gate)
+        artifact_path = self.gate_dir / f"{domain_id}.json"
+        verification = verify_gate_artifact(
+            artifact_path,
+            thresholds=thresholds,
+        )
+
+        if verification.passed:
+            return DomainGateCheckResult(
+                status=DomainGateStatus.ENABLED,
+                artifact_id=domain_id,
+                artifact_hash=artifact.artifact_hash,
+                reasons=list(verification.warnings),
+            )
+        return DomainGateCheckResult(
+            status=DomainGateStatus.GATE_STALE,
+            artifact_id=domain_id,
+            artifact_hash=artifact.artifact_hash,
+            reasons=list(verification.reasons),
+        )
+
+
+# ---------------------------------------------------------------------------
+# Allowlist resolution
+# ---------------------------------------------------------------------------
+
+
+def _allowlist_for_family(family: str) -> List[str]:
+    """Return the configured beta/research allowlist for ``family``.
+
+    Stable user IDs only (Supabase UUIDs once auth lands). Email addresses
+    and API keys MUST NOT be passed in as ``user_id``.
     """
     cfg = _global_config
     if family == "employment":
@@ -170,6 +325,50 @@ def _allowlist_for_family(family: str) -> list[str]:
     return list(cfg.domain_beta_allowlist_user_ids)
 
 
+def _allowlist_status(
+    spec: DomainSpec,
+    *,
+    user_id: Optional[str],
+    requested_mode: str,
+    is_default_domain: bool,
+    strict_gates: bool,
+) -> DomainAllowlistStatus:
+    """Compute the per-user allowlist outcome.
+
+    Production-stage domains are uniformly unrestricted. Beta and research
+    domains require an authenticated stable user ID matching the
+    configured allowlist — except for the configured ``DEFAULT_DOMAIN``
+    when strict gates are off (the deposit-baseline carve-out).
+    """
+    if spec.stage == LaunchStage.DISABLED:
+        return DomainAllowlistStatus.BLOCKED
+
+    if spec.stage == LaunchStage.PRODUCTION:
+        return DomainAllowlistStatus.UNRESTRICTED
+
+    # beta / research below.
+
+    # Carve-out: the configured ``DEFAULT_DOMAIN`` keeps anonymous-access
+    # behaviour as long as strict gates are off (local/dev/test). Once
+    # strict gates flip on the carve-out is consumed by the gate check
+    # path; this branch only governs allowlist outcomes.
+    if is_default_domain and not strict_gates:
+        return DomainAllowlistStatus.UNRESTRICTED
+
+    if not user_id:
+        return DomainAllowlistStatus.BLOCKED
+
+    allowed = _allowlist_for_family(spec.family.value)
+    if user_id in allowed:
+        return DomainAllowlistStatus.ALLOWLISTED
+    return DomainAllowlistStatus.BLOCKED
+
+
+# ---------------------------------------------------------------------------
+# Resolution
+# ---------------------------------------------------------------------------
+
+
 def resolve_domain_runtime(
     domain_id: Optional[str],
     *,
@@ -177,83 +376,106 @@ def resolve_domain_runtime(
     requested_mode: str = "production",
     cross_domain_retrieval: bool = False,
     selected_via: str = "default",
+    gate_checker: Optional[DomainGateChecker] = None,
 ) -> DomainRuntimeContext:
-    """Resolve a ``DomainRuntimeContext`` for an incoming request.
+    """Resolve a :class:`DomainRuntimeContext` for an incoming request.
 
-    Args:
-        domain_id: The requested domain id. ``None`` falls back to
-            ``DEFAULT_DOMAIN`` from config.
-        user_id: Stable authenticated user id (Supabase UUID once auth lands).
-            Used to evaluate ``stage=research`` allowlists. Email addresses
-            and API keys MUST NOT be passed in here.
-        requested_mode: Prediction mode for the resolved run (production,
-            shadow, evaluation). Carried through to traces; not used to gate.
-        cross_domain_retrieval: Whether the caller wants cross-namespace
-            retrieval. Cross-domain is gated by
-            ``DOMAIN_CROSS_RETRIEVAL_ALLOWED`` in config; until that flag is
-            true (Phase 4+) the value here is treated as informational only.
-        selected_via: How this domain was chosen (``default``,
-            ``explicit_request``, ``router``, ...). Recorded in
-            ``routing_metadata`` for audit.
+    Resolution order (Phase 8):
 
-    Raises:
-        DomainNotFoundError: when the requested id is not in the registry.
+    1. Domain exists in registry (``DomainNotFoundError`` otherwise).
+    2. Domain enabled in ``ENABLED_DOMAINS`` (else ``DISABLED``).
+    3. ``requested_mode`` allowed by the spec's ``LaunchStage`` mapping.
+    4. Per-user allowlist (beta / research domains).
+    5. Strict-gate verification when ``DOMAIN_STRICT_EVAL_GATES=true``.
+
+    User-facing API calls default to ``requested_mode="production"``. Eval
+    runners and internal research tools must explicitly set
+    ``requested_mode="research"``.
     """
     cfg = _global_config
 
     # Step 1: resolve to a concrete id.
     target_id = (domain_id or "").strip() or cfg.default_domain
     if domain_id and domain_id.strip() and domain_id.strip() != cfg.default_domain:
-        actual_selected_via = "explicit_request" if selected_via == "default" else selected_via
+        actual_selected_via = (
+            "explicit_request" if selected_via == "default" else selected_via
+        )
     else:
         actual_selected_via = selected_via
 
     # Step 2: load the spec (raises DomainNotFoundError for unknown ids).
     spec = get_domain_spec(target_id)
-
-    # Step 3: gate status — Phase 3 only checks ENABLED_DOMAINS.
-    if target_id in cfg.enabled_domains:
-        gate_status = DomainGateStatus.ENABLED
-    else:
-        gate_status = DomainGateStatus.DISABLED
-
-    # Step 4: allowlist status.
-    #
-    # Compatibility carve-out (SHA-20 Phase 3, plan §"Hard constraints"):
-    # the configured ``DEFAULT_DOMAIN`` is treated as ``unrestricted`` even if
-    # its YAML stage is ``research``. This preserves the existing deposit
-    # baseline (``housing.deposit.v1`` ships at stage=research per the audit's
-    # D1/D2 decisions, but must remain accessible to anonymous traffic until
-    # the V2 launch gate is signed). Non-default research domains still enforce
-    # the family allowlist.
-    #
-    # Production/beta domains are uniformly unrestricted. Disabled-stage
-    # domains short-circuit to blocked.
-    allowlist_status: DomainAllowlistStatus
     is_default_domain = target_id == cfg.default_domain
-    if spec.stage == LaunchStage.DISABLED:
-        allowlist_status = DomainAllowlistStatus.BLOCKED
-    elif spec.stage == LaunchStage.RESEARCH and not is_default_domain:
-        if not user_id:
-            allowlist_status = DomainAllowlistStatus.BLOCKED
-        else:
-            allowed = _allowlist_for_family(spec.family.value)
-            allowlist_status = (
-                DomainAllowlistStatus.ALLOWLISTED
-                if user_id in allowed
-                else DomainAllowlistStatus.BLOCKED
-            )
-    elif spec.stage == LaunchStage.RESEARCH and is_default_domain:
-        # Default research domain is the deposit compatibility baseline.
-        allowlist_status = DomainAllowlistStatus.UNRESTRICTED
+
+    # Step 3: enabled in ENABLED_DOMAINS?
+    if target_id not in cfg.enabled_domains:
+        gate_status = DomainGateStatus.DISABLED
+        gate_artifact_id: Optional[str] = None
+        gate_artifact_hash: Optional[str] = None
+        gate_reasons: List[str] = [f"{target_id!r} not in ENABLED_DOMAINS"]
     else:
-        allowlist_status = DomainAllowlistStatus.UNRESTRICTED
+        gate_status = DomainGateStatus.ENABLED
+        gate_artifact_id = None
+        gate_artifact_hash = None
+        gate_reasons = []
+
+        # Compatibility carve-out for the configured ``DEFAULT_DOMAIN`` when
+        # strict gates are off: skip BOTH the stage-mode policy check and
+        # the artifact verification. This preserves the legacy deposit
+        # baseline (anonymous traffic, ``stage=research``) for local /
+        # test deployments. Once strict gates flip on, even the default
+        # domain falls through to fail-closed.
+        carve_out_active = (
+            is_default_domain and not cfg.domain_strict_eval_gates
+        )
+
+        # Step 3b: stage allows the requested mode?
+        if not carve_out_active and not _mode_allowed_for_stage(
+            spec.stage, requested_mode
+        ):
+            # We surface this as DISABLED (the ``stage`` itself prevents
+            # the requested_mode). It's not GATE_MISSING — there's nothing
+            # missing, the policy says no.
+            gate_status = DomainGateStatus.DISABLED
+            gate_reasons.append(
+                f"stage={spec.stage.value!r} does not permit "
+                f"requested_mode={requested_mode!r}"
+            )
+
+        # Step 5: strict-gates artifact verification.
+        # Research mode: artifact is OPTIONAL even with strict gates on.
+        # Production / beta mode: artifact REQUIRED with strict gates on.
+        elif cfg.domain_strict_eval_gates and requested_mode in {
+            "production",
+            "beta",
+        }:
+            checker = gate_checker or DomainGateChecker(
+                gate_dir=cfg.domain_gate_artifact_dir
+            )
+            check = checker.check(spec, requested_mode=requested_mode)
+            if check.status != DomainGateStatus.ENABLED:
+                gate_status = check.status
+                gate_reasons.extend(check.reasons)
+            gate_artifact_id = check.artifact_id
+            gate_artifact_hash = check.artifact_hash
+
+    # Step 4: allowlist (independent of gate status so callers can tell
+    # ``user blocked`` apart from ``gate blocked``).
+    allowlist_status = _allowlist_status(
+        spec,
+        user_id=user_id,
+        requested_mode=requested_mode,
+        is_default_domain=is_default_domain,
+        strict_gates=cfg.domain_strict_eval_gates,
+    )
 
     routing_metadata: Dict[str, Any] = {
         "selected_via": actual_selected_via,
         "confidence": None,
         "requested_domain_id": domain_id,
         "resolved_domain_id": target_id,
+        "requested_mode": requested_mode,
+        "gate_reasons": gate_reasons,
     }
 
     return DomainRuntimeContext(
@@ -263,15 +485,20 @@ def resolve_domain_runtime(
         routing_metadata=routing_metadata,
         core=_CoreRuntimeContext(spec=spec),
         prediction_mode=requested_mode,
-        cross_domain_retrieval=bool(cross_domain_retrieval) and cfg.domain_cross_retrieval_allowed,
+        cross_domain_retrieval=bool(cross_domain_retrieval)
+        and cfg.domain_cross_retrieval_allowed,
+        gate_artifact_id=gate_artifact_id,
+        gate_artifact_hash=gate_artifact_hash,
     )
 
 
 __all__ = [
     "DomainAllowlistStatus",
+    "DomainGateChecker",
+    "DomainGateCheckResult",
     "DomainGateStatus",
+    "DomainNotFoundError",
     "DomainRuntimeContext",
     "DomainUnavailableError",
     "resolve_domain_runtime",
-    "DomainNotFoundError",
 ]
