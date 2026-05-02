@@ -35,14 +35,100 @@ from apps.api.src.domain_runtime import (
 logger = structlog.get_logger()
 
 
-# SHA-20 Phase 3 sentinel values for things that don't yet exist as
-# first-class artifacts (prompt packs land in Phase 6, namespaces in Phase 4).
-# Keeping them as named constants makes it obvious where to swap real values
-# in once those phases land.
+# SHA-20 Phase 8 fallback sentinels — used ONLY when ``runtime`` is ``None``
+# (no domain context resolved at all, i.e. legacy code path that hasn't
+# been threaded through ``DomainRuntimeContext`` yet). Once a runtime is
+# present the real prompt-pack / ontology / namespace / corpus-version
+# values are looked up from the spec + registries.
 _LEGACY_PROMPT_PACK_HASH = "legacy_deposit_v1"
 _LEGACY_ONTOLOGY_HASH = "legacy_deposit_v1"
 _LEGACY_CORPUS_VERSION = "legacy"
 _LEGACY_NAMESPACE_ID = "tribunal_cases"
+
+
+def _resolve_domain_artifact_hashes(
+    runtime: Optional[DomainRuntimeContext],
+) -> Dict[str, str]:
+    """Look up the real prompt-pack / ontology / corpus / namespace values
+    for the resolved domain.
+
+    Returns a dict with keys ``prompt_pack_hash``, ``ontology_hash``,
+    ``corpus_version``, ``namespace_id``. Falls back to legacy sentinels
+    only when ``runtime`` is ``None`` or a registry lookup fails (which is
+    treated as a programming error: we log and continue rather than
+    crashing the request).
+    """
+    if runtime is None:
+        return {
+            "prompt_pack_hash": _LEGACY_PROMPT_PACK_HASH,
+            "ontology_hash": _LEGACY_ONTOLOGY_HASH,
+            "corpus_version": _LEGACY_CORPUS_VERSION,
+            "namespace_id": _LEGACY_NAMESPACE_ID,
+        }
+
+    domain_id = runtime.domain_id
+
+    # --- prompt pack hash ---
+    try:
+        from llm_orchestrator.prompts.packs import (
+            get_prompt_pack,
+            hash_prompt_pack,
+        )
+
+        pack = get_prompt_pack(domain_id)
+        prompt_pack_hash = hash_prompt_pack(pack)
+    except Exception as exc:  # pragma: no cover - logged + falls back
+        logger.warning(
+            "prompt_pack_lookup_failed_using_sentinel",
+            domain_id=domain_id,
+            error=str(exc),
+        )
+        prompt_pack_hash = _LEGACY_PROMPT_PACK_HASH
+
+    # --- ontology hash ---
+    try:
+        from kg_builder.ontology.registry import (
+            get_ontology,
+            hash_ontology_spec,
+        )
+
+        ontology = get_ontology(domain_id)
+        ontology_hash = hash_ontology_spec(ontology)
+    except Exception as exc:  # pragma: no cover - logged + falls back
+        logger.warning(
+            "ontology_lookup_failed_using_sentinel",
+            domain_id=domain_id,
+            error=str(exc),
+        )
+        ontology_hash = _LEGACY_ONTOLOGY_HASH
+
+    # --- namespace id + corpus version ---
+    namespaces = list(runtime.domain_spec.retrieval_namespaces)
+    chosen_ns = None
+    if namespaces:
+        # Prefer one tagged as ``default`` in metadata_filters; otherwise
+        # fall back to the first declared namespace.
+        for ns in namespaces:
+            tag = ns.metadata_filters.get("default") if ns.metadata_filters else None
+            if tag:
+                chosen_ns = ns
+                break
+        if chosen_ns is None:
+            chosen_ns = namespaces[0]
+
+    namespace_id = chosen_ns.namespace_id if chosen_ns else _LEGACY_NAMESPACE_ID
+    corpus_version = (
+        chosen_ns.corpus_version
+        if chosen_ns and chosen_ns.corpus_version
+        else _LEGACY_CORPUS_VERSION
+    )
+
+    return {
+        "prompt_pack_hash": prompt_pack_hash,
+        "ontology_hash": ontology_hash,
+        "corpus_version": corpus_version,
+        "namespace_id": namespace_id,
+    }
 
 
 def _build_domain_cache_segment(
@@ -57,38 +143,34 @@ def _build_domain_cache_segment(
     cached prediction:
 
     - ``domain_id`` and ``domain_spec_hash`` (spec changes)
-    - ``prompt_pack_hash`` (Phase 6+)
-    - ``ontology_hash`` (Phase 5+)
-    - ``corpus_version`` (Phase 4+)
-    - retrieval ``namespace_id``
+    - ``prompt_pack_hash`` — looked up via ``get_prompt_pack`` (Phase 6/8)
+    - ``ontology_hash`` — looked up via ``get_ontology`` (Phase 5/8)
+    - ``corpus_version`` — from ``RetrievalNamespace.corpus_version``
+    - retrieval ``namespace_id`` — from ``DomainSpec.retrieval_namespaces``
     - prediction ``mode``
     - ``cross_domain`` flag
 
-    Phase 3 substitutes legacy sentinels for the items that don't have real
-    artifacts yet. The format is intentionally a single delimited string so
-    that callers can prepend it to their existing ``session:version`` cache
-    keys without changing schema.
+    Phase 8 swapped the Phase 3 sentinels for real artifact lookups. The
+    format is intentionally a single delimited string so callers can
+    prepend it to existing ``session:version`` cache keys without
+    changing schema.
     """
     if runtime is None:
         # No domain context — fall back to the deposit baseline + sentinels.
         domain_id = "housing.deposit.v1"
         spec_hash = "legacy_deposit_v1"
-        namespace_id = _LEGACY_NAMESPACE_ID
     else:
         domain_id = runtime.domain_id
         spec_hash = runtime.domain_spec_hash
-        # Use the first declared namespace_id for the spec; fall back to
-        # legacy sentinel if the spec has none (shouldn't happen for valid
-        # specs, but keeps the segment well-formed).
-        ns = runtime.domain_spec.retrieval_namespaces
-        namespace_id = ns[0].namespace_id if ns else _LEGACY_NAMESPACE_ID
+
+    hashes = _resolve_domain_artifact_hashes(runtime)
     return (
         f"d={domain_id}"
         f"|sh={spec_hash}"
-        f"|pp={_LEGACY_PROMPT_PACK_HASH}"
-        f"|on={_LEGACY_ONTOLOGY_HASH}"
-        f"|cv={_LEGACY_CORPUS_VERSION}"
-        f"|ns={namespace_id}"
+        f"|pp={hashes['prompt_pack_hash']}"
+        f"|on={hashes['ontology_hash']}"
+        f"|cv={hashes['corpus_version']}"
+        f"|ns={hashes['namespace_id']}"
         f"|m={mode.value}"
         f"|x={'1' if cross_domain else '0'}"
     )
@@ -349,27 +431,29 @@ class PredictionService:
             prediction.metadata["merged"] = True
             prediction.metadata["prediction_cache_key"] = cache_key
 
-        # SHA-20 Phase 3: stamp the domain block into prediction.metadata and
+        # SHA-20 Phase 8: stamp the domain block into prediction.metadata and
         # mirror the routing fields onto the new top-level Pydantic columns.
-        # Top-level prediction contract (HTTP response shape) does NOT change
-        # in Phase 3; that's owned by Phase 6.
+        # The four artifact hashes (prompt-pack / ontology / corpus /
+        # namespace) are now real values resolved from registries — the
+        # legacy sentinels remain only for the no-runtime fallback path.
         if domain_runtime is not None:
             spec = domain_runtime.domain_spec
-            ns = spec.retrieval_namespaces
-            namespace_id = ns[0].namespace_id if ns else _LEGACY_NAMESPACE_ID
+            hashes = _resolve_domain_artifact_hashes(domain_runtime)
             domain_meta_block = {
                 "id": str(spec.id),
                 "version": spec.domain_version,
                 "family": spec.family.value,
                 "stage": spec.stage.value,
                 "spec_hash": domain_runtime.domain_spec_hash,
-                "prompt_pack_hash": _LEGACY_PROMPT_PACK_HASH,
-                "ontology_hash": _LEGACY_ONTOLOGY_HASH,
-                "corpus_version": _LEGACY_CORPUS_VERSION,
-                "namespace_id": namespace_id,
+                "prompt_pack_hash": hashes["prompt_pack_hash"],
+                "ontology_hash": hashes["ontology_hash"],
+                "corpus_version": hashes["corpus_version"],
+                "namespace_id": hashes["namespace_id"],
                 "prediction_mode": effective_mode.value,
                 "cross_domain_retrieval": cross_domain,
                 "routing_metadata": dict(domain_runtime.routing_metadata),
+                "gate_artifact_id": domain_runtime.gate_artifact_id,
+                "gate_artifact_hash": domain_runtime.gate_artifact_hash,
             }
             prediction.metadata["domain"] = domain_meta_block
 
@@ -380,9 +464,9 @@ class PredictionService:
             prediction.matter_types = list(spec.matter_types)
             prediction.routing_metadata = dict(domain_runtime.routing_metadata)
             prediction.domain_spec_hash = domain_runtime.domain_spec_hash
-            prediction.prompt_pack_hash = _LEGACY_PROMPT_PACK_HASH
-            prediction.ontology_hash = _LEGACY_ONTOLOGY_HASH
-            prediction.corpus_version = _LEGACY_CORPUS_VERSION
+            prediction.prompt_pack_hash = hashes["prompt_pack_hash"]
+            prediction.ontology_hash = hashes["ontology_hash"]
+            prediction.corpus_version = hashes["corpus_version"]
 
         logger.info(
             "prediction_generated_pre_write",
