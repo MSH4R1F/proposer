@@ -8,7 +8,7 @@ sessions linked together for mediation.
 import random
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -88,6 +88,16 @@ class DisputeCase(BaseModel):
     
     # Metadata
     notes: Optional[str] = None
+
+    # SHA-20 Phase 3: domain routing metadata. Default deposit values keep
+    # legacy fixtures and rows valid; the projection helper backfills these
+    # to the same values when reading older payloads.
+    domain_id: str = "housing.deposit.v1"
+    domain_version: str = "v1"
+    forum: Optional[str] = None
+    matter_types: List[str] = Field(default_factory=list)
+    routing_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    routing_metadata: Dict[str, Any] = Field(default_factory=dict)
     
     def update_timestamp(self) -> None:
         """Update the updated_at timestamp."""

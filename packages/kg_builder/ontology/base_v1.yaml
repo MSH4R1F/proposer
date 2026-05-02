@@ -1,0 +1,160 @@
+# Ontology: base.v1
+#
+# Shared baseline node/edge kinds reused across every per-domain ontology
+# in this directory. Per-domain files set ``extends: base.v1`` to inherit
+# these and may add their own kinds.
+#
+# Edge kinds map 1:1 to EdgeType values in
+# ``packages/kg_builder/models/edges.py``. The (name, from_kind, to_kind)
+# triple must be unique within an ontology. Children may add new entries
+# under the same name to permit additional from/to combinations.
+#
+# Cross-domain bridges are declared per-child only; the base does not
+# whitelist any cross-domain edges by itself.
+
+id: base.v1
+schema_version: 1
+description: "Shared baseline KG ontology for all Proposer domains."
+
+node_kinds:
+  - name: Party
+    description: "A natural or legal person involved in the matter."
+    attributes:
+      - role
+      - name
+      - is_company
+      - company_name
+      - contact_info
+  - name: Property
+    description: "A physical premises or asset relevant to the matter."
+    attributes:
+      - address
+      - postcode
+      - property_type
+      - num_bedrooms
+      - furnished
+      - region
+  - name: Lease
+    description: "A tenancy / occupancy agreement."
+    attributes:
+      - start_date
+      - end_date
+      - tenancy_type
+      - monthly_rent
+      - deposit_amount
+      - deposit_protected
+      - deposit_scheme
+      - protection_date
+      - prescribed_info_provided
+      - prescribed_info_date
+  - name: Evidence
+    description: "A piece of evidence (document, photograph, statement, etc)."
+    attributes:
+      - evidence_type
+      - description
+      - file_url
+      - date_created
+      - quality
+  - name: Event
+    description: "A timestamped occurrence relevant to the matter."
+    attributes:
+      - event_type
+      - event_date
+      - description
+      - actors
+  - name: Issue
+    description: "A disputed point between the parties."
+    attributes:
+      - issue_type
+      - description
+      - disputed
+      - severity
+      - location
+  - name: ClaimedAmount
+    description: "A monetary claim by one party against another."
+    attributes:
+      - claimant
+      - amount
+      - issue_type
+      - description
+      - supported_by_evidence
+      - reasonableness
+
+edge_kinds:
+  - name: party_owns
+    from_kind: Party
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Party owns the property."
+  - name: party_rents
+    from_kind: Party
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Party rents (occupies) the property."
+  - name: party_manages
+    from_kind: Party
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Party manages the property (e.g. letting agent)."
+  - name: party_claims
+    from_kind: Party
+    to_kind: ClaimedAmount
+    cardinality: one_to_many
+    description: "Party makes a monetary claim."
+  - name: claim_relates_to
+    from_kind: ClaimedAmount
+    to_kind: Issue
+    cardinality: many_to_many
+    description: "Claim relates to a dispute issue."
+  - name: issue_involves
+    from_kind: Issue
+    to_kind: ClaimedAmount
+    cardinality: one_to_many
+    description: "Issue involves a specific claim."
+  - name: issue_caused_by
+    from_kind: Issue
+    to_kind: Event
+    cardinality: many_to_many
+    description: "Issue caused by an event."
+  - name: lease_for
+    from_kind: Lease
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Lease covers a property."
+  - name: deposit_protected_by
+    from_kind: Lease
+    to_kind: Party
+    cardinality: many_to_many
+    description: "Lease's deposit is held by a scheme operator."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: ClaimedAmount
+    cardinality: many_to_many
+    description: "Evidence supports a monetary claim."
+  - name: evidence_refutes
+    from_kind: Evidence
+    to_kind: ClaimedAmount
+    cardinality: many_to_many
+    description: "Evidence refutes a monetary claim."
+  - name: evidence_relates_to
+    from_kind: Evidence
+    to_kind: Issue
+    cardinality: many_to_many
+    description: "Evidence relates to (supports the framing of) an issue."
+  - name: event_before
+    from_kind: Event
+    to_kind: Event
+    cardinality: many_to_many
+    description: "Temporal precedence between two events."
+  - name: event_after
+    from_kind: Event
+    to_kind: Event
+    cardinality: many_to_many
+    description: "Inverse of event_before; usually inferred."
+  - name: event_during
+    from_kind: Event
+    to_kind: Event
+    cardinality: many_to_many
+    description: "Event occurs during the duration of another event."
+
+cross_domain_bridges: []

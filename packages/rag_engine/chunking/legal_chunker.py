@@ -3,8 +3,14 @@ Legal document chunking with section awareness.
 
 Segments tribunal decisions into meaningful chunks while respecting
 document structure (Background, Facts, Reasoning, Decision).
+
+SHA-20 Phase 4: chunks may carry an optional Phase-4
+:class:`~rag_engine.source_metadata.SourceMetadata` that propagates
+domain/forum/source/corpus_version onto every emitted chunk. The legacy
+deposit path that does not pass ``source_metadata`` is unchanged.
 """
 
+import copy
 import re
 from typing import Dict, List, Optional, Tuple
 
@@ -12,6 +18,7 @@ import tiktoken
 import structlog
 
 from ..config import CaseDocument, DocumentChunk, SectionType
+from ..source_metadata import SourceMetadata
 
 logger = structlog.get_logger()
 
@@ -321,7 +328,8 @@ class LegalChunker:
                 year=doc.year,
                 region=doc.region,
                 case_type=doc.case_type,
-                token_count=len(chunk_tokens)
+                token_count=len(chunk_tokens),
+                source_metadata=self._chunk_metadata_for(doc),
             )
             chunks.append(chunk)
             chunk_index += 1
@@ -348,8 +356,22 @@ class LegalChunker:
             year=doc.year,
             region=doc.region,
             case_type=doc.case_type,
-            token_count=token_count
+            token_count=token_count,
+            source_metadata=self._chunk_metadata_for(doc),
         )
+
+    @staticmethod
+    def _chunk_metadata_for(doc: CaseDocument) -> Optional[SourceMetadata]:
+        """Return a per-chunk :class:`SourceMetadata` based on the parent doc.
+
+        Returns ``None`` for legacy callers that did not stamp Phase-4
+        metadata onto the source document. Otherwise returns a *copy*
+        of the document metadata so that future chunk-level overrides
+        (page/paragraph/char_start/char_end) don't leak across chunks.
+        """
+        if doc.source_metadata is None:
+            return None
+        return copy.deepcopy(doc.source_metadata)
 
     def count_tokens(self, text: str) -> int:
         """Count tokens in text."""

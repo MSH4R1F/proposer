@@ -28,10 +28,23 @@ class MediatorAgent:
         llm_client: AgentTurnClient,
         *,
         provider: LLMProvider = LLMProvider.ANTHROPIC,
+        prompt_pack: object | None = None,
     ):
         self.llm: AgentTurnClient = llm_client
         self.provider = provider
         self._stats: Dict[str, int] = {"messages_processed": 0}
+        # SHA-20 Phase 6: when set, the pack's mediator_system replaces the
+        # legacy MEDIATOR_SYSTEM_PROMPT for this agent. When None, the
+        # existing deposit-baseline mediator behaviour is preserved.
+        self._prompt_pack = prompt_pack
+
+    @property
+    def _mediator_system_prompt(self) -> str:
+        if self._prompt_pack is not None and getattr(
+            self._prompt_pack, "mediator_system", None
+        ):
+            return self._prompt_pack.mediator_system  # type: ignore[no-any-return]
+        return MEDIATOR_SYSTEM_PROMPT
 
     async def generate_opening_message(
         self,
@@ -70,7 +83,7 @@ class MediatorAgent:
             provider=self.provider,
         )
         result = await loop.run(
-            system_prompt=MEDIATOR_SYSTEM_PROMPT,
+            system_prompt=self._mediator_system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
             ctx=ctx,
         )
@@ -128,7 +141,7 @@ class MediatorAgent:
             provider=self.provider,
         )
         result = await loop.run(
-            system_prompt=MEDIATOR_SYSTEM_PROMPT,
+            system_prompt=self._mediator_system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
             ctx=ctx,
         )

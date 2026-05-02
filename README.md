@@ -1,13 +1,13 @@
-# Proposer 🏠⚖️
+# Proposer
 
-**AI-Powered Mediation for UK Tenancy Deposit Disputes**
+**Domain-Pluggable AI Mediation for UK Housing Disputes**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.13+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-> **Bridging the justice gap**: Proposer uses hybrid RAG + Knowledge Graph architecture to predict tribunal outcomes and facilitate fair settlements—no lawyers required.
+> **Bridging the justice gap**: Proposer uses domain-specific RAG, Knowledge Graphs, and launch-gated evaluation to predict likely legal outcomes and facilitate fair settlements. The current compatibility baseline is `housing.deposit.v1`; the architecture now supports adjacent housing domains and closed-beta/research employment domains.
 
 ---
 
@@ -31,36 +31,36 @@
 
 ## 🎯 The Problem
 
-Every year, **millions of tenants in the UK** dispute deposit deductions with their landlords. The current system is broken:
+Every year, people in the UK face high-stakes housing and workplace disputes where the legal answer is hard to understand, expensive to verify, and slow to test. Tenancy deposits are the current product baseline, but the same pattern appears across repairs, rent repayment orders, and employment disputes:
 
-- 📉 **Justice Gap**: 70% of tenants can't afford solicitors for £500-2000 deposit disputes
-- ⏰ **12-Month Delays**: First-tier Tribunal cases take an average of a year to resolve
-- 🎭 **Information Asymmetry**: Landlords often have legal knowledge/resources that tenants lack
-- 🤝 **Mediation Failure**: Traditional mediation is a "black box"—parties have no idea what a fair outcome looks like
+- 📉 **Justice Gap**: People often cannot justify solicitor costs for claims worth hundreds or a few thousand pounds
+- ⏰ **Slow Formal Routes**: Tribunals, courts, ombudsman complaints, and early-conciliation paths can take months
+- 🎭 **Information Asymmetry**: One side often has more legal knowledge, better records, or professional support
+- 🤝 **Mediation Failure**: Traditional mediation is a "black box" when parties do not know what a legally realistic outcome looks like
 
-**Result**: Tenants either accept unfair deductions or face costly, lengthy tribunal battles.
+**Result**: parties either accept unfair settlements or escalate without a clear view of likely outcomes.
 
 ---
 
 ## 💡 Our Solution
 
-**Proposer** is an **outcome-driven mediation platform** that changes the game:
+**Proposer** is an **outcome-driven mediation platform** built around explicit legal domains:
 
 ### Instead of "Let's talk about feelings"...
-We say: **"Here's what the law says, based on what tribunals say"**
+We say: **"Here is what similar decisions, guidance, and calculator traces suggest, with citations and uncertainty."**
 
 ### Key Innovations
 
-1. **🔍 Glass-Box Reasoning**: Every prediction is backed by cited case law—no black boxes
-2. **📊 Predictive Analytics**: "In 87% of similar cases, the tenant recovered £850"
-3. **🤖 Rational Mediation**: Uses predicted tribunal outcome to anchor negotiations
-4. **⚡ Speed**: Get a data-backed settlement in hours, not months
+1. **🔍 Glass-Box Reasoning**: Every material claim must be backed by retrieved evidence, statutory/guidance material, user evidence, or a deterministic calculator trace
+2. **📊 Domain-Aware Prediction**: `housing.deposit.v1` stays as the compatibility baseline while adjacent housing and employment domains are configured separately
+3. **🤖 Rational Mediation**: Uses predicted legal outcomes to anchor negotiations without pretending to be a solicitor
+4. **🚦 Launch Gates**: New domains fail closed until corpus, eval, reviewer, leakage, and citation gates pass
 
 ### What Makes Us Different
 
 | Feature | Traditional Mediation | Legal Chatbots | **Proposer** |
 |---------|----------------------|----------------|--------------|
-| **Data Source** | Mediator's intuition | Generic legal info | 500+ tribunal precedents |
+| **Data Source** | Mediator's intuition | Generic legal info | Domain-specific corpora + KG + eval gates |
 | **Transparency** | Opaque | Vague | **Every claim cited** |
 | **Goal** | Any agreement | User engagement | **Fair outcome aligned with law** |
 | **Method** | Facilitative | Information retrieval | **Evaluative + predictive** |
@@ -74,7 +74,8 @@ We say: **"Here's what the law says, based on what tribunals say"**
 ```mermaid
 flowchart TD
   U["User describes dispute"] --> I["Intake (guided questions)"]
-  I --> R["RAG retrieves similar cases"]
+  I --> D["Domain runtime / router"]
+  D --> R["Namespaced RAG retrieves allowed sources"]
   R --> P["Prediction + cited reasoning"]
   P --> N["Negotiation / mediation support"]
   N --> O["Outcome: settlement or next steps"]
@@ -84,21 +85,21 @@ flowchart TD
 
 ```mermaid
 graph LR
-    A[Tenant Inputs Dispute] --> B[AI Intake Agent]
+    A[User Describes Matter] --> B[Domain-Aware Intake]
     B --> C[Knowledge Graph Built]
-    C --> D[RAG Retrieves Similar Cases]
+    C --> D[Namespaced Retrieval]
     D --> E[Prediction Engine]
-    E --> F[Reasoning Trace Generated]
-    F --> G[Landlord Invited]
+    E --> F[Cited Reasoning Trace]
+    F --> G[Other Party Invited]
     G --> H[Shadow Mediator]
-    H --> I[Settlement Reached]
-    I --> J[Agreement Signed]
+    H --> I[Settlement or Next Steps]
 ```
 
 ### 1️⃣ **Intelligent Intake**
 Instead of static forms, an AI agent asks dynamic questions:
-- "You mentioned mold. Did you report this in writing?"
-- "Do you have photos from move-in day?"
+- "You mentioned damp and mould. Did you report it in writing?"
+- "Is this about deposit deductions, deposit non-protection, repairs, or something else?"
+- "Do you have photos, inventory reports, correspondence, or decision documents?"
 
 ### 2️⃣ **Hybrid Analysis**
 Our system combines two AI approaches:
@@ -106,7 +107,8 @@ Our system combines two AI approaches:
 **Retrieval-Augmented Generation (RAG)** ✅ *Implemented*
 - **Hybrid Search**: Combines semantic embeddings (OpenAI) + BM25 keyword search
 - **Section-Aware**: Chunks legal documents by Background/Facts/Reasoning/Decision
-- **Domain Reranking**: Prioritizes by issue type, recency, region, evidence similarity
+- **Domain Namespaces**: Separates deposit, repairs, property-chamber RRO, and employment corpora
+- **Domain Reranking**: Prioritizes by issue type, recency, forum, source kind, region, and evidence similarity
 - **Uncertainty Detection**: Flags when no similar cases found
 
 ```mermaid
@@ -120,9 +122,10 @@ flowchart LR
     F --> G["✅ Top 5 Cases"]
 ```
 
-**Knowledge Graph (KG)** 🔜 *Coming Sprint 3-4*
+**Knowledge Graph (KG)** ✅ *Implemented*
 - Nodes: Parties, Evidence, Issues, Claims
 - Edges: "Evidence supports claim", "Event occurred before tenancy end"
+- Domain metadata and ontology validation prevent forum/remedy mixing
 - Ensures logical consistency
 
 ### 3️⃣ **Transparent Prediction**
@@ -153,7 +156,8 @@ An AI mediator monitors negotiations in real-time:
 - **FastAPI** (Python 3.11+): Async API with type safety
 - **Langfuse**: LLM observability and tracing (no LangChain; native async orchestration via FastAPI, asyncio, and aiohttp)
 - **ChromaDB**: Vector embeddings for RAG retrieval (local development, Pinecone-ready)
-- **Neo4j Community**: Knowledge graph for dispute facts (JSON storage for MVP)
+- **Postgres + Alembic**: Primary app state, domain metadata, predictions, KG projections, mediation state
+- **Knowledge Graph package**: Structured dispute facts with domain-aware ontology validation
 - **Supabase**: PostgreSQL database + Auth + Storage
 
 ### Frontend
@@ -206,6 +210,9 @@ cp .env.example .env
 # Edit .env with your API keys:
 # - ANTHROPIC_API_KEY=sk-ant-your-key
 # - OPENAI_API_KEY=sk-your-key
+# - ENABLED_DOMAINS=housing.deposit.v1
+# - DEFAULT_DOMAIN=housing.deposit.v1
+# - DOMAIN_STRICT_EVAL_GATES=false  # local dev only unless gate artifacts exist
 # - SUPABASE_URL=your-supabase-url (optional)
 # - SUPABASE_KEY=your-supabase-key (optional)
 
@@ -249,6 +256,7 @@ python scripts/rag.py ingest --pdf-dir data/raw/bailii
 
 # Query for similar cases
 python scripts/rag.py query "tenant deposit not protected within 30 days"
+python scripts/rag.py query "damp mould repairs housing association"
 
 # View RAG index statistics
 python scripts/rag.py stats
@@ -263,6 +271,11 @@ python scripts/intake.py chat
 curl -X POST http://localhost:8000/chat/start \
   -H "Content-Type: application/json" \
   -d '{"role": "tenant"}'
+
+# Route/classify a matter when the domain router is enabled
+curl -X POST http://localhost:8000/chat/route \
+  -H "Content-Type: application/json" \
+  -d '{"text": "My housing association has ignored damp and mould reports"}'
 
 # Continue conversation
 curl -X POST http://localhost:8000/chat/message \
@@ -366,6 +379,7 @@ proposer/
 │   └── workers/                # Background jobs (scraping, embeddings)
 │
 ├── packages/
+│   ├── domain_core/            # Domain specs, forum profiles, retrieval namespaces
 │   ├── shared/                 # Shared TypeScript types
 │   ├── rag_engine/             # RAG pipeline (Python) ✅ IMPLEMENTED
 │   │   ├── extractors/         # PDF extraction, text cleaning
@@ -375,16 +389,19 @@ proposer/
 │   │   ├── retrieval/          # Hybrid search, reranking
 │   │   ├── pipeline.py         # Main orchestrator
 │   │   └── cli.py              # CLI interface
-│   ├── kg-builder/             # Knowledge Graph (Python)
-│   ├── llm-orchestrator/       # LLM agents (Python)
+│   ├── kg_builder/             # Domain-aware Knowledge Graph (Python)
+│   ├── llm_orchestrator/       # LLM agents, routing, prompt packs (Python)
 │   └── legal-db/               # Database schemas
 │
 ├── data/
 │   ├── raw/                    # Scraped tribunal decisions
 │   │   └── bailii/             # BAILII scraper output
-│   │       ├── deposit-cases/  # Deposit dispute cases
-│   │       ├── adjacent-cases/ # Related cases (RRO, HMO)
+│   │       ├── deposit-cases/  # Deposit baseline corpus when available
+│   │       ├── adjacent-cases/ # Related housing cases (RRO, HMO, repairs)
 │   │       └── other-cases/    # All other tribunal cases
+│   ├── eval/                   # Routing/gold/negative eval sets
+│   ├── eval_artifacts/         # Domain launch-gate artifacts
+│   ├── regression/             # Domain-parity regression fixtures
 │   ├── processed/              # Cleaned, structured cases
 │   ├── embeddings/             # ChromaDB vector store
 │   └── test-cases/             # Evaluation datasets
@@ -524,7 +541,7 @@ See [`.cursorrules`](.cursorrules) for detailed guidelines. Key principles:
 We track multiple metrics to ensure quality:
 
 ### Prediction Accuracy
-- **Win/Loss Classification**: % correct predictions
+- **Per-Domain Win/Loss Classification**: % correct predictions inside each supported domain
 - **Amount Prediction**: Mean Absolute Error (MAE)
 - **Calibration**: Brier Score, reliability diagrams
 - **Target**: >70% accuracy, Brier Score <0.20
@@ -532,6 +549,7 @@ We track multiple metrics to ensure quality:
 ### Explanation Quality
 - **Citation Accuracy**: % of claims with valid case citations
 - **Hallucination Rate**: % of unsupported claims
+- **Leakage Controls**: target-source exclusion, temporal cutoffs, and cross-domain retrieval checks
 - **Target**: <2% hallucination rate
 
 ### Mediation Efficacy
@@ -545,6 +563,17 @@ We track multiple metrics to ensure quality:
 - **Target**: <30 seconds, <£0.50 per case
 
 See [`docs/evaluation-results.md`](docs/evaluation-results.md) for detailed metrics.
+
+### Domain Launch Gates
+
+New domains are not just added to a prompt. They require:
+- a domain YAML in `packages/domain_core/domains/`
+- a retrieval namespace and corpus version
+- prompt-pack, ontology, and citation-verifier hashes
+- positive gold cases and negative/adversarial eval sets
+- reviewer sign-off and a launch-gate artifact
+
+Runtime fails closed when `DOMAIN_STRICT_EVAL_GATES=true` and the required artifact is missing or stale.
 
 ---
 
@@ -575,7 +604,7 @@ This project is licensed under the **MIT License** - see [LICENSE](LICENSE) for 
 
 ### Important Legal Disclaimer
 
-⚠️ **Proposer is not a law firm and does not provide legal advice.** All outputs are informational only and based on analysis of past tribunal decisions. Users should consult qualified solicitors for legal advice specific to their circumstances.
+⚠️ **Proposer is not a law firm and does not provide legal advice.** All outputs are informational only and based on domain-specific source analysis, past decisions, guidance, user-provided evidence, and deterministic calculator traces where available. Users should consult qualified solicitors or advisers for advice specific to their circumstances.
 
 By using this software, you acknowledge that:
 - Predictions are probabilistic and not guaranteed

@@ -271,9 +271,15 @@ docker-volumes/
 *.orig
 
 # All user-facing data dirs (sessions/predictions/etc) are ignored, but the
-# gold-standard evaluation set must be tracked (see SHA-28).
+# gold-standard evaluation set must be tracked (see SHA-28). The frozen
+# domain-parity regression fixtures (SHA-20 Phase 1 Task 1.6) must also be
+# tracked because they're how we prove domain plumbing is a no-op.
 data/*
 !data/gold_standard/
+!data/regression/
+!data/eval/
+!data/eval_artifacts/
+data/eval_artifacts/runs/
 # Proposition KG corpus manifest: track the example, ignore real outputs.
 data/proposition_corpus_v*.json
 !data/proposition_corpus_v*.example.json

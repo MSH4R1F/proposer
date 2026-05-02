@@ -86,6 +86,11 @@ class MediationSession(BaseModel):
     settlement_amount: Optional[float] = None
     escalated_at: Optional[str] = None
 
+    # SHA-20 Phase 3: domain routing metadata. Mediation runs inherit the
+    # parent dispute's domain; defaults preserve legacy deposit behaviour.
+    domain_id: str = "housing.deposit.v1"
+    domain_version: str = "v1"
+
     def update_timestamp(self) -> None:
         """Update the updated_at timestamp."""
         self.updated_at = datetime.now().isoformat()

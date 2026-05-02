@@ -1,0 +1,94 @@
+# Ontology: housing.repairs_social.v1
+#
+# Social-housing disrepair / Housing Ombudsman matters. Forum is
+# ``housing_ombudsman`` (see ``packages/domain_core/domains/
+# housing_repairs_social_v1.yaml``). Extends base.v1.
+#
+# Distinct from the deposit ontology because the remedy structure (formal
+# determination, compensation orders, complaint-handling failings) and
+# evidence types (housing officer notes, repair logs, hazard inspections)
+# are different. Only Evidence and Issue are eligible cross-domain bridges
+# (e.g. when a deposit-dispute KG quotes an Ombudsman determination as
+# precedent for a similar reasoning step).
+
+id: housing.repairs_social.v1
+schema_version: 1
+extends: base.v1
+description: "Housing - social-housing repairs and Ombudsman determinations."
+
+node_kinds:
+  - name: Disrepair
+    description: "Specific disrepair issue (damp, mould, leak, structural)."
+    attributes:
+      - location
+      - category
+      - reported_at
+      - severity
+      - description
+  - name: HazardCategory
+    description: "HHSRS hazard category (housing health and safety)."
+    attributes:
+      - category
+      - score
+      - assessed_at
+  - name: OmbudsmanComplaint
+    description: "Formal complaint to the Housing Ombudsman."
+    attributes:
+      - complaint_id
+      - filed_at
+      - outcome
+      - complaint_handling_failings
+  - name: Notice
+    description: "Notice served by tenant or landlord (e.g. notice of disrepair)."
+    attributes:
+      - notice_type
+      - served_at
+      - served_by
+      - description
+
+edge_kinds:
+  - name: disrepair_at_property
+    from_kind: Disrepair
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Disrepair item exists at a specific property."
+  - name: hazard_for_disrepair
+    from_kind: HazardCategory
+    to_kind: Disrepair
+    cardinality: many_to_many
+    description: "An HHSRS hazard categorisation maps to a disrepair item."
+  - name: complaint_about_disrepair
+    from_kind: OmbudsmanComplaint
+    to_kind: Disrepair
+    cardinality: one_to_many
+    description: "A complaint covers one or more disrepair items."
+  - name: complaint_against_party
+    from_kind: OmbudsmanComplaint
+    to_kind: Party
+    cardinality: many_to_many
+    description: "Complaint is brought against a specific party (landlord/agent)."
+  - name: notice_served_by
+    from_kind: Notice
+    to_kind: Party
+    cardinality: many_to_many
+    description: "Notice was served by this party."
+  - name: notice_for_disrepair
+    from_kind: Notice
+    to_kind: Disrepair
+    cardinality: many_to_many
+    description: "Notice references one or more disrepair items."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: Disrepair
+    cardinality: many_to_many
+    description: "Evidence supports a disrepair allegation."
+  - name: evidence_refutes
+    from_kind: Evidence
+    to_kind: Disrepair
+    cardinality: many_to_many
+    description: "Evidence refutes a disrepair allegation."
+
+cross_domain_bridges:
+  - evidence_relates_to
+  - evidence_supports
+  - evidence_refutes

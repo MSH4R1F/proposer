@@ -54,6 +54,17 @@ class Edge(BaseModel):
     description: Optional[str] = None
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+    # SHA-61 / SHA-119: ontology-aware routing metadata. All defaulted so
+    # existing call sites and persisted JSON continue to round-trip. The
+    # ``source_domain`` field is the explicit cross-domain bridge marker;
+    # it is read by ``packages.kg_builder.ontology.validators`` to decide
+    # whether a cross-domain edge is permitted.
+    domain_id: Optional[str] = None
+    forum: Optional[str] = None
+    source_ref: Optional[str] = None
+    source_domain: Optional[str] = None
+    provenance: Dict[str, Any] = Field(default_factory=dict)
+
     @classmethod
     def create(
         cls,

@@ -1,6 +1,8 @@
 # API Application
 
-FastAPI REST API for the legal mediation system.
+FastAPI REST API for Proposer's domain-pluggable legal mediation system.
+
+The API still supports the existing deposit-dispute flow, but requests now run through a domain runtime. The default domain is `housing.deposit.v1`; adjacent housing and employment domains are enabled only when their stage, allowlist, retrieval namespace, and eval-gate policy allow it.
 
 ## Architecture
 
@@ -8,13 +10,18 @@ FastAPI REST API for the legal mediation system.
 flowchart TB
     subgraph API["FastAPI Application"]
         Routes[Routers] --> Services[Services]
+        Services --> Domain[Domain Runtime]
         Services --> LLM[LLM Orchestrator]
         Services --> KG[KG Builder]
         Services --> RAG[RAG Engine]
-        Services --> Storage[Supabase/Local]
+        Services --> DB[Postgres/UoW]
+        Services --> Storage[Supabase/Local Evidence]
     end
 
     Client[Client] --> Routes
+    Domain --> LLM
+    Domain --> KG
+    Domain --> RAG
 ```
 
 ## Endpoints
@@ -23,6 +30,7 @@ flowchart TB
 flowchart LR
     subgraph Chat["/chat"]
         Start[POST /start]
+        Route[POST /route]
         Message[POST /message]
         Session[GET /session/id]
     end
@@ -59,6 +67,7 @@ python scripts/api.py --host 0.0.0.0 --port 8000
 |---------|---------|
 | `IntakeService` | Manages chat sessions and conversations |
 | `PredictionService` | Generates predictions with RAG + KG |
+| `DomainRuntimeContext` | Resolves domain specs, stage/mode gates, allowlists, and eval artifacts |
 | `StorageService` | File uploads to Supabase or local |
 
 ## Configuration
@@ -72,6 +81,12 @@ export OPENAI_API_KEY=sk-...
 export SUPABASE_URL=https://...
 export SUPABASE_KEY=...
 export SUPABASE_BUCKET=evidence
+
+# Multi-domain runtime
+export ENABLED_DOMAINS=housing.deposit.v1
+export DEFAULT_DOMAIN=housing.deposit.v1
+export DOMAIN_ROUTER_ENABLED=false
+export DOMAIN_STRICT_EVAL_GATES=false  # local dev only unless gate artifacts exist
 ```
 
 ## API Docs
@@ -85,6 +100,7 @@ apps/api/
 ├── src/
 │   ├── main.py           # FastAPI app
 │   ├── config.py         # Environment config
+│   ├── domain_runtime.py # Domain resolution, gates, allowlists
 │   ├── routers/
 │   │   ├── chat.py       # Chat endpoints
 │   │   ├── evidence.py   # File uploads

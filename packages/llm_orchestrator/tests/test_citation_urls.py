@@ -79,3 +79,54 @@ def test_missing_corpus_dir_falls_back_to_pattern(tmp_path, monkeypatch):
         resolve_source_url("CHI_00ML_LBC_2022_0009", 2022)
         == f"{BAILII_BASE}/2022/CHI_00ML_LBC_2022_0009.html"
     )
+
+
+# ---------------------------------------------------------------------------
+# SHA-20 Phase 4: resolve_citation_url delegates to per-publisher mapper.
+# ---------------------------------------------------------------------------
+
+
+from datetime import date  # noqa: E402
+
+from domain_core.spec import SourceKind, SourcePublisher  # noqa: E402
+
+from llm_orchestrator.data.citation_urls import resolve_citation_url  # noqa: E402
+
+
+def test_resolve_citation_url_handles_govuk_decision():
+    url = resolve_citation_url(
+        source_publisher=SourcePublisher.GOVUK,
+        source_kind=SourceKind.CASE_DECISION,
+        source_id="lon-00xy-2024-001",
+    )
+    assert url == "https://www.gov.uk/residential-property-tribunal-decisions/lon-00xy-2024-001"
+
+
+def test_resolve_citation_url_handles_legislation_with_as_of():
+    url = resolve_citation_url(
+        source_publisher=SourcePublisher.LEGISLATION_GOV_UK,
+        source_kind=SourceKind.STATUTE,
+        source_id="ukpga/2004/34/section/213",
+        as_of=date(2012, 4, 6),
+    )
+    assert url == "https://www.legislation.gov.uk/ukpga/2004/34/section/213/2012-04-06"
+
+
+def test_resolve_citation_url_handles_internal_uri():
+    url = resolve_citation_url(
+        source_publisher=SourcePublisher.INTERNAL,
+        source_kind=SourceKind.USER_EVIDENCE,
+        source_id="upload-1",
+    )
+    assert url == "proposer://internal/upload-1"
+
+
+def test_resolve_citation_url_bailii_path_uses_legacy_resolver(monkeypatch):
+    monkeypatch.setattr(citation_urls, "_corpus_index", lambda: {})
+    url = resolve_citation_url(
+        source_publisher=SourcePublisher.BAILII,
+        source_kind=SourceKind.CASE_DECISION,
+        source_id="LON_00AU_HMF_2022_0046",
+        year=2022,
+    )
+    assert url == f"{BAILII_BASE}/2022/LON_00AU_HMF_2022_0046.html"

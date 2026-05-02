@@ -316,15 +316,20 @@ def test_audit_prediction_result_strict_schema() -> None:
 
 
 def test_audit_extraction_result_strict_schema() -> None:
-    """Pinned: ExtractionResult.updated_case_file embeds CaseFile whose
-    ``events`` field is ``Dict[str, ...]`` — an open-dict that strict mode
-    cannot represent. (Once events is closed, the next failure will be
-    ``CaseFile.completeness_score`` from ``Field(ge=0, le=1)``.)"""
+    """Pinned: ExtractionResult.updated_case_file embeds CaseFile.
+
+    SHA-20 Phase 3 added ``routing_confidence: Optional[float] = Field(ge=0,
+    le=1.0)`` to CaseFile, which the strict-schema rewriter now hits BEFORE
+    the open-dict ``events`` field. Once routing_confidence's ``le`` is
+    relaxed into a description (or both fields are closed), the next failure
+    point will be ``CaseFile.events.items`` and then
+    ``CaseFile.completeness_score``.
+    """
     from llm_orchestrator.extractors.fact_extractor import ExtractionResult
 
     with pytest.raises(
         LLMStructuredOutputError,
-        match=r"\$defs\.CaseFile\.events\.items",
+        match=r"\$defs\.CaseFile\.routing_confidence",
     ):
         strict_json_schema(ExtractionResult)
 

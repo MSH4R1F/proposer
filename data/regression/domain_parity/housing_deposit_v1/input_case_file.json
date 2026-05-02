@@ -1,0 +1,41 @@
+{
+  "_stub": true,
+  "_note": "Realistic-shape stub. See README.md in this directory.",
+  "case_id": "regression-housing-deposit-v1-0001",
+  "domain_id": "housing.deposit.v1",
+  "matter_type": "deposit_deduction",
+  "forum": "deposit_scheme_adjudication",
+  "parties": {
+    "tenant": {
+      "name": "REDACTED_TENANT",
+      "role": "tenant"
+    },
+    "landlord": {
+      "name": "REDACTED_LANDLORD",
+      "role": "landlord"
+    }
+  },
+  "tenancy": {
+    "address": "REDACTED",
+    "start_date": "2023-06-01",
+    "end_date": "2024-06-01",
+    "monthly_rent_gbp": 1200,
+    "deposit_gbp": 1200,
+    "deposit_scheme": "TDS"
+  },
+  "claim": {
+    "landlord_deductions_claimed_gbp": 600,
+    "categories": [
+      {"name": "cleaning", "amount_gbp": 200},
+      {"name": "carpet_damage", "amount_gbp": 400}
+    ]
+  },
+  "evidence": {
+    "check_in_inventory": {"present": true, "ref": "stub://inventory_in"},
+    "check_out_inventory": {"present": true, "ref": "stub://inventory_out"},
+    "photos_in": [],
+    "photos_out": [],
+    "receipts": []
+  },
+  "user_narrative_redacted": "Stub narrative for regression - replace before enabling parity test."
+}

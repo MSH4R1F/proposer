@@ -7,6 +7,10 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.models import EvidenceMetadataRow
+from apps.api.src.db.repositories._domain_meta import (
+    extract_domain_block as _extract_domain_block,
+    extract_source_provenance as _extract_source_provenance,
+)
 from packages.llm_orchestrator.models.evidence import EvidenceMetadata
 
 
@@ -16,6 +20,8 @@ class EvidenceRepo:
 
     async def save(self, metadata: EvidenceMetadata) -> None:
         payload = metadata.model_dump(mode="json")
+        domain = _extract_domain_block(payload)
+        prov = _extract_source_provenance(payload)
         values = dict(
             case_id=metadata.case_id,
             evidence_id=metadata.evidence_id,
@@ -31,6 +37,11 @@ class EvidenceRepo:
             description=metadata.description,
             extracted_text=metadata.extracted_text,
             image_description=metadata.image_description,
+            domain_id=domain["domain_id"],
+            domain_version=domain["domain_version"],
+            source_kind=prov["source_kind"],
+            source_publisher=prov["source_publisher"],
+            source_id=prov["source_id"],
             payload=payload,
         )
         stmt = pg_insert(EvidenceMetadataRow).values(**values)

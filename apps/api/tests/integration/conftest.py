@@ -2,6 +2,10 @@
 
 Provides an isolated migrated Postgres DB (via pytest-postgresql) for each
 test, identical to the setup in apps/api/tests/db/conftest.py.
+
+SHA-20 Phase 8: ``DOMAIN_STRICT_EVAL_GATES=false`` is set by the parent
+``apps/api/tests/conftest.py`` (before any ``apps.api`` import) so the
+local-dev deposit baseline still resolves to ``unrestricted``.
 """
 from __future__ import annotations
 

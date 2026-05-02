@@ -2,6 +2,8 @@
 
 Base URL: `http://localhost:8000`
 
+The API is domain-aware. Requests default to `housing.deposit.v1`, and newer domains must be enabled through `ENABLED_DOMAINS`, router settings, allowlists, and launch-gate artifacts before they can serve beta or production traffic.
+
 ## Endpoints
 
 ### Chat
@@ -9,6 +11,33 @@ Base URL: `http://localhost:8000`
 The chat flow follows this sequence:
 1. `POST /chat/start` - Create session with role and get first question
 2. `POST /chat/message` - Continue the conversation
+
+When `DOMAIN_ROUTER_ENABLED=true`, callers may first use `POST /chat/route` to classify an opening message and receive a domain decision or clarifying question.
+
+#### Route Matter
+```
+POST /chat/route
+```
+
+**Request:**
+```json
+{
+  "text": "My housing association has ignored damp and mould reports"
+}
+```
+
+**Response:**
+```json
+{
+  "routing": {
+    "outcome": "route",
+    "domain_id": "housing.repairs_social.v1",
+    "matter_label": "Repairs and housing conditions",
+    "clarifier_text": null,
+    "confidence": 0.92
+  }
+}
+```
 
 #### Start Session
 ```

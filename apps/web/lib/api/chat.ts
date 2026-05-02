@@ -8,6 +8,7 @@ import type {
   ValidateInviteResponse,
   BulkIntakeResponse,
 } from '@/lib/types/chat';
+import type { RouteResponse } from '@/lib/types/domain';
 
 interface StartSessionOptions {
   role: PartyRole;
@@ -61,4 +62,11 @@ export const chatApi = {
       invite_code: options?.inviteCode,
       create_dispute: options?.createDispute ?? true,
     }),
+
+  /**
+   * SHA-20 Phase 9: classify a free-form intake message before
+   * persisting a session. Returns a deterministic-first routing
+   * decision (route / clarify / unsupported / abstain).
+   */
+  route: (text: string) => api.post<RouteResponse>('/chat/route', { text }),
 };

@@ -8,6 +8,9 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.models import MediationSessionRow, MediationMessageRow, StructuredOfferRow
+from apps.api.src.db.repositories._domain_meta import (
+    extract_domain_block as _extract_domain_block,
+)
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
 from packages.llm_orchestrator.models.mediation import MediationSession
 
@@ -29,6 +32,7 @@ class MediationsRepo:
         expected_version: Optional[int] = None,
     ) -> None:
         payload = mediation.model_dump(mode="json")
+        domain = _extract_domain_block(payload)
         values = dict(
             mediation_id=mediation.mediation_id,
             dispute_id=mediation.dispute_id,
@@ -38,6 +42,8 @@ class MediationsRepo:
             settled_at=getattr(mediation, "settled_at", None),
             settlement_amount=getattr(mediation, "settlement_amount", None),
             escalated_at=getattr(mediation, "escalated_at", None),
+            domain_id=domain["domain_id"],
+            domain_version=domain["domain_version"],
             payload=payload,
         )
 

@@ -1,5 +1,6 @@
 from pathlib import Path
 import importlib
+import os
 from types import SimpleNamespace
 import sys
 from typing import Any, cast
@@ -14,6 +15,12 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 if str(PROJECT_ROOT / "packages") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "packages"))
+
+# SHA-20 Phase 8: API tests model the local-dev deposit baseline, where
+# strict launch-gate enforcement is OFF (no signed artifact ships in the
+# tree). Set BEFORE importing apps.api.src.main so the global APIConfig
+# instance picks it up.
+os.environ.setdefault("DOMAIN_STRICT_EVAL_GATES", "false")
 
 from apps.api.src.main import app
 from apps.api.src.services.mediation_service import MediationService

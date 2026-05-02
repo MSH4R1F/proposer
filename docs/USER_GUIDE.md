@@ -12,6 +12,15 @@ python scripts/api.py
 # Visit http://localhost:8000/docs
 ```
 
+By default, Proposer runs the compatibility domain `housing.deposit.v1`. Other domains are available only when enabled by configuration and launch gates:
+
+```bash
+export ENABLED_DOMAINS=housing.deposit.v1
+export DEFAULT_DOMAIN=housing.deposit.v1
+export DOMAIN_ROUTER_ENABLED=false
+export DOMAIN_STRICT_EVAL_GATES=false  # local dev only
+```
+
 ## Ingesting Cases
 
 ```bash
@@ -27,6 +36,7 @@ python scripts/rag.py stats
 ```bash
 # Basic query
 python scripts/rag.py query "deposit not protected"
+python scripts/rag.py query "damp mould repairs housing association"
 
 # With filters
 python scripts/rag.py query "cleaning deduction" --region LON --year 2023
@@ -57,6 +67,11 @@ The agent guides you through 10 stages:
 curl -X POST http://localhost:8000/chat/start \
   -H "Content-Type: application/json" \
   -d '{"role": "tenant"}'
+
+# Classify/route an opening message when routing is enabled
+curl -X POST http://localhost:8000/chat/route \
+  -H "Content-Type: application/json" \
+  -d '{"text": "My landlord ignored damp and mould reports"}'
 
 # Continue conversation
 curl -X POST http://localhost:8000/chat/message \

@@ -1,0 +1,31 @@
+{
+  "_stub": true,
+  "_note": "Realistic-shape stub. See README.md in this directory.",
+  "case_id": "regression-housing-deposit-v1-0001",
+  "namespace_id": "housing_deposit_v1_legacy",
+  "vector_collection": "tribunal_cases",
+  "results": [
+    {
+      "rank": 1,
+      "doc_id": "stub:bailii:case-001",
+      "score": 0.91,
+      "case_reference": "STUB v STUB [2023] STUB 1",
+      "decision_date": "2023-04-12",
+      "source_publisher": "bailii",
+      "source_kind": "case_decision",
+      "snippet": "Stub snippet. Cleaning at end of tenancy held to be fair wear and tear; deduction disallowed.",
+      "matter_type": "deposit_deduction"
+    },
+    {
+      "rank": 2,
+      "doc_id": "stub:bailii:case-002",
+      "score": 0.84,
+      "case_reference": "STUB v STUB [2022] STUB 7",
+      "decision_date": "2022-11-03",
+      "source_publisher": "bailii",
+      "source_kind": "case_decision",
+      "snippet": "Stub snippet. Carpet damage beyond fair wear and tear; partial deduction allowed.",
+      "matter_type": "deposit_deduction"
+    }
+  ]
+}

@@ -8,6 +8,10 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.models import KGEdgeRow, KGNodeRow, KnowledgeGraphRow
+from apps.api.src.db.repositories._domain_meta import (
+    extract_domain_block as _extract_domain_block,
+    extract_reproducibility_hashes as _extract_repro_hashes,
+)
 from packages.kg_builder.models.edges import Edge
 from packages.kg_builder.models.graph import KnowledgeGraph
 from packages.kg_builder.models.nodes import (
@@ -57,6 +61,8 @@ class KnowledgeGraphRepo:
         # Use the Python attr name "metadata_" for pg_insert values (ORM resolves
         # it to the "metadata" column). The excluded[] dict in on_conflict_do_update
         # uses actual SQL column names, so we map "metadata_" -> "metadata" there.
+        domain = _extract_domain_block(payload)
+        hashes = _extract_repro_hashes(payload)
         values = dict(
             case_id=kg.case_id,
             graph_id=kg.graph_id,
@@ -68,6 +74,10 @@ class KnowledgeGraphRepo:
             is_consistent=payload.get("is_consistent"),
             data_quality_tier=payload.get("data_quality_tier"),
             metadata_=meta_section,
+            domain_id=domain["domain_id"],
+            domain_version=domain["domain_version"],
+            domain_spec_hash=hashes["domain_spec_hash"],
+            ontology_hash=hashes["ontology_hash"],
             payload=payload,
         )
         col_name_map = {"metadata_": "metadata"}

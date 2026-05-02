@@ -1,0 +1,102 @@
+# Ontology: housing.deposit.v1
+#
+# Deposit-disputes ontology. Extends base.v1 and adds matter_type-specific
+# kinds reflecting the audit D3 split (deposit_deduction vs
+# deposit_non_protection). Cross-domain bridges are conservative: only
+# generic Evidence may be referenced from another domain (used when a KG
+# in this domain cites uploaded evidence whose source corpus is e.g. an
+# Ombudsman publication).
+
+id: housing.deposit.v1
+schema_version: 1
+extends: base.v1
+description: "Housing - tenancy deposit disputes. Audit D3-aware."
+
+node_kinds:
+  - name: DepositScheme
+    description: "Government-backed deposit protection scheme operator."
+    attributes:
+      - scheme_name
+      - protection_type
+      - protected_at
+  - name: DepositDeduction
+    description: "Specific deduction asserted against the deposit (D3 split)."
+    attributes:
+      - category
+      - amount
+      - description
+      - supported_by_evidence
+  - name: DepositNonProtection
+    description: "Allegation of statutory non-protection (D3 split)."
+    attributes:
+      - statute_reference
+      - days_overdue
+      - prescribed_info_provided
+  - name: DamageClaim
+    description: "Landlord's claim for damage to the property."
+    attributes:
+      - location
+      - severity
+      - amount
+      - cause
+  - name: WearAndTear
+    description: "Assertion that condition reflects fair wear and tear."
+    attributes:
+      - location
+      - tenancy_duration_days
+      - description
+
+edge_kinds:
+  # New edge kinds specific to deposit disputes
+  - name: lease_protected_by_scheme
+    from_kind: Lease
+    to_kind: DepositScheme
+    cardinality: many_to_many
+    description: "Lease's deposit is protected by a named scheme."
+  - name: deduction_against_deposit
+    from_kind: DepositDeduction
+    to_kind: Lease
+    cardinality: many_to_many
+    description: "A deduction is asserted against this lease's deposit."
+  - name: damage_claim_for_property
+    from_kind: DamageClaim
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Damage is alleged at a specific property."
+  - name: wear_and_tear_for_property
+    from_kind: WearAndTear
+    to_kind: Property
+    cardinality: many_to_many
+    description: "Fair wear and tear is asserted at a specific property."
+  - name: non_protection_for_lease
+    from_kind: DepositNonProtection
+    to_kind: Lease
+    cardinality: many_to_many
+    description: "Non-protection alleged for a specific lease."
+  # Allow Evidence to support deposit-specific claims as well as generic
+  # ClaimedAmount instances.
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: DepositDeduction
+    cardinality: many_to_many
+    description: "Evidence supports a deposit deduction."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: DamageClaim
+    cardinality: many_to_many
+    description: "Evidence supports a damage claim."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: DepositNonProtection
+    cardinality: many_to_many
+    description: "Evidence supports a non-protection allegation."
+  - name: evidence_refutes
+    from_kind: Evidence
+    to_kind: DamageClaim
+    cardinality: many_to_many
+    description: "Evidence refutes a damage claim."
+
+cross_domain_bridges:
+  - evidence_relates_to
+  - evidence_supports
+  - evidence_refutes
