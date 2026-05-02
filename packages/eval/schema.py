@@ -6,7 +6,7 @@ allowed enum values, and the cross-field invariants enforced on GoldCase.
 from __future__ import annotations
 
 import re
-from datetime import date
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import List, Literal, Optional, Tuple
@@ -193,6 +193,20 @@ class GroundTruthOutcome(StrictBaseModel):
                 f"!= sum(per_issue.awarded_gbp) ({s})"
             )
         return self
+
+
+class LabelerModel(StrictBaseModel):
+    """A single labeling pass's provider/model/version triple.
+
+    Recorded per case so a published gold set can be re-derived from raw
+    LLM outputs (frozen in the run artifact) even after the live model is
+    retired. ``api_version`` is optional — set it when the provider exposes
+    a stable response-API version string the team should pin.
+    """
+
+    provider: Literal["anthropic", "openai"]
+    model: str = Field(min_length=1)
+    api_version: Optional[str] = None
 
 
 class GoldCase(StrictBaseModel):
