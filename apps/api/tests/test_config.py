@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 
@@ -59,3 +60,79 @@ def test_production_rejects_debug(monkeypatch) -> None:
 
     with pytest.raises(ValueError, match="DEBUG"):
         APIConfig.from_env()
+
+
+# ---------------------------------------------------------------------------
+# SHA-20 Phase 8 multi-domain runtime flags
+# ---------------------------------------------------------------------------
+
+
+def test_domain_strict_eval_gates_default_is_true(monkeypatch) -> None:
+    monkeypatch.delenv("DOMAIN_STRICT_EVAL_GATES", raising=False)
+    cfg = APIConfig.from_env()
+    assert cfg.domain_strict_eval_gates is True
+
+
+def test_domain_strict_eval_gates_can_be_disabled(monkeypatch) -> None:
+    monkeypatch.setenv("DOMAIN_STRICT_EVAL_GATES", "false")
+    cfg = APIConfig.from_env()
+    assert cfg.domain_strict_eval_gates is False
+
+
+def test_domain_gate_artifact_dir_default(monkeypatch) -> None:
+    monkeypatch.delenv("DOMAIN_GATE_ARTIFACT_DIR", raising=False)
+    cfg = APIConfig.from_env()
+    assert cfg.domain_gate_artifact_dir == Path("data/eval_artifacts/domain_gates")
+
+
+def test_domain_gate_artifact_dir_env_override(monkeypatch) -> None:
+    monkeypatch.setenv("DOMAIN_GATE_ARTIFACT_DIR", "/var/lib/proposer/gates")
+    cfg = APIConfig.from_env()
+    assert cfg.domain_gate_artifact_dir == Path("/var/lib/proposer/gates")
+
+
+def test_enabled_domains_csv_parses_with_whitespace(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "ENABLED_DOMAINS", " housing.deposit.v1 , housing.repairs_social.v1 "
+    )
+    cfg = APIConfig.from_env()
+    assert cfg.enabled_domains == [
+        "housing.deposit.v1",
+        "housing.repairs_social.v1",
+    ]
+
+
+def test_default_domain_default(monkeypatch) -> None:
+    monkeypatch.delenv("DEFAULT_DOMAIN", raising=False)
+    monkeypatch.delenv("ENABLED_DOMAINS", raising=False)
+    cfg = APIConfig.from_env()
+    assert cfg.default_domain == "housing.deposit.v1"
+
+
+def test_domain_router_enabled_default_false(monkeypatch) -> None:
+    monkeypatch.delenv("DOMAIN_ROUTER_ENABLED", raising=False)
+    cfg = APIConfig.from_env()
+    assert cfg.domain_router_enabled is False
+
+
+def test_domain_cross_retrieval_default_false(monkeypatch) -> None:
+    monkeypatch.delenv("DOMAIN_CROSS_RETRIEVAL_ALLOWED", raising=False)
+    cfg = APIConfig.from_env()
+    assert cfg.domain_cross_retrieval_allowed is False
+
+
+def test_domain_beta_allowlist_user_ids_csv(monkeypatch) -> None:
+    monkeypatch.setenv("DOMAIN_BETA_ALLOWLIST_USER_IDS", "uid-a, uid-b ,uid-a")
+    cfg = APIConfig.from_env()
+    assert cfg.domain_beta_allowlist_user_ids == ["uid-a", "uid-b"]
+
+
+def test_domain_employment_allowlist_csv(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "DOMAIN_EMPLOYMENT_BETA_ALLOWLIST_USER_IDS", "uid-emp-1,uid-emp-2"
+    )
+    cfg = APIConfig.from_env()
+    assert cfg.domain_employment_beta_allowlist_user_ids == [
+        "uid-emp-1",
+        "uid-emp-2",
+    ]
