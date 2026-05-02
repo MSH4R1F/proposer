@@ -151,6 +151,32 @@ def get_storage_service(request: Request) -> StorageService:
     return StorageService(sessionmaker=sm)
 
 
+# --- SHA-20 Phase 9: domain router -----------------------------------------
+#
+# The router is process-cached because it holds only static phrase tables
+# and a (currently null) LLM classifier. When the router flag is off the
+# factory still returns a router instance — callers gate on
+# ``config.domain_router_enabled`` themselves so the deposit-default path
+# remains identical to Phase 3 behaviour.
+
+@lru_cache(maxsize=1)
+def _cached_domain_router():
+    from llm_orchestrator.routing import build_default_router
+
+    return build_default_router(tuple(config.enabled_domains))
+
+
+def get_domain_router():  # type: ignore[no-untyped-def]
+    """Return the process-cached :class:`DomainRouter`.
+
+    The router is shared across requests; it is stateless apart from
+    its configured enabled-domain list. Configuration changes between
+    process restarts are picked up automatically (we read
+    ``config.enabled_domains`` once per process).
+    """
+    return _cached_domain_router()
+
+
 @lru_cache(maxsize=1)
 def _cached_mediator_agent() -> Any:
     """Process-level cache for the heavy LLM mediator agent."""

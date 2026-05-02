@@ -33,6 +33,31 @@ ClaimedAmount = Any
 logger = structlog.get_logger()
 
 
+def propagate_domain_metadata(kg: KnowledgeGraph) -> KnowledgeGraph:
+    """Stamp ``kg.primary_domain_id`` onto nodes/edges lacking one.
+
+    Idempotent. Nodes/edges that explicitly carry a different
+    ``domain_id`` (e.g. cross-domain Evidence bridges) are left alone so
+    the ontology validator can decide whether the bridge is permitted.
+    """
+    primary = kg.primary_domain_id
+    for node in kg.nodes:
+        if getattr(node, "domain_id", None) is None:
+            try:
+                node.domain_id = primary
+            except Exception:
+                # Pydantic model_config(frozen=True) would block this; KG
+                # nodes are not frozen, but we keep this defensive.
+                pass
+    for edge in kg.edges:
+        if getattr(edge, "domain_id", None) is None:
+            try:
+                edge.domain_id = primary
+            except Exception:
+                pass
+    return kg
+
+
 class GraphBuilder:
     """
     Builds a Knowledge Graph from a CaseFile.
@@ -41,14 +66,22 @@ class GraphBuilder:
     case file data to create a queryable graph.
     """
 
-    def __init__(self, validate: bool = True):
+    def __init__(
+        self,
+        validate: bool = True,
+        domain_id: Optional[str] = None,
+    ):
         """
         Initialize the graph builder.
 
         Args:
-            validate: Whether to validate the graph after building
+            validate: Whether to validate the graph after building.
+            domain_id: Domain id to stamp onto the produced KG. Defaults
+                to ``None`` which keeps the KG's own default
+                (``housing.deposit.v1``) — preserves existing behaviour.
         """
         self.validate = validate
+        self.domain_id = domain_id
 
     def build(self, case_file: "CaseFile") -> KnowledgeGraph:
         """
@@ -61,7 +94,8 @@ class GraphBuilder:
             KnowledgeGraph with nodes and edges
         """
         kg = KnowledgeGraph(case_id=case_file.case_id)
-
+        if self.domain_id is not None:
+            kg.set_primary_domain(self.domain_id)
         # Build nodes
         party_nodes = self._build_party_nodes(case_file)
         property_node = self._build_property_node(case_file)
@@ -107,6 +141,11 @@ class GraphBuilder:
 
         for edge in edges:
             kg.add_edge(edge)
+
+        # SHA-61 / SHA-119: propagate the primary domain onto nodes/edges
+        # that don't already carry one (e.g. cross-domain Evidence bridges
+        # set their own domain explicitly).
+        propagate_domain_metadata(kg)
 
         # Validate if requested
         if self.validate:

@@ -92,9 +92,12 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
 
     unmapped: Set[str] = set()
     issues = []
+    # Phase 7 audit D3: pass gold.matter_type into the alignment so the
+    # deposit_deduction vs deposit_non_protection split is honoured.
+    mt = gold.matter_type
     for ct in gold.claim_types:
         try:
-            issues.append(eval_to_orchestrator(ct))
+            issues.append(eval_to_orchestrator(ct, matter_type=mt))
         except UnmappableIssue:
             unmapped.add(ct.value)
             issues.append(DisputeIssue.OTHER)
@@ -104,7 +107,7 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
     for ca in gold.claimed_amounts:
         # ca.issue is a string in eval-vocabulary; try to remap to orch.
         try:
-            issue_enum = eval_to_orchestrator(ca.issue)
+            issue_enum = eval_to_orchestrator(ca.issue, matter_type=mt)
         except UnmappableIssue:
             issue_enum = DisputeIssue.OTHER
         claim = ClaimedAmount(

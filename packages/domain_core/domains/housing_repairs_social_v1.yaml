@@ -1,0 +1,96 @@
+# Domain: housing.repairs_social.v1
+#
+# Forum: Housing Ombudsman (NOT court damages framing - prohibit
+# "the tribunal would award" / "court damages" output language).
+#
+# Stage starts at `research`. The corpus and gate work is tracked under
+# SHA-120 / SHA-122 and must complete before promotion.
+
+id: housing.repairs_social.v1
+family: housing
+domain_version: v1
+schema_version: 1
+display_name: "Housing - Social Housing Repairs (v1)"
+user_facing_name: "Social housing repairs and complaints"
+stage: research
+jurisdiction:
+  - GB-ENG
+forums:
+  - housing_ombudsman
+forum_profiles:
+  - forum: housing_ombudsman
+    source_publishers:
+      - housing_ombudsman
+    source_kinds:
+      - ombudsman_determination
+      - guidance
+    citation_kinds:
+      - retrieved_legal_source
+      - statute_or_guidance
+      - user_fact
+      - uploaded_evidence
+    matter_types:
+      - repairs_damp_mould
+      - repairs_disrepair
+      - complaint_handling_failure
+    remedies:
+      - compensation
+      - apology
+      - repair_action
+      - case_review
+      - policy_review
+    output_framing: "complaint outcome analysis based on similar Housing Ombudsman determinations"
+    citation_label: "Housing Ombudsman determination"
+    prohibited_phrases:
+      - "the tribunal would award"
+      - "court damages"
+      - "the court will order"
+    required_disclaimers:
+      - "This is information about Housing Ombudsman determinations, not legal advice."
+party_roles:
+  - resident
+  - landlord_provider
+matter_types:
+  - repairs_damp_mould
+  - repairs_disrepair
+  - complaint_handling_failure
+remedies:
+  - compensation
+  - apology
+  - repair_action
+  - case_review
+  - policy_review
+intake_schema_ref: ref://intake_schema/housing.repairs_social.v1
+case_file_adapter_ref: ref://case_file_adapter/housing.repairs_social.v1
+ontology_ref: ref://ontology/housing.repairs_social.v1
+prompt_pack_ref: ref://prompt_pack/housing.repairs_social.v1
+retrieval_namespaces:
+  - namespace_id: housing_repairs_social_v1
+    vector_collection: housing_ombudsman_determinations_v1
+    bm25_index_path: data/embeddings/housing_repairs_social_v1_bm25.pkl
+    corpus_root: data/raw/housing_ombudsman
+    chunk_kinds:
+      - document_chunk
+    source_publishers:
+      - housing_ombudsman
+    source_kinds:
+      - ombudsman_determination
+    forums:
+      - housing_ombudsman
+    allowed_cross_namespace_ids: []
+    metadata_filters: {}
+    corpus_version: research_seed_2026_05
+eval_gate:
+  gold_set_path: data/gold_standard/housing_repairs_social_v1.jsonl
+  min_cases: 30
+  required_metrics: {}
+  max_hallucination_rate: 0.02
+  min_citation_validity: 0.98
+  min_abstention_precision: 0.80
+safety_notes:
+  - "Output language must use Ombudsman determination framing, not court damages."
+  - "Awaab's Law phase handling requires temporal_law_markers - extend before beta promotion."
+temporal_law_markers:
+  - label: "Awaab's Law (Social Housing Regulation Act 2023, hazard response duties)"
+    effective_date: "2024-10-27"
+    note: "Phase rollout; specific hazard response timeframes phase in over 2024-2027."

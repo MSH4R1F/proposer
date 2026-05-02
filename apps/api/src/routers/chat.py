@@ -4,18 +4,139 @@ Chat router for conversational intake.
 Handles the intake conversation flow.
 """
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 import structlog
 
-from apps.api.src.dependencies import get_dispute_service, get_intake_service
+from apps.api.src.config import config as _api_config
+from apps.api.src.dependencies import (
+    get_dispute_service,
+    get_domain_router,
+    get_intake_service,
+)
+from apps.api.src.domain_runtime import (
+    DomainNotFoundError,
+    DomainRuntimeContext,
+    resolve_domain_runtime,
+)
 from apps.api.src.services.dispute_service import DisputeService
 from apps.api.src.services.intake_service import IntakeService
+from llm_orchestrator.routing import DomainRouter, RouteDecision
+from llm_orchestrator.routing.domain_router import matter_label_for
+
+
+def _resolve_domain_or_400(domain_id: Optional[str]) -> DomainRuntimeContext:
+    """SHA-20 Phase 3 helper: resolve domain runtime or raise 4xx."""
+    try:
+        runtime = resolve_domain_runtime(domain_id, user_id=None)
+    except DomainNotFoundError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "domain_not_found",
+                "message": f"Unknown domain id: {domain_id}",
+                "error": str(exc),
+            },
+        )
+    if not runtime.is_usable:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "domain_unavailable",
+                "message": (
+                    f"Domain {runtime.domain_id!r} is not available "
+                    f"(gate={runtime.gate_status.value}, "
+                    f"allowlist={runtime.allowlist_status.value})."
+                ),
+                "domain_id": runtime.domain_id,
+                "gate_status": runtime.gate_status.value,
+                "allowlist_status": runtime.allowlist_status.value,
+            },
+        )
+    return runtime
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/chat", tags=["chat"])
+
+
+# ---------------------------------------------------------------------------
+# SHA-20 Phase 9: domain router request/response models
+# ---------------------------------------------------------------------------
+
+
+class RouteRequest(BaseModel):
+    """Request body for ``POST /chat/route``."""
+
+    text: str = Field(..., min_length=1, description="Free-form intake text")
+
+
+class RoutingMetadata(BaseModel):
+    """Routing provenance returned alongside chat / bulk-intake responses.
+
+    Internal domain ids are deliberately surfaced here for tracing /
+    debugging only. The frontend MUST NOT render ``domain_id`` directly
+    — render ``matter_label`` instead.
+    """
+
+    outcome: str = Field(..., description="route / clarify / unsupported / abstain")
+    domain_id: Optional[str] = None
+    matter_label: Optional[str] = None
+    candidate_domains: List[str] = Field(default_factory=list)
+    candidate_matter_labels: List[str] = Field(default_factory=list)
+    clarifier_text: Optional[str] = None
+    confidence: Optional[float] = None
+    margin: Optional[float] = None
+    reason: Optional[str] = None
+    capture_in: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class RouteResponse(BaseModel):
+    """Response body for ``POST /chat/route``."""
+
+    routing: RoutingMetadata
+
+
+def _decision_to_metadata(decision: RouteDecision) -> RoutingMetadata:
+    return RoutingMetadata(
+        outcome=str(decision.outcome),
+        domain_id=decision.domain_id,
+        matter_label=(
+            matter_label_for(decision.domain_id) if decision.domain_id else None
+        ),
+        candidate_domains=list(decision.candidate_domains),
+        candidate_matter_labels=list(decision.candidate_matter_labels),
+        clarifier_text=decision.clarifier_text,
+        confidence=decision.confidence,
+        margin=decision.margin,
+        reason=decision.reason,
+        capture_in=decision.capture_in,
+        metadata=dict(decision.routing_metadata),
+    )
+
+
+@router.post("/route", response_model=RouteResponse)
+async def route_text(
+    request: RouteRequest,
+    domain_router: DomainRouter = Depends(get_domain_router),
+):
+    """SHA-20 Phase 9: classify a free-form intake message.
+
+    Returns a deterministic-first routing decision. The frontend uses
+    this on first user message (when ``DOMAIN_ROUTER_ENABLED=true``)
+    to either set the session's ``domain_id`` automatically, ask a
+    clarifying question, or surface a polite "we don't yet handle
+    this matter" response.
+
+    The endpoint is always reachable; the gating flag controls whether
+    the frontend wires the answer back into the chat flow. This keeps
+    the deposit-default behaviour intact for callers that ignore the
+    response.
+    """
+    decision = domain_router.route(request.text)
+    return RouteResponse(routing=_decision_to_metadata(decision))
 
 
 class ChatMessageRequest(BaseModel):
@@ -47,6 +168,11 @@ class StartSessionRequest(BaseModel):
     )
     create_dispute: bool = Field(
         True, description="Whether to create a new dispute case"
+    )
+    # SHA-20 Phase 3: optional domain selector. Defaults to housing.deposit.v1
+    # when omitted (preserves existing behaviour exactly).
+    domain_id: Optional[str] = Field(
+        default=None, description="Optional domain id (defaults to housing.deposit.v1)"
     )
 
 
@@ -85,6 +211,9 @@ class BulkIntakeRequest(BaseModel):
     invite_code: Optional[str] = Field(
         None, description="Invite code to join existing dispute"
     )
+    domain_id: Optional[str] = Field(
+        default=None, description="Optional domain id (defaults to housing.deposit.v1)"
+    )
 
 
 class BulkIntakeResponse(BaseModel):
@@ -97,6 +226,7 @@ class BulkIntakeResponse(BaseModel):
     missing_info: List[str] = Field(default_factory=list)
     extraction_successful: bool
     dispute: Optional[DisputeInfo] = None
+    routing: Optional[RoutingMetadata] = None
 
 
 class SetRoleRequest(BaseModel):
@@ -168,6 +298,11 @@ async def start_session(
             detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
         )
 
+    # SHA-20 Phase 3: resolve domain runtime up-front. Default request
+    # (no domain_id) resolves to housing.deposit.v1 with gate=enabled and
+    # allowlist=unrestricted, so persisted payloads/responses are unchanged.
+    domain_runtime = _resolve_domain_or_400(request.domain_id)
+
     try:
         dispute_info: Optional[DisputeInfo] = None
 
@@ -178,6 +313,7 @@ async def start_session(
                     role=request.role,
                     invite_code=request.invite_code,
                     create_dispute=request.create_dispute,
+                    domain_runtime=domain_runtime,
                 )
             )
             session_id = conversation.session_id
@@ -212,7 +348,7 @@ async def start_session(
         else:
             # ---- standalone path: no dispute involved --------------------
             greeting, session_id, stage = await intake_service.start_session(
-                role=request.role
+                role=request.role, domain_runtime=domain_runtime,
             )
 
         session_status = await intake_service.get_session_status(session_id)
@@ -249,12 +385,19 @@ async def start_session(
 async def bulk_intake(
     request: BulkIntakeRequest,
     intake_service: IntakeService = Depends(get_intake_service),
+    domain_router: DomainRouter = Depends(get_domain_router),
 ):
     """
     Process a complete case description in one shot.
 
     Alternative to the guided Q&A flow — user pastes all case details
     at once and the system extracts structured facts to populate the case file.
+
+    SHA-20 Phase 9: when ``DOMAIN_ROUTER_ENABLED=true`` and the request
+    omits ``domain_id``, the router classifies ``case_text`` and either
+    selects a domain automatically or surfaces a clarifier / unsupported
+    response in the body. With the flag off (default), behaviour is
+    unchanged from Phase 3.
     """
     logger.debug(
         "bulk_intake_request", role=request.role, text_length=len(request.case_text)
@@ -266,6 +409,38 @@ async def bulk_intake(
             detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
         )
 
+    # SHA-20 Phase 9: deterministic-first router. Only fire when the
+    # caller did NOT pass an explicit domain_id and the runtime flag
+    # is on. The flag defaults to false, so the deposit baseline is
+    # entirely unaffected when callers don't opt in.
+    routing_metadata: Optional[RoutingMetadata] = None
+    effective_domain_id: Optional[str] = request.domain_id
+    if request.domain_id is None and _api_config.domain_router_enabled:
+        decision = domain_router.route(request.case_text)
+        routing_metadata = _decision_to_metadata(decision)
+        if decision.outcome == "route":
+            effective_domain_id = decision.domain_id
+        elif decision.outcome in {"clarify", "unsupported", "abstain"}:
+            # Don't create a session; return the routing decision so the
+            # frontend can ask the user before persisting anything.
+            logger.info(
+                "bulk_intake_routing_blocked",
+                outcome=decision.outcome,
+                reason=decision.reason,
+            )
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "code": f"routing_{decision.outcome}",
+                    "message": decision.clarifier_text
+                    or decision.reason
+                    or "Cannot route this matter automatically.",
+                    "routing": routing_metadata.model_dump(),
+                },
+            )
+
+    domain_runtime = _resolve_domain_or_400(effective_domain_id)
+
     try:
         if request.invite_code or request.create_dispute:
             result, dispute = await intake_service.bulk_intake_with_dispute(
@@ -273,11 +448,13 @@ async def bulk_intake(
                 case_text=request.case_text,
                 invite_code=request.invite_code,
                 create_dispute=request.create_dispute,
+                domain_runtime=domain_runtime,
             )
         else:
             result = await intake_service.bulk_intake(
                 role=request.role,
                 case_text=request.case_text,
+                domain_runtime=domain_runtime,
             )
             dispute = None
 
@@ -304,6 +481,7 @@ async def bulk_intake(
             missing_info=result["missing_info"],
             extraction_successful=result["extraction_successful"],
             dispute=dispute_info,
+            routing=routing_metadata,
         )
     except HTTPException:
         raise

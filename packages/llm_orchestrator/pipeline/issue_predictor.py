@@ -37,10 +37,29 @@ logger = structlog.get_logger()
 
 
 class IssuePredictor:
-    def __init__(self, llm_client: BaseLLMClient, case_file: Any = None):
+    def __init__(
+        self,
+        llm_client: BaseLLMClient,
+        case_file: Any = None,
+        *,
+        prompt_pack: Any = None,
+    ):
         self.llm = llm_client
         self._case_file = case_file
         self._kg_facts_by_issue: Dict[Any, Any] = {}
+        # SHA-20 Phase 6: when a prompt pack is supplied, its
+        # ``prediction_system`` REPLACES the default IRAC system prompt for
+        # this run. The legacy IRAC text remains in use when no pack is
+        # injected so existing deposit predictions stay schema-compatible.
+        self._prompt_pack = prompt_pack
+
+    @property
+    def _prediction_system_prompt(self) -> str:
+        if self._prompt_pack is not None and getattr(
+            self._prompt_pack, "prediction_system", None
+        ):
+            return self._prompt_pack.prediction_system
+        return f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
 
     async def predict_no_rag(
         self,
@@ -160,7 +179,7 @@ class IssuePredictor:
                 tenant_claim=tenant_claim_text,
                 landlord_claim=landlord_claim_text,
             )
-            system_prompt = f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+            system_prompt = self._prediction_system_prompt
 
         try:
             response = await self.llm.generate(
@@ -401,7 +420,7 @@ class IssuePredictor:
                 f"Retrieved Cases ({len(retrieval.results)}):\n{retrieved_cases_str}\n"
             )
 
-        system_prompt = f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+        system_prompt = self._prediction_system_prompt
 
         attempts = 2
         last_response: Optional[str] = None

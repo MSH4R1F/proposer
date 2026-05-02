@@ -7,17 +7,26 @@ particularly useful for legal terminology and exact phrase matching.
 Supports two modes:
 - Full mode: Stores complete DocumentChunk objects (more features, higher RAM)
 - Lite mode: Stores only IDs and metadata (lower RAM, suitable for 8000+ cases)
+
+SHA-20 Phase 4: BM25 search now accepts a
+:class:`~rag_engine.config.RetrievalFilterEnvelope` and applies the
+*same* filter set as the Chroma side. Hybrid retrieval is only correct
+when both backends agree on filters, so divergent filtering is not just
+a perf bug — it is a correctness bug. See
+``rag_engine.config.RetrievalFilterEnvelope.matches_metadata`` for the
+shared semantics.
 """
 
 import pickle
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
 
 from rank_bm25 import BM25Okapi
 import structlog
 
-from ..config import DocumentChunk
+from ..config import DocumentChunk, RetrievalFilterEnvelope
+from ..source_metadata import SourceMetadata
 
 logger = structlog.get_logger()
 
@@ -97,14 +106,7 @@ class BM25Index:
                 self._chunk_id_to_index[chunk.chunk_id] = i
                 self._chunk_ids.append(chunk.chunk_id)
                 self._chunk_texts.append(chunk.text)
-                self._chunk_metadata.append({
-                    "case_reference": chunk.case_reference,
-                    "section_type": chunk.section_type,
-                    "chunk_index": chunk.chunk_index,
-                    "year": chunk.year,
-                    "region": chunk.region,
-                    "case_type": chunk.case_type,
-                })
+                self._chunk_metadata.append(chunk.to_chroma_metadata())
         else:
             # Full mode: store complete DocumentChunk objects
             self._documents = chunks
@@ -126,17 +128,27 @@ class BM25Index:
     def search(
         self,
         query: str,
-        top_k: int = 10
+        top_k: int = 10,
+        *,
+        filters: Optional[RetrievalFilterEnvelope] = None,
+        excluded_source_ids: Optional[List[str]] = None,
     ) -> List[Tuple[DocumentChunk, float, int]]:
         """
         Search for documents matching the query.
 
         Args:
-            query: Search query
-            top_k: Number of results to return
+            query: Search query.
+            top_k: Number of results to return after filtering.
+            filters: Optional :class:`RetrievalFilterEnvelope` whose
+                ``matches_metadata`` is applied to every candidate. Must
+                be the *same* envelope passed to the Chroma side in a
+                hybrid call.
+            excluded_source_ids: Convenience shortcut equivalent to
+                setting ``filters.excluded_source_ids``. Both kwargs may
+                be combined; the union is used.
 
         Returns:
-            List of (chunk, bm25_score, rank) tuples
+            List of (chunk, bm25_score, rank) tuples (post-filter).
         """
         if self._bm25 is None:
             logger.warning("bm25_index_not_built")
@@ -151,43 +163,94 @@ class BM25Index:
         # Get BM25 scores for all documents
         scores = self._bm25.get_scores(query_tokens)
 
-        # Get top-k indices
-        top_indices = sorted(
+        # Sort all indices by score; we filter in this loop so we don't
+        # truncate before the metadata check (else top_k could under-fill).
+        sorted_indices = sorted(
             range(len(scores)),
             key=lambda i: scores[i],
-            reverse=True
-        )[:top_k]
+            reverse=True,
+        )
 
-        # Build results
-        results = []
-        for rank, idx in enumerate(top_indices, start=1):
-            if scores[idx] > 0:  # Only include documents with non-zero scores
-                if self._lite_mode:
-                    # Reconstruct minimal DocumentChunk from stored data
-                    meta = self._chunk_metadata[idx]
-                    chunk = DocumentChunk(
-                        chunk_id=self._chunk_ids[idx],
-                        case_reference=meta["case_reference"],
-                        text=self._chunk_texts[idx],
-                        section_type=meta["section_type"],
-                        chunk_index=meta["chunk_index"],
-                        year=meta.get("year", 2020),
-                        region=meta.get("region"),
-                        case_type=meta.get("case_type"),
-                    )
-                else:
-                    chunk = self._documents[idx]
+        # Build effective excluded set
+        excluded: set = set(excluded_source_ids or [])
+        if filters and filters.excluded_source_ids:
+            excluded.update(filters.excluded_source_ids)
 
-                results.append((chunk, float(scores[idx]), rank))
+        results: List[Tuple[DocumentChunk, float, int]] = []
+        rank = 0
+        for idx in sorted_indices:
+            if scores[idx] <= 0:
+                break
+            chunk = self._chunk_at(idx)
+            meta = self._meta_for_filter(idx, chunk)
+
+            # Source-id exclusion check (works for both new "source_id"
+            # and legacy "case_reference").
+            sid = meta.get("source_id") or meta.get("case_reference")
+            if sid and excluded and sid in excluded:
+                continue
+
+            # Full filter envelope (excluded_source_ids already merged).
+            if filters is not None:
+                # We've already done the excluded set; pop to avoid
+                # double-checking, then run the rest.
+                if not filters.matches_metadata(meta):
+                    continue
+
+            rank += 1
+            results.append((chunk, float(scores[idx]), rank))
+            if rank >= top_k:
+                break
 
         logger.debug(
             "bm25_search_complete",
             query_tokens=query_tokens[:5],
             num_results=len(results),
-            top_score=results[0][1] if results else 0
+            top_score=results[0][1] if results else 0,
+            filtered=bool(filters or excluded_source_ids),
         )
 
         return results
+
+    def _chunk_at(self, idx: int) -> DocumentChunk:
+        """Return the DocumentChunk at ``idx`` regardless of mode."""
+        if self._lite_mode:
+            return self._chunk_from_lite_metadata(idx)
+        return self._documents[idx]
+
+    def _meta_for_filter(
+        self, idx: int, chunk: DocumentChunk
+    ) -> Dict[str, Any]:
+        """Build the metadata dict used by the filter envelope.
+
+        We feed it the *full* Chroma-shape projection so a single filter
+        envelope is consistent across BM25 and Chroma backends.
+        """
+        if self._lite_mode:
+            return dict(self._chunk_metadata[idx])
+        return chunk.to_chroma_metadata()
+
+    def _chunk_from_lite_metadata(self, idx: int) -> DocumentChunk:
+        """Rehydrate a lite-mode chunk, preserving Phase-4 metadata when present."""
+        meta = self._chunk_metadata[idx]
+        source_metadata = None
+        if "source_id" in meta:
+            try:
+                source_metadata = SourceMetadata.from_chroma_metadata(meta)
+            except Exception:
+                source_metadata = None
+        return DocumentChunk(
+            chunk_id=self._chunk_ids[idx],
+            case_reference=meta["case_reference"],
+            text=self._chunk_texts[idx],
+            section_type=meta["section_type"],
+            chunk_index=meta["chunk_index"],
+            year=meta.get("year", 2020),
+            region=meta.get("region"),
+            case_type=meta.get("case_type"),
+            token_count=meta.get("token_count", 0),
+            source_metadata=source_metadata,
+        )
 
     def _tokenize(self, text: str) -> List[str]:
         """
@@ -322,20 +385,23 @@ class BM25Index:
         idx = self._chunk_id_to_index.get(chunk_id)
         if idx is not None:
             if self._lite_mode:
-                meta = self._chunk_metadata[idx]
-                return DocumentChunk(
-                    chunk_id=self._chunk_ids[idx],
-                    case_reference=meta["case_reference"],
-                    text=self._chunk_texts[idx],
-                    section_type=meta["section_type"],
-                    chunk_index=meta["chunk_index"],
-                    year=meta.get("year", 2020),
-                    region=meta.get("region"),
-                    case_type=meta.get("case_type"),
-                )
+                return self._chunk_from_lite_metadata(idx)
             else:
                 return self._documents[idx]
         return None
+
+    def get_all_chunks(self) -> List[DocumentChunk]:
+        """Return every indexed chunk.
+
+        Used by ingestion to merge newly ingested chunks with an already
+        loaded BM25 index before writing the refreshed pickle.
+        """
+        if self._lite_mode:
+            return [
+                self._chunk_from_lite_metadata(i)
+                for i in range(len(self._chunk_ids))
+            ]
+        return list(self._documents)
 
     def get_stats(self) -> Dict:
         """Get index statistics."""

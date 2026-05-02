@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from sqlalchemy import ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import ForeignKey, Index, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -34,3 +34,25 @@ class DisputeRow(Base):
     prediction_cache_key: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+
+    # SHA-124 phase 2: domain routing metadata. NOT NULL after revision 0003.
+    domain_id: Mapped[str] = mapped_column(
+        Text, nullable=False, default="housing.deposit.v1",
+        server_default="housing.deposit.v1",
+    )
+    domain_version: Mapped[str] = mapped_column(
+        Text, nullable=False, default="v1", server_default="v1",
+    )
+    # forum stays NULL — Phase 0 audit explicitly forbids guessing it for legacy rows.
+    forum: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    matter_types: Mapped[list[Any]] = mapped_column(
+        JSONB, nullable=False, default=list, server_default="[]",
+    )
+    routing_confidence: Mapped[Optional[float]] = mapped_column(Numeric, nullable=True)
+    routing_metadata: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, default=dict, server_default="{}",
+    )
+
+    __table_args__ = (
+        Index("ix_disputes_domain_forum", "domain_id", "forum"),
+    )

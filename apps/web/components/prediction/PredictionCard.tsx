@@ -9,14 +9,19 @@ import { IssuePredictionList } from './IssuePredictionList';
 import { ReasoningTrace } from './ReasoningTrace';
 import { LegalDisclaimer } from './LegalDisclaimer';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Calendar, Hash, Scale } from 'lucide-react';
+import { FileText, Calendar, Hash, Scale, Tag } from 'lucide-react';
 import type { PredictionResult } from '@/lib/types/prediction';
+import { matterLabelFor } from '@/lib/types/domain';
 
 interface PredictionCardProps {
   prediction: PredictionResult;
 }
 
 export function PredictionCard({ prediction }: PredictionCardProps) {
+  // SHA-20 Phase 9: render the plain-English matter label rather than
+  // the internal domain id. `matterLabelFor()` returns "Legal matter"
+  // for unknown ids so we never accidentally surface raw enum values.
+  const matterLabel = prediction.domain_id ? matterLabelFor(prediction.domain_id) : null;
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -44,13 +49,25 @@ export function PredictionCard({ prediction }: PredictionCardProps) {
               )}
             </div>
           </div>
-          <Badge 
-            variant="outline" 
-            className="self-start sm:self-center sm:ml-auto font-mono text-xs"
-          >
-            <Hash className="h-3 w-3 mr-1" />
-            {prediction.prediction_id.slice(0, 8)}
-          </Badge>
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-center sm:ml-auto">
+            {matterLabel && (
+              <Badge
+                variant="secondary"
+                className="font-medium text-xs"
+                title="Matter type"
+              >
+                <Tag className="h-3 w-3 mr-1" />
+                {matterLabel}
+              </Badge>
+            )}
+            <Badge
+              variant="outline"
+              className="font-mono text-xs"
+            >
+              <Hash className="h-3 w-3 mr-1" />
+              {prediction.prediction_id.slice(0, 8)}
+            </Badge>
+          </div>
         </div>
       </div>
 

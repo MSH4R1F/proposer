@@ -1,0 +1,7 @@
+{
+  "status": "stub",
+  "_note": "TODO: replace with a real engine snapshot. See README.md in this directory. The parity test in packages/domain_core/tests/test_domain_fixtures.py detects status==stub and pytest.skips with an explicit reason.",
+  "domain_id": "housing.deposit.v1",
+  "matter_type": "deposit_deduction",
+  "forum": "deposit_scheme_adjudication"
+}

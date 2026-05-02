@@ -1,6 +1,8 @@
 # Legal Mediation System - Architecture Overview
 
-This document provides a comprehensive overview of the Proposer platform architecture, showing how the frontend (Next.js), backend (FastAPI), and core packages (RAG, KG, LLM) work together.
+This document provides a comprehensive overview of the Proposer platform architecture, showing how the frontend (Next.js), backend (FastAPI), and core packages (domain runtime, RAG, KG, LLM) work together.
+
+Proposer is now domain-pluggable. The default compatibility domain is `housing.deposit.v1`, while adjacent housing and research employment domains are described by `packages/domain_core` and only become usable when routing, allowlist, retrieval namespace, and launch-gate policy allow it.
 
 ## System Architecture
 
@@ -42,6 +44,7 @@ graph TB
         end
         
         subgraph Services["Service Layer"]
+            DomainRuntime["DomainRuntime<br/>• Domain Specs<br/>• Stage/Mode Gates<br/>• Allowlists<br/>• Eval Artifacts"]
             IntakeService["IntakeService<br/>• Session Management<br/>• Conversation Flow<br/>• Case File Building<br/>• Postgres + UoW"]
             PredictionService["PredictionService<br/>• Prediction Generation<br/>• RAG Integration<br/>• KG Integration<br/>• Postgres + UoW"]
             DisputeService["DisputeService<br/>• Dispute Creation<br/>• Invite Codes<br/>• Party Linking<br/>• Postgres + UoW"]
@@ -52,23 +55,30 @@ graph TB
     %% Core Packages Layer
     subgraph Packages["📦 Core Packages (Python)"]
         subgraph LLMOrchestrator["llm_orchestrator/"]
+            DomainRouter["DomainRouter<br/>• Deterministic Rules<br/>• LLM Fallback<br/>• Clarifying Questions"]
             IntakeAgent["IntakeAgent<br/>• Dynamic Questioning<br/>• Context Awareness<br/>• Completeness Tracking"]
+            PromptPacks["Prompt Packs<br/>• Domain Framing<br/>• Forum Policy"]
             PredictionAgent["PredictionEngine<br/>• Prediction Synthesis<br/>• Reasoning Trace<br/>• Citation Generation"]
             ClaudeClient["ClaudeClient<br/>• Anthropic API<br/>• Structured Outputs<br/>• Error Handling"]
             FactExtractor["FactExtractor<br/>• Entity Extraction<br/>• Evidence Processing"]
         end
+
+        subgraph DomainCore["domain_core/"]
+            DomainSpecs["DomainSpec YAMLs<br/>• Forum Profiles<br/>• Retrieval Namespaces<br/>• Eval Gates"]
+            Registry["Registry + Hashing<br/>• Stable Spec Hashes<br/>• Import Boundary"]
+        end
         
         subgraph KGBuilder["kg_builder/"]
             GraphBuilder["GraphBuilder<br/>• Node Creation<br/>• Edge Validation<br/>• Constraint Checking"]
-            KGModels["KG Models<br/>• Nodes (Party, Evidence, Issue)<br/>• Edges (Supports, OccurredBefore)<br/>• Validators"]
-            JSONStore["JSONGraphStore<br/>• Persistence<br/>• Retrieval"]
+            KGModels["KG Models<br/>• Domain IDs<br/>• Nodes (Party, Evidence, Issue)<br/>• Edges (Supports, OccurredBefore)<br/>• Validators"]
+            Ontology["Ontology Registry<br/>• Per-Domain Constraints<br/>• Cross-Domain Bridges"]
         end
         
         subgraph RAGEngine["rag_engine/"]
             RAGPipeline["RAGPipeline<br/>• Query Processing<br/>• Orchestration"]
-            HybridRetriever["HybridRetriever<br/>• BM25 (keyword)<br/>• Semantic Search<br/>• Weighted Fusion"]
+            HybridRetriever["HybridRetriever<br/>• BM25 (keyword)<br/>• Semantic Search<br/>• Domain Filters"]
             ChromaStore["ChromaStore<br/>• Vector DB<br/>• Embeddings"]
-            Reranker["Reranker<br/>• Relevance Scoring<br/>• Context Filtering"]
+            Reranker["Reranker<br/>• Relevance Scoring<br/>• Forum/Source Filtering"]
             LegalChunker["LegalChunker<br/>• Section Detection<br/>• Smart Chunking"]
         end
     end
@@ -536,7 +546,7 @@ npm run dev
 ## Learning Resources for Key Concepts
 
 ### What is RAG (Retrieval-Augmented Generation)?
-RAG is a technique where we **retrieve relevant information from a knowledge base** (in our case, past tribunal decisions) **before generating a response**. Think of it like:
+RAG is a technique where we **retrieve relevant information from a knowledge base** (in our case, domain-scoped legal sources such as tribunal decisions, ombudsman determinations, legislation, guidance, and user evidence) **before generating a response**. Think of it like:
 - You're writing an essay and you first look up relevant books/articles → that's **Retrieval**
 - Then you synthesize the information into your own words → that's **Generation**
 - **Why?** LLMs don't "know" specific tribunal decisions, but they're great at synthesizing information if we give them the right context.
@@ -555,7 +565,7 @@ A **Knowledge Graph (KG)** is a way to represent information as **nodes (entitie
 
 ### What are Embeddings?
 **Embeddings** are numerical representations of text (like converting words to coordinates):
-- "Tenant deposit dispute" → `[0.23, -0.45, 0.67, ...]` (3072 numbers)
+- "Housing repairs dispute" → `[0.23, -0.45, 0.67, ...]` (3072 numbers)
 - Similar concepts have similar numbers (close in "semantic space")
 - **Why?** Computers can't compare meanings directly, but they can compare numbers efficiently
 
@@ -582,4 +592,3 @@ A **Knowledge Graph (KG)** is a way to represent information as **nodes (entitie
 - [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) - Detailed API endpoint reference
 - [USER_GUIDE.md](./USER_GUIDE.md) - How to use the system
 - [DEBUG_LOGGING.md](./DEBUG_LOGGING.md) - Troubleshooting guide
-

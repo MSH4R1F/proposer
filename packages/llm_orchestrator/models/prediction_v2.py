@@ -249,6 +249,20 @@ class PredictionResult(BaseModel):
     temporal_distribution: Optional[Dict[int, int]] = None
     pipeline_metadata: Optional[PipelineMetadata] = None
 
+    # SHA-20 Phase 3: domain routing metadata + reproducibility hashes.
+    # These complement (and are repeated in) ``metadata["domain"]`` so that
+    # the projection columns and the canonical payload stay in lock-step.
+    domain_id: str = "housing.deposit.v1"
+    domain_version: str = "v1"
+    forum: Optional[str] = None
+    matter_types: List[str] = Field(default_factory=list)
+    routing_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    routing_metadata: Dict[str, Any] = Field(default_factory=dict)
+    domain_spec_hash: Optional[str] = None
+    prompt_pack_hash: Optional[str] = None
+    ontology_hash: Optional[str] = None
+    corpus_version: Optional[str] = None
+
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
     def add_reasoning_step(

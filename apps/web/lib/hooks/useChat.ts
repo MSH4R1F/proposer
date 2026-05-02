@@ -11,6 +11,7 @@ import type {
   CaseFile,
   DisputeInfo,
 } from '@/lib/types/chat';
+import type { RoutingMetadata } from '@/lib/types/domain';
 
 const initialState: ChatState = {
   sessionId: null,
@@ -29,6 +30,11 @@ export function useChat(initialSessionId?: string) {
     ...initialState,
     sessionId: initialSessionId || null,
   });
+  // SHA-20 Phase 9: last routing decision returned by the API. The UI
+  // surfaces this to render either a clarifier or an "unsupported
+  // matter" notice. Internal domain ids never leak; consumers MUST
+  // render `routing.matter_label` / `candidate_matter_labels`.
+  const [routing, setRouting] = useState<RoutingMetadata | null>(null);
 
   const startSession = useCallback(async (
     role: PartyRole,
@@ -117,6 +123,10 @@ export function useChat(initialSessionId?: string) {
         isLoading: false,
       }));
 
+      // SHA-20 Phase 9: capture routing metadata if present (only set
+      // when DOMAIN_ROUTER_ENABLED=true on the API).
+      setRouting(response.routing ?? null);
+
       saveSessionId(response.session_id);
 
       if (response.case_file?.case_id) {
@@ -135,6 +145,28 @@ export function useChat(initialSessionId?: string) {
       return null;
     }
   }, []);
+
+  // SHA-20 Phase 9: pre-routing helper. Frontends can call this from a
+  // landing page (e.g. "tell us your matter") to decide whether to
+  // start a session, ask a clarifier, or surface an unsupported notice
+  // — all WITHOUT persisting any session state yet.
+  const classifyMatter = useCallback(
+    async (text: string): Promise<RoutingMetadata | null> => {
+      try {
+        const result = await chatApi.route(text);
+        setRouting(result.routing ?? null);
+        return result.routing ?? null;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to classify matter';
+        setState((prev) => ({ ...prev, error: errorMessage }));
+        return null;
+      }
+    },
+    []
+  );
+
+  const clearRouting = useCallback(() => setRouting(null), []);
 
   const setRole = useCallback(
     async (role: PartyRole) => {
@@ -335,6 +367,10 @@ export function useChat(initialSessionId?: string) {
     clearError,
     reset,
     validateInviteCode,
+    classifyMatter,
+    clearRouting,
+    routing,
+    matterLabel: routing?.matter_label ?? null,
     isComplete: hasAllRequiredInfo,
     canGeneratePrediction: canGenerate,
     showRoleSelector: (!state.sessionId && !state.roleSelected) ||

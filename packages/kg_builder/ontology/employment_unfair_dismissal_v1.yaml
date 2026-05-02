@@ -1,0 +1,152 @@
+# Ontology: employment.unfair_dismissal.v1
+#
+# Unfair dismissal first slice (audit decision D5). Extends base.v1.
+# Wage disputes, discrimination, and whistleblowing are out of scope.
+#
+# Distinct kinds capture the procedural-fairness reasoning that ET
+# decisions hinge on: the EDT, the dismissal reason category, the
+# fairness-process factors (warnings, right of appeal, investigation),
+# the ACAS early-conciliation step, and the two limbs of award. Bridges
+# allow Evidence to be cited from another domain (rare but legitimate
+# when the reasoning trace references a related housing matter for the
+# same individual; the bridge whitelist gates this).
+
+id: employment.unfair_dismissal.v1
+schema_version: 1
+extends: base.v1
+description: "Employment - unfair dismissal (first slice, audit D5)."
+
+node_kinds:
+  - name: Employee
+    description: "Claimant employee in an unfair dismissal claim."
+    attributes:
+      - role
+      - name
+      - continuous_service_start
+      - continuous_service_end
+      - weekly_pay
+  - name: Employer
+    description: "Respondent employer."
+    attributes:
+      - name
+      - is_company
+      - company_number
+      - employee_count
+  - name: EmploymentContract
+    description: "Contract of employment."
+    attributes:
+      - contract_type
+      - start_date
+      - end_date
+      - notice_period_weeks
+      - hours_per_week
+  - name: EffectiveDateOfTermination
+    description: "EDT under ERA 1996 s.97 - critical for time-limit calc."
+    attributes:
+      - edt
+      - calculated_from
+      - notes
+  - name: DismissalReason
+    description: "ERA 1996 s.98 dismissal reason category."
+    attributes:
+      - reason_category
+      - reason_description
+      - claimed_by_employer
+  - name: ProcessFairnessFactor
+    description: "Procedural-fairness factor (warnings, hearing, appeal, etc)."
+    attributes:
+      - factor
+      - present
+      - description
+  - name: AcasEarlyConciliation
+    description: "ACAS Early Conciliation certificate / step."
+    attributes:
+      - certificate_number
+      - day_a
+      - day_b
+      - extended_limit_date
+  - name: BasicAward
+    description: "Basic award limb under ERA 1996 s.119."
+    attributes:
+      - amount
+      - calculation
+  - name: CompensatoryAward
+    description: "Compensatory award limb under ERA 1996 s.123."
+    attributes:
+      - amount
+      - calculation
+      - mitigation_steps
+      - polkey_reduction
+      - contributory_fault_reduction
+
+edge_kinds:
+  - name: employee_party
+    from_kind: Employee
+    to_kind: Party
+    cardinality: one_to_one
+    description: "Employee is realised as a Party in the graph."
+  - name: employer_party
+    from_kind: Employer
+    to_kind: Party
+    cardinality: one_to_one
+    description: "Employer is realised as a Party in the graph."
+  - name: contract_between
+    from_kind: EmploymentContract
+    to_kind: Party
+    cardinality: many_to_many
+    description: "Contract holds between employee and employer parties."
+  - name: edt_for_contract
+    from_kind: EffectiveDateOfTermination
+    to_kind: EmploymentContract
+    cardinality: one_to_one
+    description: "EDT terminates a specific contract."
+  - name: dismissal_for_contract
+    from_kind: DismissalReason
+    to_kind: EmploymentContract
+    cardinality: one_to_one
+    description: "Dismissal reason attaches to a specific contract."
+  - name: process_factor_for_dismissal
+    from_kind: ProcessFairnessFactor
+    to_kind: DismissalReason
+    cardinality: many_to_many
+    description: "Procedural-fairness factor weighs on the dismissal reason."
+  - name: acas_for_employee
+    from_kind: AcasEarlyConciliation
+    to_kind: Employee
+    cardinality: one_to_one
+    description: "ACAS EC certificate held by the claimant employee."
+  - name: basic_award_for_employee
+    from_kind: BasicAward
+    to_kind: Employee
+    cardinality: one_to_one
+    description: "Basic award attached to the claimant."
+  - name: compensatory_award_for_employee
+    from_kind: CompensatoryAward
+    to_kind: Employee
+    cardinality: one_to_one
+    description: "Compensatory award attached to the claimant."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: DismissalReason
+    cardinality: many_to_many
+    description: "Evidence supports the asserted dismissal reason."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: ProcessFairnessFactor
+    cardinality: many_to_many
+    description: "Evidence supports a procedural-fairness factor."
+  - name: evidence_supports
+    from_kind: Evidence
+    to_kind: AcasEarlyConciliation
+    cardinality: many_to_many
+    description: "Evidence supports the ACAS EC step."
+  - name: evidence_refutes
+    from_kind: Evidence
+    to_kind: DismissalReason
+    cardinality: many_to_many
+    description: "Evidence refutes the asserted dismissal reason."
+
+cross_domain_bridges:
+  - evidence_relates_to
+  - evidence_supports
+  - evidence_refutes

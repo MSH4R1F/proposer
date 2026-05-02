@@ -1,6 +1,8 @@
 # Proposer Web Frontend
 
-Next.js 14+ frontend for the Proposer legal mediation system.
+Next.js frontend for the Proposer legal mediation system.
+
+The UI is no longer framed as a deposit-only product. Deposit remains the default supported flow, but the frontend can display domain routing results, matter clarification prompts, forum labels, and source-kind labels for adjacent housing domains as they become gated on.
 
 ## Tech Stack
 
@@ -15,6 +17,7 @@ Next.js 14+ frontend for the Proposer legal mediation system.
 flowchart TB
     subgraph Frontend["Next.js App"]
         Landing[Landing Page] --> Chat[Chat Interface]
+        Chat --> Clarifier[Matter Clarifier]
         Chat --> Prediction[Prediction Display]
     end
 
@@ -22,6 +25,7 @@ flowchart TB
         UI[shadcn/ui]
         ChatComp[Chat Components]
         PredComp[Prediction Components]
+        DomainComp[Domain/Matter Labels]
     end
 
     subgraph API["FastAPI Backend"]
@@ -30,6 +34,7 @@ flowchart TB
     end
 
     Chat --> ChatAPI
+    Clarifier --> ChatAPI
     Prediction --> PredAPI
 ```
 
@@ -41,6 +46,7 @@ flowchart TB
 | `/chat` | New intake session |
 | `/chat/[sessionId]` | Resume existing session |
 | `/prediction/[caseId]` | Prediction results |
+| `/mediation/[disputeId]/*` | Mediation, expectation, escalation, and settlement views |
 
 ## Key Components
 
@@ -51,6 +57,7 @@ flowchart TB
 - `MessageBubble` - User/assistant message styling
 - `ChatInput` - Input field with send button
 - `RoleSelector` - Tenant/Landlord selection
+- `MatterClarifier` - Domain-router clarification when a matter is ambiguous or unsupported
 - `ProgressIndicator` - 10-stage visual stepper
 - `CompletenessBar` - Progress percentage
 
@@ -61,7 +68,7 @@ flowchart TB
 - `SettlementRange` - Financial summary
 - `IssuePredictionList` - Per-issue breakdown
 - `ReasoningTrace` - Expandable reasoning steps
-- `CitationCard` - Case citation display
+- `CitationCard` - Case citation display with forum/source-kind badges
 - `LegalDisclaimer` - Prominent warning
 
 ## Getting Started
@@ -94,6 +101,7 @@ The frontend integrates with the FastAPI backend:
 ```typescript
 // Chat API
 POST /chat/start           // Start new session
+POST /chat/route           // Route/classify a matter when enabled
 POST /chat/set-role        // Set user role
 POST /chat/message         // Send message
 GET  /chat/session/{id}    // Get session state
@@ -125,6 +133,7 @@ apps/web/
 │   ├── api/                    # API client
 │   ├── hooks/                  # React hooks
 │   ├── types/                  # TypeScript types
+│   │   └── domain.ts           # Domain/forum/source labels
 │   ├── constants/              # Stage mappings
 │   └── utils/                  # Utilities
 └── [config files]
@@ -144,12 +153,15 @@ apps/web/
 9. **Summary** - Full account
 10. **Confirm** - Review and confirm
 
+The flow is still housing-first and role-aware (`tenant` / `landlord`) because the live product baseline is `housing.deposit.v1`. The domain router can ask a clarification question before or during intake when the user's opening message looks like repairs, RRO, employment, or another unsupported matter.
+
 ### Prediction Display
 - Overall outcome with confidence
 - Settlement range
 - Per-issue breakdown
 - Expandable reasoning trace
 - Case citations
+- Forum/source-kind badges
 - Legal disclaimer
 
 ## Dependencies

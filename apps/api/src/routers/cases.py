@@ -4,7 +4,7 @@ Cases router.
 Handles case management endpoints.
 """
 
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -29,6 +29,12 @@ class CaseResponse(BaseModel):
     deposit_amount: Optional[float] = None
     issues: list = []
     missing_info: list = []
+    # SHA-20 Phase 9: surface the resolved domain id + routing
+    # provenance so the frontend can render a plain-English matter
+    # label (via the matter-label map) without re-querying the router.
+    # Always optional so legacy clients keep working.
+    domain_id: Optional[str] = None
+    routing_metadata: Optional[Dict[str, Any]] = None
 
 
 class CaseSummaryResponse(BaseModel):
@@ -74,6 +80,8 @@ async def get_case(
             deposit_amount=case_file.tenancy.deposit_amount,
             issues=[i.value for i in case_file.issues],
             missing_info=case_file.missing_info,
+            domain_id=getattr(case_file, "domain_id", None),
+            routing_metadata=getattr(case_file, "routing_metadata", None),
         )
     except HTTPException:
         raise

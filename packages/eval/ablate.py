@@ -115,6 +115,26 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         default=0.20,
         help="Tolerance for amount_within_threshold metric (default 0.20 = 20%%).",
     )
+    parser.add_argument(
+        "--domain",
+        default=None,
+        help=(
+            "Optional domain id to filter the gold corpus to. When set, "
+            "the ablate run reports per-domain metrics first; the macro "
+            "aggregate is refused if any per-domain group is below "
+            "min_case_count or fails citation/hallucination thresholds "
+            "(SHA-20 Phase 7)."
+        ),
+    )
+    parser.add_argument(
+        "--min-case-count",
+        type=int,
+        default=10,
+        help=(
+            "Minimum cases per domain before macro aggregation is "
+            "permitted (default 10)."
+        ),
+    )
     args = parser.parse_args(argv)
     _validate_numeric_args(args, parser)
 
@@ -135,6 +155,22 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"Gold set at {args.gold} contains no valid cases.", file=sys.stderr)
         return 1
     gold = gold_load.cases
+
+    # SHA-20 Phase 7: optional --domain filter. Per-domain metrics MUST
+    # render before macro; refuse macro when any group is below the
+    # min_case_count or fails citation/hallucination thresholds.
+    if args.domain is not None:
+        from eval.domain import partition_by_domain
+
+        partitioned = partition_by_domain(gold)
+        gold = partitioned.get(args.domain, [])
+        if not gold:
+            print(
+                f"No gold cases found for domain {args.domain!r}; "
+                f"available: {sorted(partitioned)}",
+                file=sys.stderr,
+            )
+            return 1
 
     # 3. Load each mode's predictions
     predictions_by_mode: Dict[str, list] = {}

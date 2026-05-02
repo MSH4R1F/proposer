@@ -3,6 +3,12 @@ Main RAG Pipeline orchestrator.
 
 Coordinates PDF extraction, chunking, embedding, indexing,
 and retrieval to answer queries about tribunal cases.
+
+SHA-20 Phase 4: ``RAGPipeline`` is unchanged for the legacy deposit path
+(no ``namespace`` kwarg => behaviour identical to pre-Phase-4). When a
+:class:`domain_core.spec.RetrievalNamespace` is passed, the pipeline
+binds to that namespace's collection and forwards it to the hybrid
+retriever for cross-domain enforcement.
 """
 
 import asyncio
@@ -18,6 +24,7 @@ from .config import (
     DocumentChunk,
     QueryResult,
     RAGConfig,
+    RetrievalFilterEnvelope,
     RetrievalResult,
 )
 from .extractors.pdf_extractor import PDFExtractor
@@ -45,14 +52,23 @@ class RAGPipeline:
     - Uncertainty detection
     """
 
-    def __init__(self, config: Optional[RAGConfig] = None) -> None:
+    def __init__(
+        self,
+        config: Optional[RAGConfig] = None,
+        *,
+        namespace: Optional[Any] = None,
+    ) -> None:
         """
         Initialize the RAG pipeline.
 
         Args:
-            config: RAGConfig object, uses defaults if not provided
+            config: RAGConfig object, uses defaults if not provided.
+            namespace: Optional :class:`domain_core.spec.RetrievalNamespace`
+                this pipeline is bound to. Forwarded to the hybrid
+                retriever to enforce the cross-domain guard.
         """
         self.config = config or RAGConfig.from_env()
+        self.namespace = namespace
         self.config.ensure_directories()
 
         # Initialize components
@@ -86,7 +102,8 @@ class RAGPipeline:
             embeddings=self.embeddings,
             vectorstore=self.vectorstore,
             bm25_index=self.bm25_index,
-            config=self.config
+            config=self.config,
+            namespace=self.namespace,
         )
 
     async def ingest(
@@ -186,6 +203,12 @@ class RAGPipeline:
 
         # Rebuild BM25 index with all chunks
         logger.info("rebuilding_bm25_index")
+        existing_chunks = (
+            self.bm25_index.get_all_chunks() if self.bm25_index.is_built else []
+        )
+        chunks_by_id = {chunk.chunk_id: chunk for chunk in existing_chunks}
+        chunks_by_id.update({chunk.chunk_id: chunk for chunk in all_chunks})
+        self.bm25_index.build_index(list(chunks_by_id.values()))
         await self._rebuild_bm25_index()
 
         # Initialize retriever
@@ -245,10 +268,13 @@ class RAGPipeline:
 
         # Update BM25 index
         if self.bm25_index.is_built:
-            # Rebuild with new chunks
-            existing_docs = list(self.bm25_index._documents)
-            existing_docs.extend(chunks)
-            self.bm25_index.build_index(existing_docs)
+            # Rebuild with existing + new chunks. ``get_all_chunks`` works in
+            # both full and lite modes, unlike the private ``_documents`` list.
+            chunks_by_id = {
+                chunk.chunk_id: chunk for chunk in self.bm25_index.get_all_chunks()
+            }
+            chunks_by_id.update({chunk.chunk_id: chunk for chunk in chunks})
+            self.bm25_index.build_index(list(chunks_by_id.values()))
         else:
             self.bm25_index.build_index(chunks)
 
@@ -269,19 +295,28 @@ class RAGPipeline:
         query: str,
         top_k: int = 5,
         where: Optional[Dict[str, Any]] = None,
-        query_region: Optional[str] = None
+        query_region: Optional[str] = None,
+        *,
+        filters: Optional[RetrievalFilterEnvelope] = None,
+        requesting_namespace: Optional[Any] = None,
     ) -> QueryResult:
         """
         Retrieve similar cases for a query.
 
         Args:
-            query: Natural language query describing the case
-            top_k: Number of results to return
-            where: Optional metadata filters (year, region, case_type)
-            query_region: User's region for re-ranking boost
+            query: Natural language query describing the case.
+            top_k: Number of results to return.
+            where: Optional legacy metadata filters (year, region, case_type).
+            query_region: User's region for re-ranking boost.
+            filters: SHA-20 Phase 4
+                :class:`~rag_engine.config.RetrievalFilterEnvelope`. When
+                supplied, takes precedence over ``where`` and is
+                forwarded as a single envelope to both BM25 and Chroma.
+            requesting_namespace: Caller's namespace, used by the
+                cross-domain guard.
 
         Returns:
-            QueryResult with retrieved cases and confidence
+            QueryResult with retrieved cases and confidence.
         """
         start_time = time.time()
 
@@ -297,11 +332,15 @@ class RAGPipeline:
                 retrieval_time_ms=0.0
             )
 
-        # Get initial candidates from hybrid retrieval
+        # Get initial candidates from hybrid retrieval. Phase-4 callers
+        # pass ``filters``; legacy callers pass ``where``. The retriever
+        # ensures both backends apply the same envelope.
         candidates = await self._retriever.retrieve(
             query=query,
             top_k=self.config.initial_retrieval_k,
-            where=where
+            where=where,
+            filters=filters,
+            requesting_namespace=requesting_namespace,
         )
 
         if not candidates:

@@ -1,15 +1,18 @@
 # Knowledge Graph Builder
 
-Structured case representation for legal reasoning.
+Structured, domain-aware case representation for legal reasoning.
+
+The graph builder is no longer deposit-only. It can stamp graphs with a `domain_id`, propagate that domain to nodes/edges, and validate against per-domain ontology rules so forum/remedy logic does not bleed between deposit, repairs, Property Chamber RRO, and employment research domains.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
     CaseFile[CaseFile] --> Builder[GraphBuilder]
+    Domain[DomainSpec / Ontology] --> Builder
     Builder --> Validate[Validators]
     Validate --> KG[(KnowledgeGraph)]
-    KG --> Store[JSONStore]
+    KG --> Store[Postgres / JSON rollback]
 ```
 
 ## Node Types
@@ -62,23 +65,35 @@ classDiagram
 | `PARTY_CLAIMS` | Party | ClaimedAmount | Party makes claim |
 | `CLAIM_FOR_ISSUE` | ClaimedAmount | Issue | Claim relates to issue |
 
+## Domain Metadata
+
+Knowledge graphs carry reproducibility fields:
+
+| Field | Purpose |
+|-------|---------|
+| `domain_id` | Primary domain, e.g. `housing.deposit.v1` |
+| `domain_version` | Domain semantic version |
+| `domain_spec_hash` | Stable hash of the domain config used at prediction time |
+| `ontology_hash` | Stable hash of the ontology used for validation |
+
+Nodes and edges can also carry `domain_id`, `forum`, and source references. Cross-domain edges are rejected unless an ontology explicitly allows a bridge.
+
 ## Usage
 
 ```python
 from kg_builder import GraphBuilder, JSONGraphStore
 from llm_orchestrator.models import CaseFile
 
-# Build graph from case file
-builder = GraphBuilder()
+# Build graph from case file for a specific domain
+builder = GraphBuilder(domain_id="housing.repairs_social.v1")
 kg = builder.build(case_file)
 
 # Validate
 print(f"Consistent: {kg.is_consistent}")
 print(f"Errors: {kg.validation_errors}")
 
-# Save
-store = JSONGraphStore("./data/kg")
-store.save(kg)
+# Persist through the API repository layer in normal app code.
+# JSONGraphStore remains useful for local fixtures/rollback.
 ```
 
 ## Validators

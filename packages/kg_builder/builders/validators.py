@@ -10,7 +10,7 @@ warnings and never raise.
 """
 
 from datetime import date, timedelta
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import structlog
 
@@ -55,7 +55,12 @@ class KGValidator:
     - Data completeness
     """
 
-    def __init__(self, strict: bool = False, raise_on_error: bool = True):
+    def __init__(
+        self,
+        strict: bool = False,
+        raise_on_error: bool = True,
+        ontology: Optional["Any"] = None,
+    ):
         """
         Initialize the validator.
 
@@ -66,9 +71,16 @@ class KGValidator:
                 when any hard-logic violation is detected. Set False for
                 read-only inspection (admin dashboards, tests that want to
                 inspect the violations list directly).
+            ontology: optional :class:`packages.kg_builder.ontology.spec.OntologySpec`
+                to validate ``kg`` against. When provided, ontology-rule
+                violations (unknown node kinds, invalid edge endpoints,
+                un-whitelisted cross-domain edges) are appended to
+                ``kg.validation_errors`` and trigger the same hard-fail
+                behaviour as SHA-35 temporal violations.
         """
         self.strict = strict
         self.raise_on_error = raise_on_error
+        self.ontology = ontology
 
     def validate(self, kg: KnowledgeGraph) -> KnowledgeGraph:
         """
@@ -93,6 +105,7 @@ class KGValidator:
         self._validate_evidence_coverage(kg)
         self._validate_claim_support(kg)
         self._validate_required_nodes(kg)
+        self._validate_against_ontology(kg)
 
         # Determine consistency
         kg.is_consistent = len(kg.validation_errors) == 0
@@ -275,6 +288,28 @@ class KGValidator:
                 kg.validation_warnings.append(
                     f"Claim '{claim.description[:50]}' has no supporting evidence or issue link"
                 )
+
+    def _validate_against_ontology(self, kg: KnowledgeGraph) -> None:
+        """SHA-61 / SHA-119: ontology rule check (additive, opt-in).
+
+        Only runs when ``self.ontology`` is set. Errors are added to
+        ``kg.validation_errors``; if ``raise_on_error`` is True they
+        raise :class:`KGValidationError` along with the existing SHA-35
+        temporal/evidence errors.
+        """
+        if self.ontology is None:
+            return
+        # Local import to avoid a hard dependency between the builders
+        # module and the ontology sub-package at import time.
+        from kg_builder.ontology.validators import (
+            validate_graph_against_ontology,
+        )
+
+        errs = validate_graph_against_ontology(
+            kg, self.ontology, raise_on_error=False
+        )
+        for e in errs:
+            kg.validation_errors.append(f"[ontology] {e}")
 
     def _validate_required_nodes(self, kg: KnowledgeGraph) -> None:
         """Check that expected nodes exist — informational, not blocking."""

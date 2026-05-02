@@ -13,7 +13,7 @@ from chromadb.config import Settings
 import structlog
 
 from .base import BaseVectorStore, VectorSearchResult
-from ..config import DocumentChunk, RAGConfig
+from ..config import DocumentChunk, RAGConfig, RetrievalFilterEnvelope
 
 logger = structlog.get_logger()
 
@@ -131,18 +131,29 @@ class ChromaStore(BaseVectorStore):
         self,
         embedding: List[float],
         n_results: int = 10,
-        where: Optional[Dict[str, Any]] = None
+        where: Optional[Dict[str, Any]] = None,
+        *,
+        filters: Optional[RetrievalFilterEnvelope] = None,
     ) -> List[VectorSearchResult]:
         """
         Query for similar vectors.
 
         Args:
-            embedding: Query embedding vector
-            n_results: Number of results to return
-            where: Optional metadata filter (e.g., {"year": 2023})
+            embedding: Query embedding vector.
+            n_results: Number of results to return.
+            where: Legacy raw ChromaDB-style filter dict (e.g., ``{"year": 2023}``).
+                Backward-compat path used by the deposit pipeline.
+            filters: SHA-20 Phase 4
+                :class:`~rag_engine.config.RetrievalFilterEnvelope`. When
+                provided, takes precedence over ``where`` and is the
+                envelope the BM25 side must also receive — see
+                ``HybridRetriever`` for enforcement.
 
         Returns:
-            List of search results ordered by similarity (highest first)
+            List of search results ordered by similarity (highest first).
+            Phase-4 filters that cannot be expressed in Chroma's
+            where-clause (e.g. ``matter_type``) are applied in Python on
+            the result set so semantic + keyword backends agree.
         """
         self._stats["queries"] += 1
 
@@ -153,9 +164,15 @@ class ChromaStore(BaseVectorStore):
             "include": ["documents", "metadatas", "distances"]
         }
 
-        if where:
-            # Convert where clause for ChromaDB
-            query_kwargs["where"] = self._build_where_clause(where)
+        chroma_where: Optional[Dict[str, Any]]
+        if filters is not None:
+            chroma_where = filters.to_chroma_where()
+        elif where:
+            chroma_where = self._build_where_clause(where)
+        else:
+            chroma_where = None
+        if chroma_where:
+            query_kwargs["where"] = chroma_where
 
         # Execute query
         results = self._collection.query(**query_kwargs)
@@ -170,12 +187,28 @@ class ChromaStore(BaseVectorStore):
                 distance = results["distances"][0][i] if results["distances"] else 0
                 similarity = 1 - distance
 
+                meta = (
+                    results["metadatas"][0][i]
+                    if results["metadatas"]
+                    else {}
+                ) or {}
                 search_results.append(VectorSearchResult(
                     chunk_id=chunk_id,
                     text=results["documents"][0][i] if results["documents"] else "",
                     score=similarity,
-                    metadata=results["metadatas"][0][i] if results["metadatas"] else {}
+                    metadata=meta,
                 ))
+
+        # Phase-4 post-filter for fields Chroma can't express in where.
+        # Currently this is matter_type (stored as "|"-joined string).
+        # Applying the same envelope here as BM25 keeps the two backends
+        # aligned. matches_metadata also re-checks excluded_source_ids /
+        # date filters, which is harmless since they were already applied
+        # by Chroma's where; the duplication is the correctness guarantee.
+        if filters is not None and not filters.is_empty():
+            search_results = [
+                r for r in search_results if filters.matches_metadata(r.metadata)
+            ]
 
         logger.debug(
             "chroma_query_complete",

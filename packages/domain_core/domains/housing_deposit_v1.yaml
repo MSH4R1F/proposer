@@ -1,0 +1,134 @@
+# Domain: housing.deposit.v1
+#
+# This is the compatibility baseline (audit decision D1). Until the canonical
+# `data/gold_standard/housing_v1.jsonl` is restored to the working tree
+# (audit decision D2), this spec stays at stage=research and the runtime
+# launch gate is fail-closed regardless of stage.
+#
+# Audit decision D3: deposit_deduction and deposit_non_protection are
+# explicitly split matter_types. Downstream code MUST NOT macro-average
+# across them. Audit decision D6 keeps deposit_non_protection unsupported
+# for public/beta until a separate gate artifact is signed.
+#
+# Retrieval namespace deliberately preserves the legacy single namespace
+# (collection: tribunal_cases, BM25 path: data/embeddings/bm25_index.pkl,
+# corpus root: data/raw/bailii) so existing code paths continue to work.
+# Per audit Finding 2, the BAILII corpus on disk is functionally an
+# RRO + AST corpus today; Phase 4 ingestion (SHA-120) must re-state this
+# honestly with a new corpus_version.
+
+id: housing.deposit.v1
+family: housing
+domain_version: v1
+schema_version: 1
+display_name: "Housing - Deposit Disputes (v1)"
+user_facing_name: "Tenancy deposit dispute"
+stage: research
+jurisdiction:
+  - GB-ENG
+  - GB-WLS
+forums:
+  - deposit_scheme_adjudication
+  - county_court
+forum_profiles:
+  - forum: deposit_scheme_adjudication
+    source_publishers:
+      - bailii
+    source_kinds:
+      - case_decision
+      - guidance
+    citation_kinds:
+      - retrieved_legal_source
+      - user_fact
+      - uploaded_evidence
+      - statute_or_guidance
+    matter_types:
+      - deposit_deduction
+    remedies:
+      - deduction_allowed
+      - deduction_disallowed
+      - deposit_return
+      - partial_deduction
+    output_framing: "deposit-scheme adjudication outcome analysis based on tribunal decisions"
+    citation_label: "Tribunal decision"
+    prohibited_phrases:
+      - "the court will award"
+      - "we recommend you sue"
+      - "you should accept"
+    required_disclaimers:
+      - "This is legal information based on similar published decisions, not legal advice."
+  - forum: county_court
+    source_publishers:
+      - bailii
+    source_kinds:
+      - case_decision
+      - statute
+    citation_kinds:
+      - retrieved_legal_source
+      - statute_or_guidance
+      - user_fact
+      - uploaded_evidence
+    matter_types:
+      - deposit_non_protection
+    remedies:
+      - statutory_penalty
+      - deposit_return
+    output_framing: "county court Housing Act 2004 s.214 non-protection penalty analysis"
+    citation_label: "County court decision"
+    prohibited_phrases:
+      - "the court will award"
+      - "we recommend you sue"
+      - "you should accept"
+    required_disclaimers:
+      - "This is legal information based on similar published decisions, not legal advice."
+party_roles:
+  - tenant
+  - landlord
+  - letting_agent
+matter_types:
+  - deposit_deduction
+  - deposit_non_protection
+remedies:
+  - deduction_allowed
+  - deduction_disallowed
+  - deposit_return
+  - partial_deduction
+  - statutory_penalty
+intake_schema_ref: ref://intake_schema/housing.deposit.v1
+case_file_adapter_ref: ref://case_file_adapter/housing.deposit.v1
+ontology_ref: ref://ontology/housing.deposit.v1
+prompt_pack_ref: ref://prompt_pack/housing.deposit.v1
+retrieval_namespaces:
+  - namespace_id: housing_deposit_v1_legacy
+    vector_collection: tribunal_cases
+    bm25_index_path: data/embeddings/bm25_index.pkl
+    corpus_root: data/raw/bailii
+    chunk_kinds:
+      - document_chunk
+    source_publishers:
+      - bailii
+    source_kinds:
+      - case_decision
+    forums:
+      - deposit_scheme_adjudication
+      - county_court
+    allowed_cross_namespace_ids: []
+    metadata_filters: {}
+    corpus_version: legacy_2025_pre_sha20
+eval_gate:
+  gold_set_path: data/gold_standard/housing_v1.jsonl
+  min_cases: 50
+  required_metrics:
+    accuracy: 0.70
+    brier_score_max: 0.20
+  max_hallucination_rate: 0.02
+  min_citation_validity: 0.98
+  min_abstention_precision: 0.80
+safety_notes:
+  - "Audit D2: launch gate is fail-closed until housing_v1.jsonl is restored."
+  - "Audit D3: deposit_deduction and deposit_non_protection are distinct matters - never macro-average."
+  - "Audit D6: deposit_non_protection remains unsupported on public/beta paths."
+temporal_law_markers:
+  - label: "Housing Act 2004 ss.213-215 (deposit protection regime)"
+    effective_date: "2007-04-06"
+    note: "Statutory deposit protection requirement; underpins non-protection penalty branch."

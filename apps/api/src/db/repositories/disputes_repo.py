@@ -9,6 +9,10 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.src.db.models import DisputeRow
+from apps.api.src.db.repositories._domain_meta import (
+    extract_domain_block as _extract_domain_block,
+    extract_forum as _extract_forum,
+)
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
 from packages.llm_orchestrator.models.dispute import DisputeCase
 
@@ -58,6 +62,7 @@ class DisputesRepo:
 
     async def save(self, dispute: DisputeCase, *, expected_version: Optional[int] = None) -> None:
         payload = dispute.model_dump(mode="json")
+        domain = _extract_domain_block(payload)
         values = dict(
             dispute_id=dispute.dispute_id,
             invite_code=dispute.invite_code,
@@ -74,6 +79,12 @@ class DisputesRepo:
             deposit_amount=dispute.deposit_amount,
             cached_prediction_id=None,
             prediction_cache_key=None,
+            domain_id=domain["domain_id"],
+            domain_version=domain["domain_version"],
+            forum=_extract_forum(payload),
+            matter_types=domain["matter_types"],
+            routing_confidence=domain["routing_confidence"],
+            routing_metadata=domain["routing_metadata"],
             payload=payload,
         )
         if expected_version is not None:

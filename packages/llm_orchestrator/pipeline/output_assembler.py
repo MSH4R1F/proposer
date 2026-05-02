@@ -20,6 +20,13 @@ from ..models.prediction_v2 import (
 logger = structlog.get_logger()
 
 
+# SHA-20 Phase 6 (audit D3): the deposit_protection IssueType is overloaded
+# across two materially different matters. Route penalty-branch logic ONLY
+# when the matter_type is explicitly the non-protection penalty matter.
+_DEPOSIT_DEDUCTION_MATTER = "deposit_deduction"
+_DEPOSIT_NON_PROTECTION_MATTER = "deposit_non_protection"
+
+
 class OutputAssembler:
     def assemble(
         self,
@@ -29,7 +36,15 @@ class OutputAssembler:
         retrieval_results: Dict[IssueType, IssueRetrievalResult],
         verification: VerificationResult,
         pipeline_metadata: PipelineMetadata,
+        *,
+        matter_type: Optional[str] = None,
     ) -> PredictionResult:
+        # SHA-20 Phase 6 (audit D3): resolve the matter_type so the
+        # deposit_protection penalty branch (1x-3x) only fires for the
+        # non-protection matter. For backwards compat with pre-Phase-6
+        # predictions whose CaseFile carries no matter information, default
+        # to deposit_deduction and emit a structured warning.
+        resolved_matter_type = self._resolve_matter_type(case_file, matter_type)
         issue_map: Dict[IssueType, IssueContext] = {
             issue.issue_type: issue for issue in issues
         }
@@ -50,7 +65,14 @@ class OutputAssembler:
                 continue
 
             non_uncertain_for_conf.append(prediction)
-            is_penalty_issue = prediction.issue_type == IssueType.DEPOSIT_PROTECTION
+            # Audit D3 split: penalty branch only when matter_type explicitly
+            # signals the non-protection penalty matter. Otherwise (the
+            # default deposit_deduction matter) treat deposit_protection
+            # outcomes as standard issue-by-issue recovery.
+            is_penalty_issue = (
+                prediction.issue_type == IssueType.DEPOSIT_PROTECTION
+                and resolved_matter_type == _DEPOSIT_NON_PROTECTION_MATTER
+            )
 
             if prediction.outcome == IssueOutcome.TENANT_WINS:
                 if is_penalty_issue:
@@ -209,6 +231,12 @@ class OutputAssembler:
             pipeline_metadata=pipeline_metadata,
         )
 
+        # Stamp the resolved matter_type onto metadata so downstream callers
+        # (and the regression assertions in test_output_assembler_matter_split)
+        # can verify which branch was taken.
+        prediction.metadata["matter_type"] = resolved_matter_type
+        prediction.metadata["penalty_recovery"] = penalty_recovery
+
         self._validate_prediction(prediction, verification)
         logger.info(
             "output_assembled",
@@ -217,6 +245,8 @@ class OutputAssembler:
             confidence=prediction.overall_confidence,
             issues=len(issue_predictions),
             verified_citations=len(verification.verified_citations),
+            matter_type=resolved_matter_type,
+            penalty_recovery=penalty_recovery,
         )
         return prediction
 
@@ -427,6 +457,38 @@ class OutputAssembler:
                         "verified case law references."
                     ]
                 )
+
+    @staticmethod
+    def _resolve_matter_type(
+        case_file: CaseFile,
+        explicit: Optional[str],
+    ) -> str:
+        """Pick the effective matter_type for the deposit-domain branch split.
+
+        Priority:
+            1. ``explicit`` argument (from the prediction engine / runtime).
+            2. ``case_file.metadata['matter_type']`` if set.
+            3. First entry of ``case_file.matter_types`` if non-empty.
+            4. Default ``deposit_deduction`` (audit D3 backwards-compat
+               default — a pre-Phase-6 persisted CaseFile has none of the
+               above, and the established behaviour for those predictions
+               is the deposit-deduction branch).
+        """
+        if explicit:
+            return explicit
+        meta = getattr(case_file, "metadata", None)
+        if isinstance(meta, dict):
+            value = meta.get("matter_type")
+            if isinstance(value, str) and value:
+                return value
+        matter_types = getattr(case_file, "matter_types", None)
+        if matter_types:
+            return matter_types[0]
+        logger.warning(
+            "matter_type_missing_defaulting_to_deposit_deduction",
+            case_id=getattr(case_file, "case_id", "unknown"),
+        )
+        return _DEPOSIT_DEDUCTION_MATTER
 
     @staticmethod
     def _get_value(obj: Any, key: str, default: Any = None) -> Any:

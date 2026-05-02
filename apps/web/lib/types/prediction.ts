@@ -22,6 +22,14 @@ export interface Citation {
   similarity_score: number;
   verified?: boolean;
   source_url?: string;
+  /**
+   * SHA-20 Phase 9: forum + source-kind metadata. Frontends MUST
+   * render these via `forumLabelFor()` / `sourceKindLabelFor()` rather
+   * than displaying the raw enum values.
+   */
+  forum?: string | null;
+  source_kind?: string | null;
+  source_publisher?: string | null;
 }
 
 export interface ReasoningStep {
@@ -79,6 +87,12 @@ export interface PredictionResult {
   rag_confidence?: number;
   retrieval_quality?: string;
   citation_verification?: CitationVerification;
+  /**
+   * SHA-20 Phase 9: domain provenance for the prediction. Frontends
+   * render `matterLabelFor(domain_id)`, never the raw id.
+   */
+  domain_id?: string | null;
+  routing_metadata?: import('./domain').RoutingMetadata | null;
   disclaimer: string;
 }
 

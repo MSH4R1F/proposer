@@ -45,6 +45,8 @@ class PredictionEngineV2:
         min_cases_required: int = 3,
         proposition_retriever: Optional[Any] = None,
         retrieval_strategy: RetrievalStrategy = RetrievalStrategy.CHUNK_RAG,
+        *,
+        prompt_pack: Optional[Any] = None,
     ):
         self.llm = llm_client
         self.rag = rag_pipeline
@@ -52,6 +54,11 @@ class PredictionEngineV2:
         self.min_cases_required = min_cases_required
         self.proposition_retriever = proposition_retriever
         self.retrieval_strategy = retrieval_strategy
+        # SHA-20 Phase 6: optional prompt pack. When None, the legacy IRAC
+        # prompts are used (deposit baseline). When set, the pack's
+        # prediction_system text takes over and downstream callers can read
+        # ``self.prompt_pack`` to introspect the active pack/hash.
+        self.prompt_pack = prompt_pack
 
         self.issue_decomposer = IssueDecomposer()
         self.issue_retriever = IssueRetriever(
@@ -59,7 +66,7 @@ class PredictionEngineV2:
             min_cases_required,
             proposition_retriever=proposition_retriever,
         )
-        self.issue_predictor = IssuePredictor(llm_client)
+        self.issue_predictor = IssuePredictor(llm_client, prompt_pack=prompt_pack)
         self.citation_verifier = CitationVerifier()
         self.output_assembler = OutputAssembler()
 
@@ -86,6 +93,8 @@ class PredictionEngineV2:
         top_k: int = 10,
         mode: PredictionMode = PredictionMode.HYBRID,
         retrieval_strategy: Optional[RetrievalStrategy] = None,
+        *,
+        matter_type: Optional[str] = None,
     ) -> PredictionResult:
         start_time = time.time()
         strategy = retrieval_strategy or self.retrieval_strategy
@@ -161,6 +170,7 @@ class PredictionEngineV2:
                 retrieval_results={},
                 verification=CitationVerifier.empty_verification(),
                 pipeline_metadata=metadata,
+                matter_type=matter_type,
             )
 
         # ── Step 2: Per-Issue Retrieval (parallel retriever calls) ──
@@ -253,6 +263,7 @@ class PredictionEngineV2:
             retrieval_results=retrieval_results,
             verification=verification,
             pipeline_metadata=metadata,
+            matter_type=matter_type,
         )
 
         logger.info(
