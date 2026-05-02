@@ -209,6 +209,31 @@ class LabelerModel(StrictBaseModel):
     api_version: Optional[str] = None
 
 
+_PROVENANCE_SOURCES = Literal[
+    "deterministic_manifest",
+    "model_agreement",
+    "human_mandatory_review",
+    "human_disagreement_adjudication",
+    "human_agreed_cell_audit",
+    "human_only_anchor",
+]
+
+
+class FieldLabelProvenance(StrictBaseModel):
+    """Per-cell audit trail for a single ``GoldCase`` field.
+
+    ``field_path`` uses the granular notation defined in §4 of the sparring
+    plan (e.g. ``"per_issue[issue=damages].winner"``); see
+    ``packages/eval/auto_label/disagreement.py`` for the canonical builder.
+    """
+
+    field_path: str = Field(min_length=1)
+    source: _PROVENANCE_SOURCES
+    source_spans: list[Provenance] = Field(default_factory=list)
+    match_strategy: Optional[str] = None
+    reviewer_rationale: Optional[str] = None
+
+
 class GoldCase(StrictBaseModel):
     """A single annotated tribunal case in the gold-standard evaluation set.
 
