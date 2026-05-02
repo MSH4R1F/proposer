@@ -93,6 +93,8 @@ If a gate verification fails, do **not** disable the gate. Instead:
 
 See [`docs/eval/decision-log.md`](decision-log.md) for the audit-D2
 context and the rationale for fail-closed rather than soft-failing.
+See [`docs/sha-20/rollback.md`](../sha-20/rollback.md) for the full
+five-path rollback playbook (domain / gate / prompt-pack / corpus / DB).
 
 ## CLI
 
