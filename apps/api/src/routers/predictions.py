@@ -91,6 +91,13 @@ class PredictionResponse(BaseModel):
     citation_verification: Optional[Dict[str, Any]] = None
     pipeline_metadata: Optional[Dict[str, Any]] = None
 
+    # SHA-20 Phase 9: domain provenance. ``domain_id`` is for tracing.
+    # The frontend MUST render ``forum_label`` / matter labels rather
+    # than the raw id. Both fields are optional so legacy clients keep
+    # working.
+    domain_id: Optional[str] = None
+    routing_metadata: Optional[Dict[str, Any]] = None
+
     disclaimer: str
 
 
@@ -98,6 +105,8 @@ def _prediction_to_response(
     prediction: Union[PredictionResult, Dict[str, Any]],
     *,
     include_reasoning: bool = True,
+    domain_id: Optional[str] = None,
+    routing_metadata: Optional[Dict[str, Any]] = None,
 ) -> PredictionResponse:
     """Serialize persisted and freshly generated predictions with one DTO shape."""
     if isinstance(prediction, dict):
@@ -176,6 +185,8 @@ def _prediction_to_response(
             if prediction.pipeline_metadata
             else None
         ),
+        domain_id=domain_id,
+        routing_metadata=routing_metadata,
         disclaimer=prediction.disclaimer,
     )
 
@@ -307,6 +318,8 @@ async def generate_prediction(
         return _prediction_to_response(
             prediction,
             include_reasoning=request.include_reasoning,
+            domain_id=domain_runtime.domain_id,
+            routing_metadata=dict(domain_runtime.routing_metadata),
         )
 
     except HTTPException:
