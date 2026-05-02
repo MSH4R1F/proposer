@@ -279,6 +279,7 @@ data/*
 !data/regression/
 !data/eval/
 !data/eval_artifacts/
+data/eval_artifacts/runs/
 
 # ===================================
 # Multi-window orchestration
