@@ -367,7 +367,9 @@ class IssueDecomposer:
         if issue_type == IssueType.DEPOSIT_PROTECTION and lease_node is not None:
             deposit_protected = getattr(lease_node, "deposit_protected", None)
             scheme = getattr(lease_node, "deposit_scheme", None)
-            start_date = getattr(lease_node, "start_date", None)
+            start_date = getattr(lease_node, "deposit_received_date", None) or getattr(
+                lease_node, "start_date", None
+            )
             protection_date = getattr(lease_node, "protection_date", None)
             prescribed_info_provided = getattr(
                 lease_node, "prescribed_info_provided", None
@@ -396,7 +398,7 @@ class IssueDecomposer:
             ):
                 days_late = (prescribed_info_date - start_date).days
                 constraints.append(
-                    f"Prescribed information served late ({days_late} days after tenancy start)"
+                    f"Prescribed information served late ({days_late} days after deposit receipt or tenancy-start fallback)"
                 )
 
         if issue_type == IssueType.RENT_ARREARS and lease_node is not None:
@@ -422,10 +424,11 @@ class IssueDecomposer:
 
         tenancy = case_file.tenancy
         if issue_type == IssueType.DEPOSIT_PROTECTION:
+            deadline_anchor = tenancy.deposit_received_date or tenancy.start_date
             if tenancy.deposit_protected is False:
                 constraints.append("Deposit not protected")
-            elif tenancy.start_date and tenancy.protection_date:
-                if (tenancy.protection_date - tenancy.start_date).days > 30:
+            elif deadline_anchor and tenancy.protection_date:
+                if (tenancy.protection_date - deadline_anchor).days > 30:
                     constraints.append("deposit not protected within 30 days")
                 elif tenancy.deposit_scheme:
                     constraints.append(
@@ -440,13 +443,13 @@ class IssueDecomposer:
 
             if tenancy.prescribed_info_provided is False:
                 constraints.append("Prescribed information not provided")
-            elif tenancy.start_date and tenancy.prescribed_info_date:
+            elif deadline_anchor and tenancy.prescribed_info_date:
                 days_after_start = (
-                    tenancy.prescribed_info_date - tenancy.start_date
+                    tenancy.prescribed_info_date - deadline_anchor
                 ).days
                 if days_after_start > 30:
                     constraints.append(
-                        f"Prescribed information served late ({days_after_start} days after tenancy start)"
+                        f"Prescribed information served late ({days_after_start} days after deposit receipt or tenancy-start fallback)"
                     )
 
         if issue_type == IssueType.RENT_ARREARS and tenancy.end_date:

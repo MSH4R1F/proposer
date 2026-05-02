@@ -67,14 +67,13 @@ def test_langfuse_logger_falls_back_to_noop_without_sdk() -> None:
 
 def test_langfuse_logger_records_steps_through_base() -> None:
     """With _client=None, record_step still appends to the in-memory trace."""
-    # Simulate absent SDK: sys.modules has no "langfuse" key, so the lazy
-    # `from langfuse import Langfuse` inside __init__ should ImportError.
-    saved = sys.modules.pop("langfuse", None)
-    try:
+    # Simulate an unavailable SDK deterministically. Removing sys.modules is
+    # insufficient when langfuse is installed in the active environment because
+    # Python can simply import it again from site-packages.
+    broken_module = MagicMock()
+    broken_module.Langfuse = MagicMock(side_effect=ImportError("forced"))
+    with patch.dict(sys.modules, {"langfuse": broken_module}):
         logger = LangFuseTraceLogger(public_key="x", secret_key="y", host="z")
-    finally:
-        if saved is not None:
-            sys.modules["langfuse"] = saved
 
     assert logger._client is None
 

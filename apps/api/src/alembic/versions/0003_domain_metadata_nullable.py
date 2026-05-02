@@ -4,8 +4,12 @@ Adds domain routing and reproducibility columns as nullable, then backfills
 existing rows to ``housing.deposit.v1`` (D1 of the Phase 0 audit). Indexes are
 created here so the metadata is queryable as soon as it is written.
 
-A follow-up revision (``0003_domain_metadata_not_null``) tightens the columns
+A follow-up revision (``0004_domain_metadata_not_null``) tightens the columns
 that must be NOT NULL once application code is deployed and writing them.
+
+Chains after ``0002_add_proposition_kg`` (SHA-36 Phase 2). The proposition KG
+tables are independent of the domain metadata columns, so the order is
+purely chronological.
 
 Notes:
 - Uses TEXT/JSONB columns rather than Postgres ENUMs for ``domain_id``,
@@ -14,9 +18,9 @@ Notes:
 - ``forum`` is left NULL after backfill — the Phase 0 audit explicitly notes
   the deposit corpus on disk does not cleanly identify a forum.
 
-Revision ID: 0002
-Revises: 0001
-Create Date: 2026-05-01
+Revision ID: 0003
+Revises: 0002
+Create Date: 2026-05-02
 """
 
 from __future__ import annotations
@@ -25,8 +29,8 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.postgresql import JSONB
 
-revision = "0002"
-down_revision = "0001"
+revision = "0003"
+down_revision = "0002"
 branch_labels = None
 depends_on = None
 

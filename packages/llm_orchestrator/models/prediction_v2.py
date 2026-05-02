@@ -38,6 +38,19 @@ class PredictionMode(str, Enum):
     LLM_ONLY = "llm_only"
 
 
+class RetrievalStrategy(str, Enum):
+    """Precedent retrieval strategy for PredictionEngineV2.
+
+    Kept separate from PredictionMode so KG/RAG ablations do not turn into a
+    combinatorial enum once proposition retrieval is evaluated.
+    """
+
+    CHUNK_RAG = "chunk_rag"
+    PROPOSITION_DIRECT = "proposition_direct"
+    PROPOSITION_PAGERANK = "proposition_pagerank"
+    HYBRID_CHUNK_PROPOSITION = "hybrid_chunk_proposition"
+
+
 IssueType = DisputeIssue
 
 
@@ -74,6 +87,7 @@ class Citation(BaseModel):
     year: int
     region: Optional[str] = None
     paragraph: Optional[str] = None
+    proposition_id: Optional[str] = None
     quote: str
     relevance: str
     similarity_score: float = Field(default=0.0, ge=0, le=1)
@@ -184,6 +198,7 @@ class PipelineMetadata(BaseModel):
     issues_with_sufficient_cases: int = 0
     fallbacks_used: List[str] = Field(default_factory=list)
     mode: str = "hybrid"  # PredictionMode value — surfaced in trace for SHA-68
+    retrieval_strategy: str = RetrievalStrategy.CHUNK_RAG.value
 
 
 class PredictionResult(BaseModel):

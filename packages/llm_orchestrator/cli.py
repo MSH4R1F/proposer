@@ -13,7 +13,8 @@ import click
 import structlog
 
 from .config import LLMConfig
-from .clients.claude_client import ClaudeClient
+from .clients.factory import get_llm_client
+from .clients.types import LLMProvider, LLMRole
 from .agents.intake_agent import IntakeAgent
 from .models.case_file import PartyRole
 from .models.conversation import ConversationState
@@ -64,13 +65,17 @@ def chat(ctx, role: Optional[str], save: Optional[str]):
     Type 'save' to save the case file.
     """
     config = ctx.obj["config"]
+    role_config = config.role_config(LLMRole.INTAKE)
 
-    if not config.anthropic_api_key:
+    if role_config.provider == LLMProvider.ANTHROPIC and not config.anthropic_api_key:
         click.echo("Error: ANTHROPIC_API_KEY not set in environment", err=True)
+        return
+    if role_config.provider == LLMProvider.OPENAI and not config.openai_api_key:
+        click.echo("Error: OPENAI_API_KEY not set in environment", err=True)
         return
 
     # Initialize components
-    llm_client = ClaudeClient(api_key=config.anthropic_api_key)
+    llm_client = get_llm_client(LLMRole.INTAKE, config=config)
     agent = IntakeAgent(llm_client)
 
     # Pre-set role if provided
@@ -179,12 +184,12 @@ def analyze(ctx, case_file: str):
             click.echo(f"Protection Status: {status}")
 
         if cf.issues:
-            click.echo(f"\nDispute Issues:")
+            click.echo("\nDispute Issues:")
             for issue in cf.issues:
                 click.echo(f"  - {issue.value}")
 
         if cf.evidence:
-            click.echo(f"\nEvidence:")
+            click.echo("\nEvidence:")
             for ev in cf.evidence:
                 click.echo(f"  - {ev.type.value}: {ev.description}")
 
@@ -196,7 +201,7 @@ def analyze(ctx, case_file: str):
 
         # Show query string for RAG
         query = cf.to_query_string()
-        click.echo(f"\nRAG Query Preview:")
+        click.echo("\nRAG Query Preview:")
         click.echo(f"  {query[:200]}...")
 
     except Exception as e:
@@ -206,22 +211,40 @@ def analyze(ctx, case_file: str):
 @cli.command()
 @click.pass_context
 def test_connection(ctx):
-    """Test connection to Claude API."""
+    """Test connection to the configured prediction LLM provider."""
     config = ctx.obj["config"]
+    role_config = config.role_config(LLMRole.PREDICTION)
 
-    if not config.anthropic_api_key:
+    if role_config.provider == LLMProvider.ANTHROPIC and not config.anthropic_api_key:
         click.echo("Error: ANTHROPIC_API_KEY not set", err=True)
         return
+    if role_config.provider == LLMProvider.OPENAI and not config.openai_api_key:
+        click.echo("Error: OPENAI_API_KEY not set", err=True)
+        return
 
-    click.echo("Testing Claude API connection...")
+    click.echo(
+        "Testing "
+        f"{role_config.provider.value} API connection "
+        f"({role_config.primary_model})..."
+    )
 
     try:
-        client = ClaudeClient(api_key=config.anthropic_api_key)
-        response = run_async(client.generate(
-            messages=[{"role": "user", "content": "Hello, please respond with 'Connection successful!'"}],
-            system_prompt="You are a helpful assistant. Respond briefly.",
-            max_tokens=50,
-        ))
+        client = get_llm_client(LLMRole.PREDICTION, config=config)
+        response = run_async(
+            client.generate(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": (
+                            "Hello, please respond with "
+                            "'Connection successful!'"
+                        ),
+                    }
+                ],
+                system_prompt="You are a helpful assistant. Respond briefly.",
+                max_tokens=50,
+            )
+        )
 
         click.echo(f"Response: {response}")
         click.echo("\nConnection successful!")

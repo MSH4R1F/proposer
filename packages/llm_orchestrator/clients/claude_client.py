@@ -13,11 +13,44 @@ from anthropic import AsyncAnthropic, APIError, RateLimitError
 from pydantic import BaseModel, ValidationError
 
 from ..agent_loop.loop import AgentTurnResponse
+from ._pricing import get_anthropic_pricing_table, get_model_pricing
 from .base import BaseLLMClient
+from .exceptions import LLMAPIError, LLMRateLimitError
+from .types import LLMProvider
 
 logger = structlog.get_logger()
 
 T = TypeVar("T", bound=BaseModel)
+
+
+class _PricingProxy:
+    """Read-through dict proxy that fetches pricing from the YAML loader.
+
+    Preserves the public ``ClaudeClient.PRICING`` interface (``in``, ``[]``,
+    iteration) so existing tests and callers keep working unchanged after
+    pricing moved out of the class into ``config/pricing.yaml``.
+    """
+
+    def __contains__(self, key: object) -> bool:
+        return key in get_anthropic_pricing_table()
+
+    def __getitem__(self, key: str) -> Dict[str, float]:
+        return get_anthropic_pricing_table()[key]
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return get_anthropic_pricing_table().get(key, default)
+
+    def __iter__(self):
+        return iter(get_anthropic_pricing_table())
+
+    def keys(self):
+        return get_anthropic_pricing_table().keys()
+
+    def items(self):
+        return get_anthropic_pricing_table().items()
+
+    def values(self):
+        return get_anthropic_pricing_table().values()
 
 
 def _serialize_content_block(block: Any) -> Dict[str, Any]:
@@ -64,12 +97,11 @@ class ClaudeClient(BaseLLMClient):
     - Fallback to cheaper model on rate limits
     """
 
-    # Pricing per 1M tokens (as of Jan 2025)
-    PRICING = {
-        "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00},
-        "claude-3-5-sonnet-20241022": {"input": 3.00, "output": 15.00},
-        "claude-3-5-haiku-20241022": {"input": 0.80, "output": 4.00},
-    }
+    # Pricing per 1M tokens. Source-of-truth lives in
+    # ``packages/llm_orchestrator/config/pricing.yaml``; this attribute is a
+    # read-through proxy preserved as a back-compat shim so existing tests and
+    # call sites that read ``ClaudeClient.PRICING`` keep working.
+    PRICING = _PricingProxy()
 
     def __init__(
         self,
@@ -92,11 +124,16 @@ class ClaudeClient(BaseLLMClient):
         self.fallback_model = fallback_model
         self.max_retries = max_retries
 
-        # Usage tracking
+        # Usage tracking. Schema is provider-neutral (SHA-114 spec §9) — the
+        # cached/reasoning fields default to 0 for Anthropic since the SDK
+        # does not surface those values today; they exist so the OpenAI client
+        # added in step 3 can populate them without changing the dict shape.
         self._stats = {
             "calls": 0,
             "tokens_in": 0,
             "tokens_out": 0,
+            "cached_tokens_in": 0,
+            "reasoning_tokens_out": 0,
             "errors": 0,
             "fallback_uses": 0,
         }
@@ -179,7 +216,9 @@ class ClaudeClient(BaseLLMClient):
                     current_model = self.fallback_model
                     self._stats["fallback_uses"] += 1
                     continue
-                raise
+                # Wrap in provider-neutral exception so call sites can catch
+                # `LLMRateLimitError` regardless of which provider is in use.
+                raise LLMRateLimitError(str(e)) from e
 
             except APIError as e:
                 self._stats["errors"] += 1
@@ -189,7 +228,7 @@ class ClaudeClient(BaseLLMClient):
                     attempt=attempt + 1,
                 )
                 if attempt == self.max_retries - 1:
-                    raise
+                    raise LLMAPIError(str(e)) from e
 
         raise RuntimeError("Max retries exceeded")
 
@@ -235,12 +274,15 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
 
         # Parse JSON from response
         try:
-            # Try to extract JSON if wrapped in markdown
-            json_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", response_text)
-            if json_match:
-                json_str = json_match.group(1)
+            # Try to extract JSON if wrapped in markdown. Tolerate the case where
+            # the closing fence is missing (response truncated at max_tokens) by
+            # falling back to "everything after the opening fence".
+            closed = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", response_text)
+            if closed:
+                json_str = closed.group(1)
             else:
-                json_str = response_text.strip()
+                opened = re.search(r"```(?:json)?\s*\n?([\s\S]*)$", response_text)
+                json_str = (opened.group(1) if opened else response_text).strip()
 
             # Parse and validate
             data = json.loads(json_str)
@@ -386,7 +428,7 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
                     model_used=current_model,
                 )
 
-            except RateLimitError:
+            except RateLimitError as e:
                 logger.warning(
                     "claude_run_agent_turn_rate_limit",
                     model=current_model,
@@ -396,7 +438,7 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
                     current_model = self.fallback_model
                     self._stats["fallback_uses"] += 1
                     continue
-                raise
+                raise LLMRateLimitError(str(e)) from e
 
             except APIError as e:
                 self._stats["errors"] += 1
@@ -406,17 +448,29 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
                     attempt=attempt + 1,
                 )
                 if attempt == self.max_retries - 1:
-                    raise
+                    raise LLMAPIError(str(e)) from e
 
         raise RuntimeError("Max retries exceeded")
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get usage statistics."""
-        stats = dict(self._stats)
+        """Get usage statistics.
 
-        # Calculate costs
-        if self.model in self.PRICING:
-            pricing = self.PRICING[self.model]
+        Schema (SHA-114 spec §9): provider-neutral keys ``provider``, ``model``,
+        ``calls``, ``tokens_in``, ``tokens_out``, ``cached_tokens_in``,
+        ``reasoning_tokens_out``, ``errors``, ``fallback_uses``,
+        ``estimated_cost_usd``. ``cached_tokens_in`` and
+        ``reasoning_tokens_out`` are 0 for Anthropic today.
+        """
+        stats = dict(self._stats)
+        stats["provider"] = LLMProvider.ANTHROPIC.value
+        stats["model"] = self.model
+
+        # Calculate costs. Routing through ``get_model_pricing`` (rather than
+        # the ``self.PRICING`` proxy) ensures the loader's
+        # ``pricing_missing_for_model`` warning fires once when the model is
+        # absent from the YAML — otherwise cost-tracking goes silently dark.
+        pricing = get_model_pricing(LLMProvider.ANTHROPIC, self.model)
+        if pricing is not None:
             stats["estimated_cost_usd"] = (
                 (stats["tokens_in"] / 1_000_000) * pricing["input"]
                 + (stats["tokens_out"] / 1_000_000) * pricing["output"]
@@ -432,6 +486,8 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
             "calls": 0,
             "tokens_in": 0,
             "tokens_out": 0,
+            "cached_tokens_in": 0,
+            "reasoning_tokens_out": 0,
             "errors": 0,
             "fallback_uses": 0,
         }

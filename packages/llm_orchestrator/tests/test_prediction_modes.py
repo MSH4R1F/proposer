@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from llm_orchestrator.models.prediction_v2 import PredictionMode
+from llm_orchestrator.models.prediction_v2 import PredictionMode, RetrievalStrategy
 
 
 def test_prediction_mode_has_four_modes():
@@ -21,6 +21,16 @@ def test_prediction_mode_hybrid_value():
     assert PredictionMode.RAG_ONLY.value == "rag_only"
     assert PredictionMode.KG_ONLY.value == "kg_only"
     assert PredictionMode.LLM_ONLY.value == "llm_only"
+
+
+def test_retrieval_strategy_is_separate_from_prediction_mode():
+    assert {s.value for s in RetrievalStrategy} == {
+        "chunk_rag",
+        "proposition_direct",
+        "proposition_pagerank",
+        "hybrid_chunk_proposition",
+    }
+    assert PredictionMode.HYBRID.value == "hybrid"
 
 
 @pytest.mark.asyncio
@@ -231,4 +241,3 @@ async def test_predict_metadata_records_mode():
     # The short-circuit returns create_uncertain — verify the trace is well-formed for both
     # the short-circuit path and the metadata recorded on the engine instance.
     assert result is not None
-

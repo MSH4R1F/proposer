@@ -11,6 +11,12 @@ from apps.api.src.db.models.mediations import (
     MediationSessionRow, MediationMessageRow, StructuredOfferRow,
 )
 from apps.api.src.db.models.evidence import EvidenceMetadataRow
+from apps.api.src.db.models.propositions import (
+    DecisionDocumentRow,
+    PropositionEdgeRow,
+    PropositionExtractionRunRow,
+    PropositionRow,
+)
 
 __all__ = [
     "IntakeSessionRow",
@@ -26,4 +32,8 @@ __all__ = [
     "MediationMessageRow",
     "StructuredOfferRow",
     "EvidenceMetadataRow",
+    "DecisionDocumentRow",
+    "PropositionExtractionRunRow",
+    "PropositionRow",
+    "PropositionEdgeRow",
 ]

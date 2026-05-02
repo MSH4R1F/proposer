@@ -41,7 +41,7 @@ def test_derive_kg_facts_late_protection():
     )
     facts = derive_kg_facts(kg, IssueType.DEPOSIT_PROTECTION)
     assert facts.deposit_protection_status == "protected_late"
-    assert facts.deposit_late_by_days == 90
+    assert facts.deposit_late_by_days == 60
     assert facts.deposit_scheme == "DPS"
 
 
@@ -61,6 +61,25 @@ def test_derive_kg_facts_on_time_protection():
     facts = derive_kg_facts(kg, IssueType.DEPOSIT_PROTECTION)
     assert facts.deposit_protection_status == "protected_on_time"
     assert facts.deposit_late_by_days is None
+
+
+def test_derive_kg_facts_uses_deposit_receipt_date():
+    from kg_builder.models.nodes import LeaseNode
+    from kg_builder.models.graph import KnowledgeGraph
+
+    kg = KnowledgeGraph(case_id="test_receipt_anchor")
+    kg.add_node(
+        LeaseNode(
+            node_id="lease_main",
+            start_date=date(2023, 6, 1),
+            deposit_received_date=date(2023, 5, 1),
+            protection_date=date(2023, 6, 5),
+            deposit_protected=True,
+        )
+    )
+    facts = derive_kg_facts(kg, IssueType.DEPOSIT_PROTECTION)
+    assert facts.deposit_protection_status == "protected_late"
+    assert facts.deposit_late_by_days == 5
 
 
 def test_derive_kg_facts_not_protected():
@@ -88,7 +107,7 @@ def test_derive_kg_facts_prescribed_info_late():
     )
     facts = derive_kg_facts(kg, IssueType.DEPOSIT_PROTECTION)
     assert facts.prescribed_information_status == "provided_late"
-    assert facts.prescribed_late_by_days == 59
+    assert facts.prescribed_late_by_days == 29
 
 
 def test_derive_kg_facts_inventory_absent_for_inventory_issue():

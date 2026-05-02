@@ -7,10 +7,17 @@ from pathlib import Path
 from typing import List, Optional
 from urllib.parse import parse_qs, urlparse
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 import structlog
 
 logger = structlog.get_logger()
+
+_ALLOWED_RETRIEVAL_STRATEGIES = {
+    "chunk_rag",
+    "proposition_direct",
+    "proposition_pagerank",
+    "hybrid_chunk_proposition",
+}
 
 
 def _parse_csv_env(value: str) -> List[str]:
@@ -98,6 +105,15 @@ class APIConfig(BaseModel):
     prediction_mode: str = Field(
         default_factory=lambda: os.getenv("PREDICTION_MODE", "hybrid").lower()
     )
+    # Retrieval strategy (SHA-36 Phase 2). Valid values:
+    # chunk_rag / proposition_direct / proposition_pagerank /
+    # hybrid_chunk_proposition. Defaults to current production behaviour.
+    retrieval_strategy: str = Field(
+        default_factory=lambda: os.getenv(
+            "RETRIEVAL_STRATEGY", "chunk_rag"
+        ).lower(),
+        validate_default=True,
+    )
 
     # SHA-20 Phase 3: Multi-domain runtime flags
     # ---------------------------------------------------------------
@@ -166,6 +182,17 @@ class APIConfig(BaseModel):
             "postgresql+asyncpg://proposer:proposer-dev@localhost:5432/proposer",
         )
     )
+
+    @field_validator("retrieval_strategy")
+    @classmethod
+    def validate_retrieval_strategy(cls, value: str) -> str:
+        normalized = value.lower()
+        if normalized not in _ALLOWED_RETRIEVAL_STRATEGIES:
+            allowed = ", ".join(sorted(_ALLOWED_RETRIEVAL_STRATEGIES))
+            raise ValueError(
+                f"retrieval_strategy must be one of: {allowed}; got {value!r}"
+            )
+        return normalized
 
     @model_validator(mode="after")
     def validate_domain_settings(self) -> "APIConfig":

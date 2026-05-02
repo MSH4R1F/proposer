@@ -131,10 +131,13 @@ class CitationVerifier:
         issue_predictions: List[IssuePrediction],
         retrieval_results: Dict[IssueType, IssueRetrievalResult],
     ) -> Tuple[List[IssuePrediction], VerificationResult]:
-        # Build an index of retrieved chunks keyed by normalised case ref
-        # AND by source_id, so Phase-4 callers (which use source_id) and
-        # legacy callers (which use case_reference) both resolve.
+        # Index chunks keyed by both case_reference AND source_id (Phase-4)
+        # so callers using either resolution path can verify.
         ref_to_chunks: Dict[str, List[Dict[str, Any]]] = {}
+        # Proposition indices (SHA-36 Phase 2): kept separate so the chunk
+        # path remains semantically simple.
+        valid_propositions_by_id: Dict[str, object] = {}
+        valid_proposition_results: List[object] = []
 
         def _add(key: str, meta: Dict[str, Any]) -> None:
             if not key:
@@ -143,13 +146,18 @@ class CitationVerifier:
 
         for retrieval in retrieval_results.values():
             for result in retrieval.results:
-                # Pull both keys; either may be missing depending on
-                # ingestion vintage.
+                proposition_id = self._get_value(result, "proposition_id", None)
+                kind = str(self._get_value(result, "kind", "")).lower()
+                if kind == "proposition" or proposition_id:
+                    if proposition_id:
+                        valid_propositions_by_id[str(proposition_id)] = result
+                    valid_proposition_results.append(result)
+                    continue
+
                 case_reference = str(self._get_value(result, "case_reference", "") or "")
                 source_id = str(self._get_value(result, "source_id", "") or "")
                 source_kind = self._get_value(result, "source_kind", None)
                 paragraph = self._get_value(result, "paragraph", None)
-
                 meta = {
                     "case_reference": case_reference,
                     "source_id": source_id,
@@ -158,8 +166,8 @@ class CitationVerifier:
                 }
                 _add(normalize_case_ref(case_reference), meta)
                 if source_id:
-                    # Source ids are publisher-stable; do NOT case-fold or strip
-                    # the same way as case refs — just trim and dedupe.
+                    # Source ids are publisher-stable; do not case-fold like
+                    # case refs — trim and dedupe only.
                     _add(source_id.strip(), meta)
 
         verified_citations: List[Citation] = []
@@ -170,7 +178,18 @@ class CitationVerifier:
             kept: List[Citation] = []
             for citation in prediction.supporting_cases:
                 total_citations += 1
-                if self._citation_matches(citation, ref_to_chunks):
+                # Proposition citations verify via the proposition-specific
+                # path (SHA-36 Phase 2). Everything else uses the Phase-4
+                # source_id / source_kind / span match.
+                if citation.proposition_id:
+                    matched = self._verify_proposition_citation(
+                        citation,
+                        valid_propositions_by_id,
+                        valid_proposition_results,
+                    )
+                else:
+                    matched = self._citation_matches(citation, ref_to_chunks)
+                if matched:
                     citation.verified = True
                     verified_citations.append(citation)
                     kept.append(citation)
@@ -285,3 +304,78 @@ class CitationVerifier:
                     continue
             return True
         return False
+
+    def _verify_proposition_citation(
+        self,
+        citation: Citation,
+        by_id: Dict[str, object],
+        results: List[object],
+    ) -> bool:
+        if citation.proposition_id:
+            result = by_id.get(str(citation.proposition_id))
+            if result is None:
+                return False
+            result_ref = normalize_case_ref(
+                str(self._get_value(result, "case_reference", ""))
+            )
+            if normalize_case_ref(citation.case_reference) != result_ref:
+                return False
+            if citation.paragraph:
+                result_paragraph = str(
+                    self._get_value(
+                        result,
+                        "paragraph",
+                        self._get_value(result, "paragraph_ref", ""),
+                    )
+                    or ""
+                ).strip()
+                if result_paragraph and citation.paragraph.strip() != result_paragraph:
+                    return False
+            return self._citation_quote_matches_result(citation, result)
+
+        normalized_ref = normalize_case_ref(citation.case_reference)
+        paragraph = (citation.paragraph or "").strip()
+        for result in results:
+            result_ref = normalize_case_ref(
+                str(self._get_value(result, "case_reference", ""))
+            )
+            if result_ref != normalized_ref:
+                continue
+            result_paragraph = str(
+                self._get_value(
+                    result,
+                    "paragraph",
+                    self._get_value(result, "paragraph_ref", ""),
+                )
+                or ""
+            ).strip()
+            if paragraph and result_paragraph and paragraph != result_paragraph:
+                continue
+            if self._citation_quote_matches_result(citation, result):
+                return True
+        return False
+
+    def _citation_quote_matches_result(self, citation: Citation, result: object) -> bool:
+        citation_quote = _normalize_quote(citation.quote)
+        if not citation_quote:
+            return False
+        result_quote = _normalize_quote(
+            str(
+                self._get_value(
+                    result,
+                    "quote",
+                    self._get_value(
+                        result,
+                        "source_passage",
+                        self._get_value(result, "chunk_text", ""),
+                    ),
+                )
+            )
+        )
+        if not result_quote:
+            return False
+        return citation_quote in result_quote
+
+
+def _normalize_quote(text: str) -> str:
+    return re.sub(r"\s+", " ", (text or "").strip().lower())

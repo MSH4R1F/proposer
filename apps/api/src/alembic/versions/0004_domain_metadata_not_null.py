@@ -1,7 +1,7 @@
 """Tighten domain metadata to NOT NULL once application code writes it.
 
 This is the second half of the SHA-124 zero-downtime migration. After
-revision ``0002`` is deployed and application code is consistently writing
+revision ``0003`` is deployed and application code is consistently writing
 ``domain_id`` / ``domain_version`` / ``matter_types`` / ``routing_metadata``
 on every insert, this revision flips those columns to NOT NULL.
 
@@ -16,17 +16,17 @@ What stays nullable forever (per Phase 0 audit + Phase 2 plan):
 - ``namespace_id`` / ``canonical_url`` / ``source_license`` on
   prediction_citations.
 
-Revision ID: 0003
-Revises: 0002
-Create Date: 2026-05-01
+Revision ID: 0004
+Revises: 0003
+Create Date: 2026-05-02
 """
 
 from __future__ import annotations
 
 from alembic import op
 
-revision = "0003"
-down_revision = "0002"
+revision = "0004"
+down_revision = "0003"
 branch_labels = None
 depends_on = None
 

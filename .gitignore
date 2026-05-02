@@ -280,6 +280,9 @@ data/*
 !data/eval/
 !data/eval_artifacts/
 data/eval_artifacts/runs/
+# Proposition KG corpus manifest: track the example, ignore real outputs.
+data/proposition_corpus_v*.json
+!data/proposition_corpus_v*.example.json
 
 # ===================================
 # Multi-window orchestration

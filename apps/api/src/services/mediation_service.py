@@ -152,12 +152,19 @@ class MediationService:
     @staticmethod
     def _build_mediator_agent(api_key: str) -> Any:
         from llm_orchestrator.agents.mediator_agent import MediatorAgent
-        from llm_orchestrator.clients.claude_client import ClaudeClient
+        from llm_orchestrator.clients.factory import get_llm_client
+        from llm_orchestrator.clients.types import LLMProvider, LLMRole
+        from llm_orchestrator.config import LLMConfig
 
-        if api_key:
-            return MediatorAgent(ClaudeClient(api_key=api_key))
-        logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
-        return MediatorAgent(_DeterministicMediatorLLM())
+        llm_config = LLMConfig.from_env()
+        role_config = llm_config.role_config(LLMRole.MEDIATOR)
+        if role_config.provider == LLMProvider.ANTHROPIC and not api_key:
+            logger.warning("mediator_llm_key_missing_using_deterministic_fallback")
+            return MediatorAgent(_DeterministicMediatorLLM())
+        return MediatorAgent(
+            get_llm_client(LLMRole.MEDIATOR, config=llm_config),
+            provider=role_config.provider,
+        )
 
     @staticmethod
     def _enforce_legal_disclaimer(content: str) -> str:
@@ -217,6 +224,54 @@ class MediationService:
         except (TypeError, ValueError):
             return 0.5
         return min(max(confidence, 0.0), 1.0)
+
+    @staticmethod
+    def _amount_limit_from_prediction(
+        deposit_amount: Optional[float], prediction_data: Optional[Dict[str, Any]]
+    ) -> Optional[float]:
+        candidates: List[float] = []
+        if deposit_amount is not None:
+            candidates.append(float(deposit_amount))
+
+        if prediction_data:
+            settlement_range = prediction_data.get("predicted_settlement_range")
+            if isinstance(settlement_range, (list, tuple)):
+                for value in settlement_range:
+                    try:
+                        candidates.append(float(value))
+                    except (TypeError, ValueError):
+                        continue
+
+            for key in (
+                "tenant_recovery_amount",
+                "landlord_recovery_amount",
+                "deposit_at_stake",
+            ):
+                try:
+                    value = prediction_data.get(key)
+                    if value is not None:
+                        candidates.append(float(value))
+                except (TypeError, ValueError):
+                    continue
+
+        return max(candidates) if candidates else None
+
+    @staticmethod
+    def _validate_non_negative_amount(
+        amount: float, label: str, max_amount: Optional[float]
+    ) -> None:
+        if amount < 0:
+            if max_amount is not None:
+                raise ValueError(
+                    f"{label} amount must be within 0 and {max_amount:.2f}. "
+                    f"Got {amount:.2f}"
+                )
+            raise ValueError(f"{label} amount must be >= 0. Got {amount:.2f}")
+        if max_amount is not None and amount > max_amount:
+            raise ValueError(
+                f"{label} amount must be within 0 and {max_amount:.2f}. "
+                f"Got {amount:.2f}"
+            )
 
     def _build_prediction_result(
         self,
@@ -400,13 +455,18 @@ class MediationService:
             prediction_data=prediction_data, role="landlord"
         )
 
+        trace_summary: Optional[TraceSummary] = None
         try:
-            initial_content = await self._mediator.generate_opening_message(
+            initial_result = await self._mediator.generate_opening_message(
                 prediction=prediction,
                 dispute=dispute,
                 expectation_data_tenant=expectation_data_tenant,
                 expectation_data_landlord=expectation_data_landlord,
             )
+            if isinstance(initial_result, tuple):
+                initial_content, trace_summary = initial_result
+            else:
+                initial_content, trace_summary = initial_result, None
         except Exception as e:
             logger.error(
                 "mediator_opening_generation_failed",
@@ -418,6 +478,7 @@ class MediationService:
                 "highlighting realistic settlement ranges, and helping both parties test "
                 "offers against comparable outcomes."
             )
+            trace_summary = None
 
         # ── Phase 3: write txn — create mediation + update dispute ───────────
         async with self._uow() as uow:
@@ -457,6 +518,7 @@ class MediationService:
                 content=initial_content,
                 message_type=MessageType.AI_MEDIATOR,
                 metadata={"triggered_by": role},
+                reasoning_trace=trace_summary,
             )
             await uow.mediations.save(new_mediation)
 
@@ -552,13 +614,18 @@ class MediationService:
         if latest_offer is None and mediation.offers:
             latest_offer = mediation.offers[-1]
 
+        ai_trace: Optional[TraceSummary] = None
         try:
-            ai_content = await self._mediator.generate_response(
+            ai_result = await self._mediator.generate_response(
                 messages=mediation.messages,
                 prediction=prediction,
                 dispute=dispute,
                 latest_offer=latest_offer,
             )
+            if isinstance(ai_result, tuple):
+                ai_content, ai_trace = ai_result
+            else:
+                ai_content, ai_trace = ai_result, None
         except Exception as e:
             logger.error(
                 "mediator_followup_generation_failed",
@@ -570,6 +637,7 @@ class MediationService:
                 "outcomes, it may help to move toward the predicted settlement range and "
                 "focus on evidence each side can substantiate."
             )
+            ai_trace = None
 
         # ── Txn 2: persist AI response ───────────────────────────────────────
         async with self._uow() as uow:
@@ -581,6 +649,7 @@ class MediationService:
                 session=mediation,
                 content=ai_content,
                 message_type=MessageType.AI_MEDIATOR,
+                reasoning_trace=ai_trace,
             )
             await uow.mediations.save(
                 mediation, expected_version=versioned.version
@@ -621,20 +690,21 @@ class MediationService:
                 raise DisputeNotFoundError(dispute_id)
             role = self._resolve_role(dispute, session_id)
 
-            deposit_amount = dispute.deposit_amount
-            if deposit_amount is None:
-                raise ValueError("Dispute deposit_amount is required for offer handling")
-            deposit_amount = float(deposit_amount)
-
-            if amount < 0 or amount > deposit_amount:
-                raise ValueError(
-                    f"Offer amount must be within 0 and {deposit_amount:.2f}. Got {amount:.2f}"
-                )
+            deposit_amount = (
+                float(dispute.deposit_amount)
+                if dispute.deposit_amount is not None
+                else None
+            )
+            prediction_data = await self._fetch_prediction_data_uow(uow, dispute_id)
+            max_amount = self._amount_limit_from_prediction(
+                deposit_amount, prediction_data
+            )
+            self._validate_non_negative_amount(amount, "Offer", max_amount)
 
             offer = mediation.submit_offer(
                 proposed_by_role=role,
                 amount=amount,
-                deposit_amount=deposit_amount,
+                max_amount=max_amount,
             )
             await uow.mediations.save(
                 mediation, expected_version=versioned.version
@@ -703,8 +773,7 @@ class MediationService:
                     content=(
                         f"Offer {offer_id} accepted at £{accepted_offer.amount:.2f}. "
                         "The mediation record has been marked as settled. This records "
-                        "the parties' stated agreement and is legal information, not "
-                        "legal advice."
+                        "the parties' stated agreement."
                     ),
                     message_type=MessageType.SYSTEM,
                     offer_id=offer_id,
@@ -791,16 +860,18 @@ class MediationService:
                 if responder_role == offer.proposed_by_role:
                     raise ValueError("Offer responder must be the opposite party")
 
-                deposit_amount = dispute.deposit_amount
-                if deposit_amount is None:
-                    raise ValueError("Dispute deposit_amount is required for offer handling")
-                deposit_amount = float(deposit_amount)
-
-                if counter_amount < 0 or counter_amount > deposit_amount:
-                    raise ValueError(
-                        f"Counter amount must be within 0 and {deposit_amount:.2f}. "
-                        f"Got {counter_amount:.2f}"
-                    )
+                deposit_amount = (
+                    float(dispute.deposit_amount)
+                    if dispute.deposit_amount is not None
+                    else None
+                )
+                prediction_data = await self._fetch_prediction_data_uow(uow, dispute_id)
+                max_amount = self._amount_limit_from_prediction(
+                    deposit_amount, prediction_data
+                )
+                self._validate_non_negative_amount(
+                    counter_amount, "Counter", max_amount
+                )
 
                 counter_offer = mediation.counter_offer(
                     offer_id=offer_id,
@@ -874,11 +945,16 @@ class MediationService:
             if dispute is None:
                 raise DisputeNotFoundError(dispute_id)
 
-            deposit_amount = dispute.deposit_amount
-            if deposit_amount is not None and (amount < 0 or amount > deposit_amount):
-                raise ValueError(
-                    f"Settlement amount must be within 0 and {deposit_amount:.2f}. Got {amount:.2f}"
-                )
+            deposit_amount = (
+                float(dispute.deposit_amount)
+                if dispute.deposit_amount is not None
+                else None
+            )
+            prediction_data = await self._fetch_prediction_data_uow(uow, dispute_id)
+            max_amount = self._amount_limit_from_prediction(
+                deposit_amount, prediction_data
+            )
+            self._validate_non_negative_amount(amount, "Settlement", max_amount)
 
             mediation.settle(amount)
             await uow.mediations.save(
@@ -1020,7 +1096,8 @@ class MediationService:
 
         The cached_prediction_id is stored on DisputeRow (not on DisputeCase's
         Pydantic model payload) so we go via disputes_repo.lock_for_prediction_cache.
-        Falls back to legacy service lookup if no cached prediction exists.
+        If no cached prediction exists, fall back to the most recent prediction
+        for any case_id linked to the dispute via its tenant/landlord sessions.
         """
         locked = await uow.disputes.lock_for_prediction_cache(dispute_id)
         if locked is None:
@@ -1029,8 +1106,28 @@ class MediationService:
             prediction = await uow.predictions.get(locked.cached_prediction_id)
             if prediction is not None:
                 return prediction.model_dump(mode="json")
-        # Fall back to legacy prediction service lookup (mirrors original behaviour)
-        return await self._get_prediction_data(dispute_id)
+
+        dispute = await uow.disputes.get(dispute_id)
+        if dispute is None:
+            return None
+        case_ids: List[str] = []
+        for session_id in (dispute.tenant_session_id, dispute.landlord_session_id):
+            if not session_id:
+                continue
+            state = await uow.sessions.get(session_id)
+            if state is not None:
+                case_ids.append(state.case_file.case_id)
+        if not case_ids:
+            return None
+
+        candidates: List[Dict[str, Any]] = []
+        for case_id in case_ids:
+            for prediction in await uow.predictions.get_by_case_id(case_id):
+                candidates.append(prediction.model_dump(mode="json"))
+        if not candidates:
+            return None
+        candidates.sort(key=lambda item: item.get("timestamp", ""), reverse=True)
+        return candidates[0]
 
     @staticmethod
     def _resolve_role(dispute: Any, session_id: str) -> str:
@@ -1256,17 +1353,15 @@ class MediationService:
     ) -> StructuredOffer:
         session = await self._require_active_session(dispute_id)
         role = await self._get_party_role(dispute_id, session_id)
-        deposit_amount = await self._get_deposit_amount(dispute_id)
-
-        if amount < 0 or amount > deposit_amount:
-            raise ValueError(
-                f"Offer amount must be within 0 and {deposit_amount:.2f}. Got {amount:.2f}"
-            )
+        deposit_amount = await self._get_deposit_amount_or_none(dispute_id)
+        prediction_data = await self._get_prediction_data(dispute_id)
+        max_amount = self._amount_limit_from_prediction(deposit_amount, prediction_data)
+        self._validate_non_negative_amount(amount, "Offer", max_amount)
 
         offer = session.submit_offer(
             proposed_by_role=role,
             amount=amount,
-            deposit_amount=deposit_amount,
+            max_amount=max_amount,
         )
         self._save_session(session)
 
@@ -1325,12 +1420,12 @@ class MediationService:
             if counter_amount is None:
                 raise ValueError("counter_amount is required for counter action")
 
-            deposit_amount = await self._get_deposit_amount(dispute_id)
-            if counter_amount < 0 or counter_amount > deposit_amount:
-                raise ValueError(
-                    f"Counter amount must be within 0 and {deposit_amount:.2f}. "
-                    f"Got {counter_amount:.2f}"
-                )
+            deposit_amount = await self._get_deposit_amount_or_none(dispute_id)
+            prediction_data = await self._get_prediction_data(dispute_id)
+            max_amount = self._amount_limit_from_prediction(
+                deposit_amount, prediction_data
+            )
+            self._validate_non_negative_amount(counter_amount, "Counter", max_amount)
 
             counter_offer = session.counter_offer(
                 offer_id=offer_id,
@@ -1375,11 +1470,14 @@ class MediationService:
         if not dispute:
             raise ValueError(f"Dispute not found: {dispute_id}")
 
-        deposit_amount = dispute.deposit_amount
-        if deposit_amount is not None and (amount < 0 or amount > deposit_amount):
-            raise ValueError(
-                f"Settlement amount must be within 0 and {deposit_amount:.2f}. Got {amount:.2f}"
-            )
+        deposit_amount = (
+            float(dispute.deposit_amount)
+            if dispute.deposit_amount is not None
+            else None
+        )
+        prediction_data = await self._get_prediction_data(dispute_id)
+        max_amount = self._amount_limit_from_prediction(deposit_amount, prediction_data)
+        self._validate_non_negative_amount(amount, "Settlement", max_amount)
 
         session.settle(amount)
         dispute.settle()
@@ -1507,6 +1605,12 @@ class MediationService:
         return session
 
     async def _get_deposit_amount(self, dispute_id: str) -> float:
+        deposit_amount = await self._get_deposit_amount_or_none(dispute_id)
+        if deposit_amount is None:
+            raise ValueError("Dispute deposit_amount is required for offer handling")
+        return deposit_amount
+
+    async def _get_deposit_amount_or_none(self, dispute_id: str) -> Optional[float]:
         from apps.api.src.services.dispute_service import get_dispute_service
 
         dispute_service = get_dispute_service()
@@ -1514,7 +1618,7 @@ class MediationService:
         if not dispute:
             raise ValueError(f"Dispute not found: {dispute_id}")
         if dispute.deposit_amount is None:
-            raise ValueError("Dispute deposit_amount is required for offer handling")
+            return None
         return float(dispute.deposit_amount)
 
     async def _get_prediction_data(self, dispute_id: str) -> Optional[Dict[str, Any]]:

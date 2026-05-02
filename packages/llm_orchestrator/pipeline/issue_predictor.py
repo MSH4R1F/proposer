@@ -534,6 +534,9 @@ class IssuePredictor:
                             year=resolved_year,
                             region=self._to_optional_str(citation.get("region")),
                             paragraph=self._to_optional_str(citation.get("paragraph")),
+                            proposition_id=self._to_optional_str(
+                                citation.get("proposition_id")
+                            ),
                             quote=str(citation.get("quote", "")),
                             relevance=str(citation.get("relevance", "")),
                             similarity_score=self._to_probability(
@@ -787,12 +790,14 @@ class IssuePredictor:
         else:
             parts.append("Protection status unknown")
 
-        start_date = getattr(tenancy, "start_date", None)
+        receipt_date = getattr(tenancy, "deposit_received_date", None)
+        start_date = receipt_date or getattr(tenancy, "start_date", None)
+        anchor_label = "deposit receipt" if receipt_date else "tenancy start fallback"
         protection_date = getattr(tenancy, "protection_date", None)
         if protection_date and start_date:
             days = (protection_date - start_date).days
             parts.append(
-                f"Protection date: {protection_date} ({days} days after tenancy start)"
+                f"Protection date: {protection_date} ({days} days after {anchor_label})"
             )
             if days > 30:
                 parts.append(
@@ -809,7 +814,7 @@ class IssuePredictor:
                 pi_days = (prescribed_date - start_date).days
                 parts.append(
                     f"Prescribed information served: {prescribed_date} "
-                    f"({pi_days} days after tenancy start)"
+                    f"({pi_days} days after {anchor_label})"
                 )
                 if pi_days > 30:
                     parts.append(
