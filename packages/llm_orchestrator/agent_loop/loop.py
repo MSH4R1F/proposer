@@ -34,6 +34,7 @@ from .trace import (
     TraceStep,
     TraceSummary,
     TraceTerminationReason,
+    _scrub_employment_trace_text,
     redact_text,
 )
 
@@ -82,8 +83,19 @@ def _elapsed_ms(start: float) -> int:
     return max(0, int((time.monotonic() - start) * 1000))
 
 
-def _preview(value: Any, *, redact: bool) -> str:
-    """Render a preview string for trace steps (truncated, optionally redacted)."""
+def _preview(
+    value: Any,
+    *,
+    redact: bool,
+    domain_family: Optional[str] = None,
+    party_names: Optional[List[str]] = None,
+) -> str:
+    """Render a preview string for trace steps (truncated, optionally redacted).
+
+    SHA-20 Phase 8: when ``domain_family == "employment"`` the text is run
+    through :func:`_scrub_employment_trace_text` BEFORE storage, on top of
+    the standard ``redact_text`` path. Other families are unaffected.
+    """
     if isinstance(value, str):
         text = value
     else:
@@ -92,9 +104,15 @@ def _preview(value: Any, *, redact: bool) -> str:
         except Exception:
             text = repr(value)
     if redact:
-        return redact_text(text, max_chars=_PREVIEW_MAX_CHARS)
-    if len(text) > _PREVIEW_MAX_CHARS:
-        return text[:_PREVIEW_MAX_CHARS] + "\u2026"
+        text = redact_text(text, max_chars=_PREVIEW_MAX_CHARS)
+    elif len(text) > _PREVIEW_MAX_CHARS:
+        text = text[:_PREVIEW_MAX_CHARS] + "\u2026"
+    if domain_family == "employment":
+        text = _scrub_employment_trace_text(
+            text,
+            party_names=party_names,
+            max_chars=_PREVIEW_MAX_CHARS,
+        )
     return text
 
 
@@ -143,14 +161,26 @@ class AgentLoop:
         messages: List[Dict[str, Any]],
         ctx: ToolContext,
     ) -> AgentLoopResult:
-        # SHA-20 Phase 3: forward domain tags into the trace so LangFuse
+        # SHA-20 Phase 3+8: forward domain tags into the trace so LangFuse
         # spans + the no-op TraceSummary metadata both carry the routing
         # context. ``ctx.domain_tags`` is empty when no domain runtime has
-        # been resolved (legacy / test paths).
+        # been resolved (legacy / test paths). The employment-family
+        # scrubbing path reads ``ctx.domain_tags["domain.family"]`` to
+        # decide whether to apply :func:`_scrub_employment_trace_text`.
         ctx.trace_logger.start_trace(
             trace_id=ctx.request_id,
             tags=dict(ctx.domain_tags) if ctx.domain_tags else None,
         )
+        domain_family = (ctx.domain_tags or {}).get("domain.family")
+        party_names = list(ctx.employment_party_names or ())
+
+        def _prev(value: Any) -> str:
+            return _preview(
+                value,
+                redact=ctx.redact_pii,
+                domain_family=domain_family,
+                party_names=party_names,
+            )
 
         # Don't mutate the caller's list.
         local_messages: List[Dict[str, Any]] = list(messages)
@@ -174,7 +204,7 @@ class AgentLoop:
                 # Model call failed after the client's own retries. Record the
                 # termination step then re-raise; caller can recover the trace
                 # from ctx.trace_logger if they need to.
-                err_preview = _preview(str(exc), redact=ctx.redact_pii)
+                err_preview = _prev(str(exc))
                 ctx.trace_logger.record_step(
                     TraceStep(
                         index=step_index,
@@ -202,9 +232,8 @@ class AgentLoop:
                     duration_ms=turn_duration,
                     tokens_in=response.tokens_in,
                     tokens_out=response.tokens_out,
-                    output_preview=_preview(
-                        _extract_text(response.content_blocks) or "",
-                        redact=ctx.redact_pii,
+                    output_preview=_prev(
+                        _extract_text(response.content_blocks) or ""
                     ),
                 )
             )
@@ -228,9 +257,7 @@ class AgentLoop:
                         name="end_turn",
                         started_at=term_started_at,
                         duration_ms=0,
-                        output_preview=_preview(
-                            final_text or "", redact=ctx.redact_pii
-                        ),
+                        output_preview=_prev(final_text or ""),
                     )
                 )
                 step_index += 1
@@ -277,12 +304,8 @@ class AgentLoop:
                             name=tool_name,
                             started_at=tool_started_at,
                             duration_ms=tool_duration,
-                            input_preview=_preview(
-                                raw_args, redact=ctx.redact_pii
-                            ),
-                            output_preview=_preview(
-                                result.model_payload, redact=ctx.redact_pii
-                            ),
+                            input_preview=_prev(raw_args),
+                            output_preview=_prev(result.model_payload),
                             is_error=result.is_error,
                         )
                     )
@@ -326,9 +349,7 @@ class AgentLoop:
                     name=f"stop_{response.stop_reason}",
                     started_at=term_started_at,
                     duration_ms=0,
-                    output_preview=_preview(
-                        final_text or "", redact=ctx.redact_pii
-                    ),
+                    output_preview=_prev(final_text or ""),
                 )
             )
             step_index += 1
