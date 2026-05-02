@@ -430,6 +430,16 @@ class GoldCase(StrictBaseModel):
             "Optional verbatim expected redacted output for assertions."
         ),
     )
+    labeling_provenance: Optional[LabelingProvenance] = Field(
+        default=None,
+        description=(
+            "When set, this row was produced by the auto-label pipeline "
+            "(dual-LLM + auto-grounder + human adjudication). None means "
+            "the row predates the pipeline (legacy hand-annotated cases). "
+            "See packages/eval/auto_label/runner.py and "
+            "docs/eval/gold-schema.md."
+        ),
+    )
 
     @model_validator(mode="after")
     def _validate_invariants(self) -> "GoldCase":
