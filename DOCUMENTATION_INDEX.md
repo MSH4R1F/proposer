@@ -19,18 +19,19 @@ This document provides a comprehensive overview of all markdown documentation fi
 **Purpose**: Main project documentation and getting started guide
 
 **Key Sections**:
-- **The Problem**: Explains the justice gap in UK tenancy deposits (70% can't afford solicitors, 12-month delays, information asymmetry)
-- **Our Solution**: Outcome-driven mediation platform with glass-box reasoning, predictive analytics, and rational mediation
+- **The Problem**: Explains the justice gap across small but high-stakes UK housing and workplace disputes; tenancy deposits remain the current compatibility baseline
+- **Our Solution**: Domain-pluggable outcome-driven mediation platform with glass-box reasoning, predictive analytics, rational mediation, and fail-closed launch gates
 - **How It Works**:
   - Intelligent Intake (dynamic AI agent questions)
-  - Hybrid Analysis (RAG + Knowledge Graph)
+  - Domain Runtime (explicit domain specs, router, allowlists, stage/mode gates)
+  - Hybrid Analysis (namespaced RAG + Knowledge Graph)
   - Transparent Prediction (reasoning traces with citations)
   - Shadow Mediation (ZOPA calculation, real-time nudges)
 - **Tech Stack**:
-  - Backend: FastAPI, Langfuse (observability), ChromaDB, Neo4j, Supabase
+  - Backend: FastAPI, Postgres/Alembic, Langfuse (observability), ChromaDB, Supabase
   - Frontend: Next.js 16, TypeScript, shadcn/ui, Tailwind CSS
   - AI/ML: Claude 3.5 Sonnet (primary), Claude 3.5 Haiku (fallback), text-embedding-3-small (embeddings)
-- **Project Structure**: Complete directory tree with descriptions
+- **Project Structure**: Complete directory tree with `domain_core`, namespaced RAG, KG, LLM orchestration, eval, and launch-gate artifacts
 - **Getting Started**: Installation instructions, API testing commands
 - **Evaluation Metrics**: Prediction accuracy >70%, Brier Score <0.20, hallucination rate <2%, response time <30s
 
@@ -561,37 +562,40 @@ INTERNAL_UPDATES.md (Technical Log)
 ## 🎯 Key Takeaways
 
 ### What Proposer Is
-- **Not**: Another legal chatbot or generic mediation platform
-- **Is**: Hybrid RAG + Knowledge Graph system predicting judicial outcomes to anchor negotiations
-- **Goal**: Bridge the justice gap in UK tenancy deposit disputes (£500-2000 claims)
+- **Not**: Another legal chatbot, generic mediation platform, or one-off deposit prompt
+- **Is**: Domain-pluggable hybrid RAG + Knowledge Graph system predicting likely legal outcomes to anchor negotiations
+- **Current baseline**: `housing.deposit.v1` for compatibility with existing deposit flows
+- **Expansion path**: adjacent housing domains first (`housing.repairs_social.v1`, `housing.property_chamber.rro.v1`), employment only as closed-beta/research until PII and corpus gates pass
+- **Goal**: Bridge the justice gap in low-value but high-stakes legal disputes without mixing forums, remedies, or source types
 
-### Development Status (January 2026)
-- ✅ **Complete**: RAG pipeline (447 cases, 43,776 chunks), Frontend (60+ components), Backend API, Knowledge Graph builder
-- 🔄 **In Progress**: Multi-party disputes, Prediction accuracy evaluation, Cost optimization
-- 🔜 **Planned**: Shadow mediator, ZOPA calculation, Settlement agreement generation
+### Development Status (May 2026)
+- ✅ **Complete**: Postgres-backed API, domain runtime, domain specs, namespaced RAG plumbing, KG domain metadata, deterministic-first domain router, prompt packs, launch-gate verification, and frontend matter/source labels
+- 🔄 **In Progress**: real per-domain corpus ingestion, citation mapping, gate artifacts, evaluation dashboards, and production hardening
+- 🔜 **Planned**: SHA-64 adjacent housing ingestion, SHA-65/66/123 employment research beta, full cross-domain dashboard, Ed25519-signed launch gates
 
 ### Success Criteria
-- **Technical**: >70% prediction accuracy, <2% hallucination rate, <30s response time
+- **Technical**: per-domain >70% prediction accuracy, <2% hallucination rate, high citation validity, <30s response time
 - **Product**: 50 beta users, 10 settlements, user satisfaction >4/5
 - **Academic**: Novel RAG+KG contribution, conference paper submission
 - **Commercial**: 100 waitlist signups, viral content (50k+ views)
 
 ### Critical Constraints
 1. **Legal Compliance**: No unauthorized legal advice, conditional language only, prominent disclaimers
-2. **Cite or Abstain**: Never generate without evidence, mark uncertainty explicitly
-3. **Evaluation Driven**: Every claim must be measurable and tested
-4. **Security**: Treat user input as untrusted, prevent prompt injection, protect PII
+2. **Cite or Abstain**: Never generate without retrieved/user/statutory/calculator evidence, mark uncertainty explicitly
+3. **Domain Separation**: Do not mix Housing Ombudsman, Property Chamber, county court, deposit adjudication, and Employment Tribunal outputs under generic language
+4. **Evaluation Driven**: Every claim must be measurable, versioned, and tested per domain
+5. **Security**: Treat user input as untrusted, prevent prompt injection, protect PII
 
 ### Next Major Milestones
-1. Reset RAG index to adjacent cases only (increase relevance)
-2. Implement evaluation framework with gold standard test set
-3. Deploy shadow mediator with ZOPA calculation
-4. Conduct user studies with 10-20 real disputes
-5. Publish thesis and/or conference paper
+1. Build per-domain ingestion, licensing, dedupe, and citation-mapping contracts
+2. Produce launch-gate artifacts for the deposit baseline and first adjacent housing slice
+3. Implement SHA-64 adjacent housing ingestion with forum/remedy-safe prompts
+4. Keep employment unfair dismissal research-only until PII redaction and trace minimisation pass
+5. Publish thesis evaluation with leakage controls and negative sets
 
 ---
 
-**This Documentation Index Last Updated**: January 2026  
+**This Documentation Index Last Updated**: May 2026
 **Maintained By**: Mohamed Sharif (Imperial College London)  
 **For Updates**: Modify this file when adding new docs or restructuring documentation  
 **Related**: See `/docs/README.md` for research papers and planning documentation
