@@ -170,22 +170,49 @@ class TestAlignmentReport:
         assert "end_of_tenancy" in captured.out
 
 
-class TestLiveModeNotYetImplemented:
-    def test_engine_live_raises_clear_message(self, tmp_path):
+class TestLiveModeRequiresExplicitClient:
+    """SHA-20 Phase 7: --engine live requires --client; refuses to run
+    silently against the stub. The deterministic stub client is the test
+    path; production clients (claude/openai) need credentials."""
+
+    def test_engine_live_without_client_returns_nonzero(self, tmp_path, capsys):
         mod = _import_script_module()
-        with pytest.raises(NotImplementedError, match="LLM client"):
-            mod._cli_main(
-                [
-                    "--gold",
-                    str(GOLD_PATH),
-                    "--out-dir",
-                    str(tmp_path),
-                    "--engine",
-                    "live",
-                    "--modes",
-                    "hybrid",
-                ]
-            )
+        rc = mod._cli_main(
+            [
+                "--gold",
+                str(GOLD_PATH),
+                "--out-dir",
+                str(tmp_path),
+                "--engine",
+                "live",
+                "--modes",
+                "hybrid",
+            ]
+        )
+        assert rc != 0
+        captured = capsys.readouterr()
+        assert "client" in captured.err.lower()
+
+    def test_engine_live_with_client_stub_runs(self, tmp_path):
+        mod = _import_script_module()
+        rc = mod._cli_main(
+            [
+                "--gold",
+                str(GOLD_PATH),
+                "--out-dir",
+                str(tmp_path),
+                "--engine",
+                "live",
+                "--client",
+                "stub",
+                "--modes",
+                "hybrid",
+                "--limit",
+                "1",
+            ]
+        )
+        assert rc == 0
+        assert (tmp_path / "hybrid.jsonl").exists()
 
 
 # ---------- Subprocess (real entry point) ----------

@@ -317,6 +317,11 @@ def _cli_main(argv=None) -> int:
         version = args.path.stem
         try:
             result = load(version, base_dir=args.path.parent, strict=args.strict)
+        except FileNotFoundError as e:
+            # SHA-20 Phase 7 / audit D2: a missing gold file MUST fail
+            # closed and never be silently substituted with synthetic data.
+            print(f"Gold-set file missing (fail-closed): {e}", file=sys.stderr)
+            return 1
         except (json.JSONDecodeError, ValidationError) as e:
             print(f"Load error: {e}", file=sys.stderr)
             return 1

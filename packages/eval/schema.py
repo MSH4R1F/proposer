@@ -9,7 +9,7 @@ import re
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -223,6 +223,117 @@ class GoldCase(StrictBaseModel):
     claimed_amounts: list[ClaimedAmount] = Field(min_length=1)
     ground_truth_outcome: GroundTruthOutcome
     key_reasoning_quotes: list[ReasoningQuote] = Field(min_length=1)
+
+    # ------------------------------------------------------------------
+    # SHA-20 Phase 7 extensions. All fields are OPTIONAL/defaulted so
+    # legacy ``housing_v1.jsonl`` rows continue to validate. New per-domain
+    # gold sets populate them.
+    #
+    # See docs/eval/gold-schema.md and docs/eval/leakage_controls.md.
+    # ------------------------------------------------------------------
+    domain_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "DomainId of the gold case (e.g. 'housing.deposit.v1'). When "
+            "set, leakage controls and per-domain metrics are activated."
+        ),
+    )
+    forum: Optional[str] = Field(
+        default=None,
+        description="Forum value from domain_core.spec.Forum.",
+    )
+    source_url: Optional[str] = Field(
+        default=None,
+        description="Public URL of the source document, if known.",
+    )
+    source_license: Optional[str] = Field(
+        default=None,
+        description="License identifier (e.g. 'OGL-3.0', 'BAILII-terms').",
+    )
+    retrieval_namespace_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "Namespace_id from the domain spec; used by leakage controls "
+            "to assert the gold case lines up with the chosen domain."
+        ),
+    )
+    target_source_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "The source_id of the tribunal decision THIS gold case was "
+            "derived from. MUST be excluded from retrieval at eval time."
+        ),
+    )
+    excluded_source_ids: List[str] = Field(
+        default_factory=list,
+        description=(
+            "Additional source_ids that must be excluded (e.g. follow-up "
+            "appeals, related cases sharing facts)."
+        ),
+    )
+    law_effective_date: Optional[date] = Field(
+        default=None,
+        description=(
+            "as_of_date for retrieval: only authorities with "
+            "effective_date <= this date are admissible."
+        ),
+    )
+    train_test_split: Optional[Literal["train", "test", "dev"]] = Field(
+        default=None,
+        description="Optional explicit split assignment.",
+    )
+    source_publisher: Optional[str] = Field(
+        default=None,
+        description="domain_core.spec.SourcePublisher value.",
+    )
+    source_kind: Optional[str] = Field(
+        default=None,
+        description="domain_core.spec.SourceKind value.",
+    )
+    corpus_version: Optional[str] = Field(
+        default=None,
+        description=(
+            "Corpus version against which this gold case was annotated. "
+            "Result hash captures this so reproducibility is auditable."
+        ),
+    )
+    matter_type: Optional[str] = Field(
+        default=None,
+        description=(
+            "SHA-20 audit D3 split (e.g. 'deposit_deduction' vs "
+            "'deposit_non_protection'). Eval scores these separately."
+        ),
+    )
+    negative_kind: Optional[str] = Field(
+        default=None,
+        description=(
+            "When present, this row is part of a negative set "
+            "(insufficient_evidence, wrong_forum, prompt_injection, "
+            "temporal_leakage, pii_leakage, cross_domain_distractor, "
+            "ambiguous_mixed). Engine should abstain or be tested for "
+            "redaction; metrics treat the row specially."
+        ),
+    )
+    expected_outcome: Optional[str] = Field(
+        default=None,
+        description=(
+            "Free-form expected outcome label for negative-set rows "
+            "(e.g. 'abstain', 'redact', 'select_correct_domain')."
+        ),
+    )
+    expected_redactions: List[str] = Field(
+        default_factory=list,
+        description=(
+            "For pii_leakage_v1 rows: identifiers that MUST be scrubbed "
+            "from the model's trace and user-facing output."
+        ),
+    )
+    expected_redacted_text: Optional[str] = Field(
+        default=None,
+        description=(
+            "Optional verbatim expected redacted output for assertions."
+        ),
+    )
 
     @model_validator(mode="after")
     def _validate_invariants(self) -> "GoldCase":
