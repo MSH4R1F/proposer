@@ -397,6 +397,165 @@ def clear(ctx):
     click.echo("Index cleared successfully.")
 
 
+@cli.command(name="cleanup-corpus")
+@click.option(
+    "--domain",
+    "domain_id",
+    type=str,
+    required=True,
+    help="SHA-20 domain id whose corpus versions should be pruned.",
+)
+@click.option(
+    "--namespace-id",
+    "namespace_id_opt",
+    type=str,
+    default=None,
+    help=(
+        "Retrieval namespace id within the domain. Required when the "
+        "domain declares more than one namespace."
+    ),
+)
+@click.option(
+    "--keep-last",
+    type=int,
+    default=2,
+    show_default=True,
+    help="Number of most-recent corpus versions to retain.",
+)
+@click.option(
+    "--apply",
+    "apply_changes",
+    is_flag=True,
+    help="Actually delete the obsolete versions. Default is --dry-run.",
+)
+@click.pass_context
+def cleanup_corpus(
+    ctx,
+    domain_id: str,
+    namespace_id_opt: Optional[str],
+    keep_last: int,
+    apply_changes: bool,
+):
+    """Phase 4 corpus-version cleanup.
+
+    Lists all on-disk corpus versions for the namespace under
+    ``data_dir/corpora/{namespace_id}/``, retains the latest ``--keep-last``
+    versions plus any version still referenced by persisted predictions,
+    and either prints what would be deleted (default ``--dry-run``) or
+    deletes them (``--apply``).
+
+    The retention set is intentionally conservative: when a Postgres
+    connection is not available, the CLI keeps the ``--keep-last`` set
+    and skips DB-referenced lookups (no false negatives).
+    """
+    if keep_last < 1:
+        raise click.UsageError("--keep-last must be >= 1")
+
+    from domain_core.registry import get_domain_spec  # noqa: WPS433
+
+    spec = get_domain_spec(domain_id)
+    if not spec.retrieval_namespaces:
+        raise click.UsageError(
+            f"Domain {domain_id!r} declares no retrieval namespaces."
+        )
+
+    if namespace_id_opt:
+        matches = [
+            ns for ns in spec.retrieval_namespaces
+            if ns.namespace_id == namespace_id_opt
+        ]
+        if not matches:
+            raise click.UsageError(
+                f"namespace_id {namespace_id_opt!r} not found in domain "
+                f"{domain_id!r}; available: "
+                f"{[ns.namespace_id for ns in spec.retrieval_namespaces]}"
+            )
+        namespace = matches[0]
+    elif len(spec.retrieval_namespaces) == 1:
+        namespace = spec.retrieval_namespaces[0]
+    else:
+        raise click.UsageError(
+            f"Domain {domain_id!r} has multiple namespaces; pass --namespace-id."
+        )
+
+    base_dir = Path(ctx.obj["config"].data_dir if ctx.obj else "./data")
+    corpora_root = base_dir / "corpora" / namespace.namespace_id
+
+    if not corpora_root.exists():
+        click.echo(
+            f"No corpora directory at {corpora_root}; nothing to clean up."
+        )
+        return
+
+    versions = sorted(
+        [p for p in corpora_root.iterdir() if p.is_dir()],
+        key=lambda p: p.name,
+        reverse=True,
+    )
+    if not versions:
+        click.echo(
+            f"No corpus versions found under {corpora_root}; "
+            "nothing to clean up."
+        )
+        return
+
+    keep = {p.name for p in versions[:keep_last]}
+
+    # Best-effort DB lookup for live references. Failure is non-fatal:
+    # the dry-run / apply still respects ``--keep-last``.
+    referenced: set[str] = set()
+    try:
+        import os
+        from sqlalchemy import create_engine, text  # type: ignore
+
+        db_url = os.getenv("DATABASE_URL")
+        if db_url:
+            sync_url = db_url.replace("+asyncpg", "")
+            engine = create_engine(sync_url)
+            with engine.connect() as conn:
+                rows = conn.execute(
+                    text(
+                        "SELECT DISTINCT corpus_version FROM predictions "
+                        "WHERE corpus_version IS NOT NULL"
+                    )
+                )
+                referenced = {r[0] for r in rows if r[0]}
+    except Exception as exc:
+        click.echo(
+            f"warning: could not query predictions table for referenced "
+            f"corpus versions ({exc}); falling back to keep-last only.",
+            err=True,
+        )
+
+    keep |= referenced
+
+    to_delete = [p for p in versions if p.name not in keep]
+
+    click.echo(f"Domain:         {domain_id}")
+    click.echo(f"Namespace:      {namespace.namespace_id}")
+    click.echo(f"Corpora root:   {corpora_root}")
+    click.echo(f"Total versions: {len(versions)}")
+    click.echo(f"Keeping (last {keep_last}): {sorted([p.name for p in versions[:keep_last]])}")
+    if referenced:
+        click.echo(f"Keeping (DB-referenced): {sorted(referenced)}")
+    click.echo(f"Candidates for deletion: {[p.name for p in to_delete]}")
+
+    if not to_delete:
+        click.echo("Nothing to delete.")
+        return
+
+    if not apply_changes:
+        click.echo("\n[dry-run] re-run with --apply to delete the listed versions.")
+        return
+
+    import shutil
+
+    for path in to_delete:
+        click.echo(f"deleting {path} ...")
+        shutil.rmtree(path)
+    click.echo(f"Deleted {len(to_delete)} corpus version(s).")
+
+
 @cli.command()
 @click.argument("pdf_path", type=click.Path(exists=True))
 @click.pass_context
