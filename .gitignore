@@ -277,6 +277,8 @@ docker-volumes/
 data/*
 !data/gold_standard/
 !data/regression/
+!data/eval/
+!data/eval_artifacts/
 
 # ===================================
 # Multi-window orchestration
