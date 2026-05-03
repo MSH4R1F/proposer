@@ -409,18 +409,23 @@ proposer/
 ├── scripts/
 │   ├── scrapers/               # Data collection scrapers
 │   │   ├── bailii_scraper.py   # BAILII tribunal decisions scraper
+│   │   ├── housing_ombudsman/  # Housing Ombudsman determinations
+│   │   ├── govuk_property_tribunal/   # FTT(PC) RRO scraper
+│   │   ├── govuk_rent_determination/  # FTT(PC) MNR rent-determination scraper
 │   │   ├── config.py           # Keywords and settings
 │   │   ├── models.py           # Pydantic data models
 │   │   ├── parsers.py          # HTML parsing
 │   │   ├── downloader.py       # Async HTTP client
 │   │   └── progress.py         # SQLite progress tracking
+│   ├── ingest/                 # Per-namespace ingestion (chunk → embed → Chroma + BM25)
 │   ├── build-embeddings.py     # Generate vector store
 │   └── evaluate-predictions.py # Accuracy testing
 │
 ├── docs/
 │   ├── architecture.md         # System design
 │   ├── api-spec.yaml           # OpenAPI specification
-│   └── evaluation-results.md   # Performance metrics
+│   ├── evaluation-results.md   # Performance metrics
+│   └── scraping-runs.md        # Operational log of every live scrape pilot
 │
 ├── .cursorrules                # AI assistant context
 ├── CLAUDE.md                   # Project philosophy & roadmap
@@ -562,7 +567,7 @@ We track multiple metrics to ensure quality:
 - **Cost per Case**: LLM API costs per prediction
 - **Target**: <30 seconds, <£0.50 per case
 
-See [`docs/evaluation-results.md`](docs/evaluation-results.md) for detailed metrics.
+See [`docs/evaluation-results.md`](docs/evaluation-results.md) for detailed metrics, and [`docs/scraping-runs.md`](docs/scraping-runs.md) for the operational log of every live corpus pilot (commands, hit rates, bugs uncovered, ingest counts).
 
 ### Domain Launch Gates
 
