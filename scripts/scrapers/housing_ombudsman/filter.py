@@ -155,31 +155,41 @@ def keep_repairs_social_only(
     """
     cats_lower = " ".join(c.lower() for c in metadata.complaint_categories)
     body_lower = (raw_text or "").lower()
-    haystack = f"{cats_lower}\n{body_lower}"
 
-    matched_damp = _scan(haystack, REPAIRS_DAMP_MOULD)
-    matched_disrepair = _scan(haystack, REPAIRS_DISREPAIR)
-    matched_complaint = _scan(haystack, COMPLAINT_HANDLING)
+    # Scan categories and body separately. Body evidence is what determines
+    # repairs membership: a generic category like "Repairs" or "Property
+    # condition" alone is too weak — the live site applies those liberally
+    # and we'd swallow non-repairs cases. Body keywords are what proves
+    # the determination is actually about damp/mould/disrepair/etc.
+    damp_body = _scan(body_lower, REPAIRS_DAMP_MOULD)
+    disrepair_body = _scan(body_lower, REPAIRS_DISREPAIR)
+    complaint_body = _scan(body_lower, COMPLAINT_HANDLING)
+
+    damp_cats = _scan(cats_lower, REPAIRS_DAMP_MOULD)
+    disrepair_cats = _scan(cats_lower, REPAIRS_DISREPAIR)
+    complaint_cats = _scan(cats_lower, COMPLAINT_HANDLING)
 
     matter_types: List[str] = []
     matched_keywords: List[str] = []
-    if matched_damp:
+    if damp_body:
         matter_types.append("repairs_damp_mould")
-        matched_keywords.extend(matched_damp)
-    if matched_disrepair:
+        matched_keywords.extend(damp_body)
+    if disrepair_body:
         matter_types.append("repairs_disrepair")
-        matched_keywords.extend(matched_disrepair)
-    has_repairs_signal = bool(matched_damp or matched_disrepair)
+        matched_keywords.extend(disrepair_body)
+    has_repairs_signal = bool(damp_body or disrepair_body)
 
-    # Complaint handling is only KEPT if tied to a kept repairs signal.
-    if matched_complaint and has_repairs_signal:
+    # Complaint handling is only KEPT if tied to a kept body repairs signal.
+    if complaint_body and has_repairs_signal:
         matter_types.append("complaint_handling_failure")
-        matched_keywords.extend(matched_complaint)
+        matched_keywords.extend(complaint_body)
 
-    # Look for non-repairs reject signals.
+    # Look for non-repairs reject signals across both surfaces — categories
+    # like "Service charges" or body mentions of "ground rent" both flag
+    # the case as non-repairs.
     reject_hits = []
     for keyword, reason in NON_REPAIRS_REJECT.items():
-        if keyword in haystack:
+        if keyword in body_lower or keyword in cats_lower:
             reject_hits.append((keyword, reason))
 
     # Decision tree:
@@ -212,12 +222,26 @@ def keep_repairs_social_only(
             matched_keywords=[k for k, _ in reject_hits],
             excerpt=_excerpt_for(body_lower, keyword),
         )
-    if matched_complaint:
+    # Either body or category mention of complaint-handling alone, with no
+    # repairs signal anywhere, is rejected.
+    if complaint_body or complaint_cats:
+        excerpt_anchor = (complaint_body or complaint_cats)[0]
         return KeepReject(
             keep=False,
             reject_reason="generic_complaint_handling_no_repairs",
-            matched_keywords=matched_complaint,
-            excerpt=_excerpt_for(body_lower, matched_complaint[0]),
+            matched_keywords=complaint_body + complaint_cats,
+            excerpt=_excerpt_for(body_lower, excerpt_anchor),
+        )
+    # Categories declared a repairs label but the body had no supporting
+    # evidence (and no other reject signal). Treat as a weak signal and
+    # reject conservatively — we'd rather miss real repairs than ingest
+    # a non-repairs case under a misleading category.
+    if damp_cats or disrepair_cats:
+        return KeepReject(
+            keep=False,
+            reject_reason="category_only_no_body_evidence",
+            matched_keywords=damp_cats + disrepair_cats,
+            excerpt=None,
         )
     return KeepReject(
         keep=False,

@@ -21,7 +21,7 @@ def _have_runtime_deps() -> bool:
         import llm_orchestrator.pipeline.citation_verifier  # noqa: F401
         import llm_orchestrator.models.prediction_v2  # noqa: F401
         return True
-    except Exception:
+    except ImportError:
         return False
 
 

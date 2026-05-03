@@ -146,6 +146,12 @@ class OmbudsmanDownloader:
 
         async with self._sem:
             await self._bucket.acquire()
+            # ``reraise=False`` so the retry loop normalises *any* exhaustion
+            # into ``RetryError``, which we then unwrap and re-raise as
+            # ``OmbudsmanFetchError``. With ``reraise=True``, tenacity would
+            # bypass the except block and leak raw ``httpx.HTTPError``
+            # instances out of this module — breaking the public error
+            # contract documented in the docstring.
             try:
                 async for attempt in AsyncRetrying(
                     stop=stop_after_attempt(self.config.max_retries),
@@ -156,7 +162,7 @@ class OmbudsmanDownloader:
                     retry=retry_if_exception_type(
                         (httpx.HTTPError, OmbudsmanFetchError)
                     ),
-                    reraise=True,
+                    reraise=False,
                 ):
                     with attempt:
                         resp = await self._client.get(url)
@@ -167,7 +173,12 @@ class OmbudsmanDownloader:
                         resp.raise_for_status()
                         return resp.text
             except RetryError as e:
-                raise OmbudsmanFetchError(f"giving up on {url}: {e}") from e
+                # Surface the underlying transport error in the message
+                # and chain so logs/tracebacks still show the root cause.
+                cause = e.last_attempt.exception() if e.last_attempt else e
+                raise OmbudsmanFetchError(
+                    f"giving up on {url}: {cause}"
+                ) from cause
         # Should not reach here.
         raise OmbudsmanFetchError(f"no response for {url}")
 

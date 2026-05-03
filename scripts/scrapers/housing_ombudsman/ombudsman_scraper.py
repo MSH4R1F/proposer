@@ -129,7 +129,16 @@ class OmbudsmanScraper:
             return
 
         # Prefer parser-extracted reference; fall back to listing hint.
-        case_ref = metadata.case_reference or case_ref_hint
+        # ``parse_detail_html`` returns the literal sentinel "unknown" when
+        # both the labelled-field and URL-pattern paths fail, so treat
+        # that as absent — otherwise every unparseable page collides into
+        # ``decisions/unknown/`` and overwrites prior siblings.
+        parsed_ref = metadata.case_reference
+        case_ref = (
+            parsed_ref
+            if parsed_ref and parsed_ref != "unknown"
+            else case_ref_hint
+        )
         content_hash = self.runlog.content_hash(raw_text)
         if self.runlog.dedup_key(case_ref, source_url, content_hash):
             self.runlog.record(

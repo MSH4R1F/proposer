@@ -117,6 +117,34 @@ class TestRejectNonRepairs:
         assert result.reject_reason == "no_repairs_signal"
 
 
+class TestCategoryOnly:
+    """Regression: a "Repairs" or "Property condition" category with no
+    body evidence used to falsely keep a case (categories were merged
+    into the haystack). Now categories and body are scanned separately
+    and category-only matches are rejected as too weak to ingest."""
+
+    def test_repairs_category_only_with_unrelated_body_is_rejected(self):
+        meta = _meta(complaint_categories=["Repairs"])
+        body = (
+            "The resident asked the landlord to clarify the parking permit "
+            "policy for the estate. There was no further substantive issue."
+        )
+        result = keep_repairs_social_only(meta, body)
+        assert result.keep is False
+        assert result.reject_reason == "category_only_no_body_evidence"
+
+    def test_property_condition_category_only_empty_body_is_rejected(self):
+        meta = _meta(complaint_categories=["Property condition"])
+        result = keep_repairs_social_only(meta, "")
+        assert result.keep is False
+        # Empty body falls through to no_repairs_signal — also acceptable
+        # as long as it is NOT kept.
+        assert result.reject_reason in {
+            "category_only_no_body_evidence",
+            "no_repairs_signal",
+        }
+
+
 class TestMixedSignals:
     def test_repairs_plus_service_charge_keeps_repairs(self):
         """Joint repairs+service-charge complaints are kept (repairs wins)."""
