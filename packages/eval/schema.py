@@ -6,7 +6,7 @@ allowed enum values, and the cross-field invariants enforced on GoldCase.
 from __future__ import annotations
 
 import re
-from datetime import date
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import List, Literal, Optional, Tuple
@@ -195,6 +195,102 @@ class GroundTruthOutcome(StrictBaseModel):
         return self
 
 
+class LabelerModel(StrictBaseModel):
+    """A single labeling pass's provider/model/version triple.
+
+    Recorded per case so a published gold set can be re-derived from raw
+    LLM outputs (frozen in the run artifact) even after the live model is
+    retired. ``api_version`` is optional — set it when the provider exposes
+    a stable response-API version string the team should pin.
+    """
+
+    provider: Literal["anthropic", "openai"]
+    model: str = Field(min_length=1)
+    api_version: Optional[str] = None
+
+
+_PROVENANCE_SOURCES = Literal[
+    "deterministic_manifest",
+    "model_agreement",
+    "human_mandatory_review",
+    "human_disagreement_adjudication",
+    "human_agreed_cell_audit",
+    "human_only_anchor",
+]
+
+
+class FieldLabelProvenance(StrictBaseModel):
+    """Per-cell audit trail for a single ``GoldCase`` field.
+
+    ``field_path`` uses the granular notation defined in §4 of the sparring
+    plan (e.g. ``"per_issue[issue=damages].winner"``); see
+    ``packages/eval/auto_label/disagreement.py`` for the canonical builder.
+    """
+
+    field_path: str = Field(min_length=1)
+    source: _PROVENANCE_SOURCES
+    source_spans: list[Provenance] = Field(default_factory=list)
+    match_strategy: Optional[str] = None
+    reviewer_rationale: Optional[str] = None
+
+
+class LabelingProvenance(StrictBaseModel):
+    """Per-case audit trail produced by ``packages/eval/auto_label/runner.py``.
+
+    Carries every hash and version needed to replay a labeling decision
+    once labeler models, OCR engines, or authority indexes drift. Raw LLM
+    outputs are NOT stored here — they live in the per-case run artifact
+    under ``data/eval_artifacts/labeling/<run_id>/<case_id>.json``. This
+    keeps ``housing_v1.jsonl`` rows readable and diffable.
+    """
+
+    run_id: str = Field(min_length=1)
+    labeled_at: datetime
+    labeler_models: list[LabelerModel] = Field(min_length=1)
+
+    # Reproducibility hashes / versions
+    source_pdf_sha256: str
+    ocr_text_sha256: str
+    ocr_engine: Optional[str] = None
+    ocr_engine_version: Optional[str] = None
+    prompt_template_hash: str = Field(min_length=1)
+    prompt_pack_hash: Optional[str] = None
+    gold_schema_hash: str = Field(min_length=1)
+    corpus_manifest_hash: str = Field(min_length=1)
+    domain_spec_hash: Optional[str] = None
+    authority_index_id: Optional[str] = None
+    authority_index_hash: Optional[str] = None
+    statute_index_id: Optional[str] = None
+    statute_index_hash: Optional[str] = None
+    canonicalizer_version: str = Field(min_length=1)
+    grounder_version: str = Field(min_length=1)
+    audit_seed: int
+
+    # Human-control status
+    is_human_only_anchor: bool = False
+    anchor_set_id: Optional[str] = None
+    mandatory_review_completed_at: Optional[datetime] = None
+    human_adjudicator: Optional[str] = None
+    adjudicated_fields: list[str] = Field(default_factory=list)
+
+    # Reported metrics — raw rates, NOT Cohen's kappa.
+    inter_model_agreement_rate: float = Field(ge=0.0, le=1.0)
+    grounding_pass_rate: float = Field(ge=0.0, le=1.0)
+    audit_flip_rate: float = Field(ge=0.0, le=1.0)
+    mandatory_review_flip_rate: float = Field(ge=0.0, le=1.0)
+    field_provenance: list[FieldLabelProvenance] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _validate_sha256_fields(self) -> "LabelingProvenance":
+        for field_name in ("source_pdf_sha256", "ocr_text_sha256"):
+            value = getattr(self, field_name)
+            if not _SHA256_RE.match(value):
+                raise ValueError(
+                    f"{field_name} must be 64 lowercase hex chars; got {value!r}"
+                )
+        return self
+
+
 class GoldCase(StrictBaseModel):
     """A single annotated tribunal case in the gold-standard evaluation set.
 
@@ -332,6 +428,16 @@ class GoldCase(StrictBaseModel):
         default=None,
         description=(
             "Optional verbatim expected redacted output for assertions."
+        ),
+    )
+    labeling_provenance: Optional[LabelingProvenance] = Field(
+        default=None,
+        description=(
+            "When set, this row was produced by the auto-label pipeline "
+            "(dual-LLM + auto-grounder + human adjudication). None means "
+            "the row predates the pipeline (legacy hand-annotated cases). "
+            "See packages/eval/auto_label/runner.py and "
+            "docs/eval/gold-schema.md."
         ),
     )
 

@@ -10,15 +10,47 @@
 │ data/raw/bailii/*.pdf   │
 └────────────┬────────────┘
              │
-             │ 1.  Reviewer runs `annotate.py template`
-             │ 2.  Reviewer fills in JSON
-             │ 3.  `annotate.py validate` → schema gatekeeper
-             │ 4.  `annotate.py append`   → JSONL accumulator
+             │ LLM-assisted labeling pipeline (Phases 1–11; see decision-log D-021).
+             │ Replaces the original two-paralegal protocol on every real-gold row.
+             │
+             │ 1.  scripts/eval/auto_label.py
+             │       • LabelerModelSpec_A (Anthropic) and _B (OpenAI) in parallel
+             │         via packages/llm_orchestrator/clients/labeler_factory.py
+             │       • packages/eval/auto_label/grounder.py runs per output:
+             │             quote span match (canonicalize + bounded span_match,
+             │             never whole-document fuzzy), authority + statute
+             │             lookups, outcome/label basis spans, INV-1..INV-10,
+             │             facts leakage scan (pre_decision_record only)
+             │       • writes data/eval_artifacts/labeling/<run_id>/<case_id>.json
+             │             — raw outputs, prompts, hashes, grounding decisions
+             │       • REFUSES to write under data/gold_standard/
+             │
+             │ 2.  scripts/eval/adjudicate.py append --decisions <path>
+             │       • walks MandatoryReviewSet (every metric-critical cell, always)
+             │       • walks DisagreementSet (A/B mismatch + ungrounded + null-XOR)
+             │       • walks 10% audit overlay of agreed cells (deterministic)
+             │       • runs assert_real_gold_appendable from
+             │         packages/eval/auto_label/append_gate.py — refuses on
+             │         missing labeling_provenance, negative_kind set, missing
+             │         target_source_id, missing manifest fields, incomplete
+             │         MandatoryReviewSet coverage, or missing/mismatched
+             │         run-artifact hashes
+             │       • only on green-light: append GoldCase row + reviewer-log entry
+             │
+             │ Adjudicator-only onboarding: docs/eval/reviewer-guide.md.
+             │ scripts/eval/annotate.py is retained for legacy hand-annotation
+             │ but is not the path real-gold rows take any more.
              ▼
 ┌──────────────────────────────────────┐
 │  Gold-standard corpus                │
 │  data/gold_standard/housing_v1.jsonl │
-│  one annotated GoldCase per line     │
+│  one annotated GoldCase per line,    │
+│  each carrying LabelingProvenance    │
+│  (run_id, labeler models, source +   │
+│   OCR hashes, prompt-template hash,  │
+│   canonicalizer/grounder versions,   │
+│   audit_flip_rate,                   │
+│   mandatory_review_flip_rate, …)     │
 └────────────┬─────────────────────────┘
              │
              │ `eval.dataset.load(...)`
@@ -182,34 +214,64 @@ The boundary rule: nothing in `packages/eval/` ever directly imports from rag_en
 
 **What's still on the deferred path:** `--engine live` raises until Phase 5c wires a real `BaseLLMClient` (Anthropic / OpenAI choice + key handling). Phase 5b verifies the entire chain runs end-to-end with the stub; swapping in a real LLM is a one-line change at `_resolve_predict_fn` once the client is decided.
 
-## Lifecycle of a single annotated case
+## Lifecycle of a single annotated case (LLM-assisted pipeline)
+
+> Updated 2026-05-03 — see decision-log D-021. Replaces the original
+> two-paralegal Cohen's κ flow.
 
 ```text
-[Reviewer reads PDF]
+[Pipeline owner picks PDF + corpus manifest entry]
         │
-        │ sha256sum data/raw/bailii/case.pdf
+        │ sha256sum data/raw/bailii/case.pdf  → source_pdf_sha256
         ▼
-[Reviewer fills draft.json]
+[scripts/eval/auto_label.py
+   --case-id ... --pdf ... --domain-id ... --run-id ...
+   --labeler-a anthropic:claude-sonnet-4-...
+   --labeler-b openai:gpt-5.5]
         │
-        │ python scripts/eval/annotate.py validate draft.json
+        │ → both LabelerModelSpec clients constructed via
+        │   packages/llm_orchestrator/clients/labeler_factory.py
+        │ → both run in parallel via asyncio.gather (different providers,
+        │   different rate-limit pools, JSON-shaped partial-GoldCase output)
+        │ → packages/eval/auto_label/grounder.py runs per output:
+        │      check_quote, check_authority, check_statute,
+        │      check_outcome_basis, check_label_basis,
+        │      check_facts_leakage, check_date_sanity, check_amount_sanity,
+        │      check_invariants, check_real_gold_audit
         ▼
-       {valid?}
+[data/eval_artifacts/labeling/<run_id>/<case_id>.json]
+   raw labeler outputs + rendered prompts + every reproducibility hash
+   (source PDF, OCR text, prompt template, canonicalizer/grounder
+    versions, gold-schema, corpus-manifest)
         │
-        │ yes
+        │ Adjudicator queues derived per-case:
+        │   • MandatoryReviewSet — every metric-critical cell, always
+        │   • DisagreementSet     — A/B mismatch, ungrounded, null-XOR,
+        │                           invariant fail, basis-span missing
+        │   • Audit overlay       — deterministic 10% sample of agreed cells
         ▼
-[python scripts/eval/annotate.py append draft.json]
+[Adjudicator opens scripts/eval/adjudicate.py queues → reviews → fills
+ decisions.json with confirmed values + LabelingProvenance metadata]
         │
-        │ → atomic JSONL append
+        │ scripts/eval/adjudicate.py append --decisions decisions.json
+        │ → assert_real_gold_appendable(GoldCase, run_artifact_path):
+        │      refuses missing labeling_provenance, negative_kind set,
+        │      missing target_source_id, missing manifest fields,
+        │      incomplete MandatoryReviewSet coverage, or missing/mismatched
+        │      run-artifact hashes
         ▼
-[data/gold_standard/housing_v1.jsonl gains 1 line]
+[data/gold_standard/housing_v1.jsonl gains 1 line, with
+ LabelingProvenance summary of the run]
         │
-        │ Phase 6: another reviewer blind-annotates same case
-        │ → row in docs/eval/reviewer-log.md if disagreement
+        │ + adjudication rationale row in docs/eval/reviewer-log.md
+        │ + audit_flip_rate / mandatory_review_flip_rate / inter_model_
+        │   agreement_rate recorded in LabelingProvenance for downstream
+        │   defensibility metrics
         ▼
-[Cohen's κ ≥ 0.8 per claim_type required for DoD]
-        │
-        ▼
-[Case is downstream-consumable by every metric]
+[Case is downstream-consumable by every metric.
+ Calibration claims are reported per anchor / LLM-assisted / combined;
+ a combined-corpus claim only lands when anchor divergence is below
+ the pre-registered threshold (Brier delta ≤ 0.05, no winner-flip).]
 ```
 
 ## Lifecycle of a single metric run

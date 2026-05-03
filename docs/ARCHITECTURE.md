@@ -39,15 +39,18 @@ graph TB
             ChatRouter["/chat<br/>• POST /start<br/>• POST /message<br/>• POST /set-role<br/>• GET /session/:id<br/>• DELETE /session/:id<br/>• GET /sessions"]
             PredictionsRouter["/predictions<br/>• POST /generate<br/>• GET /:id<br/>• GET /case/:caseId"]
             DisputesRouter["/disputes<br/>• POST /create<br/>• POST /validate-invite<br/>• POST /join<br/>• GET /:id"]
+            MediationRouter["/mediation<br/>• POST /:id/start<br/>• GET /:id/expectation/:sid<br/>• GET /:id/messages<br/>• POST /:id/message<br/>• POST /:id/offer<br/>• POST /:id/respond<br/>• GET /:id/settlement<br/>• GET /:id/settlement/pdf"]
             EvidenceRouter["/evidence<br/>• POST /upload/:caseId<br/>• GET /:caseId<br/>• DELETE /:evidenceId"]
             CasesRouter["/cases<br/>• GET /:caseId<br/>• GET /"]
+            DevRouter["/api/dev (debug)<br/>• POST /agent-smoke"]
         end
         
         subgraph Services["Service Layer"]
             DomainRuntime["DomainRuntime<br/>• Domain Specs<br/>• Stage/Mode Gates<br/>• Allowlists<br/>• Eval Artifacts"]
             IntakeService["IntakeService<br/>• Session Management<br/>• Conversation Flow<br/>• Case File Building<br/>• Postgres + UoW"]
-            PredictionService["PredictionService<br/>• Prediction Generation<br/>• RAG Integration<br/>• KG Integration<br/>• Postgres + UoW"]
+            PredictionService["PredictionService<br/>• PredictionEngineV2 wiring<br/>• Read-cache + row lock<br/>• Postgres + UoW"]
             DisputeService["DisputeService<br/>• Dispute Creation<br/>• Invite Codes<br/>• Party Linking<br/>• Postgres + UoW"]
+            MediationService["MediationService<br/>• Mediation lifecycle<br/>• ZOPA + offer state<br/>• Settlement assembly<br/>• Postgres + UoW"]
             StorageService["StorageService<br/>• File Uploads<br/>• Evidence Processing<br/>• Postgres + UoW"]
         end
     end
@@ -58,7 +61,19 @@ graph TB
             DomainRouter["DomainRouter<br/>• Deterministic Rules<br/>• LLM Fallback<br/>• Clarifying Questions"]
             IntakeAgent["IntakeAgent<br/>• Dynamic Questioning<br/>• Context Awareness<br/>• Completeness Tracking"]
             PromptPacks["Prompt Packs<br/>• Domain Framing<br/>• Forum Policy"]
-            PredictionAgent["PredictionEngine<br/>• Prediction Synthesis<br/>• Reasoning Trace<br/>• Citation Generation"]
+            subgraph PredictionEngineV2["PredictionEngineV2 (5-step)"]
+                IssueDecomposer["IssueDecomposer"]
+                IssueRetriever["IssueRetriever<br/>(per-issue RAG)"]
+                IssuePredictor["IssuePredictor"]
+                CitationVerifier["CitationVerifier<br/>(cite-or-abstain)"]
+                OutputAssembler["OutputAssembler"]
+            end
+            MediatorAgent["MediatorAgent<br/>• Shadow Mediator<br/>• ZOPA computation<br/>• Nudge generation"]
+            subgraph AgentLoop["agent_loop/ (foundation)"]
+                LoopTool["tool / context"]
+                LoopRunner["loop / trace"]
+            end
+            LabelerFactory["labeler_factory<br/>• LabelerModelSpec<br/>• build_labeler_client()<br/>• provider-independent A/B"]
             ClaudeClient["ClaudeClient<br/>• Anthropic API<br/>• Structured Outputs<br/>• Error Handling"]
             FactExtractor["FactExtractor<br/>• Entity Extraction<br/>• Evidence Processing"]
         end
@@ -112,7 +127,7 @@ graph TB
     %% External Services
     subgraph External["☁️ External Services"]
         Anthropic["Anthropic API<br/>Claude 3.5 Sonnet/Haiku"]
-        OpenAI["OpenAI API<br/>text-embedding-3-large"]
+        OpenAI["OpenAI API<br/>text-embedding-3-small"]
     end
 
     %% Frontend Connections
@@ -133,31 +148,42 @@ graph TB
     MainApp --> ChatRouter
     MainApp --> PredictionsRouter
     MainApp --> DisputesRouter
+    MainApp --> MediationRouter
     MainApp --> EvidenceRouter
     MainApp --> CasesRouter
+    MainApp --> DevRouter
     
     ChatRouter --> IntakeService
     ChatRouter --> DisputeService
     PredictionsRouter --> PredictionService
     DisputesRouter --> DisputeService
+    MediationRouter --> MediationService
     EvidenceRouter --> StorageService
     CasesRouter --> IntakeService
+    DevRouter --> AgentLoop
 
     %% Service to Package Connections
     IntakeService --> IntakeAgent
     IntakeService --> FactExtractor
     IntakeService --> GraphBuilder
     
-    PredictionService --> PredictionAgent
+    PredictionService --> PredictionEngineV2
     PredictionService --> RAGPipeline
     PredictionService --> GraphBuilder
+    
+    MediationService --> MediatorAgent
+    MediationService --> PredictionEngineV2
     
     DisputeService --> GraphBuilder
 
     %% LLM Orchestrator Internal Connections
     IntakeAgent --> ClaudeClient
-    PredictionAgent --> ClaudeClient
-    PredictionAgent --> RAGPipeline
+    IssueRetriever --> RAGPipeline
+    IssuePredictor --> ClaudeClient
+    CitationVerifier --> RAGPipeline
+    MediatorAgent --> ClaudeClient
+    MediatorAgent --> RAGPipeline
+    AgentLoop --> ClaudeClient
     
     %% RAG Engine Internal Connections
     RAGPipeline --> HybridRetriever
@@ -190,8 +216,8 @@ graph TB
     classDef external fill:#ef4444,stroke:#dc2626,color:#fff
     
     class HomePage,ChatListPage,ChatSessionPage,PredictionPage,AdminPage,ChatContainer,IntakeSidebar,MessageList,PredictionViewer,ReasoningTrace,ChatAPIClient,PredictionsAPIClient,APIClient frontend
-    class MainApp,ChatRouter,PredictionsRouter,DisputesRouter,EvidenceRouter,CasesRouter,IntakeService,PredictionService,DisputeService,StorageService backend
-    class IntakeAgent,PredictionAgent,ClaudeClient,FactExtractor,GraphBuilder,KGModels,JSONStore,RAGPipeline,HybridRetriever,ChromaStore,Reranker,LegalChunker package
+    class MainApp,ChatRouter,PredictionsRouter,DisputesRouter,MediationRouter,EvidenceRouter,CasesRouter,DevRouter,IntakeService,PredictionService,DisputeService,MediationService,StorageService backend
+    class IntakeAgent,IssueDecomposer,IssueRetriever,IssuePredictor,CitationVerifier,OutputAssembler,MediatorAgent,LoopTool,LoopRunner,LabelerFactory,ClaudeClient,FactExtractor,GraphBuilder,KGModels,JSONStore,RAGPipeline,HybridRetriever,ChromaStore,Reranker,LegalChunker package
     class SessionsDir,KGDir,PredictionsDir,DisputesDir,ChromaDB,Supabase,TribunalCases,PostgresNode data
     class Anthropic,OpenAI external
 ```
@@ -242,7 +268,7 @@ sequenceDiagram
     Frontend-->>User: Show "Generate Prediction" button
 ```
 
-### 2. Prediction Generation Flow
+### 2. Prediction Generation Flow (PredictionEngineV2, 5-step)
 
 ```mermaid
 sequenceDiagram
@@ -250,38 +276,49 @@ sequenceDiagram
     participant Frontend as Next.js Frontend
     participant API as FastAPI Backend
     participant PredictionService
-    participant KGBuilder as Knowledge Graph
-    participant RAG as RAG Pipeline
+    participant Engine as PredictionEngineV2
+    participant Decomposer as IssueDecomposer
+    participant Retriever as IssueRetriever
+    participant Predictor as IssuePredictor
+    participant Verifier as CitationVerifier
+    participant Assembler as OutputAssembler
     participant Claude as Claude API
-    participant Storage as File System
+    participant RAG as RAG Pipeline
+    participant DB as Postgres (UoW)
 
     User->>Frontend: Clicks "Generate Prediction"
     Frontend->>API: POST /predictions/generate {caseId}
     API->>PredictionService: generate_prediction(caseId)
-    
-    PredictionService->>Storage: Load case file
-    Storage-->>PredictionService: Case JSON
-    
-    par Build Knowledge Graph
-        PredictionService->>KGBuilder: build_graph(case_facts)
-        KGBuilder->>KGBuilder: Extract entities + relationships
-        KGBuilder->>Storage: Save KG JSON
-        KGBuilder-->>PredictionService: Knowledge graph
-    and Retrieve Similar Cases
-        PredictionService->>RAG: retrieve_similar_cases(case_facts)
-        RAG->>RAG: Hybrid search (BM25 + semantic)
-        RAG->>RAG: Rerank by relevance
-        RAG-->>PredictionService: Top 10 relevant cases
+
+    PredictionService->>DB: read-cache (lock_for_prediction_cache)
+    alt cache hit
+        DB-->>PredictionService: cached prediction
+        PredictionService-->>API: cached result
+    else cache miss
+        PredictionService->>Engine: run(case_file, kg)
+        Engine->>Decomposer: decompose case into issues
+        Decomposer->>Claude: structured issue list
+        Claude-->>Decomposer: [issue_1 ... issue_n]
+        loop For each issue
+            Engine->>Retriever: retrieve(issue)
+            Retriever->>RAG: hybrid search + rerank
+            RAG-->>Retriever: top-k passages w/ citations
+            Engine->>Predictor: predict(issue, passages)
+            Predictor->>Claude: per-issue judgement
+            Claude-->>Predictor: {outcome, confidence, claims[], cites[]}
+        end
+        Engine->>Verifier: verify(claims, cites)
+        Note over Verifier: Cite-or-abstain rule:<br/>any claim without a valid<br/>retrieval citation is dropped<br/>or marked "Uncertain"
+        Verifier-->>Engine: verified claim set
+        Engine->>Assembler: assemble(verified, kg)
+        Assembler-->>Engine: structured Prediction
+        Engine-->>PredictionService: Prediction
+        PredictionService->>DB: row-lock recheck + write
     end
-    
-    PredictionService->>Claude: Synthesize prediction with RAG + KG
-    Note over Claude: Generates structured prediction:<br/>- Outcome (tenant_win/landlord_win/split)<br/>- Confidence scores<br/>- Reasoning trace with citations<br/>- Settlement ranges
-    Claude-->>PredictionService: Structured prediction
-    
-    PredictionService->>Storage: Save prediction JSON
+
     PredictionService-->>API: Prediction result
     API-->>Frontend: Full prediction with reasoning
-    Frontend-->>User: Display prediction page with:<br/>- Outcome & confidence<br/>- Reasoning trace<br/>- Similar cases<br/>- Settlement recommendations
+    Frontend-->>User: Outcome + per-issue confidence<br/>+ verified citations
 ```
 
 ### 3. Multi-Party Dispute Flow
@@ -332,6 +369,80 @@ sequenceDiagram
     API-->>TenantFE: Combined prediction
     API-->>LandlordFE: Notify prediction available
 ```
+
+### 4. Mediation Flow (Shadow Mediator)
+
+```mermaid
+sequenceDiagram
+    participant Tenant
+    participant Landlord
+    participant API as FastAPI Backend
+    participant MS as MediationService
+    participant Mediator as MediatorAgent
+    participant Engine as PredictionEngineV2
+    participant DB as Postgres (UoW)
+
+    Note over Tenant,Landlord: Both parties already joined the dispute<br/>and a Prediction exists in DB.
+
+    Tenant->>API: POST /mediation/{disputeId}/start
+    API->>MS: start_mediation(disputeId)
+    MS->>DB: status check + record create (atomic)
+    MS->>Engine: load joint Prediction
+    Engine-->>MS: per-issue outcomes + ranges
+    MS->>Mediator: compute_zopa(prediction, party_offers)
+    Mediator-->>MS: ZOPA + opening nudges
+
+    loop Negotiation rounds
+        Tenant->>API: POST /mediation/{id}/offer
+        API->>MS: record offer
+        MS->>Mediator: evaluate(offer, zopa, history)
+        Mediator-->>MS: nudge / counter-suggestion
+        MS-->>API: nudge to tenant
+        Landlord->>API: POST /mediation/{id}/respond
+        API->>MS: accept | counter | reject (atomic state transition)
+    end
+
+    alt Settlement reached
+        MS->>DB: settle (atomic)
+        API->>API: GET /mediation/{id}/settlement/pdf
+    else Escalate
+        MS->>DB: escalate (atomic)
+    end
+```
+
+---
+
+## Prediction Engine V2 (5-step pipeline)
+
+`packages/llm_orchestrator/pipeline/prediction_engine_v2.py` (orchestrator) plus five sibling modules. Each step has a single responsibility; the orchestrator threads state without overlap.
+
+| Step | Module | Responsibility |
+|---|---|---|
+| 1. **IssueDecomposer** | `pipeline/issue_decomposer.py` | Splits the case file into independently-judgeable legal issues (deposit-protection-window, prescribed-information-service, cleaning/damage deduction, fair-wear-and-tear, rent-arrears offset, etc.). |
+| 2. **IssueRetriever** | `pipeline/issue_retriever.py` | Per-issue RAG: queries `RAGPipeline` with issue-specific framing, applies the cross-encoder reranker, returns ranked passages with stable citation IDs. |
+| 3. **IssuePredictor** | `pipeline/issue_predictor.py` | Calls Claude with the (issue, passages, KG slice) tuple; returns a structured per-issue judgement: outcome, confidence, claim list, cited passage IDs. |
+| 4. **CitationVerifier** | `pipeline/citation_verifier.py` | Enforces the cite-or-abstain rule. Every claim must reference a passage that actually appeared in the retrieved set; unsupported claims are dropped or marked `Uncertain`. This is the architectural firewall against hallucination. |
+| 5. **OutputAssembler** | `pipeline/output_assembler.py` | Combines verified per-issue judgements into the final `Prediction` model: overall outcome, calibrated confidence, reasoning trace, settlement range, disclaimer. |
+
+The whole pipeline is wrapped by `PredictionService` inside the SHA-102 read-cache → external work → row-lock-recheck-write atomic flow, so two concurrent `POST /predictions/generate` calls for the same case will not both pay the LLM cost.
+
+---
+
+## Mediator Architecture
+
+`packages/llm_orchestrator/agents/mediator_agent.py` is the Shadow Mediator. It does **not** do prediction itself — it consumes the latest verified `Prediction` from `PredictionEngineV2` and drives mediation around it.
+
+- **Inputs**: joint `Prediction` (per-issue outcome, confidence, settlement range), party offers, mediation history.
+- **Outputs**: ZOPA computation (low/high anchored on confidence-weighted prediction), per-round nudges, settlement assembly.
+- **Coordination**: `MediationService` (atomic state transitions, see Atomic Flows table below) orchestrates the agent and the dispute lifecycle. The router surface lives at `/mediation/*` (see Routers subgraph).
+
+---
+
+## Agent-Loop Foundation
+
+`packages/llm_orchestrator/agent_loop/` (4 files: `tool.py`, `context.py`, `loop.py`, `trace.py`) is the tool-calling substrate. The current production wiring is the smoke loop on `/api/dev/agent-smoke` (debug-only, gated on `config.debug`); the planned migration moves both `MediatorAgent` and `PredictionEngineV2`'s LLM-call sites onto this loop so traces, retries, and tool-use are uniform. See `docs/AGENT_LOOP_FOUNDATION.md` for the contract.
+
+---
 
 ## 🗄️ Persistence Layer (SHA-102)
 
@@ -415,6 +526,79 @@ See `docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md` for the full de
 
 ---
 
+### Eval-Set Labeling Pipeline (SHA-28, Phases 1–12)
+
+A separate **offline labeling pipeline** that produces `data/gold_standard/housing_v1.jsonl` — the gold evaluation set every thesis number is graded against. Like the Proposition-KG substrate, this is not user-case state and is not read by live mediation predictions; it lives entirely under `packages/eval/auto_label/` plus two scripts under `scripts/eval/`. Decision recorded in [`docs/eval/decision-log.md`](eval/decision-log.md) D-021. Replaces the original two-paralegal blind double-annotation flow; Codex sparring at `.sisyphus/codex/sha-tbd-llm-labeling-2026-05-02.md` (8 P1/P2 findings, all integrated before any code landed).
+
+**Why it sits in the architecture doc**: the labeling pipeline shares core packages with the live system — `llm_orchestrator/clients/labeler_factory.py` reuses `ClaudeClient` and `OpenAIClient`, the auto-grounder reuses `eval/schema.py`'s `GoldCase` invariants, and the cite-or-abstain rule that the live `CitationVerifier` enforces at prediction time has its labeling-side counterpart in `auto_label/grounder.py:check_quote`. Same firewall, two ends.
+
+**Pipeline shape** (see also [`docs/eval/architecture.md`](eval/architecture.md)):
+
+```text
+PDF ──► auto_label.py ──► two LabelerModelSpec clients (Anthropic + OpenAI)
+                              │   parallel via asyncio.gather
+                              ▼
+                          partial-GoldCase JSON × 2
+                              │
+                              ▼  packages/eval/auto_label/grounder.py
+                          ground(...) — 10 deterministic checks:
+                            quote span match (canonicalize + bounded
+                              span_match, never whole-document fuzzy),
+                            authority + statute lookups,
+                            outcome/label basis spans,
+                            facts leakage scan (pre_decision_record only),
+                            date + amount sanity, INV-1..INV-10,
+                            real-gold append-gate audit
+                              │
+                              ▼
+                       data/eval_artifacts/labeling/<run_id>/<case_id>.json
+                       (raw outputs + prompts + every reproducibility hash)
+                              │
+                              ▼  scripts/eval/adjudicate.py
+                          adjudicator queues:
+                            • MandatoryReviewSet (every metric-critical cell, always)
+                            • DisagreementSet (A/B mismatch + ungrounded + null-XOR)
+                            • Audit overlay (deterministic 10% sample of agreed cells)
+                              │
+                              ▼  packages/eval/auto_label/append_gate.py
+                          assert_real_gold_appendable(...) — refuses on
+                            missing labeling_provenance, negative_kind,
+                            missing target_source_id, missing manifest fields,
+                            incomplete MandatoryReviewSet coverage,
+                            missing/mismatched run-artifact hashes
+                              │
+                              ▼  on green-light only
+                       data/gold_standard/housing_v1.jsonl
+                       (one row per case, each carrying LabelingProvenance:
+                        run_id, labeler models, source/OCR hashes,
+                        prompt-template hash, canonicalizer/grounder versions,
+                        audit_flip_rate, mandatory_review_flip_rate,
+                        inter_model_agreement_rate, per-cell field_provenance)
+```
+
+**Key components** (all under `packages/eval/auto_label/` unless noted):
+
+| Module | Responsibility |
+|---|---|
+| `canonicalize.py` | NFKC + ligature expansion + dehyphenation + whitespace collapse. `CANONICALIZER_VERSION` stamped on every row. |
+| `span_match.py` | Bounded-window quote matcher. Canonical-exact + small bounded edit distance ONLY inside the labeler's claimed `(page, paragraph, char_start, char_end)` window. No whole-document fuzzy fallback — closes the prompt-injection hole. |
+| `disagreement.py` | Field-path `DisagreementSet` with stable identity keys (`evidence[key].kind`, `per_issue[issue=damages].winner`) so list disagreements are not hidden inside list equality. |
+| `append_gate.py` | `assert_real_gold_appendable(GoldCase, run_artifact_path)` — the single chokepoint for any write to `data/gold_standard/`. |
+| `leakage_scan.py` | `facts` phrase-list scan for tribunal-finding language ("the tribunal finds", "we award", …) plus span-section check restricting `facts` source spans to `pre_decision_record`. `facts` flows into `CaseFile.tenant_narrative` at prediction time, so verdict leakage here corrupts every downstream accuracy/Brier number. |
+| `lookups/` | `AuthorityLookup` + `StatuteLookup` runtime-checkable Protocols with deterministic `index_id` / `index_hash` for replay. In-memory stubs ship for tests; production swaps in BAILII / `legislation.gov.uk` indexes. |
+| `grounder.py` | 10 per-field check functions + `ground(...)` orchestrator. `GROUNDER_VERSION` stamped per case. |
+| `runner.py` | `run_one_case(...)` async-dispatches both labelers via `asyncio.gather`, runs grounder per output, writes per-case artifact. `RUNNER_VERSION` stamped per case. |
+| `prompts/extraction.py` | Labeler system prompt + `prompt_template_hash()` (sha256 of pack version + system prompt). Source PDF text is passed as data items, never interpolated into instructions — prompt-injection hardening. |
+| `llm_orchestrator/clients/labeler_factory.py` | `LabelerModelSpec` + `build_labeler_client(spec)` constructing distinct concrete clients. Does NOT delegate to `get_llm_client(LLMRole.EXTRACTION)` — the role-keyed factory cannot prove provider independence (Codex finding [4]). |
+| `scripts/eval/auto_label.py` | Pre-adjudication CLI. Refuses same provider for A and B. Refuses any `--artifacts-root` under `data/gold_standard/`. |
+| `scripts/eval/adjudicate.py` | Adjudication CLI (`list` / `queues` / `append`). The only path that writes to `data/gold_standard/`. Writes a row to `docs/eval/reviewer-log.md` per appended case. |
+
+**Reporting rule**: `inter_model_agreement_rate` is recorded but is **NOT Cohen's κ** and must not be reported as one. The defensibility metrics are `mandatory_review_flip_rate`, `audit_flip_rate`, anchor-set divergence (10–20-case human-only subset labeled from scratch), and adjudication rate by field path. A combined-corpus calibration claim is blocked when anchor divergence exceeds the pre-registered threshold (Brier delta > 0.05 or systematic winner-flip).
+
+**Adjudicator onboarding**: [`docs/eval/reviewer-guide.md`](eval/reviewer-guide.md). **Methodology chapter §4.3**: [`docs/eval/methodology.md`](eval/methodology.md). **Plan**: `docs/superpowers/plans/2026-05-02-llm-labeling-pipeline.md`.
+
+---
+
 ## Key Architectural Patterns
 
 ### 1. **Separation of Concerns**
@@ -465,7 +649,7 @@ See `docs/superpowers/specs/2026-05-01-sha-36-proposition-kg.md` for the full de
 | **UI Library** | shadcn/ui + Tailwind | Modern, accessible, customizable components |
 | **Backend** | FastAPI | Async support, automatic OpenAPI docs, Pydantic integration |
 | **LLM** | Claude 3.5 Sonnet | Best reasoning for legal analysis, structured outputs |
-| **Embeddings** | OpenAI text-embedding-3-large | High quality, 3072 dimensions, good for legal text |
+| **Embeddings** | OpenAI text-embedding-3-small | 1536 dimensions; matches live ChromaDB `tribunal_cases` collection and `RAGConfig` defaults (`packages/rag_engine/config.py`) |
 | **Vector DB** | ChromaDB | Lightweight, embeddable, sufficient for 500 cases |
 | **Graph DB** | JSON files (Neo4j future) | Simple for MVP, JSON is debuggable, Neo4j later for complex queries |
 | **Storage** | Supabase | PostgreSQL + Auth + File storage in one, generous free tier |
@@ -565,7 +749,7 @@ A **Knowledge Graph (KG)** is a way to represent information as **nodes (entitie
 
 ### What are Embeddings?
 **Embeddings** are numerical representations of text (like converting words to coordinates):
-- "Housing repairs dispute" → `[0.23, -0.45, 0.67, ...]` (3072 numbers)
+- "Tenant deposit dispute" → `[0.23, -0.45, 0.67, ...]` (1536 numbers — `text-embedding-3-small`, matches the live ChromaDB collection)
 - Similar concepts have similar numbers (close in "semantic space")
 - **Why?** Computers can't compare meanings directly, but they can compare numbers efficiently
 
