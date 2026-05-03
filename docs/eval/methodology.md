@@ -49,15 +49,31 @@ Multi-type cases count toward each of their `claim_types` (rationale: rejecting 
 
 Train: 2019-01-01 .. 2022-12-31. Test: 2023-01-01 .. 2024-12-31. No shuffle. Implemented in `eval.dataset.train()` / `eval.dataset.test()` as pure date filters. Constants `TRAIN_CUTOFF` and `TEST_START` are exposed for downstream code.
 
-### 4.3 Annotation reliability
+### 4.3 Annotation reliability — LLM-assisted labeling + human adjudication
 
-Per [SHA-96](https://linear.app/sharifbuilders/issue/SHA-96), the protocol requires:
+> Rewritten 2026-05-03. The original two-paralegal protocol from [SHA-96](https://linear.app/sharifbuilders/issue/SHA-96) is superseded by [`decision-log.md`](decision-log.md) D-021 after Codex sparring at `.sisyphus/codex/sha-tbd-llm-labeling-2026-05-02.md` (8 P1/P2 findings, all integrated before any code landed).
 
-- **Blind double annotation** of ≥10% of the corpus (≥5 of 50). Reviewer B sees only the source PDF and the schema, never Reviewer A's labels.
-- **Adjudication log** (`docs/eval/reviewer-log.md`) for every disagreement: disputed field, both choices, resolution, rationale.
-- **Cohen's κ ≥ 0.8 per `claim_type`**, computed at end of Phase 6. Sub-target κ for any type triggers a guideline-revision loop before the corpus is declared DoD-complete.
+The protocol is a dual-LLM + deterministic auto-grounder + single-human-adjudicator pipeline:
 
-This protocol pre-empts the most likely thesis attack: *"the gold set is one paralegal's opinion."*
+1. **Dual-LLM extraction** with explicit `LabelerModelSpec` configs — one Anthropic, one OpenAI. Provider independence is enforced at the call site (`packages/llm_orchestrator/clients/labeler_factory.py::build_labeler_client`), not via the role-keyed `get_llm_client(LLMRole.EXTRACTION)` factory which cannot prove independence between two passes (Codex finding [4]). Both passes consume the same allowed-field list and the same source text triples; outputs are partial-`GoldCase`-shaped JSON dicts.
+2. **Auto-grounder** (`packages/eval/auto_label/grounder.py`) rejects every cell that cannot be resolved to a basis span: canonical quote match (`canonicalize.py` + `span_match.py`, bounded edit distance only inside the claimed window — no whole-document fuzzy fallback, which would open a prompt-injection surface), versioned BAILII authority lookup, versioned UK-statutes lookup, INV-1..INV-10, plus a `facts` leakage scanner (`auto_label/leakage_scan.py`) that rejects tribunal-finding language and source spans outside `pre_decision_record`.
+3. **MandatoryReviewSet** — the human adjudicator confirms every metric-critical cell (`facts`, `disputed_amount_gbp`, `claim_types`, `matter_type`, every `ground_truth_outcome.{overall_winner, total_awarded_gbp, per_issue.*, unapportioned_reason}`) on **every real-gold row**, regardless of A/B agreement. This is the firewall against "LLMs agreed therefore truth."
+4. **DisagreementSet** — every cell where A/B disagree, either is `UNGROUNDED`, an invariant fails, a basis span is missing, or null/non-null differs is routed to the adjudicator. Field-path-level granularity (`evidence[key].kind`, `per_issue[issue=damages].winner`) so list disagreements are not hidden inside list equality.
+5. **10% agreed-cell audit overlay** — a deterministic 10% random sample of agreed cells is also surfaced to the adjudicator. The resulting `audit_flip_rate` is recorded in `LabelingProvenance` and is the single best operational signal that the LLM pair has a systematic bias.
+6. **Human-only anchor set** — a stratified 10–20-case subset is labeled from scratch by the adjudicator without seeing either LLM output. Metrics are reported per anchor / LLM-assisted / combined splits; a combined-corpus calibration claim only lands if anchor divergence is below the pre-registered threshold (Brier delta ≤ 0.05 and no systematic winner-flip pattern).
+7. **Adjudication log** at `docs/eval/reviewer-log.md` — one row per adjudicated `(case, field_path)` cell; rationale required.
+8. **Real-gold append gate** at `packages/eval/auto_label/append_gate.py` refuses any row missing `labeling_provenance`, with `negative_kind` set, missing `target_source_id` or manifest fields, with incomplete MandatoryReviewSet coverage, or with missing/mismatched run-artifact hashes. Negative-set fixtures (`data/eval/negative_sets/*.jsonl`) never go through this gate.
+
+`inter_model_agreement_rate` is **NOT Cohen's κ** and is not reported as one. It is raw operational telemetry only. The defensibility metrics are `mandatory_review_flip_rate`, `audit_flip_rate`, anchor-set divergence, and adjudication rate by field path.
+
+This protocol pre-empts both the original thesis attack (*"the gold set is one paralegal's opinion"*) and the new attack the LLM-assisted shift introduces (*"you used LLMs to label the gold set used to evaluate your LLM predictor"*) — see [`decision-log.md`](decision-log.md) D-021 for the full counter-stack and rejected alternatives.
+
+The CLI surface is two scripts:
+
+- `scripts/eval/auto_label.py` runs the dual-LLM pass and writes a per-case run artifact under `data/eval_artifacts/labeling/<run_id>/<case_id>.json`. It refuses to write to `data/gold_standard/` and refuses to construct two labelers with the same provider.
+- `scripts/eval/adjudicate.py` walks the MandatoryReviewSet, DisagreementSet, and audit overlay; on completion runs `assert_real_gold_appendable` and only on green-light appends one row to `data/gold_standard/<corpus>.jsonl` plus a reviewer-log entry.
+
+Reviewer onboarding: see [`reviewer-guide.md`](reviewer-guide.md) (rewritten as adjudicator-only flow on 2026-05-03).
 
 ### 4.4 OCR provenance
 
