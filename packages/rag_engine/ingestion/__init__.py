@@ -15,6 +15,11 @@ a ``SourceMetadata`` keep working, while new callers go through these
 models to guarantee the Phase-4 metadata bag is present and validated.
 """
 
+from .adapters import (
+    chunk_source_document,
+    deterministic_chunk_id,
+    source_document_to_case_document,
+)
 from .contracts import (
     CorpusManifest,
     IngestionRunManifest,
@@ -27,4 +32,7 @@ __all__ = [
     "IngestionRunManifest",
     "SourceChunk",
     "SourceDocument",
+    "chunk_source_document",
+    "deterministic_chunk_id",
+    "source_document_to_case_document",
 ]
