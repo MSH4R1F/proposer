@@ -233,9 +233,13 @@ class GovUKMNRScraper:
             )
             return
 
-        # PDF fallback for body extraction.
+        # GOV.UK FTT(PC) decisions return a stub like
+        # "Read the full decision in <REF>" from /api/content/. The real
+        # text is always in a PDF attachment, so prefer the PDF when
+        # primary_artefact_kind == PDF, regardless of stub-body presence.
+        body_is_stub = bool(body_text) and len(body_text.strip()) < 200
         if (
-            (not body_text)
+            (not body_text or body_is_stub)
             and meta.primary_artefact_kind == ArtefactKind.PDF
             and meta.primary_asset_url
         ):
