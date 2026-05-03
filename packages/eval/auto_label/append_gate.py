@@ -45,6 +45,7 @@ class AppendGateRule(str, Enum):
     MISSING_MANIFEST_FIELD = "missing_manifest_field"
     INCOMPLETE_MANDATORY_REVIEW = "incomplete_mandatory_review"
     MISSING_RUN_ARTIFACT = "missing_run_artifact"
+    ARTIFACT_METADATA_MISMATCH = "artifact_metadata_mismatch"
     ARTIFACT_HASH_MISMATCH = "artifact_hash_mismatch"
 
 
@@ -74,6 +75,16 @@ REQUIRED_MANIFEST_FIELDS: tuple[str, ...] = (
     "source_publisher",
     "source_kind",
     "source_license",
+)
+
+PROVENANCE_ARTIFACT_FIELDS: tuple[str, ...] = (
+    "source_pdf_sha256",
+    "ocr_text_sha256",
+    "prompt_template_hash",
+    "gold_schema_hash",
+    "corpus_manifest_hash",
+    "canonicalizer_version",
+    "grounder_version",
 )
 
 # Sources counted as "the human looked at this cell" for MandatoryReviewSet
@@ -132,6 +143,14 @@ def _load_artifact(run_artifact_path: Path) -> dict[str, Any]:
         raise  # unreachable; satisfies type checkers
 
 
+def _missing_manifest_value(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str) and not value.strip():
+        return True
+    return False
+
+
 def assert_real_gold_appendable(
     gc: GoldCase,
     *,
@@ -161,20 +180,20 @@ def assert_real_gold_appendable(
         )
 
     # Rule 3: target_source_id must be set so leakage controls can exclude it.
-    if gc.target_source_id is None:
+    if _missing_manifest_value(gc.target_source_id):
         _raise(
             AppendGateRule.MISSING_TARGET_SOURCE_ID,
-            "GoldCase.target_source_id is None; retrieval cannot exclude the "
-            "source decision at eval time",
+            "GoldCase.target_source_id is missing or blank; retrieval cannot "
+            "exclude the source decision at eval time",
         )
 
     # Rule 4: every required SHA-20 manifest field must be set.
     for field_name in REQUIRED_MANIFEST_FIELDS:
-        if getattr(gc, field_name) is None:
+        if _missing_manifest_value(getattr(gc, field_name)):
             _raise(
                 AppendGateRule.MISSING_MANIFEST_FIELD,
-                f"GoldCase.{field_name} is None; deterministic envelope "
-                "incomplete",
+                f"GoldCase.{field_name} is missing or blank; deterministic "
+                "envelope incomplete",
             )
 
     # Rule 5: every MandatoryReviewSet path must have a human-reviewed entry
@@ -196,9 +215,31 @@ def assert_real_gold_appendable(
             f"run artifact not found at {run_artifact_path}",
         )
 
-    # Rule 7: artifact hashes must match the labeling provenance.
+    # Rule 7: artifact identity + reproducibility fields must match the row
+    # being appended. This prevents a human decisions file for one case/run
+    # from being accidentally paired with another case's artifact.
     artifact = _load_artifact(run_artifact_path)
-    for hash_field in ("source_pdf_sha256", "ocr_text_sha256"):
+    if artifact.get("case_id") != gc.case_id:
+        _raise(
+            AppendGateRule.ARTIFACT_METADATA_MISMATCH,
+            f"case_id mismatch: artifact={artifact.get('case_id')!r}, "
+            f"GoldCase.case_id={gc.case_id!r}",
+        )
+    if artifact.get("run_id") != gc.labeling_provenance.run_id:
+        _raise(
+            AppendGateRule.ARTIFACT_METADATA_MISMATCH,
+            f"run_id mismatch: artifact={artifact.get('run_id')!r}, "
+            f"labeling_provenance.run_id={gc.labeling_provenance.run_id!r}",
+        )
+    if gc.source_pdf_sha256 != gc.labeling_provenance.source_pdf_sha256:
+        _raise(
+            AppendGateRule.ARTIFACT_HASH_MISMATCH,
+            "source_pdf_sha256 mismatch: "
+            f"GoldCase={gc.source_pdf_sha256!r}, "
+            f"labeling_provenance={gc.labeling_provenance.source_pdf_sha256!r}",
+        )
+
+    for hash_field in PROVENANCE_ARTIFACT_FIELDS:
         artifact_value = artifact.get(hash_field)
         provenance_value = getattr(gc.labeling_provenance, hash_field)
         if artifact_value != provenance_value:

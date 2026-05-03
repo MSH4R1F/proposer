@@ -256,6 +256,40 @@ class TestBuildDisagreementSet:
         assert all(r.field_path.startswith("ground_truth_outcome.per_issue[") for r in rows)
         assert all(r.reason == "a_b_mismatch" for r in rows)
 
+    def test_ground_truth_outcome_scalar_mismatch_is_reported(self):
+        a = {
+            "ground_truth_outcome": {
+                "overall_winner": Winner.TENANT,
+                "total_awarded_gbp": Decimal("100.00"),
+                "per_issue": [],
+            }
+        }
+        b = {
+            "ground_truth_outcome": {
+                "overall_winner": Winner.LANDLORD,
+                "total_awarded_gbp": Decimal("80.00"),
+                "per_issue": [],
+            }
+        }
+        rows = build_disagreement_set(
+            a,
+            b,
+            _grounded(
+                "ground_truth_outcome.overall_winner",
+                "ground_truth_outcome.total_awarded_gbp",
+            ),
+            _grounded(
+                "ground_truth_outcome.overall_winner",
+                "ground_truth_outcome.total_awarded_gbp",
+            ),
+        )
+        paths = sorted(r.field_path for r in rows)
+        assert paths == [
+            "ground_truth_outcome.overall_winner",
+            "ground_truth_outcome.total_awarded_gbp",
+        ]
+        assert all(r.reason == "a_b_mismatch" for r in rows)
+
     def test_authority_subfield_cited_date_mismatch(self):
         # Same authority name (matched by key) but different cited_date.
         a = {"cited_authorities": [_auth("Howard v Aggio", date(2018, 5, 1))]}

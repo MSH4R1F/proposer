@@ -89,10 +89,13 @@ def _artifact_grounding(artifact: dict[str, Any], side: str) -> DisagreementGrou
     )
 
 
-def _expected_per_issue_paths(case: Mapping[str, Any]) -> set[str]:
-    """MandatoryReviewSet expansion for per-issue cells, mirroring append_gate."""
+def _expected_outcome_review_paths(case: Mapping[str, Any]) -> set[str]:
+    """MandatoryReviewSet outcome expansion, mirroring append_gate."""
     out: set[str] = set()
     outcome = case.get("ground_truth_outcome") or {}
+    if outcome.get("unapportioned_reason") is not None:
+        out.add("ground_truth_outcome.unapportioned_reason")
+        return out
     for io in outcome.get("per_issue", []) or []:
         issue = io.get("issue", "?")
         out.add(f"ground_truth_outcome.per_issue[issue={issue}].winner")
@@ -132,7 +135,11 @@ def derive_queues(
     disagree_paths = {row.field_path for row in disagreements}
 
     # MandatoryReviewSet for THIS case = baseline + per-issue expansion.
-    mandatory = set(MANDATORY_REVIEW_FIELDS) | _expected_per_issue_paths(a) | _expected_per_issue_paths(b)
+    mandatory = (
+        set(MANDATORY_REVIEW_FIELDS)
+        | _expected_outcome_review_paths(a)
+        | _expected_outcome_review_paths(b)
+    )
 
     # Audit overlay: cells that are GROUNDED on both sides AND not
     # already in the disagreement set. We sample by sorted path so the
@@ -141,6 +148,7 @@ def derive_queues(
         p
         for p in (set(grounding_a.field_path) | set(grounding_b.field_path))
         if p not in disagree_paths
+        and not p.startswith("__")
         and grounding_a.field_path.get(p, "GROUNDED") == "GROUNDED"
         and grounding_b.field_path.get(p, "GROUNDED") == "GROUNDED"
     )
@@ -171,6 +179,28 @@ def _to_jsonable(v: Any) -> Any:
     if isinstance(v, dict):
         return {k: _to_jsonable(x) for k, x in v.items()}
     return v
+
+
+def _labeler_models_from_artifact(artifact: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Return provenance-safe provider/model/api_version records.
+
+    Artifacts store the richer ``LabelerModelSpec`` shape, including
+    provider-specific knobs such as ``reasoning_effort`` and ``store``.
+    ``LabelingProvenance.labeler_models`` intentionally stores only the
+    stable provider/model/api_version triple, so normalise from the artifact
+    rather than trusting a decisions file to echo the right shape.
+    """
+    out: list[dict[str, Any]] = []
+    for side in ("labeler_a", "labeler_b"):
+        spec = dict((artifact.get(side) or {}).get("spec") or {})
+        model = {
+            "provider": spec["provider"],
+            "model": spec["model"],
+        }
+        if spec.get("api_version") is not None:
+            model["api_version"] = spec["api_version"]
+        out.append(model)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -217,7 +247,7 @@ def build_gold_case(
     provenance = LabelingProvenance(
         run_id=run_id,
         labeled_at=datetime.now(timezone.utc),
-        labeler_models=prov_dec["labeler_models"],
+        labeler_models=_labeler_models_from_artifact(artifact),
         source_pdf_sha256=artifact["source_pdf_sha256"],
         ocr_text_sha256=artifact["ocr_text_sha256"],
         prompt_template_hash=artifact["prompt_template_hash"],

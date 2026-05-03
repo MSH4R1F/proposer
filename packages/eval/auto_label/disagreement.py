@@ -473,6 +473,43 @@ def _compare_per_issue(
     )
 
 
+def _outcome_scalar(outcome: Any, field_name: str) -> Any:
+    if outcome is None:
+        return None
+    if isinstance(outcome, dict):
+        return outcome.get(field_name)
+    return getattr(outcome, field_name, None)
+
+
+def _compare_outcome_scalars(
+    rows: list[DisagreementRow],
+    a_outcome: Any,
+    b_outcome: Any,
+    grounding_a: GroundingResult,
+    grounding_b: GroundingResult,
+) -> None:
+    """Compare scalar cells under ``ground_truth_outcome``.
+
+    These cells are MandatoryReviewSet fields, but they still need to
+    appear in DisagreementSet when A/B disagree or either side is ungrounded
+    so adjudication queues can explain why the field is being surfaced.
+    """
+    for subfield in (
+        "overall_winner",
+        "total_awarded_gbp",
+        "unapportioned_reason",
+    ):
+        path = f"ground_truth_outcome.{subfield}"
+        _compare_scalar(
+            rows,
+            path,
+            _outcome_scalar(a_outcome, subfield),
+            _outcome_scalar(b_outcome, subfield),
+            grounding_a,
+            grounding_b,
+        )
+
+
 # ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
@@ -537,7 +574,14 @@ def build_disagreement_set(
             grounding_b=grounding_b,
         )
 
-    # 3. Nested ground_truth_outcome.per_issue
+    # 3. Nested ground_truth_outcome scalar cells + per_issue
+    _compare_outcome_scalars(
+        rows,
+        a.get("ground_truth_outcome"),
+        b.get("ground_truth_outcome"),
+        grounding_a,
+        grounding_b,
+    )
     _compare_per_issue(
         rows,
         a.get("ground_truth_outcome"),

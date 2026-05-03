@@ -189,6 +189,27 @@ class TestQueuesSubcommand:
         assert "facts" in body["mandatory_review"]
         assert "ground_truth_outcome.overall_winner" in body["mandatory_review"]
 
+    def test_queues_include_unapportioned_reason_when_labeler_emits_it(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        artifact_path, _artifacts_root = _build_artifact(tmp_path)
+        artifact = json.loads(artifact_path.read_text())
+        for side in ("labeler_a", "labeler_b"):
+            artifact[side]["partial_case"]["ground_truth_outcome"] = {
+                "overall_winner": "tenant",
+                "total_awarded_gbp": "220.00",
+                "per_issue": [],
+                "unapportioned_reason": "Tribunal gave one global figure.",
+            }
+        cli = _adjudicate_cli()
+        queues = cli.derive_queues(artifact, audit_seed=1)  # type: ignore[attr-defined]
+        assert (
+            "ground_truth_outcome.unapportioned_reason"
+            in queues["mandatory_review"]
+        )
+        assert not any("per_issue" in p for p in queues["mandatory_review"])
+
 
 # ---------------------------------------------------------------------------
 # append subcommand — end-to-end
@@ -203,6 +224,11 @@ class TestAppendSubcommand:
         decisions = _decisions_payload()
         # Match artifact hashes so the append gate's hash check passes.
         decisions["case"]["source_pdf_sha256"] = artifact["source_pdf_sha256"]
+        # The CLI must derive the persisted model provenance from the artifact,
+        # not trust a human decisions file to echo the richer LabelerModelSpec.
+        decisions["labeling_provenance"]["labeler_models"] = [
+            {"provider": "openai", "model": "wrong-model", "store": False}
+        ]
 
         decisions_path = tmp_path / "decisions.json"
         decisions_path.write_text(json.dumps(decisions))
@@ -240,6 +266,10 @@ class TestAppendSubcommand:
         assert appended["case_id"] == "FTT-2023-0001"
         assert appended["labeling_provenance"]["run_id"] == "run-test-001"
         assert appended["labeling_provenance"]["human_adjudicator"] == "Mohamed"
+        assert appended["labeling_provenance"]["labeler_models"] == [
+            {"provider": "anthropic", "model": "claude-sonnet-4-20250514", "api_version": None},
+            {"provider": "openai", "model": "gpt-5.5", "api_version": None},
+        ]
         # Reviewer log row landed.
         assert reviewer_log.exists()
         log = reviewer_log.read_text()
