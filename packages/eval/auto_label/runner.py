@@ -69,6 +69,7 @@ class LabelingRun:
     artifacts_root: Path
     gold_schema_hash: str
     corpus_manifest_hash: str
+    domain_id: str = ""
 
     @property
     def run_dir(self) -> Path:
@@ -270,6 +271,7 @@ def write_artifact(case_pass: CasePass, *, run: LabelingRun) -> Path:
         "ran_at": case_pass.ran_at.isoformat(),
         "source_pdf_sha256": case_pass.source_pdf_sha256,
         "ocr_text_sha256": case_pass.ocr_text_sha256,
+        "domain_id": run.domain_id,
         "prompt_template_hash": case_pass.prompt_template_hash,
         "prompt_pack_version": PROMPT_PACK_VERSION,
         "canonicalizer_version": CANONICALIZER_VERSION,

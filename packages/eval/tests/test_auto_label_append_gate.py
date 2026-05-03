@@ -114,6 +114,8 @@ def _write_artifact(
     *,
     pdf_sha: str = _PDF_SHA,
     ocr_sha: str = _OCR_SHA,
+    run_id: str = "run-2026-05-02-append-gate",
+    case_id: str = "SYNTH-2023-0001",
 ) -> Path:
     # Artifact JSON shape: a flat object with the two replay hashes the
     # gate checks against. The full per-case run artifact (raw labeler
@@ -122,8 +124,13 @@ def _write_artifact(
     artifact = {
         "source_pdf_sha256": pdf_sha,
         "ocr_text_sha256": ocr_sha,
-        "run_id": "run-2026-05-02-append-gate",
-        "case_id": "SYNTH-2023-0001",
+        "prompt_template_hash": "t" * 16,
+        "gold_schema_hash": "s" * 16,
+        "corpus_manifest_hash": "c" * 16,
+        "canonicalizer_version": "1.0.0",
+        "grounder_version": "1.0.0",
+        "run_id": run_id,
+        "case_id": case_id,
     }
     path = tmp_path / "case_artifact.json"
     path.write_text(json.dumps(artifact))
@@ -177,6 +184,16 @@ def test_refuses_missing_target_source_id(tmp_path: Path) -> None:
     assert AppendGateRule.MISSING_TARGET_SOURCE_ID.value in str(ei.value)
 
 
+def test_refuses_blank_target_source_id(tmp_path: Path) -> None:
+    d = _full_gold_case_dict()
+    d["target_source_id"] = "   "
+    gc = GoldCase(**d)
+    artifact = _write_artifact(tmp_path)
+    with pytest.raises(AppendGateError) as ei:
+        assert_real_gold_appendable(gc, run_artifact_path=artifact)
+    assert AppendGateRule.MISSING_TARGET_SOURCE_ID.value in str(ei.value)
+
+
 @pytest.mark.parametrize("missing_field", REQUIRED_MANIFEST_FIELDS)
 def test_refuses_missing_manifest_field(tmp_path: Path, missing_field: str) -> None:
     d = _full_gold_case_dict()
@@ -189,6 +206,19 @@ def test_refuses_missing_manifest_field(tmp_path: Path, missing_field: str) -> N
     assert AppendGateRule.MISSING_MANIFEST_FIELD.value in msg
     # Error message names the offending field.
     assert missing_field in msg
+
+
+@pytest.mark.parametrize("blank_field", REQUIRED_MANIFEST_FIELDS)
+def test_refuses_blank_manifest_field(tmp_path: Path, blank_field: str) -> None:
+    d = _full_gold_case_dict()
+    d[blank_field] = " "
+    gc = GoldCase(**d)
+    artifact = _write_artifact(tmp_path)
+    with pytest.raises(AppendGateError) as ei:
+        assert_real_gold_appendable(gc, run_artifact_path=artifact)
+    msg = str(ei.value)
+    assert AppendGateRule.MISSING_MANIFEST_FIELD.value in msg
+    assert blank_field in msg
 
 
 def test_refuses_incomplete_mandatory_review(tmp_path: Path) -> None:
@@ -224,6 +254,51 @@ def test_refuses_artifact_hash_mismatch(tmp_path: Path) -> None:
     msg = str(ei.value)
     assert AppendGateRule.ARTIFACT_HASH_MISMATCH.value in msg
     assert "ocr_text_sha256" in msg
+
+
+def test_refuses_artifact_case_id_mismatch(tmp_path: Path) -> None:
+    gc = GoldCase(**_full_gold_case_dict())
+    artifact = _write_artifact(tmp_path, case_id="OTHER-CASE")
+    with pytest.raises(AppendGateError) as ei:
+        assert_real_gold_appendable(gc, run_artifact_path=artifact)
+    msg = str(ei.value)
+    assert AppendGateRule.ARTIFACT_METADATA_MISMATCH.value in msg
+    assert "case_id" in msg
+
+
+def test_refuses_artifact_run_id_mismatch(tmp_path: Path) -> None:
+    gc = GoldCase(**_full_gold_case_dict())
+    artifact = _write_artifact(tmp_path, run_id="other-run")
+    with pytest.raises(AppendGateError) as ei:
+        assert_real_gold_appendable(gc, run_artifact_path=artifact)
+    msg = str(ei.value)
+    assert AppendGateRule.ARTIFACT_METADATA_MISMATCH.value in msg
+    assert "run_id" in msg
+
+
+def test_refuses_case_source_pdf_hash_mismatch_with_provenance(tmp_path: Path) -> None:
+    d = _full_gold_case_dict()
+    d["source_pdf_sha256"] = "e" * 64
+    gc = GoldCase(**d)
+    artifact = _write_artifact(tmp_path)
+    with pytest.raises(AppendGateError) as ei:
+        assert_real_gold_appendable(gc, run_artifact_path=artifact)
+    msg = str(ei.value)
+    assert AppendGateRule.ARTIFACT_HASH_MISMATCH.value in msg
+    assert "source_pdf_sha256" in msg
+
+
+def test_refuses_artifact_prompt_hash_mismatch(tmp_path: Path) -> None:
+    gc = GoldCase(**_full_gold_case_dict())
+    artifact = _write_artifact(tmp_path)
+    payload = json.loads(artifact.read_text())
+    payload["prompt_template_hash"] = "x" * 16
+    artifact.write_text(json.dumps(payload))
+    with pytest.raises(AppendGateError) as ei:
+        assert_real_gold_appendable(gc, run_artifact_path=artifact)
+    msg = str(ei.value)
+    assert AppendGateRule.ARTIFACT_HASH_MISMATCH.value in msg
+    assert "prompt_template_hash" in msg
 
 
 # ---------------------------------------------------------------------------

@@ -195,8 +195,12 @@ ClientFactory = Any  # callable: (LabelerModelSpec) -> BaseLLMClient
 
 def _default_factory() -> ClientFactory:
     api_keys = {
-        "anthropic": os.environ.get("ANTHROPIC_API_KEY", ""),
-        "openai": os.environ.get("OPENAI_API_KEY", ""),
+        provider: key
+        for provider, key in (
+            ("anthropic", os.environ.get("ANTHROPIC_API_KEY")),
+            ("openai", os.environ.get("OPENAI_API_KEY")),
+        )
+        if key
     }
 
     def _build(spec: LabelerModelSpec) -> BaseLLMClient:
@@ -205,14 +209,26 @@ def _default_factory() -> ClientFactory:
     return _build
 
 
-def _build_offline_factory(canned_a_path: Path, canned_b_path: Path) -> ClientFactory:
+def _spec_key(spec: LabelerModelSpec) -> str:
+    return f"{spec.provider}:{spec.model}"
+
+
+def _build_offline_factory(
+    *,
+    spec_a: LabelerModelSpec,
+    canned_a_path: Path,
+    spec_b: LabelerModelSpec,
+    canned_b_path: Path,
+) -> ClientFactory:
     canned_a = json.loads(canned_a_path.read_text())
     canned_b = json.loads(canned_b_path.read_text())
+    canned_by_spec = {
+        _spec_key(spec_a): canned_a,
+        _spec_key(spec_b): canned_b,
+    }
 
     def _build(spec: LabelerModelSpec) -> BaseLLMClient:
-        if spec.provider == "anthropic":
-            return _OfflineStubClient(canned_a)
-        return _OfflineStubClient(canned_b)
+        return _OfflineStubClient(canned_by_spec[_spec_key(spec)])
 
     return _build
 
@@ -242,7 +258,12 @@ def _run(args: argparse.Namespace, *, client_factory: Optional[ClientFactory] = 
         )
 
     factory = client_factory or (
-        _build_offline_factory(Path(args.canned_a), Path(args.canned_b))
+        _build_offline_factory(
+            spec_a=spec_a,
+            canned_a_path=Path(args.canned_a),
+            spec_b=spec_b,
+            canned_b_path=Path(args.canned_b),
+        )
         if args.offline
         else _default_factory()
     )
@@ -254,11 +275,12 @@ def _run(args: argparse.Namespace, *, client_factory: Optional[ClientFactory] = 
         artifacts_root=artifacts_root,
         gold_schema_hash=args.gold_schema_hash,
         corpus_manifest_hash=args.corpus_manifest_hash,
+        domain_id=args.domain_id,
     )
 
     clients = {
-        f"{spec_a.provider}:{spec_a.model}": factory(spec_a),
-        f"{spec_b.provider}:{spec_b.model}": factory(spec_b),
+        _spec_key(spec_a): factory(spec_a),
+        _spec_key(spec_b): factory(spec_b),
     }
 
     deps = GroundingDeps(

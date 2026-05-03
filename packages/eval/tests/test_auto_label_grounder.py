@@ -475,6 +475,13 @@ def _write_artifact(tmp_path: Path) -> Path:
     artifact = {
         "source_pdf_sha256": _PDF_SHA,
         "ocr_text_sha256": _OCR_SHA,
+        "prompt_template_hash": "t" * 16,
+        "gold_schema_hash": "s" * 16,
+        "corpus_manifest_hash": "c" * 16,
+        "canonicalizer_version": "1.0.0",
+        "grounder_version": GROUNDER_VERSION,
+        "run_id": "run-grounder-test",
+        "case_id": "SYNTH-2023-0001",
     }
     p = tmp_path / "case_artifact.json"
     p.write_text(json.dumps(artifact))

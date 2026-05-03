@@ -96,9 +96,55 @@ class TestAutoLabelOfflineEndToEnd:
         assert payload["labeler_a"]["spec"]["provider"] == "anthropic"
         assert payload["labeler_b"]["spec"]["provider"] == "openai"
         assert payload["labeler_a"]["partial_case"]["facts"].startswith("Tenant occupied")
+        assert payload["domain_id"] == "housing.deposit.v1"
         # Every reproducibility hash recorded.
         assert "prompt_template_hash" in payload
         assert "source_pdf_sha256" in payload
+
+    def test_offline_canned_outputs_follow_a_b_order_when_providers_reversed(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        cli = _import_cli()
+        pdf = tmp_path / "FTT-2023-0002.txt"
+        pdf.write_text("Tenant and landlord disagreed over cleaning.")
+        canned_a = tmp_path / "canned_a.json"
+        canned_b = tmp_path / "canned_b.json"
+        canned_a.write_text(json.dumps({"facts": "A output"}))
+        canned_b.write_text(json.dumps({"facts": "B output"}))
+
+        artifacts_root = tmp_path / "artifacts"
+        rc = cli._cli_main(  # type: ignore[attr-defined]
+            [
+                "--case-id",
+                "FTT-2023-0002",
+                "--pdf",
+                str(pdf),
+                "--domain-id",
+                "housing.deposit.v1",
+                "--run-id",
+                "run-test-002",
+                "--labeler-a",
+                "openai:gpt-5.5",
+                "--labeler-b",
+                "anthropic:claude-sonnet-4-20250514",
+                "--artifacts-root",
+                str(artifacts_root),
+                "--offline",
+                "--canned-a",
+                str(canned_a),
+                "--canned-b",
+                str(canned_b),
+            ]
+        )
+        assert rc == 0
+        payload = json.loads(
+            (artifacts_root / "run-test-002" / "FTT-2023-0002.json").read_text()
+        )
+        assert payload["labeler_a"]["spec"]["provider"] == "openai"
+        assert payload["labeler_b"]["spec"]["provider"] == "anthropic"
+        assert payload["labeler_a"]["partial_case"]["facts"] == "A output"
+        assert payload["labeler_b"]["partial_case"]["facts"] == "B output"
 
     def test_refuses_same_provider_for_a_and_b(self, tmp_path: Path) -> None:
         cli = _import_cli()
