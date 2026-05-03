@@ -275,6 +275,10 @@ docker-volumes/
 # domain-parity regression fixtures (SHA-20 Phase 1 Task 1.6) must also be
 # tracked because they're how we prove domain plumbing is a no-op.
 data/*
+!data/raw/
+data/raw/**
+!data/raw/**/
+!data/raw/**/SOURCE_RIGHTS.md
 !data/gold_standard/
 !data/regression/
 !data/eval/

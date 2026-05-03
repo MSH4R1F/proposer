@@ -13,6 +13,7 @@ resumed via the master_index.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import logging
 import sys
@@ -113,7 +114,8 @@ class GovUKRROScraper:
         report = ScrapeReport(started_at=datetime.utcnow())
         report.api_query = {
             "filter_format": self._config.decision_format,
-            "filter_sub_categories": self._config.sub_category,
+            "sub_category_guard": self._config.sub_category,
+            "sub_category_search_filter_sent": False,
             "search_api_url": self._config.search_api_url,
         }
         bailii_index = load_bailii_index(self._bailii_index_path)
@@ -212,6 +214,19 @@ class GovUKRROScraper:
             report.excluded_count += 1
             return
 
+        _ensure_content_hash(meta, body_text)
+        existing = self._existing_unchanged_record(meta, body_text)
+        if existing is not None:
+            self._run_log.record(
+                "dedup_skip",
+                {
+                    "case_reference": meta.case_reference,
+                    "govuk_page_url": meta.govuk_page_url,
+                    "content_sha256": existing.content_sha256,
+                },
+            )
+            return
+
         # If the primary asset is a PDF and we still have no body, download
         # and extract.
         if (
@@ -220,12 +235,14 @@ class GovUKRROScraper:
             and meta.primary_asset_url
         ):
             try:
-                tmp = Path(tempfile.mkstemp(suffix=".pdf")[1])
-                kind = await dl.download_asset(meta.primary_asset_url, tmp)
-                if kind == ArtefactKind.PDF:
-                    text, _pdf_meta = extract_pdf_text(tmp)
-                    body_text = text
-                    meta.raw_text = body_text
+                with tempfile.TemporaryDirectory() as td:
+                    tmp = Path(td) / "decision.pdf"
+                    kind = await dl.download_asset(meta.primary_asset_url, tmp)
+                    if kind == ArtefactKind.PDF:
+                        text, _pdf_meta = extract_pdf_text(tmp)
+                        body_text = text
+                        meta.raw_text = body_text
+                        _ensure_content_hash(meta, body_text)
             except Exception as exc:
                 self._run_log.record(
                     "pdf_extract_failed",
@@ -332,6 +349,20 @@ class GovUKRROScraper:
         )
 
     # ------------------------------------------------------------------
+    def _existing_unchanged_record(
+        self, meta: GovUKPCMetadata, body_text: str
+    ) -> Optional[ScrapeRecord]:
+        """Return existing record when a resumed run can safely skip it."""
+        existing = self._master_index.get(meta.case_reference)
+        if existing is None:
+            return None
+        if not body_text or not meta.content_sha256:
+            return existing
+        if existing.content_sha256 == meta.content_sha256:
+            return existing
+        return None
+
+    # ------------------------------------------------------------------
     def _write_summary(self, report: ScrapeReport) -> None:
         path = self._config.scrape_summary_path
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -353,6 +384,11 @@ def _slug(case_reference: str) -> str:
             safe.append(ch)
     s = "".join(safe).strip("_")
     return s or "decision"
+
+
+def _ensure_content_hash(meta: GovUKPCMetadata, body_text: str) -> None:
+    if body_text and not meta.content_sha256:
+        meta.content_sha256 = hashlib.sha256(body_text.encode("utf-8")).hexdigest()
 
 
 # ---------------------------------------------------------------------------

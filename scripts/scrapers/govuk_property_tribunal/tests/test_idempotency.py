@@ -8,9 +8,13 @@ from rag_engine.chunking.legal_chunker import LegalChunker
 from rag_engine.ingestion.adapters import chunk_source_document, deterministic_chunk_id
 
 from scripts.scrapers.govuk_property_tribunal.config import NAMESPACE_ID
+from scripts.scrapers.govuk_property_tribunal.config import ScraperConfig
+from scripts.scrapers.govuk_property_tribunal.govuk_scraper import GovUKRROScraper
 from scripts.scrapers.govuk_property_tribunal.models import (
     ArtefactKind,
+    FilterDecision,
     GovUKPCMetadata,
+    ScrapeRecord,
 )
 from scripts.scrapers.govuk_property_tribunal.to_source_document import (
     govuk_to_source_document,
@@ -63,3 +67,26 @@ def test_chunking_is_idempotent():
             chunk_text=chunk.text,
         )
         assert chunk.chunk_id == expected
+
+
+def test_scraper_resume_skips_unchanged_master_index_records(tmp_path):
+    meta = _meta()
+    scraper = GovUKRROScraper(ScraperConfig(output_base_dir=tmp_path))
+    existing = ScrapeRecord(
+        case_reference=meta.case_reference,
+        govuk_page_url=meta.govuk_page_url,
+        base_path=meta.base_path,
+        decision_date=meta.decision_date,
+        title=meta.title,
+        filter_decision=FilterDecision.ACCEPT,
+        statutory_grounds=["Housing Act 2004 s.72(1) (unlicensed HMO)"],
+        primary_artefact_kind=meta.primary_artefact_kind,
+        content_sha256=meta.content_sha256,
+    )
+    scraper._master_index.upsert(existing)
+
+    assert scraper._existing_unchanged_record(meta, meta.raw_text or "") is existing
+
+    changed = _meta()
+    changed.content_sha256 = "y" * 64
+    assert scraper._existing_unchanged_record(changed, changed.raw_text or "") is None

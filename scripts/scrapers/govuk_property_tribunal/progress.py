@@ -99,6 +99,9 @@ class MasterIndex:
     def has(self, case_reference: str) -> bool:
         return case_reference in self._records
 
+    def get(self, case_reference: str) -> Optional[ScrapeRecord]:
+        return self._records.get(case_reference)
+
     def __len__(self) -> int:
         return len(self._records)
 

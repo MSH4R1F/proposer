@@ -146,7 +146,6 @@ class GovUKDownloader:
         """
         params = {
             "filter_format": self._config.decision_format,
-            "filter_sub_categories": self._config.sub_category,
             "count": count,
             "start": start,
             "order": "-public_timestamp",
