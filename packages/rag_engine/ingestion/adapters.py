@@ -171,12 +171,15 @@ def chunk_source_document(
     raw_text = sd.raw_text
     for idx, chunk in enumerate(legacy_chunks):
         # Try to recover a char span by searching for the chunk text in
-        # the raw document, advancing the cursor monotonically. Falls
-        # back to (0, len(text)) if the chunker rewrote characters.
+        # the raw document, advancing the cursor monotonically. If the
+        # chunker rewrote whitespace/characters enough that exact search
+        # misses, fall back to the next cursor position and still advance
+        # so later chunks cannot reuse the same span.
         span_start = raw_text.find(chunk.text, cursor)
         if span_start < 0:
             span_start = max(cursor, 0)
             span_end = span_start + len(chunk.text)
+            cursor = span_end
         else:
             span_end = span_start + len(chunk.text)
             cursor = span_end

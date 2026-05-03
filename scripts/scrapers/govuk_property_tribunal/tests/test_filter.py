@@ -161,6 +161,19 @@ def test_filter_rejects_when_subcategory_missing():
     assert "sub_category_not_rro" in reasons
 
 
+def test_filter_accepts_when_live_search_omits_subcategories():
+    body = "Section 72(1) of the Housing Act 2004 was made out."
+    hit = GovUKSearchHit(
+        title="RRO decision",
+        link="/residential-property-tribunal-decisions/example",
+        sub_categories=[],
+    )
+    decision, grounds, reasons = classify_rro(hit, body)
+    assert decision == FilterDecision.ACCEPT
+    assert grounds
+    assert reasons == []
+
+
 def test_filter_uncertain_on_empty_body():
     decision, grounds, reasons = classify_rro(_hit(), "")
     assert decision == FilterDecision.UNCERTAIN

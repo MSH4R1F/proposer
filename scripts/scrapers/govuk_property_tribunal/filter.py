@@ -6,20 +6,24 @@ Audit gate (D4) — RRO ONLY. The filter has three layers:
    (leasehold service charges, ground rent, Tenant Fees Act, park homes,
    building safety). These terms cause an immediate REJECT regardless of
    sub-category.
-2. *Sub-category gate* — the GOV.UK search hit must have the RRO
-   ``sub_categories`` slug (``RRO_SUB_CATEGORY``).
+2. *Sub-category gate* — when GOV.UK returns ``sub_categories`` for a
+   row, the hit must have the RRO slug (``RRO_SUB_CATEGORY``). The live
+   search endpoint does not currently return that field for tribunal
+   decisions, so an empty list is treated as "unavailable" rather than a
+   negative signal.
 3. *Statutory ground allowlist* — body text must contain at least one of
    the offence sections that can ground an RRO. This protects against
    mis-tagged hits where the page has the RRO sub-category but the
    decision is actually a non-RRO Housing Act matter.
 
-ACCEPT requires (1) no hard rejects, (2) sub-category match, AND (3) at
-least one statutory ground hit.
+ACCEPT requires (1) no hard rejects, (2) no explicit non-RRO
+sub-category when categories are available, AND (3) at least one
+statutory ground hit.
 
 Anything that passes (1)+(2) but not (3) -> UNCERTAIN with reason
-``ground_not_recognised``. Anything that fails (1) or (2) -> REJECT with
-the appropriate reason. Reject reasons are written verbatim to
-``excluded.jsonl``.
+``ground_not_recognised``. Anything that fails (1) or has explicit
+non-RRO categories -> REJECT with the appropriate reason. Reject reasons
+are written verbatim to ``excluded.jsonl``.
 """
 
 from __future__ import annotations
@@ -216,8 +220,14 @@ def classify_rro(
     reasons: List[str] = []
 
     # 0. Sub-category gate ------------------------------------------------
+    # The live GOV.UK search result currently omits sub_categories for
+    # residential_property_tribunal_decision rows, and sending
+    # filter_sub_categories returns HTTP 422. Treat an empty list as
+    # "field unavailable" and rely on the statutory-ground body allowlist.
+    # If GOV.UK does return categories, an explicit non-RRO category remains
+    # a clean reject.
     sub_cats = list(hit.sub_categories or [])
-    if RRO_SUB_CATEGORY not in sub_cats:
+    if sub_cats and RRO_SUB_CATEGORY not in sub_cats:
         reasons.append("sub_category_not_rro")
 
     # 1. Body text required for any positive decision --------------------
