@@ -266,6 +266,68 @@ class TestSourceDocumentAdapterCarriesMetadata:
         assert len(digest) == 8
         int(digest, 16)  # parses as hex
 
+    def test_fallback_spans_advance_cursor_monotonically(self):
+        """Regression: when the chunker emits text the adapter cannot
+        find verbatim in the source (whitespace normalisation, etc.),
+        the cursor must still advance so distinct chunks get distinct
+        char_start values. Pre-fix, consecutive misses produced
+        overlapping spans because cursor was only advanced on hits.
+        """
+
+        class _RewriteChunker:
+            """Minimal chunker stub that emits two chunks neither of
+            which is a verbatim substring of the source. Forces the
+            adapter into the fallback branch twice in a row."""
+
+            def chunk_document(self, doc):
+                from rag_engine.config import DocumentChunk, SectionType
+
+                # Both chunks differ from the source text — find() will miss.
+                return [
+                    DocumentChunk(
+                        chunk_id="placeholder-0",
+                        case_reference=doc.case_reference,
+                        chunk_index=0,
+                        text="REWRITTEN-CHUNK-ZERO",
+                        section_type=SectionType.UNKNOWN,
+                        year=doc.year,
+                        token_count=4,
+                    ),
+                    DocumentChunk(
+                        chunk_id="placeholder-1",
+                        case_reference=doc.case_reference,
+                        chunk_index=1,
+                        text="REWRITTEN-CHUNK-ONE-LONGER",
+                        section_type=SectionType.UNKNOWN,
+                        year=doc.year,
+                        token_count=5,
+                    ),
+                ]
+
+        sd = SourceDocument(
+            metadata=_govuk_rro_metadata(source_id="GOVUK-RRO-FALLBACK"),
+            raw_text="Original text that will never match the rewritten chunks.",
+        )
+
+        chunks = chunk_source_document(
+            sd,
+            namespace_id="housing_property_chamber_rro_v1_te3s",
+            chunker=_RewriteChunker(),
+        )
+        assert len(chunks) == 2
+        m0 = chunks[0].source_metadata
+        m1 = chunks[1].source_metadata
+        assert m0.char_start == 0
+        assert m0.char_end == len("REWRITTEN-CHUNK-ZERO")
+        # Critical: chunk #1 must start where chunk #0 ended, not at 0.
+        assert m1.char_start == m0.char_end, (
+            f"fallback cursor must advance: "
+            f"got char_start={m1.char_start}, expected {m0.char_end}"
+        )
+        assert m1.char_end == m1.char_start + len("REWRITTEN-CHUNK-ONE-LONGER")
+        # Spans must not overlap.
+        assert m0.char_end <= m1.char_start
+
     def test_deterministic_chunk_id_rejects_blank_inputs(self):
         with pytest.raises(ValueError):
             deterministic_chunk_id(

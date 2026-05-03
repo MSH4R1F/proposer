@@ -171,15 +171,23 @@ def chunk_source_document(
     raw_text = sd.raw_text
     for idx, chunk in enumerate(legacy_chunks):
         # Try to recover a char span by searching for the chunk text in
-        # the raw document, advancing the cursor monotonically. Falls
-        # back to (0, len(text)) if the chunker rewrote characters.
-        span_start = raw_text.find(chunk.text, cursor)
-        if span_start < 0:
-            span_start = max(cursor, 0)
-            span_end = span_start + len(chunk.text)
+        # the raw document. Spans must be monotonic and non-overlapping
+        # so downstream citation highlighting/source-snippet code can
+        # rely on (char_start, char_end) being unique per chunk.
+        #
+        # Fallback: if the chunker rewrote characters (whitespace
+        # normalisation, etc.), fall back to a synthetic span starting
+        # at the current cursor and length-of-chunk wide. Crucially the
+        # cursor is advanced unconditionally — otherwise consecutive
+        # fallback misses would all stamp the same char_start/char_end
+        # onto distinct chunks.
+        found = raw_text.find(chunk.text, cursor)
+        if found < 0:
+            span_start = cursor
         else:
-            span_end = span_start + len(chunk.text)
-            cursor = span_end
+            span_start = found
+        span_end = span_start + len(chunk.text)
+        cursor = span_end
 
         chunk_meta = _build_chunk_metadata(
             base=metadata,
