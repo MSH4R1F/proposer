@@ -32,7 +32,7 @@ class ChromaStore(BaseVectorStore):
         self,
         config: Optional[RAGConfig] = None,
         persist_directory: Optional[Path] = None,
-        collection_name: str = "tribunal_cases"
+        collection_name: Optional[str] = None,
     ) -> None:
         """
         Initialize ChromaDB store.
@@ -40,14 +40,19 @@ class ChromaStore(BaseVectorStore):
         Args:
             config: RAGConfig object (optional)
             persist_directory: Path for persistent storage
-            collection_name: Name of the collection
+            collection_name: Explicit collection name. If omitted, the
+                collection name from ``config.collection_name`` is used
+                (which is what ``RAGConfig.from_namespace`` populates).
+                Defaults to ``"tribunal_cases"`` only when neither a
+                config nor an explicit name is provided — i.e. legacy
+                no-arg construction.
         """
         if config:
             persist_dir = persist_directory or config.chroma_persist_dir
             self._collection_name = collection_name or config.collection_name
         else:
             persist_dir = persist_directory or Path("./data/embeddings")
-            self._collection_name = collection_name
+            self._collection_name = collection_name or "tribunal_cases"
 
         # Ensure directory exists
         persist_dir = Path(persist_dir)
