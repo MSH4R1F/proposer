@@ -23,8 +23,8 @@ This index maps every doc in `docs/eval/` to its audience and purpose.
 | [`gold-schema.md`](gold-schema.md) | Field-by-field schema reference. Every cross-field invariant (INV-1..INV-10) with rationale. |
 | [`dataset.md`](dataset.md) | The `eval.dataset` API: `load`, `train`, `test`, `audit`. CLI usage. Lenient/strict mode pattern. |
 | [`metrics.md`](metrics.md) | Per-metric definitions, the bootstrap CI shape, the thesis-claim survival rule, CLI worked example. |
-| [`reviewer-guide.md`](reviewer-guide.md) | Paralegal onboarding. TL;DR loop, field-by-field, common mistakes, adjudication workflow. |
-| [`reviewer-log.md`](reviewer-log.md) | Adjudication log template. One row per double-annotation disagreement. |
+| [`reviewer-guide.md`](reviewer-guide.md) | Adjudicator onboarding for the LLM-assisted labeling pipeline (rewritten 2026-05-03 — see decision log D-021). The three queues — MandatoryReviewSet, DisagreementSet, 10% audit overlay — plus the human-only anchor flow and `LabelingProvenance` recording. |
+| [`reviewer-log.md`](reviewer-log.md) | Adjudication log. One row per adjudicated `(case, field_path)` cell, with rationale. Written automatically by `scripts/eval/adjudicate.py append`. |
 | [`ablation.md`](ablation.md) | The RQ1 ablation runner. CLI, methodology, dominance check via non-overlapping CIs, worked example. |
 
 ## For someone reproducing the work
