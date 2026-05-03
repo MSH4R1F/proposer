@@ -48,10 +48,9 @@
 
 ## How to verify locally
 
-```
-cd worktrees/sha-125-housing-ombudsman
-/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/bin/python \
-    -m pytest scripts/scrapers/housing_ombudsman/tests -q -p no:cacheprovider
+```bash
+# From the repo root (or this worktree's root):
+python -m pytest scripts/scrapers/housing_ombudsman/tests -q -p no:cacheprovider
 ```
 
-The non-slow set should pass; slow tests skip without OPENAI_API_KEY.
+The non-slow set should pass; slow tests skip without `OPENAI_API_KEY`.

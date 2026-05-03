@@ -14,7 +14,10 @@ def test_repairs_social_forum_prohibits_tribunal_award_framing():
     profiles = [
         p for p in spec.forum_profiles if p.forum.value == "housing_ombudsman"
     ]
-    assert profiles, "expected exactly one housing_ombudsman forum profile"
+    assert len(profiles) == 1, (
+        f"expected exactly one housing_ombudsman forum profile, "
+        f"got {len(profiles)}"
+    )
     profile = profiles[0]
     prohibited = list(profile.prohibited_phrases)
     assert "the tribunal would award" in prohibited

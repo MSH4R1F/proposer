@@ -247,14 +247,39 @@ def main(max_docs: Optional[int], data_dir: Optional[str], verbose: bool) -> Non
         stream=sys.stdout,
     )
 
-    scraper_config = ScraperConfig()
+    # Apply --data-dir to the SCRAPER config first so master_index.json /
+    # raw.txt are read from the override tree, not the default.
+    # Previously the override only affected RAG output paths, which left
+    # the CLI ingesting the wrong corpus when a non-default data dir was
+    # passed (CodeRabbit caught this).
+    scraper_kwargs = {}
+    if data_dir:
+        # ``ScraperConfig.output_subdir`` defaults to "data/raw/...".
+        # Pin ``project_root`` so ``output_dir = project_root / output_subdir``
+        # resolves under the override, regardless of repo layout.
+        override_root = Path(data_dir).resolve()
+        # If the user passed a path ending in "data", treat its parent
+        # as the project root so ``data/raw/...`` resolves correctly.
+        if override_root.name == "data":
+            scraper_kwargs["project_root"] = override_root.parent
+        else:
+            scraper_kwargs["project_root"] = override_root
+    scraper_config = ScraperConfig(**scraper_kwargs)
+
     records = _load_kept_records(scraper_config)
     if max_docs is not None:
         records = records[:max_docs]
     if not records:
-        logger.warning("no kept records found in master_index; nothing to ingest")
+        logger.warning(
+            "no kept records found in master_index at %s; nothing to ingest",
+            scraper_config.master_index_path,
+        )
         return
-    logger.info("loaded %d kept records from master_index", len(records))
+    logger.info(
+        "loaded %d kept records from %s",
+        len(records),
+        scraper_config.master_index_path,
+    )
 
     documents = _build_source_documents(records, scraper_config)
 

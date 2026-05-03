@@ -39,10 +39,23 @@ class MasterIndexEntry:
 class RunLog:
     """Append-only run log + persistent master index.
 
-    Designed for *small* pilot runs. We keep everything in memory and
-    re-serialise on each ``flush()``; ``record(...)`` writes a JSONL line
-    without rewriting prior content.
+    The master index drives dedup across runs: on construction we read
+    it and prime ``_dedup_seen`` so a resumed scrape skips cases we
+    already processed. ``upsert`` mutates the in-memory index;
+    ``save_master_index`` (also exposed as ``flush``) atomically
+    serialises to disk. Without periodic flushes a process killed mid-run
+    would lose every upsert since the last save and re-fetch every case
+    on resume — defeating the dedup mechanism.
+
+    The JSONL run log written by ``record`` is line-appended directly
+    to disk and is therefore safe regardless of flush cadence.
     """
+
+    #: Default master-index flush interval (in upserts). The scraper can
+    #: override per-run via ``flush_every``. ``0`` disables periodic
+    #: flushing — callers are then responsible for an explicit final
+    #: ``save_master_index()``.
+    DEFAULT_FLUSH_EVERY = 5
 
     def __init__(
         self,
@@ -50,6 +63,7 @@ class RunLog:
         master_index_path: Path,
         *,
         run_id: Optional[str] = None,
+        flush_every: Optional[int] = None,
     ) -> None:
         self.runs_dir = Path(runs_dir)
         self.master_index_path = Path(master_index_path)
@@ -62,6 +76,10 @@ class RunLog:
             self._dedup_tuple(ref, e.source_url, e.content_sha256)
             for ref, e in self._master_index.items()
         }
+        self._flush_every = (
+            self.DEFAULT_FLUSH_EVERY if flush_every is None else int(flush_every)
+        )
+        self._upserts_since_flush = 0
 
     # ------------------------------------------------------------------
     # Persistence
@@ -161,6 +179,23 @@ class RunLog:
             raw_storage_path=raw_storage_path,
             matter_types=list(matter_types or []),
         )
+        # Periodic flush so an interrupt mid-run loses at most
+        # ``flush_every`` upserts, not the whole batch. The scraper
+        # still calls ``save_master_index`` explicitly at end-of-run
+        # for the final commit.
+        self._upserts_since_flush += 1
+        if (
+            self._flush_every
+            and self._upserts_since_flush >= self._flush_every
+        ):
+            self.save_master_index()
+            self._upserts_since_flush = 0
+
+    # Alias matching the docstring's `flush()` reference.
+    def flush(self) -> None:
+        """Persist the in-memory master index to disk now."""
+        self.save_master_index()
+        self._upserts_since_flush = 0
 
     def kept_entries(self) -> Dict[str, MasterIndexEntry]:
         return {k: v for k, v in self._master_index.items() if v.kept}

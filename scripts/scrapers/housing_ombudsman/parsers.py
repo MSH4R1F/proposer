@@ -269,9 +269,11 @@ def parse_detail_html(
     recommendations = _list_after_heading(soup, _RECS_HEADERS)
 
     temporal_markers = {}
-    if "awaab" in raw_text.lower() or re.search(
-        r"s\.?\s?10A\b|section\s*10A\b", raw_text, re.IGNORECASE
-    ) or "Landlord and Tenant Act 1985" in raw_text and "10A" in raw_text:
+    if (
+        "awaab" in raw_text.lower()
+        or re.search(r"s\.?\s?10A\b|section\s*10A\b", raw_text, re.IGNORECASE)
+        or ("Landlord and Tenant Act 1985" in raw_text and "10A" in raw_text)
+    ):
         temporal_markers["awaabs_law_referenced"] = True
 
     metadata = OmbudsmanCaseMetadata(
