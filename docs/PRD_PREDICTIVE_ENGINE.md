@@ -1,9 +1,15 @@
+> ⚠️ **SUPERSEDED — DO NOT USE FOR NEW WORK.**
+> This V1 PRD is retained for transcript only. The authoritative spec is **[`PRD_PREDICTIVE_ENGINE_V2.md`](./PRD_PREDICTIVE_ENGINE_V2.md)** (covers PredictionEngineV2: IssueDecomposer → IssueRetriever → IssuePredictor → CitationVerifier → OutputAssembler). If you are reading this for current architecture, stop and switch to V2.
+> *Banner added 2026-05-01.*
+
+---
+
 # Product Requirements Document: Predictive Engine
 
 **Document**: PRD – Predictive Engine  
 **Product**: Proposer – AI-Powered Mediation for UK Tenancy Deposit Disputes  
-**Version**: 1.0  
-**Status**: Draft  
+**Version**: 1.0 (superseded by V2)
+**Status**: Superseded
 **Last Updated**: February 2026  
 
 ---

@@ -1,9 +1,15 @@
+> ⚠️ **SUPERSEDED — DO NOT USE FOR NEW WORK.**
+> This V1 PRD is retained for transcript only. The authoritative spec is **[`PRD_AGENT_MEDIATION_SYSTEM_V2.md`](./PRD_AGENT_MEDIATION_SYSTEM_V2.md)** (covers MediatorAgent, agent_loop, `/mediation` and `/disputes` routers, V2 prediction pipeline). If you are reading this for current architecture, stop and switch to V2.
+> *Banner added 2026-05-01.*
+
+---
+
 # Product Requirements Document: Agent Mediation System
 
 **Document**: PRD – Agent Mediation System (RAG + Knowledge Graph–Based)  
 **Product**: Proposer – AI-Powered Mediation for UK Tenancy Deposit Disputes  
-**Version**: 1.0  
-**Status**: Draft  
+**Version**: 1.0 (superseded by V2)
+**Status**: Superseded
 **Last Updated**: February 2026  
 
 ---
