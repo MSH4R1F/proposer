@@ -51,7 +51,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Any, Literal, TypedDict
+from typing import Any, Iterable, Literal, TypedDict
 
 from eval.auto_label.canonicalize import canonicalize_text
 from eval.schema import (
@@ -140,18 +140,52 @@ class DisagreementRow:
 
 @dataclass
 class GroundingResult:
-    """Placeholder for the Phase 8 grounder output.
+    """Phase 8 auto-grounder output.
 
     ``field_path`` maps each granular path to a verdict; ``reasons`` carries
-    a one-line explanation per UNGROUNDED path. The Phase 8 grounder will
-    extend this with match-strategy and span data.
+    a one-line explanation per path. ``grounding_pass_rate`` is
+    |GROUNDED| / |GROUNDED ∪ UNGROUNDED| over emitted cells (used by
+    ``LabelingProvenance.grounding_pass_rate``).
     """
 
     field_path: dict[str, Literal["GROUNDED", "UNGROUNDED"]] = field(default_factory=dict)
     reasons: dict[str, str] = field(default_factory=dict)
+    grounding_pass_rate: float = 0.0
 
     def is_ungrounded(self, path: str) -> bool:
         return self.field_path.get(path) == "UNGROUNDED"
+
+    @classmethod
+    def from_rows(
+        cls,
+        rows: Iterable[tuple[str, str, str]],
+    ) -> "GroundingResult":
+        """Build a ``GroundingResult`` from ``(path, verdict, reason)`` rows.
+
+        ``verdict`` must be ``"GROUNDED"`` or ``"UNGROUNDED"``. Pass rate is
+        computed over emitted rows; an empty input yields ``0.0`` (no
+        signal to report). Later rows override earlier rows on the same
+        path — callers should not emit duplicate paths but the
+        last-write-wins rule keeps the function total.
+        """
+        field_path: dict[str, Literal["GROUNDED", "UNGROUNDED"]] = {}
+        reasons: dict[str, str] = {}
+        for path, verdict, reason in rows:
+            if verdict not in ("GROUNDED", "UNGROUNDED"):
+                raise ValueError(
+                    f"GroundingResult.from_rows got verdict={verdict!r} "
+                    f"for path={path!r}; expected GROUNDED or UNGROUNDED"
+                )
+            field_path[path] = verdict  # type: ignore[assignment]
+            reasons[path] = reason
+        total = len(field_path)
+        grounded = sum(1 for v in field_path.values() if v == "GROUNDED")
+        rate = grounded / total if total else 0.0
+        return cls(
+            field_path=field_path,
+            reasons=reasons,
+            grounding_pass_rate=rate,
+        )
 
 
 # ---------------------------------------------------------------------------
