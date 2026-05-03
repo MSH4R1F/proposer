@@ -73,6 +73,51 @@ def _select_namespace(spec: DomainSpec):
     return spec.retrieval_namespaces[0]
 
 
+def _resolve_data_dir(data_dir: Optional[str]) -> Optional[Path]:
+    """Resolve ``--data-dir`` as the base data directory, if supplied."""
+    if not data_dir:
+        return None
+    return Path(data_dir).expanduser().resolve()
+
+
+def _scraper_config_for_data_dir(data_dir: Optional[str]) -> ScraperConfig:
+    """Build scraper config whose raw paths live under ``data_dir``.
+
+    ``--data-dir /tmp/proposer-data`` means:
+
+    * raw scraper output/input: ``/tmp/proposer-data/raw/housing_ombudsman``
+    * indices/manifests: ``/tmp/proposer-data/indices/...``
+    """
+    data_root = _resolve_data_dir(data_dir)
+    if data_root is None:
+        return ScraperConfig()
+    return ScraperConfig(
+        output_subdir=str(data_root / "raw" / "housing_ombudsman")
+    )
+
+
+def _rag_config_for_namespace(
+    namespace,
+    *,
+    base_rag: RAGConfig,
+    data_dir: Optional[str],
+) -> RAGConfig:
+    """Build namespace RAG config, honoring ``--data-dir`` for outputs."""
+    rag_config = RAGConfig.from_namespace(
+        namespace, base=base_rag, project_root=_REPO_ROOT
+    )
+    data_root = _resolve_data_dir(data_dir)
+    if data_root is None:
+        return rag_config
+
+    corpus_version = namespace.corpus_version or "unversioned"
+    namespace_dir = data_root / "indices" / namespace.namespace_id / corpus_version
+    rag_config.data_dir = data_root
+    rag_config.bm25_index_path = namespace_dir / "bm25.pkl"
+    rag_config.chroma_persist_dir = namespace_dir / "chroma"
+    return rag_config
+
+
 def _load_kept_records(scraper_config: ScraperConfig) -> List[Dict]:
     """Read master_index.json and return only kept entries."""
     runlog = RunLog(
@@ -247,24 +292,7 @@ def main(max_docs: Optional[int], data_dir: Optional[str], verbose: bool) -> Non
         stream=sys.stdout,
     )
 
-    # Apply --data-dir to the SCRAPER config first so master_index.json /
-    # raw.txt are read from the override tree, not the default.
-    # Previously the override only affected RAG output paths, which left
-    # the CLI ingesting the wrong corpus when a non-default data dir was
-    # passed (CodeRabbit caught this).
-    scraper_kwargs = {}
-    if data_dir:
-        # ``ScraperConfig.output_subdir`` defaults to "data/raw/...".
-        # Pin ``project_root`` so ``output_dir = project_root / output_subdir``
-        # resolves under the override, regardless of repo layout.
-        override_root = Path(data_dir).resolve()
-        # If the user passed a path ending in "data", treat its parent
-        # as the project root so ``data/raw/...`` resolves correctly.
-        if override_root.name == "data":
-            scraper_kwargs["project_root"] = override_root.parent
-        else:
-            scraper_kwargs["project_root"] = override_root
-    scraper_config = ScraperConfig(**scraper_kwargs)
+    scraper_config = _scraper_config_for_data_dir(data_dir)
 
     records = _load_kept_records(scraper_config)
     if max_docs is not None:
@@ -288,10 +316,10 @@ def main(max_docs: Optional[int], data_dir: Optional[str], verbose: bool) -> Non
     namespace = _select_namespace(spec)
 
     base_rag = RAGConfig.from_env()
-    if data_dir:
-        base_rag.data_dir = Path(data_dir)
-    rag_config = RAGConfig.from_namespace(
-        namespace, base=base_rag, project_root=_REPO_ROOT
+    rag_config = _rag_config_for_namespace(
+        namespace,
+        base_rag=base_rag,
+        data_dir=data_dir,
     )
     rag_config.ensure_directories()
 
