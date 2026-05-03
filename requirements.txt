@@ -85,6 +85,15 @@ asgi-lifespan>=2.1
 httpx>=0.27,<0.29
 
 # ============================================
+# Scrapers (BAILII, Housing Ombudsman, GOV.UK Property Tribunal)
+# ============================================
+# Used by scripts/scrapers/* — declared explicitly so CI installs them
+# (previously transitively present in the dev venv but undeclared).
+beautifulsoup4>=4.12,<5
+tenacity>=8.2,<10
+aiohttp>=3.9,<4
+
+# ============================================
 # Development
 # ============================================
 # Uncomment for development

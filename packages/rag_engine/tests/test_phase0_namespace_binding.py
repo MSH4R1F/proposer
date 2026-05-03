@@ -29,7 +29,7 @@ from domain_core.spec import (
 )
 
 from rag_engine.chunking.legal_chunker import LegalChunker
-from rag_engine.config import RAGConfig
+from rag_engine.config import DocumentChunk, RAGConfig, SectionType
 from rag_engine.ingestion import (
     SourceDocument,
     chunk_source_document,
@@ -249,6 +249,58 @@ class TestSourceDocumentAdapterCarriesMetadata:
             chunker=chunker,
         )
         assert [c.chunk_id for c in first] != [c.chunk_id for c in third]
+
+    def test_fallback_spans_advance_after_exact_match_miss(self):
+        """A rewritten chunk must not make later fallback spans overlap."""
+
+        sd = SourceDocument(
+            metadata=_govuk_rro_metadata(source_id="GOVUK-RRO-SPANS"),
+            raw_text="alpha beta gamma delta epsilon",
+        )
+
+        class RewritingChunker:
+            def chunk_document(self, case_doc):
+                return [
+                    DocumentChunk(
+                        chunk_id="legacy-0",
+                        case_reference=case_doc.case_reference,
+                        chunk_index=0,
+                        text="alpha beta",
+                        section_type=SectionType.UNKNOWN,
+                        year=case_doc.year,
+                    ),
+                    # This exact text is not present in raw_text.
+                    DocumentChunk(
+                        chunk_id="legacy-1",
+                        case_reference=case_doc.case_reference,
+                        chunk_index=1,
+                        text="rewritten middle",
+                        section_type=SectionType.UNKNOWN,
+                        year=case_doc.year,
+                    ),
+                    DocumentChunk(
+                        chunk_id="legacy-2",
+                        case_reference=case_doc.case_reference,
+                        chunk_index=2,
+                        text="also rewritten",
+                        section_type=SectionType.UNKNOWN,
+                        year=case_doc.year,
+                    ),
+                ]
+
+        chunks = chunk_source_document(
+            sd,
+            namespace_id="housing_property_chamber_rro_v1_te3s",
+            chunker=RewritingChunker(),
+        )
+
+        spans = [
+            (c.source_metadata.char_start, c.source_metadata.char_end)
+            for c in chunks
+        ]
+        assert spans[0] == (0, len("alpha beta"))
+        assert spans[1][0] == spans[0][1]
+        assert spans[2][0] == spans[1][1]
 
     def test_deterministic_chunk_id_format(self):
         chunk_id = deterministic_chunk_id(
