@@ -23,7 +23,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Literal, Protocol, runtime_checkable
+from typing import Iterable, Literal, Protocol, Tuple, runtime_checkable
 
 from eval.auto_label.canonicalize import canonicalize_text
 
@@ -49,45 +49,60 @@ class AuthorityLookup(Protocol):
     def lookup(self, *, name: str, cited_date: date) -> AuthorityVerdict: ...
 
 
-def _canonical_key(name: str, cited_date: date) -> tuple[str, str]:
+def _canonical_key(name: str, cited_date: date) -> Tuple[str, str]:
     """Normalise a ``(name, cited_date)`` lookup key.
 
-    Names are canonicalised + lower-cased so casing/curly-quote/whitespace
-    drift cannot drop a known authority into UNKNOWN. Dates are stringified
-    to ISO ``YYYY-MM-DD`` form for stable equality across ``date``
-    instances and JSON-roundtrip serialisations.
+    Names are canonicalised + lower-cased; dates are stringified to ISO
+    ``YYYY-MM-DD`` form for stable equality across ``date`` instances and
+    JSON-roundtrip serialisations.
     """
     return (canonicalize_text(name or "").lower(), cited_date.isoformat())
 
 
 @dataclass
 class InMemoryAuthorityStub:
-    """In-memory ``AuthorityLookup`` implementation for tests.
+    """In-memory ``AuthorityLookup`` for tests.
 
-    ``entries`` maps ``(canonical_name, iso_date_str)`` to a verdict
-    string. The keys MUST be already canonicalised (lower-cased,
-    whitespace-collapsed); the constructor does not re-canonicalise the
-    incoming keys so test setup remains explicit. The ``lookup`` method
-    canonicalises the *query* before hitting the table, matching how the
-    grounder will pass un-normalised LLM output.
+    Two construction styles, both supported simultaneously so callers can
+    pick the form that matches their test data:
 
-    A query that lands on no entry returns ``"UNKNOWN"`` — entries default
-    to absent, not to KNOWN.
+        InMemoryAuthorityStub(
+            entries={("howard de walden estates ltd", "2008-06-25"): "KNOWN"},
+        )
+
+        InMemoryAuthorityStub(
+            known_pairs=[("Howard de Walden v Aggio", date(2008, 6, 26))],
+            ambiguous_pairs=[("Smith v Jones", date(2010, 5, 1))],
+        )
+
+    Pairs not listed default to ``UNKNOWN``.
     """
 
-    entries: dict[tuple[str, str], AuthorityVerdict] = field(default_factory=dict)
+    entries: dict[Tuple[str, str], AuthorityVerdict] = field(default_factory=dict)
+    known_pairs: Iterable[Tuple[str, date]] = field(default_factory=list)
+    ambiguous_pairs: Iterable[Tuple[str, date]] = field(default_factory=list)
     index_id: str = "auth-stub-v1"
     index_hash: str = field(init=False)
+    _entries: dict[Tuple[str, str], AuthorityVerdict] = field(init=False, default_factory=dict)
 
     def __post_init__(self) -> None:
+        self._entries = {}
+        # `entries` keys are (canonical-already, "YYYY-MM-DD") per the lookup
+        # tests' contract; canonicalise defensively in case a caller hands
+        # raw strings.
+        for (name, iso_date), verdict in self.entries.items():
+            self._entries[(canonicalize_text(name or "").lower(), iso_date)] = verdict
+        for name, cited in self.known_pairs:
+            self._entries[_canonical_key(name, cited)] = "KNOWN"
+        for name, cited in self.ambiguous_pairs:
+            # Ambiguous wins over known if both listed (defensive for tests).
+            self._entries[_canonical_key(name, cited)] = "AMBIGUOUS"
         self.index_hash = self._compute_hash()
 
     def _compute_hash(self) -> str:
-        # Sort keys for deterministic serialisation. tuple keys are
-        # serialised as JSON arrays of [name, iso_date] pairs.
         payload = json.dumps(
             sorted(
-                ([k[0], k[1], v] for k, v in self.entries.items()),
+                ([k[0], k[1], v] for k, v in self._entries.items()),
                 key=lambda r: (r[0], r[1]),
             ),
             ensure_ascii=False,
@@ -96,8 +111,16 @@ class InMemoryAuthorityStub:
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     def lookup(self, *, name: str, cited_date: date) -> AuthorityVerdict:
-        key = _canonical_key(name, cited_date)
-        return self.entries.get(key, "UNKNOWN")
+        return self._entries.get(_canonical_key(name, cited_date), "UNKNOWN")
 
 
-__all__ = ["AuthorityLookup", "AuthorityVerdict", "InMemoryAuthorityStub"]
+# Backwards-compat alias — the grounder test file imports the longer name.
+InMemoryAuthorityLookup = InMemoryAuthorityStub
+
+
+__all__ = [
+    "AuthorityLookup",
+    "AuthorityVerdict",
+    "InMemoryAuthorityLookup",
+    "InMemoryAuthorityStub",
+]
