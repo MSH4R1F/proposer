@@ -56,14 +56,19 @@ case_file_adapter_ref: ref://case_file_adapter/housing.property_chamber.rro.v1
 ontology_ref: ref://ontology/housing.property_chamber.rro.v1
 prompt_pack_ref: ref://prompt_pack/housing.property_chamber.rro.v1
 retrieval_namespaces:
+  # Phase 0 (SHA-125/126): the RRO namespace is the single retrieval space
+  # for both BAILII Property Chamber decisions and GOV.UK published RRO
+  # decisions. corpus_root is therefore set to data/raw (the parent of
+  # both publisher-scoped subtrees) rather than data/raw/bailii.
   - namespace_id: housing_property_chamber_rro_v1
     vector_collection: property_chamber_rro_v1
     bm25_index_path: data/embeddings/property_chamber_rro_v1_bm25.pkl
-    corpus_root: data/raw/bailii
+    corpus_root: data/raw
     chunk_kinds:
       - document_chunk
     source_publishers:
       - bailii
+      - govuk
     source_kinds:
       - case_decision
     forums:

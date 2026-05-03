@@ -73,6 +73,28 @@ def test_housing_property_chamber_rro_v1_invariants(specs: dict):
     assert [f.value for f in spec.forums] == ["first_tier_property_chamber"]
     forbidden = {"leasehold", "tenant_fees", "rents", "park_homes", "building_safety"}
     assert not (forbidden & set(spec.matter_types))
+    # SHA-126 Phase 0: the RRO retrieval namespace ingests both BAILII
+    # Property Chamber decisions and GOV.UK published RRO decisions.
+    # Both publishers must be allowed and the corpus_root must be the
+    # parent (data/raw) rather than data/raw/bailii so per-publisher
+    # subtrees can sit underneath.
+    assert len(spec.retrieval_namespaces) == 1
+    ns = spec.retrieval_namespaces[0]
+    publishers = {p.value for p in ns.source_publishers}
+    assert publishers == {"bailii", "govuk"}, (
+        f"RRO namespace must accept BAILII + GOV.UK; got {publishers}"
+    )
+    assert ns.corpus_root == "data/raw", (
+        f"RRO corpus_root must be data/raw to host both publishers; "
+        f"got {ns.corpus_root}"
+    )
+    # Forum profile already declares both publishers (Phase 0 rationale).
+    profile = next(
+        p for p in spec.forum_profiles
+        if p.forum.value == "first_tier_property_chamber"
+    )
+    profile_publishers = {p.value for p in profile.source_publishers}
+    assert {"bailii", "govuk"}.issubset(profile_publishers)
 
 
 def test_employment_unfair_dismissal_v1_invariants(specs: dict):
