@@ -1,0 +1,90 @@
+# Domain: housing.rent_determination.v1
+#
+# FTT(PC) MNR cases — section 13 rent-increase referrals on assured
+# periodic tenancies (Housing Act 1988 s.14 determination). Tribunal
+# sets the open-market rent the landlord may charge.
+#
+# Companion to the RRO (housing.property_chamber.rro.v1) and Repairs
+# Social (housing.repairs_social.v1) domains.
+
+id: housing.rent_determination.v1
+family: housing
+domain_version: v1
+schema_version: 1
+display_name: "Housing - First-tier Property Chamber, Rent Determinations (MNR, v1)"
+user_facing_name: "Rent determination"
+stage: research
+jurisdiction:
+  - GB-ENG
+forums:
+  - first_tier_property_chamber
+forum_profiles:
+  - forum: first_tier_property_chamber
+    source_publishers:
+      - govuk
+    source_kinds:
+      - case_decision
+      - statute
+      - guidance
+    citation_kinds:
+      - retrieved_legal_source
+      - statute_or_guidance
+      - user_fact
+      - uploaded_evidence
+    matter_types:
+      - rent_determination
+    remedies:
+      - tribunal_rent_amount
+      - statutory_basis_finding
+    output_framing: "First-tier Tribunal Property Chamber rent determination analysis"
+    citation_label: "Property Chamber rent determination"
+    prohibited_phrases:
+      - "the tribunal will award"
+      - "we recommend you sue"
+    required_disclaimers:
+      - "This is legal information based on similar published Property Chamber rent-determination decisions, not legal advice."
+party_roles:
+  - tenant
+  - landlord
+matter_types:
+  - rent_determination
+remedies:
+  - tribunal_rent_amount
+  - statutory_basis_finding
+intake_schema_ref: ref://intake_schema/housing.rent_determination.v1
+case_file_adapter_ref: ref://case_file_adapter/housing.rent_determination.v1
+ontology_ref: ref://ontology/housing.rent_determination.v1
+prompt_pack_ref: ref://prompt_pack/housing.rent_determination.v1
+retrieval_namespaces:
+  - namespace_id: housing_rent_determination_v1
+    vector_collection: rent_determination_v1
+    bm25_index_path: data/embeddings/rent_determination_v1_bm25.pkl
+    corpus_root: data/raw/govuk_rent_determination
+    chunk_kinds:
+      - document_chunk
+    source_publishers:
+      - govuk
+    source_kinds:
+      - case_decision
+    forums:
+      - first_tier_property_chamber
+    allowed_cross_namespace_ids: []
+    metadata_filters:
+      matter_type: rent_determination
+    corpus_version: research_seed_2026_05
+eval_gate:
+  gold_set_path: data/gold_standard/housing_rent_determination_v1.jsonl
+  min_cases: 30
+  required_metrics: {}
+  max_hallucination_rate: 0.02
+  min_citation_validity: 0.98
+  min_abstention_precision: 0.80
+safety_notes:
+  - "First slice is MNR only (Housing Act 1988 s.13 referrals decided under s.14). Do NOT add LSC service charges, F77 regulated fair rents, LDC dispensations, or RRO into this namespace."
+temporal_law_markers:
+  - label: "Housing Act 1988 s.13 / s.14 (Market rent for assured periodic tenancies)"
+    effective_date: "1989-01-15"
+    note: "The s.13 referral mechanism — landlord serves notice, tenant refers to FTT(PC), tribunal determines open-market rent under s.14."
+  - label: "Renters' Rights Act 2025"
+    effective_date: "2025-10-31"
+    note: "Reshaped s.13: shorter notice, restricted increases, new caps. Cases after this date apply the amended framework."
