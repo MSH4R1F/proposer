@@ -10,28 +10,17 @@ record, the scraper calls :func:`govuk_to_source_document` to produce a
 from __future__ import annotations
 
 import hashlib
-from typing import Optional
 
 from domain_core.spec import Forum, SourceKind, SourcePublisher
 from rag_engine.ingestion.contracts import SourceDocument
 from rag_engine.source_metadata import SourceMetadata
 
-from .config import (
-    CORPUS_VERSION,
-    DOMAIN_ID,
-    PARSER_VERSION,
-    ScraperConfig,
-)
+from .config import CORPUS_VERSION, DOMAIN_ID, PARSER_VERSION
 from .models import GovUKPCMetadata
 
 
-def govuk_to_source_document(
-    meta: GovUKPCMetadata,
-    *,
-    config: Optional[ScraperConfig] = None,
-) -> SourceDocument:
+def govuk_to_source_document(meta: GovUKPCMetadata) -> SourceDocument:
     """Build a :class:`SourceDocument` from accepted GOV.UK MNR metadata."""
-    cfg = config or ScraperConfig()  # type: ignore[call-arg]
     raw_text = meta.raw_text or meta.title or ""
     if not raw_text.strip():
         raw_text = (meta.title or meta.case_reference or "rent determination")

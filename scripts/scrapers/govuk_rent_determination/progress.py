@@ -8,6 +8,7 @@ once and kept in memory, then written atomically at the end of a run.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import tempfile
 from datetime import datetime
@@ -17,6 +18,9 @@ from typing import Any, Dict, Iterable, List, Optional, Set
 from pydantic import BaseModel
 
 from .models import ScrapeRecord
+
+
+logger = logging.getLogger(__name__)
 
 
 class RunLog:
@@ -85,9 +89,14 @@ class MasterIndex:
                     continue
                 try:
                     rec = ScrapeRecord.model_validate(row)
-                except Exception:
+                except Exception as exc:
                     # Skip rows that pre-date the current schema. The new
-                    # run will overwrite them on upsert.
+                    # run will overwrite them on upsert. Logged so a
+                    # mass-skip during a schema migration is visible.
+                    logger.debug(
+                        "master_index_row_invalid",
+                        extra={"case_reference": row.get("case_reference"), "err": str(exc)},
+                    )
                     continue
                 idx._records[rec.case_reference] = rec
         return idx

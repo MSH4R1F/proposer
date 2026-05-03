@@ -93,7 +93,7 @@ def test_smoke_retrieval_repairs_social(tmp_path: Path) -> None:
     assert all_chunks
 
     embeddings = OpenAIEmbeddings(config=rag_config)
-    vectors = asyncio.run(embeddings.embed_documents([c.text for c in all_chunks]))
+    vectors = asyncio.run(embeddings.embed_texts([c.text for c in all_chunks]))
 
     chroma = ChromaStore(config=rag_config)
     asyncio.run(chroma.add_chunks(all_chunks, vectors))
@@ -102,7 +102,7 @@ def test_smoke_retrieval_repairs_social(tmp_path: Path) -> None:
 
     # Query.
     query = "damp and mould in a council flat"
-    qvec = asyncio.run(embeddings.embed_documents([query]))
+    qvec = asyncio.run(embeddings.embed_texts([query]))
     results = asyncio.run(chroma.query(qvec[0], n_results=3))
     assert results, "expected non-empty results"
     top = results[0]
