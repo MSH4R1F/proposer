@@ -208,7 +208,7 @@ async def _ingest_async(
 
     # Embed in batches.
     texts = [c.text for c in all_chunks]
-    vectors = await embeddings.embed_documents(texts)
+    vectors = await embeddings.embed_texts(texts)
 
     await chroma.add_chunks(all_chunks, vectors)
     bm25.build_index(all_chunks)
