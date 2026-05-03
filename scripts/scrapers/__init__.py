@@ -8,9 +8,12 @@ A production-ready async scraper for collecting UK First-tier Tribunal
 __version__ = "0.1.0"
 __author__ = "Mohamed Sharif"
 
-from .config import ScraperConfig
-from .models import CaseMetadata, CaseCategory, ScrapeProgress
-from .bailii_scraper import BAILIIScraper
+# NOTE (SHA-125): the eager imports below were moved behind ``__getattr__``
+# so that sibling scraper packages (e.g.
+# ``scripts.scrapers.housing_ombudsman``) and their tests can be imported
+# without dragging in ``aiohttp`` / ``aiosqlite`` / etc, which are heavy
+# and unrelated to those scrapers. The public API is preserved. Mirrors
+# the SHA-126 worktree's identical fix.
 
 __all__ = [
     "ScraperConfig",
@@ -19,3 +22,16 @@ __all__ = [
     "ScrapeProgress",
     "BAILIIScraper",
 ]
+
+
+def __getattr__(name):  # PEP 562 lazy attribute resolution
+    if name == "ScraperConfig":
+        from .config import ScraperConfig as _ScraperConfig
+        return _ScraperConfig
+    if name in {"CaseMetadata", "CaseCategory", "ScrapeProgress"}:
+        from . import models as _models
+        return getattr(_models, name)
+    if name == "BAILIIScraper":
+        from .bailii_scraper import BAILIIScraper as _BAILIIScraper
+        return _BAILIIScraper
+    raise AttributeError(name)
