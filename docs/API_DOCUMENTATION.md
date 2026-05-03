@@ -256,6 +256,51 @@ GET /cases
 
 ---
 
+### Disputes
+
+Two-party dispute lifecycle: tenant or landlord creates a dispute, the counterparty joins via invite, then mediation runs against the joined dispute. Source: `apps/api/src/routers/disputes.py`.
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/disputes/create` | Create a dispute from a completed intake session; returns invite token. |
+| POST | `/disputes/validate-invite` | Validate an invite token before the counterparty joins. |
+| POST | `/disputes/join` | Counterparty joins an existing dispute via token + their session. |
+| GET | `/disputes/by-session/{session_id}` | Look up dispute by either party's intake session. |
+| GET | `/disputes/{dispute_id}` | Full dispute status (parties, stage, mediation state). |
+| GET | `/disputes/` | List disputes (filtered by user). |
+| DELETE | `/disputes/{dispute_id}` | Remove a dispute. |
+| POST | `/disputes/{dispute_id}/sync-status` | Recompute dispute stage from joined-state and prediction-readiness. |
+| POST | `/disputes/fix-by-session/{session_id}` | Repair operation for orphaned sessions. |
+
+---
+
+### Mediation
+
+Agent-driven mediation loop on top of an existing dispute. The Shadow Mediator coordinates Intake/Prediction agents, computes ZOPA, and arbitrates offers. Source: `apps/api/src/routers/mediation.py`. See `PRD_AGENT_MEDIATION_SYSTEM_V2.md` for full agent contracts.
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/mediation/{dispute_id}/start` | Open the mediation channel once both parties have joined. |
+| GET | `/mediation/{dispute_id}/expectation/{session_id}` | Per-party expected outcome envelope (anchored to PredictionEngineV2). |
+| GET | `/mediation/{dispute_id}/messages` | Full chat transcript for the mediation room. |
+| POST | `/mediation/{dispute_id}/message` | Post a message into the mediation room. |
+| POST | `/mediation/{dispute_id}/offer` | Submit a settlement offer (amount + per-issue breakdown). |
+| POST | `/mediation/{dispute_id}/respond` | Accept / counter / reject a pending offer. |
+| GET | `/mediation/{dispute_id}/settlement` | Settlement state (agreed terms, signatures). |
+| GET | `/mediation/{dispute_id}/settlement/pdf` | Render a signed settlement to PDF. |
+
+---
+
+### Dev / Smoke
+
+Operational endpoints used by Window-1/Window-3 smoke tests and the agent_loop foundation. Source: `apps/api/src/routers/dev.py`. Not exposed in production builds.
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/api/dev/agent-smoke` | Drive a one-shot turn through the agent_loop (tool / context / loop / trace) for end-to-end validation. Returns the structured trace defined in `docs/AGENT_LOOP_FOUNDATION.md`. |
+
+---
+
 ### Health
 
 ```
