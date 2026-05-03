@@ -7,7 +7,7 @@ case-reference parsing (``/MNR/`` segment).
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -86,7 +86,7 @@ class ScraperConfig(BaseModel):
     respect_robots_txt: bool = Field(default=True)
 
     # Run-level metadata ---------------------------------------------------
-    run_started_at: datetime = Field(default_factory=datetime.utcnow)
+    run_started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     fixture_mode: bool = Field(
         default=False,
         description=(

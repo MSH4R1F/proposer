@@ -1,4 +1,4 @@
-"""SHA-126: async, polite GOV.UK downloader for the RRO scraper.
+"""SHA-138: async, polite GOV.UK downloader for the MNR rent-determination scraper.
 
 Three responsibilities:
 

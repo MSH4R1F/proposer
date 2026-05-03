@@ -656,12 +656,41 @@ def parse_decision_html(html: str, source_url: str) -> Tuple[GovUKPCMetadata, st
         statute_basis=rent.statute_basis,
     )
     if parties:
-        # Best-effort split on " and " or "v"
+        # Best-effort split on " v " / " and ". For MNR cases the
+        # convention is "Tenant v Landlord" (the tenant refers under
+        # s.13). If neither side resembles a landlord — entity suffixes
+        # like "Ltd" / "Council" / "Properties" / "Housing" / "Trust" —
+        # we leave both blank to flag uncertainty downstream.
+        landlord_indicators = (
+            " ltd",
+            " limited",
+            " plc",
+            " council",
+            " borough",
+            " properties",
+            " housing",
+            " homes",
+            " estates",
+            " trust",
+            " group",
+            " llp",
+        )
         for sep in (" v ", " v. ", " and "):
             if sep in parties.lower():
                 left, _, right = parties.partition(sep)
-                meta.landlord = left.strip() or None
-                meta.tenant = right.strip() or None
+                left, right = left.strip(), right.strip()
+                left_lc, right_lc = " " + left.lower(), " " + right.lower()
+                if any(tok in right_lc for tok in landlord_indicators):
+                    meta.tenant = left or None
+                    meta.landlord = right or None
+                elif any(tok in left_lc for tok in landlord_indicators):
+                    meta.landlord = left or None
+                    meta.tenant = right or None
+                else:
+                    # No reliable signal — record both sides on tenant
+                    # field with a sentinel suffix so downstream knows
+                    # the assignment is uncertain.
+                    meta.tenant = f"{left} v {right}".strip(" v") or None
                 break
 
     return meta, body_text

@@ -58,7 +58,7 @@ prompt_pack_ref: ref://prompt_pack/housing.rent_determination.v1
 retrieval_namespaces:
   - namespace_id: housing_rent_determination_v1
     vector_collection: rent_determination_v1
-    bm25_index_path: data/embeddings/rent_determination_v1_bm25.pkl
+    bm25_index_path: data/indices/housing_rent_determination_v1/research_seed_2026_05/bm25.pkl
     corpus_root: data/raw/govuk_rent_determination
     chunk_kinds:
       - document_chunk
