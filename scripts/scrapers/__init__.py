@@ -8,11 +8,6 @@ A production-ready async scraper for collecting UK First-tier Tribunal
 __version__ = "0.1.0"
 __author__ = "Mohamed Sharif"
 
-# NOTE (SHA-126): the eager imports below were moved behind ``__getattr__``
-# so that sibling scraper packages (e.g.
-# ``scripts.scrapers.govuk_property_tribunal``) and their tests can be
-# imported without dragging in ``aiohttp`` / ``aiosqlite`` / etc, which
-# are heavy and unrelated to those scrapers. The public API is preserved.
 
 __all__ = [
     "ScraperConfig",
