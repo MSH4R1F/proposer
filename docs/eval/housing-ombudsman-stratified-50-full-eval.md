@@ -215,3 +215,11 @@ Interpretation:
 - Hybrid still does not provide thesis-grade evidence for a RAG+KG improvement.
   The next product task is to inspect the retrieval/citation failure cases and
   tune issue-specific retrieval/prompting before reporting SHA-68 final numbers.
+
+Follow-up debug log:
+
+- `docs/eval/housing-ombudsman-hybrid-debug-log.md` records the 2026-05-05
+  root-cause analysis for the low `hybrid` score, the fixes applied to KG
+  wiring and repairs retrieval, and the first 5-case live smoke result after
+  the patch. The full 50-case live eval still needs to be rerun before updating
+  headline product-evidence numbers.
