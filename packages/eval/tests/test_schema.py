@@ -180,6 +180,15 @@ class TestGoldCaseInvariants:
         with pytest.raises(ValidationError, match="decision_date"):
             GoldCase.model_validate(bad)
 
+    def test_inv1_repairs_social_domain_allows_2026_seed_window(self):
+        from eval.schema import GoldCase
+        ok = self._base() | {
+            "decision_date": "2026-01-08",
+            "domain_id": "housing.repairs_social.v1",
+        }
+        gc = GoldCase.model_validate(ok)
+        assert gc.decision_date.isoformat() == "2026-01-08"
+
     def test_inv2_requires_tenant_and_landlord(self):
         from eval.schema import GoldCase
         bad = self._base() | {"parties": [{"role": "tenant", "represented": False}]}

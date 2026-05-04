@@ -16,6 +16,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _MIN_DECISION_DATE = date(2019, 1, 1)
 _MAX_DECISION_DATE = date(2024, 12, 31)
+_DOMAIN_MAX_DECISION_DATE = {
+    # The social-repairs Ombudsman research seed scraped in May 2026 contains
+    # real 2025/2026 determinations. Keep the legacy pilot window for all
+    # other domains, but do not force false dates onto this domain's gold rows.
+    "housing.repairs_social.v1": date(2026, 5, 4),
+}
 _SMALL_CASE_THRESHOLD_GBP = Decimal("1500")
 
 
@@ -444,10 +450,14 @@ class GoldCase(StrictBaseModel):
     @model_validator(mode="after")
     def _validate_invariants(self) -> "GoldCase":
         # INV-1: decision_date in PILOT-permitted window
-        if not (_MIN_DECISION_DATE <= self.decision_date <= _MAX_DECISION_DATE):
+        max_decision_date = _DOMAIN_MAX_DECISION_DATE.get(
+            self.domain_id or "",
+            _MAX_DECISION_DATE,
+        )
+        if not (_MIN_DECISION_DATE <= self.decision_date <= max_decision_date):
             raise ValueError(
                 f"decision_date {self.decision_date} outside permitted "
-                f"window [{_MIN_DECISION_DATE}, {_MAX_DECISION_DATE}]"
+                f"window [{_MIN_DECISION_DATE}, {max_decision_date}]"
             )
         # INV-2: at least one tenant and one landlord
         roles = {p.role for p in self.parties}

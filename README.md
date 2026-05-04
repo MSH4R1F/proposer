@@ -447,8 +447,14 @@ python scripts/run_tests.py --unit-only     # Skip integration tests
 python scripts/run_tests.py --coverage      # With coverage report
 python scripts/run_tests.py -k "test_bm25"  # Filter specific tests
 
-# RAG retrieval quality tests
-python scripts/test_rag_quality.py
+# Deposit/RRO RAG retrieval quality tests
+python scripts/test_deposit_rag_quality.py
+
+# Housing Ombudsman RAG retrieval quality tests
+python scripts/test_ombudsman_rag_quality.py --data-dir "$DATA_DIR"
+
+# Build Housing Ombudsman 50-case stratified eval manifest
+python scripts/eval/build_housing_ombudsman_stratified_eval.py --data-dir "$DATA_DIR"
 
 # Backend API tests
 cd apps/api && pytest
@@ -509,8 +515,14 @@ python scripts/run_tests.py
 python scripts/run_tests.py --unit-only  # Skip integration tests
 python scripts/run_tests.py --coverage   # With coverage report
 
-# Test RAG retrieval quality
-python scripts/test_rag_quality.py
+# Test deposit/RRO RAG retrieval quality
+python scripts/test_deposit_rag_quality.py
+
+# Test Housing Ombudsman retrieval quality
+python scripts/test_ombudsman_rag_quality.py --data-dir "$DATA_DIR"
+
+# Build Housing Ombudsman 50-case stratified eval manifest
+python scripts/eval/build_housing_ombudsman_stratified_eval.py --data-dir "$DATA_DIR"
 
 # Backend tests
 cd apps/api && pytest

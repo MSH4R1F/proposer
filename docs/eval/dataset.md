@@ -77,6 +77,56 @@ PYTHONPATH=packages python -m eval.dataset audit data/gold_standard/housing_v1.j
 
 Load errors land on stderr; CLI does not abort on them (lenient by default).
 
+## Housing Ombudsman stratified eval manifest
+
+`data/eval/housing_ombudsman_stratified_50.jsonl` is deliberately **not**
+loaded through `eval.dataset.load(...)` yet. It is a selection manifest for
+`housing.repairs_social.v1`, not a fully adjudicated `GoldCase` corpus.
+
+The manifest is built from the 1,000-case Housing Ombudsman repairs/social
+scrape and records the 50 source determinations that should be promoted into
+reviewed gold next:
+
+```bash
+python scripts/eval/build_housing_ombudsman_stratified_eval.py --data-dir "$DATA_DIR"
+```
+
+Current selection summary:
+
+| Field | Value |
+|---|---:|
+| Source cases | 1,000 |
+| Eligible cases with decision dates | 936 |
+| Excluded missing decision date | 64 |
+| Selected cases | 50 |
+| Selection seed | 42 |
+
+Outcome distribution:
+
+| Outcome | Cases |
+|---|---:|
+| `maladministration` | 32 |
+| `service-failure` | 7 |
+| `reasonable-redress` | 4 |
+| `severe-maladministration` | 3 |
+| `resolved-with-intervention` | 2 |
+| `outside-jurisdiction` | 1 |
+| `unknown` | 1 |
+
+Primary matter distribution:
+
+| Matter type | Cases |
+|---|---:|
+| `repairs_disrepair` | 26 |
+| `repairs_damp_mould` | 24 |
+
+Each row includes `target_source_id`, `raw_text_sha256`, source paths, forum,
+domain, corpus version, outcome stratum, matter-type stratum, and
+`annotation_status="needs_gold_labeling"`. Once the SHA-28/SHA-127 review path
+extracts compensation/orders/source spans and writes `LabelingProvenance`, the
+resulting reviewed rows can move into `data/gold_standard/` and be loaded by
+the normal dataset API.
+
 ## Lenient default, strict opt-in
 
 Pilot phase needs forgiveness: a half-broken corpus is the normal state during annotation. CI before shipping needs the opposite. Pattern:
@@ -101,11 +151,14 @@ Pilot phase needs forgiveness: a half-broken corpus is the normal state during a
 ## What this does NOT do
 
 - It does not write to the gold-set file. The annotation CLI (Phase 3) owns that.
+- It does not load the Housing Ombudsman stratified-50 manifest until that
+  manifest is promoted to adjudicated `GoldCase` rows.
 - It does not compute metrics. Phase 4 metric modules consume the splits and produce numbers.
 - It does not run the prediction model. Phase 5 ablation runner does that.
 
 ## Related
 
 - [`docs/eval/gold-schema.md`](gold-schema.md) — the `GoldCase` schema this loader validates against.
+- [`docs/eval/housing-ombudsman-stratified-50.md`](housing-ombudsman-stratified-50.md) — selection method for the Housing Ombudsman eval manifest.
 - `.sisyphus/plans/track-a-plan.md` — Track A overall plan.
 - `docs/superpowers/plans/2026-04-28-gold-set-dataset.md` — the bite-sized TDD plan that built this module.

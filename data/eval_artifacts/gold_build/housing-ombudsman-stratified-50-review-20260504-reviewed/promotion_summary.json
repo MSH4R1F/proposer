@@ -1,0 +1,364 @@
+{
+  "backup_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/replaced_housing_repairs_social_v1.jsonl",
+  "build_gold_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/gold/housing_repairs_social_v1.jsonl",
+  "canonical_gold_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/gold_standard/housing_repairs_social_v1.jsonl",
+  "cases": 50,
+  "gold_corpus": "housing_repairs_social_v1",
+  "promoted": [
+    {
+      "case_id": "housing-ombudsman-202451564",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202451564.reviewed_decision.json",
+      "grounding_pass_rate": 0.458041958041958,
+      "inter_model_agreement_rate": 0.4117647058823529,
+      "target_source_id": "202451564"
+    },
+    {
+      "case_id": "housing-ombudsman-202427949",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202427949.reviewed_decision.json",
+      "grounding_pass_rate": 0.23214285714285715,
+      "inter_model_agreement_rate": 0.5714285714285714,
+      "target_source_id": "202427949"
+    },
+    {
+      "case_id": "housing-ombudsman-202332678",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202332678.reviewed_decision.json",
+      "grounding_pass_rate": 0.5227272727272727,
+      "inter_model_agreement_rate": 0.4444444444444444,
+      "target_source_id": "202332678"
+    },
+    {
+      "case_id": "housing-ombudsman-202426484",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202426484.reviewed_decision.json",
+      "grounding_pass_rate": 0.1388888888888889,
+      "inter_model_agreement_rate": 0.87248322147651,
+      "target_source_id": "202426484"
+    },
+    {
+      "case_id": "housing-ombudsman-202409223",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202409223.reviewed_decision.json",
+      "grounding_pass_rate": 0.5374331550802138,
+      "inter_model_agreement_rate": 0.40740740740740744,
+      "target_source_id": "202409223"
+    },
+    {
+      "case_id": "housing-ombudsman-202511615",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202511615.reviewed_decision.json",
+      "grounding_pass_rate": 0.5,
+      "inter_model_agreement_rate": 0.375,
+      "target_source_id": "202511615"
+    },
+    {
+      "case_id": "housing-ombudsman-202445527",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202445527.reviewed_decision.json",
+      "grounding_pass_rate": 0.40588235294117647,
+      "inter_model_agreement_rate": 0.3870967741935484,
+      "target_source_id": "202445527"
+    },
+    {
+      "case_id": "housing-ombudsman-202509252",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202509252.reviewed_decision.json",
+      "grounding_pass_rate": 0.06251526251526252,
+      "inter_model_agreement_rate": 0.8309859154929577,
+      "target_source_id": "202509252"
+    },
+    {
+      "case_id": "housing-ombudsman-202331162",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202331162.reviewed_decision.json",
+      "grounding_pass_rate": 0.5729166666666667,
+      "inter_model_agreement_rate": 0.4,
+      "target_source_id": "202331162"
+    },
+    {
+      "case_id": "housing-ombudsman-202446687",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202446687.reviewed_decision.json",
+      "grounding_pass_rate": 0.6441176470588235,
+      "inter_model_agreement_rate": 0.5,
+      "target_source_id": "202446687"
+    },
+    {
+      "case_id": "housing-ombudsman-202332724",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202332724.reviewed_decision.json",
+      "grounding_pass_rate": 0.5643939393939394,
+      "inter_model_agreement_rate": 0.375,
+      "target_source_id": "202332724"
+    },
+    {
+      "case_id": "housing-ombudsman-202413497",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202413497.reviewed_decision.json",
+      "grounding_pass_rate": 0.29705882352941176,
+      "inter_model_agreement_rate": 0.46153846153846156,
+      "target_source_id": "202413497"
+    },
+    {
+      "case_id": "housing-ombudsman-202508313",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202508313.reviewed_decision.json",
+      "grounding_pass_rate": 0.5392156862745098,
+      "inter_model_agreement_rate": 0.4375,
+      "target_source_id": "202508313"
+    },
+    {
+      "case_id": "housing-ombudsman-202408056",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202408056.reviewed_decision.json",
+      "grounding_pass_rate": 0.3854166666666667,
+      "inter_model_agreement_rate": 0.4,
+      "target_source_id": "202408056"
+    },
+    {
+      "case_id": "housing-ombudsman-202338295",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202338295.reviewed_decision.json",
+      "grounding_pass_rate": 0.5576923076923077,
+      "inter_model_agreement_rate": 0.31818181818181823,
+      "target_source_id": "202338295"
+    },
+    {
+      "case_id": "housing-ombudsman-202513245",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202513245.reviewed_decision.json",
+      "grounding_pass_rate": 0.5192307692307692,
+      "inter_model_agreement_rate": 0.4375,
+      "target_source_id": "202513245"
+    },
+    {
+      "case_id": "housing-ombudsman-202348669",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202348669.reviewed_decision.json",
+      "grounding_pass_rate": 0.1926470588235294,
+      "inter_model_agreement_rate": 0.5384615384615384,
+      "target_source_id": "202348669"
+    },
+    {
+      "case_id": "housing-ombudsman-202410423",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202410423.reviewed_decision.json",
+      "grounding_pass_rate": 0.5393939393939393,
+      "inter_model_agreement_rate": 0.5,
+      "target_source_id": "202410423"
+    },
+    {
+      "case_id": "housing-ombudsman-202421521",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202421521.reviewed_decision.json",
+      "grounding_pass_rate": 0.3522727272727273,
+      "inter_model_agreement_rate": 0.625,
+      "target_source_id": "202421521"
+    },
+    {
+      "case_id": "housing-ombudsman-202429736",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202429736.reviewed_decision.json",
+      "grounding_pass_rate": 0.5227272727272727,
+      "inter_model_agreement_rate": 0.5625,
+      "target_source_id": "202429736"
+    },
+    {
+      "case_id": "housing-ombudsman-202441018",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202441018.reviewed_decision.json",
+      "grounding_pass_rate": 0.5634920634920635,
+      "inter_model_agreement_rate": 0.46153846153846156,
+      "target_source_id": "202441018"
+    },
+    {
+      "case_id": "housing-ombudsman-202428538",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202428538.reviewed_decision.json",
+      "grounding_pass_rate": 0.3418803418803419,
+      "inter_model_agreement_rate": 0.631578947368421,
+      "target_source_id": "202428538"
+    },
+    {
+      "case_id": "housing-ombudsman-202430026",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202430026.reviewed_decision.json",
+      "grounding_pass_rate": 0.4653679653679653,
+      "inter_model_agreement_rate": 0.5357142857142857,
+      "target_source_id": "202430026"
+    },
+    {
+      "case_id": "housing-ombudsman-202316658",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202316658.reviewed_decision.json",
+      "grounding_pass_rate": 0.2923076923076923,
+      "inter_model_agreement_rate": 0.5185185185185186,
+      "target_source_id": "202316658"
+    },
+    {
+      "case_id": "housing-ombudsman-2022225 48",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-2022225 48.reviewed_decision.json",
+      "grounding_pass_rate": 0.07285714285714286,
+      "inter_model_agreement_rate": 0.8035714285714286,
+      "target_source_id": "2022225 48"
+    },
+    {
+      "case_id": "housing-ombudsman-202345261",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202345261.reviewed_decision.json",
+      "grounding_pass_rate": 0.18333333333333335,
+      "inter_model_agreement_rate": 0.38235294117647056,
+      "target_source_id": "202345261"
+    },
+    {
+      "case_id": "housing-ombudsman-202334994",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202334994.reviewed_decision.json",
+      "grounding_pass_rate": 0.5393939393939393,
+      "inter_model_agreement_rate": 0.34615384615384615,
+      "target_source_id": "202334994"
+    },
+    {
+      "case_id": "housing-ombudsman-202407044",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202407044.reviewed_decision.json",
+      "grounding_pass_rate": 0.43939393939393934,
+      "inter_model_agreement_rate": 0.5,
+      "target_source_id": "202407044"
+    },
+    {
+      "case_id": "housing-ombudsman-202432454",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202432454.reviewed_decision.json",
+      "grounding_pass_rate": 0.36904761904761907,
+      "inter_model_agreement_rate": 0.5357142857142857,
+      "target_source_id": "202432454"
+    },
+    {
+      "case_id": "housing-ombudsman-202401431",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202401431.reviewed_decision.json",
+      "grounding_pass_rate": 0.1835016835016835,
+      "inter_model_agreement_rate": 0.5476190476190477,
+      "target_source_id": "202401431"
+    },
+    {
+      "case_id": "housing-ombudsman-202442504",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202442504.reviewed_decision.json",
+      "grounding_pass_rate": 0.25,
+      "inter_model_agreement_rate": 0.38095238095238093,
+      "target_source_id": "202442504"
+    },
+    {
+      "case_id": "housing-ombudsman-202346688",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202346688.reviewed_decision.json",
+      "grounding_pass_rate": 0.30128205128205127,
+      "inter_model_agreement_rate": 0.6176470588235294,
+      "target_source_id": "202346688"
+    },
+    {
+      "case_id": "housing-ombudsman-202306436",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202306436.reviewed_decision.json",
+      "grounding_pass_rate": 0.325,
+      "inter_model_agreement_rate": 0.4,
+      "target_source_id": "202306436"
+    },
+    {
+      "case_id": "housing-ombudsman-202508050",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202508050.reviewed_decision.json",
+      "grounding_pass_rate": 0.28125,
+      "inter_model_agreement_rate": 0.5882352941176471,
+      "target_source_id": "202508050"
+    },
+    {
+      "case_id": "housing-ombudsman-202506211",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202506211.reviewed_decision.json",
+      "grounding_pass_rate": 0.4605263157894737,
+      "inter_model_agreement_rate": 0.5217391304347826,
+      "target_source_id": "202506211"
+    },
+    {
+      "case_id": "housing-ombudsman-202404949",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202404949.reviewed_decision.json",
+      "grounding_pass_rate": 0.23560606060606062,
+      "inter_model_agreement_rate": 0.7777777777777778,
+      "target_source_id": "202404949"
+    },
+    {
+      "case_id": "housing-ombudsman-202318374",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202318374.reviewed_decision.json",
+      "grounding_pass_rate": 0.606060606060606,
+      "inter_model_agreement_rate": 0.5333333333333333,
+      "target_source_id": "202318374"
+    },
+    {
+      "case_id": "housing-ombudsman-202334890",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202334890.reviewed_decision.json",
+      "grounding_pass_rate": 0.5083333333333333,
+      "inter_model_agreement_rate": 0.46153846153846156,
+      "target_source_id": "202334890"
+    },
+    {
+      "case_id": "housing-ombudsman-202339075",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202339075.reviewed_decision.json",
+      "grounding_pass_rate": 0.303030303030303,
+      "inter_model_agreement_rate": 0.5454545454545454,
+      "target_source_id": "202339075"
+    },
+    {
+      "case_id": "housing-ombudsman-202427803",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202427803.reviewed_decision.json",
+      "grounding_pass_rate": 0.48684210526315785,
+      "inter_model_agreement_rate": 0.5,
+      "target_source_id": "202427803"
+    },
+    {
+      "case_id": "housing-ombudsman-202404522",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202404522.reviewed_decision.json",
+      "grounding_pass_rate": 0.3601823708206687,
+      "inter_model_agreement_rate": 0.7413793103448276,
+      "target_source_id": "202404522"
+    },
+    {
+      "case_id": "housing-ombudsman-202410679",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202410679.reviewed_decision.json",
+      "grounding_pass_rate": 0.17261904761904762,
+      "inter_model_agreement_rate": 0.7959183673469388,
+      "target_source_id": "202410679"
+    },
+    {
+      "case_id": "housing-ombudsman-202412991",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202412991.reviewed_decision.json",
+      "grounding_pass_rate": 0.30833333333333335,
+      "inter_model_agreement_rate": 0.5294117647058824,
+      "target_source_id": "202412991"
+    },
+    {
+      "case_id": "housing-ombudsman-202413845",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202413845.reviewed_decision.json",
+      "grounding_pass_rate": 0.5419580419580419,
+      "inter_model_agreement_rate": 0.33333333333333337,
+      "target_source_id": "202413845"
+    },
+    {
+      "case_id": "housing-ombudsman-202511313",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202511313.reviewed_decision.json",
+      "grounding_pass_rate": 0.23363774733637746,
+      "inter_model_agreement_rate": 0.9649122807017544,
+      "target_source_id": "202511313"
+    },
+    {
+      "case_id": "housing-ombudsman-202325309",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202325309.reviewed_decision.json",
+      "grounding_pass_rate": 0.5576923076923077,
+      "inter_model_agreement_rate": 0.33333333333333337,
+      "target_source_id": "202325309"
+    },
+    {
+      "case_id": "housing-ombudsman-202409957",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202409957.reviewed_decision.json",
+      "grounding_pass_rate": 0.3571428571428571,
+      "inter_model_agreement_rate": 0.48571428571428577,
+      "target_source_id": "202409957"
+    },
+    {
+      "case_id": "housing-ombudsman-202509792",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202509792.reviewed_decision.json",
+      "grounding_pass_rate": 0.2994652406417112,
+      "inter_model_agreement_rate": 0.55,
+      "target_source_id": "202509792"
+    },
+    {
+      "case_id": "housing-ombudsman-202440462",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202440462.reviewed_decision.json",
+      "grounding_pass_rate": 0.3507246376811594,
+      "inter_model_agreement_rate": 0.4473684210526315,
+      "target_source_id": "202440462"
+    },
+    {
+      "case_id": "housing-ombudsman-202340236",
+      "decision_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/decisions/housing-ombudsman-202340236.reviewed_decision.json",
+      "grounding_pass_rate": 0.5227272727272727,
+      "inter_model_agreement_rate": 0.41666666666666663,
+      "target_source_id": "202340236"
+    }
+  ],
+  "promotion_mode": "canonical_replacement",
+  "reviewed_at": "2026-05-04T17:07:55.113452+00:00",
+  "reviewer": "Mohamed Sharif",
+  "reviewer_log_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/reviewer-log.md",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504"
+}

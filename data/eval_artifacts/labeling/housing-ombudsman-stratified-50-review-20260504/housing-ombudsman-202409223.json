@@ -1,0 +1,1092 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202409223",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "GROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "UNGROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5454545454545454,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 16 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repairs', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'resident',...don Borough of Croydon'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"landlord's repairs records\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='inspection reports', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='complaint correspondence', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='stage 1 and stage 2 responses', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['repairs...ource': 'landlord name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='maladministration found ... and complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 9 validation errors for GoldCase\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repairs', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'resident',...don Borough of Croydon'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"landlord's repairs records\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='inspection reports', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='complaint correspondence', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='stage 1 and stage 2 responses', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='maladministration found ... and complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date present",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "quote not found in declared span",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "cited_authorities[0]": "UNGROUNDED",
+      "cited_authorities[1]": "UNGROUNDED",
+      "cited_authorities[2]": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "key_reasoning_quotes[5]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5294117647058824,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 28 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='5 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repairs to the external ...ructure of the property', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='replacement of external doors', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London Boro...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='stage 1 response to the roof repair complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='stage 2 response', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='repairs records', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='internal records concern...expenditure calculation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='utility bills or other e...ional electricity usage', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='the landlord’s repairs policy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='remedies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.2\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='apologies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nclaimed_amounts\n  Field required [type=missing, input_value={'cited_authorities': ['t...on Borough of Croydon.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'external_structure_repa...ng if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'external_structure_repa...ng if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.external_structure_repairs\n  Extra inputs are not permitted [type=extra_forbidden, input_value='maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.replacement_of_external_doors\n  Extra inputs are not permitted [type=extra_forbidden, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['written apology', 'reim...the external structure'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='£600 compensation in re...ing if not already paid', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 21 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='5 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repairs to the external ...ructure of the property', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='replacement of external doors', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London Boro...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='stage 1 response to the roof repair complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='stage 2 response', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='repairs records', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='internal records concern...expenditure calculation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='utility bills or other e...ional electricity usage', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='the landlord’s repairs policy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='remedies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.2\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='apologies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'external_structure_repa...ng if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'external_structure_repa...ng if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.external_structure_repairs\n  Extra inputs are not permitted [type=extra_forbidden, input_value='maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.replacement_of_external_doors\n  Extra inputs are not permitted [type=extra_forbidden, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['written apology', 'reim...the external structure'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='£600 compensation in re...ing if not already paid', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "cited_authorities[0]": "missing name or cited_date",
+      "cited_authorities[1]": "missing name or cited_date",
+      "cited_authorities[2]": "missing name or cited_date",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "key_reasoning_quotes[5]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              574,
+              602
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              602,
+              653
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              653,
+              684
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              684,
+              745
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              267,
+              278
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              278,
+              283
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              6996,
+              7668
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              7668,
+              8342
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4382,
+              4667
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              5309,
+              5622
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              294,
+              546
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 117,
+            "text_span": [
+              4039,
+              4059
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 119,
+            "text_span": [
+              4061,
+              4216
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 120,
+            "text_span": [
+              4216,
+              4369
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4382,
+              4667
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 126,
+            "text_span": [
+              4766,
+              4886
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 128,
+            "text_span": [
+              4898,
+              5133
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              5309,
+              5622
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 135,
+            "text_span": [
+              5663,
+              5682
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              5682,
+              5700
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 137,
+            "text_span": [
+              5700,
+              5749
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              5749,
+              5777
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              804,
+              891
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              891,
+              959
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              959,
+              1011
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1122,
+              1395
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              9602,
+              10306
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 39,
+            "text_span": [
+              1425,
+              1617
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              144,
+              158
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              167,
+              193
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              167,
+              193
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              167,
+              193
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "This is a Housing Ombudsman investigation where the resident sought redress rather than claiming specific monetary amounts.",
+        "disputed_amount_gbp": "No specific disputed amount is identified in the pre-decision record sections.",
+        "statutory_basis": "No specific statutory provisions or legal basis are cited in the decision text."
+      },
+      "claim_types": [
+        "repairs",
+        "complaint handling"
+      ],
+      "decision_date": "2025-11-05",
+      "evidence": [
+        "landlord's repairs records",
+        "inspection reports",
+        "complaint correspondence",
+        "stage 1 and stage 2 responses"
+      ],
+      "facts": "The resident lives in a house with a shed in the garden. She complained about delays to repairs which caused a bedroom to be damp and cold, and delays in replacing external doors. On 25 April 2024, the resident raised 2 complaints: first, that she had reported problems with external doors in January 2024 with no response from the landlord; second, that a roof repair had been raised in November 2023 but no work started since an inspection in December 2023. The landlord sent its stage 1 response on 13 June 2024 acknowledging a 7-month delay and offering £200 compensation. On 20 June 2024, the resident escalated her complaints. On 2 July 2024, the landlord increased compensation offers to £450 for the roof leak and £275 for doors, plus £25 each for delayed responses. The landlord sent its stage 2 response on 9 September 2024, finding no roof faults but identifying brickwork needing repointing, scheduled for 30 September 2024. It increased compensation offers to £450 for doors, £450 for roof, £144 for energy reimbursement, and £150 for complaint handling.",
+      "ground_truth_outcome": "maladministration found for repairs handling, reasonable redress found for doors and complaint handling",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1122,
+              1395
+            ]
+          },
+          "text": "The landlord did not carry out inspections and repairs in line with its repairs policy. Jobs were left unresolved when it changed sub-contractors, leading to long delays."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              9602,
+              10306
+            ]
+          },
+          "text": "The landlord's failure to accurately consider the financial detriment to the resident has caused her further distress and inconvenience."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 39,
+            "text_span": [
+              1425,
+              1617
+            ]
+          },
+          "text": "While there were avoidable delays by the landlord in replacing the external doors, it recognised this in its response. It offered an apology and appropriate compensation to put matters right."
+        }
+      ],
+      "matter_type": "Housing Ombudsman Investigation",
+      "parties": {
+        "applicant": "resident",
+        "respondent": "London Borough of Croydon"
+      },
+      "region": "London",
+      "region_source": "landlord name"
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"repairs\", \"complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 23, \"text_span\": [574, 602]},\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [602, 653]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [653, 684]},\n      {\"page\": 1, \"paragraph\": 26, \"text_span\": [684, 745]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"This is a Housing Ombudsman investigation where the resident sought redress rather than claiming specific monetary amounts.\"\n  },\n  \"decision_date\": {\n    \"value\": \"2025-11-05\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [267, 278]},\n      {\"page\": 1, \"paragraph\": 19, \"text_span\": [278, 283]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific disputed amount is identified in the pre-decision record sections.\"\n  },\n  \"evidence\": {\n    \"value\": [\"landlord's repairs records\", \"inspection reports\", \"complaint correspondence\", \"stage 1 and stage 2 responses\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 158, \"text_span\": [6996, 7668]},\n      {\"page\": 1, \"paragraph\": 159, \"text_span\": [7668, 8342]},\n      {\"page\": 1, \"paragraph\": 122, \"text_span\": [4382, 4667]},\n      {\"page\": 1, \"paragraph\": 133, \"text_span\": [5309, 5622]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident lives in a house with a shed in the garden. She complained about delays to repairs which caused a bedroom to be damp and cold, and delays in replacing external doors. On 25 April 2024, the resident raised 2 complaints: first, that she had reported problems with external doors in January 2024 with no response from the landlord; second, that a roof repair had been raised in November 2023 but no work started since an inspection in December 2023. The landlord sent its stage 1 response on 13 June 2024 acknowledging a 7-month delay and offering £200 compensation. On 20 June 2024, the resident escalated her complaints. On 2 July 2024, the landlord increased compensation offers to £450 for the roof leak and £275 for doors, plus £25 each for delayed responses. The landlord sent its stage 2 response on 9 September 2024, finding no roof faults but identifying brickwork needing repointing, scheduled for 30 September 2024. It increased compensation offers to £450 for doors, £450 for roof, £144 for energy reimbursement, and £150 for complaint handling.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [294, 546]},\n      {\"page\": 1, \"paragraph\": 117, \"text_span\": [4039, 4059]},\n      {\"page\": 1, \"paragraph\": 119, \"text_span\": [4061, 4216]},\n      {\"page\": 1, \"paragraph\": 120, \"text_span\": [4216, 4369]},\n      {\"page\": 1, \"paragraph\": 122, \"text_span\": [4382, 4667]},\n      {\"page\": 1, \"paragraph\": 126, \"text_span\": [4766, 4886]},\n      {\"page\": 1, \"paragraph\": 128, \"text_span\": [4898, 5133]},\n      {\"page\": 1, \"paragraph\": 133, \"text_span\": [5309, 5622]},\n      {\"page\": 1, \"paragraph\": 135, \"text_span\": [5663, 5682]},\n      {\"page\": 1, \"paragraph\": 136, \"text_span\": [5682, 5700]},\n      {\"page\": 1, \"paragraph\": 137, \"text_span\": [5700, 5749]},\n      {\"page\": 1, \"paragraph\": 138, \"text_span\": [5749, 5777]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"maladministration found for repairs handling, reasonable redress found for doors and complaint handling\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 29, \"text_span\": [804, 891]},\n      {\"page\": 1, \"paragraph\": 30, \"text_span\": [891, 959]},\n      {\"page\": 1, \"paragraph\": 31, \"text_span\": [959, 1011]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord did not carry out inspections and repairs in line with its repairs policy. Jobs were left unresolved when it changed sub-contractors, leading to long delays.\",\n      \"The landlord's failure to accurately consider the financial detriment to the resident has caused her further distress and inconvenience.\",\n      \"While there were avoidable delays by the landlord in replacing the external doors, it recognised this in its response. It offered an apology and appropriate compensation to put matters right.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 37, \"text_span\": [1122, 1395]},\n      {\"page\": 1, \"paragraph\": 163, \"text_span\": [9602, 10306]},\n      {\"page\": 1, \"paragraph\": 39, \"text_span\": [1425, 1617]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman Investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [144, 158]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"applicant\": \"resident\",\n      \"respondent\": \"London Borough of Croydon\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [167, 193]}\n    ]\n  },\n  \"region\": {\n    \"value\": \"London\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [167, 193]}\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"landlord name\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [167, 193]}\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutory provisions or legal basis are cited in the decision text.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202409223\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 53, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Croydon (202409223)\"}, {\"char_end\": 91, \"char_start\": 53, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Croydon (202409223)\"}, {\"char_end\": 103, \"char_start\": 91, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 112, \"char_start\": 103, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 120, \"char_start\": 112, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 130, \"char_start\": 120, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202409223\"}, {\"char_end\": 144, \"char_start\": 130, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 158, \"char_start\": 144, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 167, \"char_start\": 158, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 193, \"char_start\": 167, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Croydon\"}, {\"char_end\": 207, \"char_start\": 193, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 237, \"char_start\": 207, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Local Authority / ALMO or TMO\"}, {\"char_end\": 247, \"char_start\": 237, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 262, \"char_start\": 247, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 267, \"char_start\": 262, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 278, \"char_start\": 267, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"5 November\"}, {\"char_end\": 283, \"char_start\": 278, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 294, \"char_start\": 283, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 546, \"char_start\": 294, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives in the property, a house with a shed in the garden. She is unhappy with delays to repairs which caused a bedroom in the property to be damp and cold and the time taken by the landlord to replace external doors in the house and shed.\"}, {\"char_end\": 574, \"char_start\": 546, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 602, \"char_start\": 574, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord’s handling of:\"}, {\"char_end\": 653, \"char_start\": 602, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"Repairs to the external structure of the property.\"}, {\"char_end\": 684, \"char_start\": 653, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"Replacement of external doors.\"}, {\"char_end\": 745, \"char_start\": 684, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"We have also investigated the landlord’s complaint handling.\"}, {\"char_end\": 774, \"char_start\": 745, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 804, \"char_start\": 774, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found that there was:\"}, {\"char_end\": 891, \"char_start\": 804, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"maladministration in the handling of repairs to the external structure of the property\"}, {\"char_end\": 959, \"char_start\": 891, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"reasonable redress in the handling of replacement of external doors\"}, {\"char_end\": 1011, \"char_start\": 959, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"reasonable redress in the handling of the complaint\"}, {\"char_end\": 1014, \"char_start\": 1011, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 1019, \"char_start\": 1014, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 1069, \"char_start\": 1019, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 1088, \"char_start\": 1069, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1122, \"char_start\": 1088, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Repairs to the external structure\"}, {\"char_end\": 1395, \"char_start\": 1122, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not carry out inspections and repairs in line with its repairs policy. Jobs were left unresolved when it changed sub-contractors, leading to long delays. While it did eventually recognise its failings, it did not fully consider the impact on the resident.\"}, {\"char_end\": 1425, \"char_start\": 1395, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Replacement of external doors\"}, {\"char_end\": 1617, \"char_start\": 1425, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While there were avoidable delays by the landlord in replacing the external doors, it recognised this in its response. It offered an apology and appropriate compensation to put matters right.\"}, {\"char_end\": 1636, \"char_start\": 1617, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 1793, \"char_start\": 1636, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While there were failings by the landlord in its complaint handling, it recognised this in its response and offered appropriate compensation and an apology.\"}, {\"char_end\": 1814, \"char_start\": 1793, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1872, \"char_start\": 1814, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1874, \"char_start\": 1872, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1949, \"char_start\": 1874, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2040, \"char_start\": 1949, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2047, \"char_start\": 2040, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 2057, \"char_start\": 2047, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 2062, \"char_start\": 2057, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 2173, \"char_start\": 2062, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2176, \"char_start\": 2173, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2187, \"char_start\": 2176, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2203, \"char_start\": 2187, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2210, \"char_start\": 2203, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2219, \"char_start\": 2210, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2224, \"char_start\": 2219, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2230, \"char_start\": 2224, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2256, \"char_start\": 2230, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2265, \"char_start\": 2256, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2267, \"char_start\": 2265, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2281, \"char_start\": 2267, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2309, \"char_start\": 2281, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2320, \"char_start\": 2309, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2380, \"char_start\": 2320, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"to the resident for the failures identified in this report.\"}, {\"char_end\": 2393, \"char_start\": 2380, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2406, \"char_start\": 2393, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2408, \"char_start\": 2406, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"t\"}, {\"char_end\": 2411, \"char_start\": 2408, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"he\"}, {\"char_end\": 2419, \"char_start\": 2411, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2434, \"char_start\": 2419, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"is provided by\"}, {\"char_end\": 2451, \"char_start\": 2434, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"a senior manager\"}, {\"char_end\": 2453, \"char_start\": 2451, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"t\"}, {\"char_end\": 2456, \"char_start\": 2453, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"he\"}, {\"char_end\": 2464, \"char_start\": 2456, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2467, \"char_start\": 2464, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2476, \"char_start\": 2467, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2520, \"char_start\": 2476, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2548, \"char_start\": 2520, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic\"}, {\"char_end\": 2550, \"char_start\": 2548, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"i\"}, {\"char_end\": 2574, \"char_start\": 2550, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"t has due regard to our\"}, {\"char_end\": 2593, \"char_start\": 2574, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2607, \"char_start\": 2593, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2624, \"char_start\": 2607, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"03 December 2025\"}, {\"char_end\": 2626, \"char_start\": 2624, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2646, \"char_start\": 2626, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"Reimbursement order\"}, {\"char_end\": 2916, \"char_start\": 2646, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"The landlord must contact the resident to request evidence, such as utility bills, to enable it to calculate the additional electricity used by the resident to run electric heaters in the affected bedroom. It should offer her reimbursement in line with its calculation.\"}, {\"char_end\": 3006, \"char_start\": 2916, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"It can deduct the £144 offered previously, if this has already been paid to the resident.\"}, {\"char_end\": 3043, \"char_start\": 3006, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"If the resident is unable to provide\"}, {\"char_end\": 3052, \"char_start\": 3043, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"relevant\"}, {\"char_end\": 3091, \"char_start\": 3052, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"electricity bills, given the time that\"}, {\"char_end\": 3094, \"char_start\": 3091, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"ha\"}, {\"char_end\": 3139, \"char_start\": 3094, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \"s passed since the issue began, the landlord\"}, {\"char_end\": 3240, \"char_start\": 3139, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"should discuss her estimated additional usage with her and make a reasonable offer of reimbursement.\"}, {\"char_end\": 3254, \"char_start\": 3240, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3271, \"char_start\": 3254, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"03 December 2025\"}, {\"char_end\": 3273, \"char_start\": 3271, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"3\"}, {\"char_end\": 3292, \"char_start\": 3273, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 3329, \"char_start\": 3292, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 3333, \"char_start\": 3329, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"600\"}, {\"char_end\": 3387, \"char_start\": 3333, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"to recognise the distress and inconvenience caused by\"}, {\"char_end\": 3454, \"char_start\": 3387, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"its handling of repairs to the external structure of the building.\"}, {\"char_end\": 3572, \"char_start\": 3454, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment\"}, {\"char_end\": 3589, \"char_start\": 3572, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"by the due date.\"}, {\"char_end\": 3655, \"char_start\": 3589, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure any payments it has\"}, {\"char_end\": 3669, \"char_start\": 3655, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"already paid.\"}, {\"char_end\": 3683, \"char_start\": 3669, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3700, \"char_start\": 3683, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \"03 December 2025\"}, {\"char_end\": 3716, \"char_start\": 3700, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 3799, \"char_start\": 3716, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 3818, \"char_start\": 3799, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"order\", \"text\": \"Our recommendation\"}, {\"char_end\": 3964, \"char_start\": 3818, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"order\", \"text\": \"The landlord to pay the resident compensation of £600 in relation to the doors issue and its complaint handling, if it has not already paid this.\"}, {\"char_end\": 3982, \"char_start\": 3964, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 4006, \"char_start\": 3982, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 4011, \"char_start\": 4006, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 4025, \"char_start\": 4011, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 4039, \"char_start\": 4025, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \"25 April 2024\"}, {\"char_end\": 4059, \"char_start\": 4039, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised\"}, {\"char_end\": 4061, \"char_start\": 4059, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"2\"}, {\"char_end\": 4216, \"char_start\": 4061, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"pre_decision_record\", \"text\": \"complaints to the landlord. The first was that she had reported a problem with her external doors in January 2024 and had heard nothing from the landlord.\"}, {\"char_end\": 4369, \"char_start\": 4216, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"pre_decision_record\", \"text\": \"The second complaint was that a repair for the roof had been raised in November 2023, but no work had been started since an inspection in December 2023.\"}, {\"char_end\": 4382, \"char_start\": 4369, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"pre_decision_record\", \"text\": \"13 June 2024\"}, {\"char_end\": 4667, \"char_start\": 4382, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 1 response to the roof repair complaint. It acknowledged there had been a 7-month delay, partly due to work being allocated to a contractor it no longer used. It offered her £200 compensation and said a contractor would be in touch soon to book in repairs.\"}, {\"char_end\": 4721, \"char_start\": 4667, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \"We have not seen a copy of a stage 1 response for the\"}, {\"char_end\": 4753, \"char_start\": 4721, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint about external doors.\"}, {\"char_end\": 4766, \"char_start\": 4753, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \"20 June 2024\"}, {\"char_end\": 4886, \"char_start\": 4766, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked the landlord to escalate her complaints. She was unhappy with the landlord’s offers of compensation.\"}, {\"char_end\": 4898, \"char_start\": 4886, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"2 July 2024\"}, {\"char_end\": 5133, \"char_start\": 4898, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord emailed the resident and said that it had reassessed the compensation. It amended its offer for the roof leak to £450 and offered £275 for the doors issue. It also offered £25 for each complaint for its delayed responses.\"}, {\"char_end\": 5146, \"char_start\": 5133, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"15 July 2024\"}, {\"char_end\": 5252, \"char_start\": 5146, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident confirmed she still wanted the complaints escalated as she felt matters remained unresolved.\"}, {\"char_end\": 5269, \"char_start\": 5252, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"9 September 2024\"}, {\"char_end\": 5309, \"char_start\": 5269, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 2 response.\"}, {\"char_end\": 5622, \"char_start\": 5309, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"It said it had found no faults with the roof, but had identified some issues with the brickwork, which needed repointing. It said this work was scheduled for 30 September 2024. It acknowledged that it had missed an external door when it had replaced these and said it would attend to measure this within 28 days.\"}, {\"char_end\": 5663, \"char_start\": 5622, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \"It increased its compensation offers to:\"}, {\"char_end\": 5682, \"char_start\": 5663, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"£450 for the doors\"}, {\"char_end\": 5700, \"char_start\": 5682, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"£450 for the roof\"}, {\"char_end\": 5749, \"char_start\": 5700, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"£144 for reimbursement of increased energy usage\"}, {\"char_end\": 5777, \"char_start\": 5749, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"£150 for complaint handling\"}, {\"char_end\": 5803, \"char_start\": 5777, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 6031, \"char_start\": 5803, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked us to investigate as she was unhappy that work remained outstanding. She also said that the landlord had accepted liability for her additional electricity usage but had not correctly calculated reimbursement.\"}, {\"char_end\": 6053, \"char_start\": 6031, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 6077, \"char_start\": 6053, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 6080, \"char_start\": 6077, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 6099, \"char_start\": 6080, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 6105, \"char_start\": 6099, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 6139, \"char_start\": 6105, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 6143, \"char_start\": 6139, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 6174, \"char_start\": 6143, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 6240, \"char_start\": 6174, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 6280, \"char_start\": 6240, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 6285, \"char_start\": 6280, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 6317, \"char_start\": 6285, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 6379, \"char_start\": 6317, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 6389, \"char_start\": 6379, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 6466, \"char_start\": 6389, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of repairs to the external structure of the property\"}, {\"char_end\": 6474, \"char_start\": 6466, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 6492, \"char_start\": 6474, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Maladministration\"}, {\"char_end\": 6996, \"char_start\": 6492, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord carried out an inspection on 4 December 2023 found that there was damp in the front bedrooms, possibly due to a roof leak. The landlord’s repairs records show it raised a job on 5 December 2023 for it to inspect the roof but it has no evidence it completed this. It noted that as it no longer works with the sub-contractor this job was allocated to, it was unable to obtain further records. This failure to keep records appears to have contributed to delays in the landlord completing work.\"}, {\"char_end\": 7668, \"char_start\": 6996, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord raised a further job on 8 April 2024 for a roofer to attend and again allocated this to a sub-contractor, but no action was taken. The landlord’s repairs policy says it should have carried out an inspection within 10 working days, which it did not do, which was not appropriate. It acknowledged these failings in its stage 1 response of 13 June 2024. It apologised for the 7-month delay and offered £200 compensation. The landlord acknowledged the resident had said that her energy costs had increased due to difficulties in keeping the affected bedroom warm. However, it did not offer any redress in relation to this at that time, which was not appropriate.\"}, {\"char_end\": 8342, \"char_start\": 7668, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord raised a new job on 17 June 2024 and a contractor attended on 24 June 2024. The inspection found that there were no faults with the roof, however there was brickwork that needed repointing. On 2 July 2024 the landlord told the resident it had incorrectly assessed her compensation and increased its offer to £425 – £225 for time and trouble and £200 for distress. On 15 July 2024 the resident asked the landlord to reconsider its offer as she said she had been using additional electricity for at least 5 months to run electric heaters in the bedroom. She provided a detailed breakdown of what she believed was a reasonable calculation of the additional usage.\"}, {\"char_end\": 8870, \"char_start\": 8342, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord subsequently carried out a damp and mould inspection on 31 July 2024, which confirmed the required repointing and said a passive vent needed to be installed in a bedroom. The landlord’s repair records show that it raised a job for the works on 16 August 2024, which it completed on 25 September 2024, more than 9 months after the resident first raised the issue. It did not complete this work within its policy timescale of 28 working days for routine repairs. The landlord’s actions were therefore not reasonable.\"}, {\"char_end\": 9602, \"char_start\": 8870, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 2 response of 9 September 2024 the landlord increased its compensation offer to £450 and offered £144 reimbursement for what it said was ‘quantified heating expenditure’. Its internal records show it calculated this based on the number of days she was without heating and hot water due to a boiler issue. However, the resident had not raised a complaint about a boiler issue. She had made it clear that the additional expense related to electric heaters in the bedroom affected by the damp and mould. The landlord’s calculation is therefore not appropriate. It failed to consider or respond to her suggested calculation, or consider her circumstances and the impact on her, missing the opportunity to put things right.\"}, {\"char_end\": 10306, \"char_start\": 9602, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s offer of compensation in relation to the delay to repairs was broadly reasonable. However, its failure to accurately consider the financial detriment to the resident has caused her further distress and inconvenience. We have made an order for the landlord to contact the resident to obtain evidence, such as energy bills, for it to calculate her additional electricity expenditure and reimburse her for this. We have made a further order for the landlord to pay additional compensation of £150 to recognise the distress and inconvenience caused by its failure to reasonably address her concerns about the electricity expenditure. This brings the total compensation for this issue to £600.\"}, {\"char_end\": 10316, \"char_start\": 10306, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 10373, \"char_start\": 10316, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of replacement of external doors\"}, {\"char_end\": 10381, \"char_start\": 10373, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 10400, \"char_start\": 10381, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 10844, \"char_start\": 10400, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s inspection on 4 December 2023 identified that the front door was draughty and letting water in, and the 3 shed doors needed replacing. There was no mention in this inspection of the back door to the property. The landlord raised a job on 18 January 2024 for the overhaul of the doors, and a contractor attended to measure on 19 February 2024. This was not in line with the landlord’s repairs policy timescale of 28 working days.\"}, {\"char_end\": 10975, \"char_start\": 10844, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In her complaint of 25 April 2024, the resident also only referred to 4 doors needing replacing, with no mention of the back door.\"}, {\"char_end\": 11407, \"char_start\": 10975, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not approve the order of the doors until 17 June 2024, and it replaced the doors on 20 July 2024. We appreciate that there is a lead time to order new doors, but the 4-month delay in the landlord approving the order significantly delayed the installation, which was not appropriate. However, on 2 July 2024, the landlord offered the resident £250 compensation for the delay, which was reasonable and proportionate.\"}, {\"char_end\": 11719, \"char_start\": 11407, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In her escalation request of 15 July 2024, the resident said that the issue was with 5 doors, not just the 4 that the landlord had replaced. This is the first mention we have seen of the additional door having an issue, so we cannot say there was a failure by the landlord in it not replacing this door earlier.\"}, {\"char_end\": 12094, \"char_start\": 11719, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord raised a job to renew the back door on 19 August 2024. It is not clear from its records when it installed this. However the resident raised an issue with the new door on 7 October 2024, which the landlord resolved on 22 October 2024. Given the need to order a new door, this timeline suggests the landlord did install the new door within a reasonable timeframe.\"}, {\"char_end\": 12407, \"char_start\": 12094, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 2 response of 9 September 2024, the landlord increased its compensation offer to £450 and apologised for its failings. Our view is that the redress offered by the landlord was proportionate to the distress and inconvenience caused and in line with our remedies guidance and was therefore reasonable.\"}, {\"char_end\": 12417, \"char_start\": 12407, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 12447, \"char_start\": 12417, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 12455, \"char_start\": 12447, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 12474, \"char_start\": 12455, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 12501, \"char_start\": 12474, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"As can be seen from above:\"}, {\"char_end\": 12652, \"char_start\": 12501, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the landlord responded to the roof complaint at stage 1 within 33 working days (25 April 2024 to 13 June 2024) – which was not in line with its policy\"}, {\"char_end\": 12778, \"char_start\": 12652, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"it is not known when the landlord responded to the door complaint at stage 1 – which does not demonstrate good record keeping\"}, {\"char_end\": 12929, \"char_start\": 12778, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the landlord responded to both complaints at stage 2 within 57 working days (20 June 2024 to 9 September 2024) – which was not in line with its policy\"}, {\"char_end\": 13330, \"char_start\": 12929, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s responses were significantly delayed at both stages, and it did not acknowledge the resident’s complaints, despite her chasing for acknowledgement several times. However, the landlord did recognise its complaint handling failures in its stage 2 response and offered £150 compensation. This offer of compensation was proportionate to its failings and in line with our remedies guidance.\"}, {\"char_end\": 13339, \"char_start\": 13330, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 13389, \"char_start\": 13339, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 13681, \"char_start\": 13389, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not keep good repairs records, particularly in relation to sub-contractors, leading to it raising jobs but not following them through to completion. The landlord should consider how it manages repairs that have been sub-contracted, to ensure it maintains oversight of these.\"}, {\"char_end\": 13694, \"char_start\": 13681, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communicatio\"}, {\"char_end\": 13696, \"char_start\": 13694, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"tribunal_reasoning\", \"text\": \"n\"}, {\"char_end\": 14014, \"char_start\": 13696, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records do not show that its overall communication was good. It did not keep the resident regularly updated throughout the repairs process, relying instead on the resident to chase it for updates. It should be more proactive in keeping its residents updated while investigations and repairs are ongoing.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "cited_authorities": [
+          {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1122,
+              1395
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 173,
+            "text_span": [
+              12094,
+              12407
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 81,
+            "text_span": [
+              2574,
+              2593
+            ]
+          }
+        ],
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              574,
+              602
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              602,
+              653
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              653,
+              684
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              684,
+              745
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              267,
+              278
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              278,
+              283
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4382,
+              4667
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 132,
+            "text_span": [
+              5269,
+              5309
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              5309,
+              5622
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              6492,
+              6996
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              8870,
+              9602
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 86,
+            "text_span": [
+              2646,
+              2916
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              294,
+              546
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 116,
+            "text_span": [
+              4025,
+              4039
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 119,
+            "text_span": [
+              4061,
+              4216
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 120,
+            "text_span": [
+              4216,
+              4369
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 121,
+            "text_span": [
+              4369,
+              4382
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4382,
+              4667
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 126,
+            "text_span": [
+              4766,
+              4886
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 128,
+            "text_span": [
+              4898,
+              5133
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              5252,
+              5269
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 132,
+            "text_span": [
+              5269,
+              5309
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              5309,
+              5622
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 134,
+            "text_span": [
+              5622,
+              5663
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 135,
+            "text_span": [
+              5663,
+              5682
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              5682,
+              5700
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 137,
+            "text_span": [
+              5700,
+              5749
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              5749,
+              5777
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 140,
+            "text_span": [
+              5803,
+              6031
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              804,
+              891
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              891,
+              959
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              959,
+              1011
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 62,
+            "text_span": [
+              2281,
+              2309
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 64,
+            "text_span": [
+              2320,
+              2380
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 86,
+            "text_span": [
+              2646,
+              2916
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 98,
+            "text_span": [
+              3292,
+              3329
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 99,
+            "text_span": [
+              3329,
+              3333
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 100,
+            "text_span": [
+              3333,
+              3387
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              3387,
+              3454
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 111,
+            "text_span": [
+              3818,
+              3964
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1122,
+              1395
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 39,
+            "text_span": [
+              1425,
+              1617
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 41,
+            "text_span": [
+              1636,
+              1793
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              8870,
+              9602
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              9602,
+              10306
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 182,
+            "text_span": [
+              12929,
+              13330
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              144,
+              158
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              237,
+              247
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              247,
+              262
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              546,
+              574
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              574,
+              602
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              602,
+              653
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              653,
+              684
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              684,
+              745
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              158,
+              167
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              167,
+              193
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              294,
+              546
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              167,
+              193
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              158,
+              167
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              167,
+              193
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "claimed_amounts": "The text records compensation offers and orders, but does not state a specific monetary amount claimed by the resident.",
+        "disputed_amount_gbp": "No single fixed disputed monetary amount is stated in the decision.",
+        "statutory_basis": "The decision does not cite any statutory provision as the basis for the complaint or determination."
+      },
+      "cited_authorities": [
+        "the landlord’s repairs policy",
+        "remedies guidance",
+        "apologies guidance"
+      ],
+      "claim_types": [
+        "repairs to the external structure of the property",
+        "replacement of external doors",
+        "complaint handling"
+      ],
+      "decision_date": "5 November 2025",
+      "evidence": [
+        "stage 1 response to the roof repair complaint",
+        "stage 2 response",
+        "repairs records",
+        "internal records concerning the heating expenditure calculation",
+        "utility bills or other evidence of additional electricity usage"
+      ],
+      "facts": "The resident lives in a house with a shed in the garden and complained about delays to repairs that caused a bedroom to be damp and cold, and about the time taken to replace external doors. On 25 April 2024 she raised two complaints: one about external doors reported in January 2024 and one about a roof repair raised in November 2023 with no work started after a December 2023 inspection. The landlord sent a stage 1 roof repair response on 13 June 2024, offering £200 compensation, and later reassessed compensation on 2 July 2024. On 9 September 2024 it sent its stage 2 response, stating that brickwork needed repointing, that an external door had been missed, and increasing offers to £450 for doors, £450 for roof, £144 for increased energy usage, and £150 for complaint handling. The resident referred the matter to the Ombudsman because work remained outstanding and she disputed the calculation of electricity reimbursement.",
+      "ground_truth_outcome": {
+        "complaint_handling": "reasonable redress",
+        "external_structure_repairs": "maladministration",
+        "orders": [
+          "written apology",
+          "reimbursement calculation for additional electricity used to run electric heaters",
+          "£600 compensation for distress and inconvenience caused by handling of repairs to the external structure"
+        ],
+        "recommendation": "£600 compensation in relation to the doors issue and complaint handling if not already paid",
+        "replacement_of_external_doors": "reasonable redress"
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1122,
+              1395
+            ]
+          },
+          "text": "The landlord did not carry out inspections and repairs in line with its repairs policy. Jobs were left unresolved when it changed sub-contractors, leading to long delays."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 39,
+            "text_span": [
+              1425,
+              1617
+            ]
+          },
+          "text": "While there were avoidable delays by the landlord in replacing the external doors, it recognised this in its response. It offered an apology and appropriate compensation to put matters right."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 41,
+            "text_span": [
+              1636,
+              1793
+            ]
+          },
+          "text": "While there were failings by the landlord in its complaint handling, it recognised this in its response and offered appropriate compensation and an apology."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              8870,
+              9602
+            ]
+          },
+          "text": "The landlord’s calculation is therefore not appropriate. It failed to consider or respond to her suggested calculation, or consider her circumstances and the impact on her, missing the opportunity to put things right."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              9602,
+              10306
+            ]
+          },
+          "text": "The landlord’s offer of compensation in relation to the delay to repairs was broadly reasonable. However, its failure to accurately consider the financial detriment to the resident has caused her further distress and inconvenience."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 182,
+            "text_span": [
+              12929,
+              13330
+            ]
+          },
+          "text": "The landlord’s responses were significantly delayed at both stages, and it did not acknowledge the resident’s complaints, despite her chasing for acknowledgement several times."
+        }
+      ],
+      "matter_type": "Investigation concerning a secure tenancy, repairs to the external structure, replacement of external doors, and complaint handling.",
+      "parties": {
+        "landlord": "London Borough of Croydon",
+        "resident": "the resident"
+      },
+      "region": "London",
+      "region_source": "The landlord is listed as London Borough of Croydon."
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      \"the landlord’s repairs policy\",\n      \"remedies guidance\",\n      \"apologies guidance\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 37,\n        \"text_span\": [\n          1122,\n          1395\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 173,\n        \"text_span\": [\n          12094,\n          12407\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 81,\n        \"text_span\": [\n          2574,\n          2593\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"repairs to the external structure of the property\",\n      \"replacement of external doors\",\n      \"complaint handling\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          574,\n          602\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          602,\n          653\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          653,\n          684\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 26,\n        \"text_span\": [\n          684,\n          745\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text records compensation offers and orders, but does not state a specific monetary amount claimed by the resident.\"\n  },\n  \"decision_date\": {\n    \"value\": \"5 November 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          267,\n          278\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          278,\n          283\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No single fixed disputed monetary amount is stated in the decision.\"\n  },\n  \"evidence\": {\n    \"value\": [\n      \"stage 1 response to the roof repair complaint\",\n      \"stage 2 response\",\n      \"repairs records\",\n      \"internal records concerning the heating expenditure calculation\",\n      \"utility bills or other evidence of additional electricity usage\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 122,\n        \"text_span\": [\n          4382,\n          4667\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 132,\n        \"text_span\": [\n          5269,\n          5309\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 133,\n        \"text_span\": [\n          5309,\n          5622\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 158,\n        \"text_span\": [\n          6492,\n          6996\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 162,\n        \"text_span\": [\n          8870,\n          9602\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 86,\n        \"text_span\": [\n          2646,\n          2916\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident lives in a house with a shed in the garden and complained about delays to repairs that caused a bedroom to be damp and cold, and about the time taken to replace external doors. On 25 April 2024 she raised two complaints: one about external doors reported in January 2024 and one about a roof repair raised in November 2023 with no work started after a December 2023 inspection. The landlord sent a stage 1 roof repair response on 13 June 2024, offering £200 compensation, and later reassessed compensation on 2 July 2024. On 9 September 2024 it sent its stage 2 response, stating that brickwork needed repointing, that an external door had been missed, and increasing offers to £450 for doors, £450 for roof, £144 for increased energy usage, and £150 for complaint handling. The resident referred the matter to the Ombudsman because work remained outstanding and she disputed the calculation of electricity reimbursement.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          294,\n          546\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 116,\n        \"text_span\": [\n          4025,\n          4039\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 119,\n        \"text_span\": [\n          4061,\n          4216\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 120,\n        \"text_span\": [\n          4216,\n          4369\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 121,\n        \"text_span\": [\n          4369,\n          4382\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 122,\n        \"text_span\": [\n          4382,\n          4667\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 126,\n        \"text_span\": [\n          4766,\n          4886\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 128,\n        \"text_span\": [\n          4898,\n          5133\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 131,\n        \"text_span\": [\n          5252,\n          5269\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 132,\n        \"text_span\": [\n          5269,\n          5309\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 133,\n        \"text_span\": [\n          5309,\n          5622\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 134,\n        \"text_span\": [\n          5622,\n          5663\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 135,\n        \"text_span\": [\n          5663,\n          5682\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 136,\n        \"text_span\": [\n          5682,\n          5700\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 137,\n        \"text_span\": [\n          5700,\n          5749\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 138,\n        \"text_span\": [\n          5749,\n          5777\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 140,\n        \"text_span\": [\n          5803,\n          6031\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": {\n      \"external_structure_repairs\": \"maladministration\",\n      \"replacement_of_external_doors\": \"reasonable redress\",\n      \"complaint_handling\": \"reasonable redress\",\n      \"orders\": [\n        \"written apology\",\n        \"reimbursement calculation for additional electricity used to run electric heaters\",\n        \"£600 compensation for distress and inconvenience caused by handling of repairs to the external structure\"\n      ],\n      \"recommendation\": \"£600 compensation in relation to the doors issue and complaint handling if not already paid\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 29,\n        \"text_span\": [\n          804,\n          891\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 30,\n        \"text_span\": [\n          891,\n          959\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 31,\n        \"text_span\": [\n          959,\n          1011\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 62,\n        \"text_span\": [\n          2281,\n          2309\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 64,\n        \"text_span\": [\n          2320,\n          2380\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 86,\n        \"text_span\": [\n          2646,\n          2916\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 98,\n        \"text_span\": [\n          3292,\n          3329\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 99,\n        \"text_span\": [\n          3329,\n          3333\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 100,\n        \"text_span\": [\n          3333,\n          3387\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 101,\n        \"text_span\": [\n          3387,\n          3454\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 111,\n        \"text_span\": [\n          3818,\n          3964\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord did not carry out inspections and repairs in line with its repairs policy. Jobs were left unresolved when it changed sub-contractors, leading to long delays.\",\n      \"While there were avoidable delays by the landlord in replacing the external doors, it recognised this in its response. It offered an apology and appropriate compensation to put matters right.\",\n      \"While there were failings by the landlord in its complaint handling, it recognised this in its response and offered appropriate compensation and an apology.\",\n      \"The landlord’s calculation is therefore not appropriate. It failed to consider or respond to her suggested calculation, or consider her circumstances and the impact on her, missing the opportunity to put things right.\",\n      \"The landlord’s offer of compensation in relation to the delay to repairs was broadly reasonable. However, its failure to accurately consider the financial detriment to the resident has caused her further distress and inconvenience.\",\n      \"The landlord’s responses were significantly delayed at both stages, and it did not acknowledge the resident’s complaints, despite her chasing for acknowledgement several times.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 37,\n        \"text_span\": [\n          1122,\n          1395\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 39,\n        \"text_span\": [\n          1425,\n          1617\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 41,\n        \"text_span\": [\n          1636,\n          1793\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 162,\n        \"text_span\": [\n          8870,\n          9602\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 163,\n        \"text_span\": [\n          9602,\n          10306\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 182,\n        \"text_span\": [\n          12929,\n          13330\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Investigation concerning a secure tenancy, repairs to the external structure, replacement of external doors, and complaint handling.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          144,\n          158\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 15,\n        \"text_span\": [\n          237,\n          247\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 16,\n        \"text_span\": [\n          247,\n          262\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          546,\n          574\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          574,\n          602\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          602,\n          653\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          653,\n          684\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 26,\n        \"text_span\": [\n          684,\n          745\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"London Borough of Croydon\",\n      \"resident\": \"the resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 11,\n        \"text_span\": [\n          158,\n          167\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          167,\n          193\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          294,\n          546\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"London\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          167,\n          193\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"The landlord is listed as London Borough of Croydon.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 11,\n        \"text_span\": [\n          158,\n          167\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          167,\n          193\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The decision does not cite any statutory provision as the basis for the complaint or determination.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202409223\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 53, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Croydon (202409223)\"}, {\"char_end\": 91, \"char_start\": 53, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Croydon (202409223)\"}, {\"char_end\": 103, \"char_start\": 91, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 112, \"char_start\": 103, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 120, \"char_start\": 112, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 130, \"char_start\": 120, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202409223\"}, {\"char_end\": 144, \"char_start\": 130, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 158, \"char_start\": 144, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 167, \"char_start\": 158, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 193, \"char_start\": 167, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Croydon\"}, {\"char_end\": 207, \"char_start\": 193, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 237, \"char_start\": 207, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Local Authority / ALMO or TMO\"}, {\"char_end\": 247, \"char_start\": 237, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 262, \"char_start\": 247, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 267, \"char_start\": 262, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 278, \"char_start\": 267, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"5 November\"}, {\"char_end\": 283, \"char_start\": 278, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 294, \"char_start\": 283, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 546, \"char_start\": 294, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives in the property, a house with a shed in the garden. She is unhappy with delays to repairs which caused a bedroom in the property to be damp and cold and the time taken by the landlord to replace external doors in the house and shed.\"}, {\"char_end\": 574, \"char_start\": 546, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 602, \"char_start\": 574, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord’s handling of:\"}, {\"char_end\": 653, \"char_start\": 602, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"Repairs to the external structure of the property.\"}, {\"char_end\": 684, \"char_start\": 653, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"Replacement of external doors.\"}, {\"char_end\": 745, \"char_start\": 684, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"We have also investigated the landlord’s complaint handling.\"}, {\"char_end\": 774, \"char_start\": 745, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 804, \"char_start\": 774, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found that there was:\"}, {\"char_end\": 891, \"char_start\": 804, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"maladministration in the handling of repairs to the external structure of the property\"}, {\"char_end\": 959, \"char_start\": 891, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"reasonable redress in the handling of replacement of external doors\"}, {\"char_end\": 1011, \"char_start\": 959, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"reasonable redress in the handling of the complaint\"}, {\"char_end\": 1014, \"char_start\": 1011, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 1019, \"char_start\": 1014, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 1069, \"char_start\": 1019, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 1088, \"char_start\": 1069, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1122, \"char_start\": 1088, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Repairs to the external structure\"}, {\"char_end\": 1395, \"char_start\": 1122, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not carry out inspections and repairs in line with its repairs policy. Jobs were left unresolved when it changed sub-contractors, leading to long delays. While it did eventually recognise its failings, it did not fully consider the impact on the resident.\"}, {\"char_end\": 1425, \"char_start\": 1395, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Replacement of external doors\"}, {\"char_end\": 1617, \"char_start\": 1425, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While there were avoidable delays by the landlord in replacing the external doors, it recognised this in its response. It offered an apology and appropriate compensation to put matters right.\"}, {\"char_end\": 1636, \"char_start\": 1617, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 1793, \"char_start\": 1636, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While there were failings by the landlord in its complaint handling, it recognised this in its response and offered appropriate compensation and an apology.\"}, {\"char_end\": 1814, \"char_start\": 1793, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1872, \"char_start\": 1814, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1874, \"char_start\": 1872, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1949, \"char_start\": 1874, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2040, \"char_start\": 1949, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2047, \"char_start\": 2040, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 2057, \"char_start\": 2047, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 2062, \"char_start\": 2057, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 2173, \"char_start\": 2062, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2176, \"char_start\": 2173, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2187, \"char_start\": 2176, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2203, \"char_start\": 2187, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2210, \"char_start\": 2203, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2219, \"char_start\": 2210, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2224, \"char_start\": 2219, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2230, \"char_start\": 2224, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2256, \"char_start\": 2230, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2265, \"char_start\": 2256, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2267, \"char_start\": 2265, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2281, \"char_start\": 2267, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2309, \"char_start\": 2281, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2320, \"char_start\": 2309, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2380, \"char_start\": 2320, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"to the resident for the failures identified in this report.\"}, {\"char_end\": 2393, \"char_start\": 2380, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2406, \"char_start\": 2393, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2408, \"char_start\": 2406, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"t\"}, {\"char_end\": 2411, \"char_start\": 2408, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"he\"}, {\"char_end\": 2419, \"char_start\": 2411, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2434, \"char_start\": 2419, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"is provided by\"}, {\"char_end\": 2451, \"char_start\": 2434, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"a senior manager\"}, {\"char_end\": 2453, \"char_start\": 2451, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"t\"}, {\"char_end\": 2456, \"char_start\": 2453, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"he\"}, {\"char_end\": 2464, \"char_start\": 2456, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2467, \"char_start\": 2464, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2476, \"char_start\": 2467, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2520, \"char_start\": 2476, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2548, \"char_start\": 2520, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic\"}, {\"char_end\": 2550, \"char_start\": 2548, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"i\"}, {\"char_end\": 2574, \"char_start\": 2550, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"t has due regard to our\"}, {\"char_end\": 2593, \"char_start\": 2574, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2607, \"char_start\": 2593, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2624, \"char_start\": 2607, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"03 December 2025\"}, {\"char_end\": 2626, \"char_start\": 2624, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2646, \"char_start\": 2626, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"Reimbursement order\"}, {\"char_end\": 2916, \"char_start\": 2646, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"The landlord must contact the resident to request evidence, such as utility bills, to enable it to calculate the additional electricity used by the resident to run electric heaters in the affected bedroom. It should offer her reimbursement in line with its calculation.\"}, {\"char_end\": 3006, \"char_start\": 2916, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"It can deduct the £144 offered previously, if this has already been paid to the resident.\"}, {\"char_end\": 3043, \"char_start\": 3006, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"If the resident is unable to provide\"}, {\"char_end\": 3052, \"char_start\": 3043, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"relevant\"}, {\"char_end\": 3091, \"char_start\": 3052, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"electricity bills, given the time that\"}, {\"char_end\": 3094, \"char_start\": 3091, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"ha\"}, {\"char_end\": 3139, \"char_start\": 3094, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \"s passed since the issue began, the landlord\"}, {\"char_end\": 3240, \"char_start\": 3139, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"should discuss her estimated additional usage with her and make a reasonable offer of reimbursement.\"}, {\"char_end\": 3254, \"char_start\": 3240, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3271, \"char_start\": 3254, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"03 December 2025\"}, {\"char_end\": 3273, \"char_start\": 3271, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"3\"}, {\"char_end\": 3292, \"char_start\": 3273, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 3329, \"char_start\": 3292, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 3333, \"char_start\": 3329, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"600\"}, {\"char_end\": 3387, \"char_start\": 3333, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"to recognise the distress and inconvenience caused by\"}, {\"char_end\": 3454, \"char_start\": 3387, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"its handling of repairs to the external structure of the building.\"}, {\"char_end\": 3572, \"char_start\": 3454, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment\"}, {\"char_end\": 3589, \"char_start\": 3572, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"by the due date.\"}, {\"char_end\": 3655, \"char_start\": 3589, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure any payments it has\"}, {\"char_end\": 3669, \"char_start\": 3655, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"already paid.\"}, {\"char_end\": 3683, \"char_start\": 3669, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3700, \"char_start\": 3683, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \"03 December 2025\"}, {\"char_end\": 3716, \"char_start\": 3700, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 3799, \"char_start\": 3716, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 3818, \"char_start\": 3799, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"order\", \"text\": \"Our recommendation\"}, {\"char_end\": 3964, \"char_start\": 3818, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"order\", \"text\": \"The landlord to pay the resident compensation of £600 in relation to the doors issue and its complaint handling, if it has not already paid this.\"}, {\"char_end\": 3982, \"char_start\": 3964, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 4006, \"char_start\": 3982, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 4011, \"char_start\": 4006, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 4025, \"char_start\": 4011, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 4039, \"char_start\": 4025, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \"25 April 2024\"}, {\"char_end\": 4059, \"char_start\": 4039, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised\"}, {\"char_end\": 4061, \"char_start\": 4059, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"2\"}, {\"char_end\": 4216, \"char_start\": 4061, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"pre_decision_record\", \"text\": \"complaints to the landlord. The first was that she had reported a problem with her external doors in January 2024 and had heard nothing from the landlord.\"}, {\"char_end\": 4369, \"char_start\": 4216, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"pre_decision_record\", \"text\": \"The second complaint was that a repair for the roof had been raised in November 2023, but no work had been started since an inspection in December 2023.\"}, {\"char_end\": 4382, \"char_start\": 4369, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"pre_decision_record\", \"text\": \"13 June 2024\"}, {\"char_end\": 4667, \"char_start\": 4382, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 1 response to the roof repair complaint. It acknowledged there had been a 7-month delay, partly due to work being allocated to a contractor it no longer used. It offered her £200 compensation and said a contractor would be in touch soon to book in repairs.\"}, {\"char_end\": 4721, \"char_start\": 4667, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \"We have not seen a copy of a stage 1 response for the\"}, {\"char_end\": 4753, \"char_start\": 4721, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint about external doors.\"}, {\"char_end\": 4766, \"char_start\": 4753, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \"20 June 2024\"}, {\"char_end\": 4886, \"char_start\": 4766, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked the landlord to escalate her complaints. She was unhappy with the landlord’s offers of compensation.\"}, {\"char_end\": 4898, \"char_start\": 4886, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"2 July 2024\"}, {\"char_end\": 5133, \"char_start\": 4898, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord emailed the resident and said that it had reassessed the compensation. It amended its offer for the roof leak to £450 and offered £275 for the doors issue. It also offered £25 for each complaint for its delayed responses.\"}, {\"char_end\": 5146, \"char_start\": 5133, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"15 July 2024\"}, {\"char_end\": 5252, \"char_start\": 5146, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident confirmed she still wanted the complaints escalated as she felt matters remained unresolved.\"}, {\"char_end\": 5269, \"char_start\": 5252, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"9 September 2024\"}, {\"char_end\": 5309, \"char_start\": 5269, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 2 response.\"}, {\"char_end\": 5622, \"char_start\": 5309, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"It said it had found no faults with the roof, but had identified some issues with the brickwork, which needed repointing. It said this work was scheduled for 30 September 2024. It acknowledged that it had missed an external door when it had replaced these and said it would attend to measure this within 28 days.\"}, {\"char_end\": 5663, \"char_start\": 5622, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \"It increased its compensation offers to:\"}, {\"char_end\": 5682, \"char_start\": 5663, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"£450 for the doors\"}, {\"char_end\": 5700, \"char_start\": 5682, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"£450 for the roof\"}, {\"char_end\": 5749, \"char_start\": 5700, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"£144 for reimbursement of increased energy usage\"}, {\"char_end\": 5777, \"char_start\": 5749, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"£150 for complaint handling\"}, {\"char_end\": 5803, \"char_start\": 5777, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 6031, \"char_start\": 5803, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked us to investigate as she was unhappy that work remained outstanding. She also said that the landlord had accepted liability for her additional electricity usage but had not correctly calculated reimbursement.\"}, {\"char_end\": 6053, \"char_start\": 6031, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 6077, \"char_start\": 6053, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 6080, \"char_start\": 6077, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 6099, \"char_start\": 6080, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 6105, \"char_start\": 6099, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 6139, \"char_start\": 6105, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 6143, \"char_start\": 6139, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 6174, \"char_start\": 6143, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 6240, \"char_start\": 6174, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 6280, \"char_start\": 6240, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 6285, \"char_start\": 6280, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 6317, \"char_start\": 6285, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 6379, \"char_start\": 6317, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 6389, \"char_start\": 6379, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 6466, \"char_start\": 6389, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of repairs to the external structure of the property\"}, {\"char_end\": 6474, \"char_start\": 6466, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 6492, \"char_start\": 6474, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Maladministration\"}, {\"char_end\": 6996, \"char_start\": 6492, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord carried out an inspection on 4 December 2023 found that there was damp in the front bedrooms, possibly due to a roof leak. The landlord’s repairs records show it raised a job on 5 December 2023 for it to inspect the roof but it has no evidence it completed this. It noted that as it no longer works with the sub-contractor this job was allocated to, it was unable to obtain further records. This failure to keep records appears to have contributed to delays in the landlord completing work.\"}, {\"char_end\": 7668, \"char_start\": 6996, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord raised a further job on 8 April 2024 for a roofer to attend and again allocated this to a sub-contractor, but no action was taken. The landlord’s repairs policy says it should have carried out an inspection within 10 working days, which it did not do, which was not appropriate. It acknowledged these failings in its stage 1 response of 13 June 2024. It apologised for the 7-month delay and offered £200 compensation. The landlord acknowledged the resident had said that her energy costs had increased due to difficulties in keeping the affected bedroom warm. However, it did not offer any redress in relation to this at that time, which was not appropriate.\"}, {\"char_end\": 8342, \"char_start\": 7668, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord raised a new job on 17 June 2024 and a contractor attended on 24 June 2024. The inspection found that there were no faults with the roof, however there was brickwork that needed repointing. On 2 July 2024 the landlord told the resident it had incorrectly assessed her compensation and increased its offer to £425 – £225 for time and trouble and £200 for distress. On 15 July 2024 the resident asked the landlord to reconsider its offer as she said she had been using additional electricity for at least 5 months to run electric heaters in the bedroom. She provided a detailed breakdown of what she believed was a reasonable calculation of the additional usage.\"}, {\"char_end\": 8870, \"char_start\": 8342, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord subsequently carried out a damp and mould inspection on 31 July 2024, which confirmed the required repointing and said a passive vent needed to be installed in a bedroom. The landlord’s repair records show that it raised a job for the works on 16 August 2024, which it completed on 25 September 2024, more than 9 months after the resident first raised the issue. It did not complete this work within its policy timescale of 28 working days for routine repairs. The landlord’s actions were therefore not reasonable.\"}, {\"char_end\": 9602, \"char_start\": 8870, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 2 response of 9 September 2024 the landlord increased its compensation offer to £450 and offered £144 reimbursement for what it said was ‘quantified heating expenditure’. Its internal records show it calculated this based on the number of days she was without heating and hot water due to a boiler issue. However, the resident had not raised a complaint about a boiler issue. She had made it clear that the additional expense related to electric heaters in the bedroom affected by the damp and mould. The landlord’s calculation is therefore not appropriate. It failed to consider or respond to her suggested calculation, or consider her circumstances and the impact on her, missing the opportunity to put things right.\"}, {\"char_end\": 10306, \"char_start\": 9602, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s offer of compensation in relation to the delay to repairs was broadly reasonable. However, its failure to accurately consider the financial detriment to the resident has caused her further distress and inconvenience. We have made an order for the landlord to contact the resident to obtain evidence, such as energy bills, for it to calculate her additional electricity expenditure and reimburse her for this. We have made a further order for the landlord to pay additional compensation of £150 to recognise the distress and inconvenience caused by its failure to reasonably address her concerns about the electricity expenditure. This brings the total compensation for this issue to £600.\"}, {\"char_end\": 10316, \"char_start\": 10306, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 10373, \"char_start\": 10316, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of replacement of external doors\"}, {\"char_end\": 10381, \"char_start\": 10373, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 10400, \"char_start\": 10381, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 10844, \"char_start\": 10400, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s inspection on 4 December 2023 identified that the front door was draughty and letting water in, and the 3 shed doors needed replacing. There was no mention in this inspection of the back door to the property. The landlord raised a job on 18 January 2024 for the overhaul of the doors, and a contractor attended to measure on 19 February 2024. This was not in line with the landlord’s repairs policy timescale of 28 working days.\"}, {\"char_end\": 10975, \"char_start\": 10844, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In her complaint of 25 April 2024, the resident also only referred to 4 doors needing replacing, with no mention of the back door.\"}, {\"char_end\": 11407, \"char_start\": 10975, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not approve the order of the doors until 17 June 2024, and it replaced the doors on 20 July 2024. We appreciate that there is a lead time to order new doors, but the 4-month delay in the landlord approving the order significantly delayed the installation, which was not appropriate. However, on 2 July 2024, the landlord offered the resident £250 compensation for the delay, which was reasonable and proportionate.\"}, {\"char_end\": 11719, \"char_start\": 11407, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In her escalation request of 15 July 2024, the resident said that the issue was with 5 doors, not just the 4 that the landlord had replaced. This is the first mention we have seen of the additional door having an issue, so we cannot say there was a failure by the landlord in it not replacing this door earlier.\"}, {\"char_end\": 12094, \"char_start\": 11719, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord raised a job to renew the back door on 19 August 2024. It is not clear from its records when it installed this. However the resident raised an issue with the new door on 7 October 2024, which the landlord resolved on 22 October 2024. Given the need to order a new door, this timeline suggests the landlord did install the new door within a reasonable timeframe.\"}, {\"char_end\": 12407, \"char_start\": 12094, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 2 response of 9 September 2024, the landlord increased its compensation offer to £450 and apologised for its failings. Our view is that the redress offered by the landlord was proportionate to the distress and inconvenience caused and in line with our remedies guidance and was therefore reasonable.\"}, {\"char_end\": 12417, \"char_start\": 12407, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 12447, \"char_start\": 12417, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 12455, \"char_start\": 12447, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 12474, \"char_start\": 12455, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 12501, \"char_start\": 12474, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"As can be seen from above:\"}, {\"char_end\": 12652, \"char_start\": 12501, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the landlord responded to the roof complaint at stage 1 within 33 working days (25 April 2024 to 13 June 2024) – which was not in line with its policy\"}, {\"char_end\": 12778, \"char_start\": 12652, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"it is not known when the landlord responded to the door complaint at stage 1 – which does not demonstrate good record keeping\"}, {\"char_end\": 12929, \"char_start\": 12778, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the landlord responded to both complaints at stage 2 within 57 working days (20 June 2024 to 9 September 2024) – which was not in line with its policy\"}, {\"char_end\": 13330, \"char_start\": 12929, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s responses were significantly delayed at both stages, and it did not acknowledge the resident’s complaints, despite her chasing for acknowledgement several times. However, the landlord did recognise its complaint handling failures in its stage 2 response and offered £150 compensation. This offer of compensation was proportionate to its failings and in line with our remedies guidance.\"}, {\"char_end\": 13339, \"char_start\": 13330, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 13389, \"char_start\": 13339, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 13681, \"char_start\": 13389, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not keep good repairs records, particularly in relation to sub-contractors, leading to it raising jobs but not following them through to completion. The landlord should consider how it manages repairs that have been sub-contracted, to ensure it maintains oversight of these.\"}, {\"char_end\": 13694, \"char_start\": 13681, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communicatio\"}, {\"char_end\": 13696, \"char_start\": 13694, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"tribunal_reasoning\", \"text\": \"n\"}, {\"char_end\": 14014, \"char_start\": 13696, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records do not show that its overall communication was good. It did not keep the resident regularly updated throughout the repairs process, relying instead on the resident to chase it for updates. It should be more proactive in keeping its residents updated while investigations and repairs are ongoing.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "59cdff2772c323747ae5846ea36ffeb407d473c44f81d620557166823bb21440",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T15:21:53.264553+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "39731663b8fa40cdebd454ad0e3e9614e01b93457a8ab6401b9deca381ffebb3"
+}

@@ -12,6 +12,7 @@ from datetime import date
 import pytest
 
 from scripts.scrapers.housing_ombudsman.parsers import (
+    find_next_listing_page,
     parse_detail_html,
     parse_listing_html,
 )
@@ -72,6 +73,32 @@ DETAIL_HTML = """\
 """
 
 
+WORDPRESS_DETAIL_HTML = """\
+<html><body>
+<main>
+  <h1> Homes Plus Limited (202332724) </h1>
+  <table>
+    <tbody>
+      <tr><td>Case ID</td><td>202332724</td></tr>
+      <tr><td>Decision type</td><td>Investigation</td></tr>
+      <tr><td>Landlord</td><td>Homes Plus Limited</td></tr>
+      <tr><td>Landlord type</td><td>Housing Association</td></tr>
+      <tr><td>Date</td><td><span>2</span><span>8</span><span> November 2025</span></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Our decision (determination)</strong></p>
+  <ol>
+    <li>There was service failure in the landlord's response to the roof leak.</li>
+    <li>There was maladministration in the landlord's response to damp and mould.</li>
+    <li>There was service failure in the landlord's complaint handling.</li>
+  </ol>
+  <p><strong>Summary of reasons</strong></p>
+  <p>The landlord delayed repairs.</p>
+</main>
+</body></html>
+"""
+
+
 class TestParseListing:
     def test_extracts_two_rows(self):
         rows = parse_listing_html(LISTING_HTML)
@@ -87,6 +114,29 @@ class TestParseListing:
         assert first.listed_outcome_raw == "Maladministration"
         assert first.listed_date == date(2024, 3, 12)
         assert "Property condition" in first.listed_categories
+
+    def test_find_next_listing_page_supports_wordpress_head_link(self):
+        html = """\
+        <html>
+          <head>
+            <link rel="next" href="https://www.housing-ombudsman.org.uk/decisions/page/2/" />
+          </head>
+          <body></body>
+        </html>
+        """
+        assert find_next_listing_page(html) == (
+            "https://www.housing-ombudsman.org.uk/decisions/page/2/"
+        )
+
+    def test_find_next_listing_page_supports_wordpress_visible_link(self):
+        html = """\
+        <html><body>
+          <a class="next page-numbers" href="/decisions/page/3/">Next</a>
+        </body></html>
+        """
+        assert find_next_listing_page(html) == (
+            "https://www.housing-ombudsman.org.uk/decisions/page/3/"
+        )
 
 
 class TestParseDetail:
@@ -132,3 +182,47 @@ class TestParseDetail:
             DETAIL_HTML, source_url="https://x/decisions/202300001/"
         )
         assert "damp and mould" in raw.lower()
+
+    def test_wordpress_table_metadata_extracted(self):
+        meta, _raw = parse_detail_html(
+            WORDPRESS_DETAIL_HTML,
+            source_url=(
+                "https://www.housing-ombudsman.org.uk/decisions/"
+                "homes-plus-limited-202332724/"
+            ),
+        )
+        assert meta.case_reference == "202332724"
+        assert meta.landlord_name == "Homes Plus Limited"
+        assert meta.decision_date == date(2025, 11, 28)
+
+    def test_wordpress_decision_section_outcome_extracted(self):
+        meta, _raw = parse_detail_html(
+            WORDPRESS_DETAIL_HTML,
+            source_url=(
+                "https://www.housing-ombudsman.org.uk/decisions/"
+                "homes-plus-limited-202332724/"
+            ),
+        )
+        assert meta.outcome_raw == "maladministration; service failure"
+        assert meta.outcome_normalized == "maladministration"
+
+    def test_wordpress_resolved_with_intervention_outcome_extracted(self):
+        html = WORDPRESS_DETAIL_HTML.replace(
+            "There was service failure in the landlord's response to the roof leak.",
+            "The complaint was resolved with our intervention.",
+        ).replace(
+            "<li>There was maladministration in the landlord's response to damp and mould.</li>",
+            "",
+        ).replace(
+            "<li>There was service failure in the landlord's complaint handling.</li>",
+            "",
+        )
+        meta, _raw = parse_detail_html(
+            html,
+            source_url=(
+                "https://www.housing-ombudsman.org.uk/decisions/"
+                "homes-plus-limited-202332724/"
+            ),
+        )
+        assert meta.outcome_raw == "resolved with intervention"
+        assert meta.outcome_normalized == "resolved-with-intervention"

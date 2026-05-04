@@ -123,7 +123,10 @@ def _coerce_provenance(value: Any) -> Optional[Provenance]:
     if isinstance(value, Provenance):
         return value
     if isinstance(value, Mapping):
-        return Provenance.model_validate(dict(value))
+        try:
+            return Provenance.model_validate(dict(value))
+        except Exception:
+            return None
     return None
 
 

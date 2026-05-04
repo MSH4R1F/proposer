@@ -31,12 +31,40 @@ from .models import KNOWN_OUTCOMES, ListingEntry, OmbudsmanCaseMetadata
 # Outcome normalisation
 # ---------------------------------------------------------------------------
 
-_OUTCOME_TEXT_TO_SLUG = {
-    "severe maladministration": "severe-maladministration",
-    "maladministration": "maladministration",
-    "partial maladministration": "partial-maladministration",
-    "no maladministration": "no-maladministration",
-    "service failure": "maladministration",
+_OUTCOME_TEXT_TO_SLUG = (
+    ("severe maladministration", "severe-maladministration"),
+    ("partial maladministration", "partial-maladministration"),
+    ("no maladministration", "no-maladministration"),
+    ("maladministration", "maladministration"),
+    ("service failure", "service-failure"),
+    ("resolved with our intervention", "resolved-with-intervention"),
+    ("resolved with intervention", "resolved-with-intervention"),
+    ("reasonable redress", "reasonable-redress"),
+    ("satisfactorily resolves", "reasonable-redress"),
+    ("offered redress", "reasonable-redress"),
+    ("outside our jurisdiction", "outside-jurisdiction"),
+    ("outside jurisdiction", "outside-jurisdiction"),
+)
+
+_OUTCOME_SEVERITY = {
+    "outside-jurisdiction": 0,
+    "no-maladministration": 1,
+    "reasonable-redress": 2,
+    "resolved-with-intervention": 2,
+    "service-failure": 3,
+    "partial-maladministration": 4,
+    "maladministration": 5,
+    "severe-maladministration": 6,
+}
+
+_OUTCOME_SECTION_END_HEADINGS = {
+    "summary of reasons",
+    "putting things right",
+    "orders",
+    "recommendations",
+    "our investigation",
+    "the complaint procedure",
+    "what we found and why",
 }
 
 
@@ -55,10 +83,21 @@ def _normalize_outcome(raw: Optional[str]) -> Tuple[Optional[str], List[str]]:
     if cleaned in KNOWN_OUTCOMES:
         return cleaned, []
     # Try mapping from human text.
-    for needle, slug in _OUTCOME_TEXT_TO_SLUG.items():
+    matches: List[str] = []
+    for needle, slug in _OUTCOME_TEXT_TO_SLUG:
         if needle in cleaned:
-            return slug, []
+            matches.append(slug)
+    if matches:
+        return _dominant_outcome(matches), []
     return None, [f"unrecognised_outcome_label:{raw[:80]}"]
+
+
+def _dominant_outcome(slugs: List[str]) -> Optional[str]:
+    """Return the highest-severity outcome from a set of normalized labels."""
+    known = [s for s in slugs if s in _OUTCOME_SEVERITY]
+    if not known:
+        return None
+    return max(known, key=lambda s: _OUTCOME_SEVERITY[s])
 
 
 # ---------------------------------------------------------------------------
@@ -76,7 +115,7 @@ _DATE_FORMATS = (
 def _parse_date(s: Optional[str]) -> Optional[date]:
     if not s:
         return None
-    s = s.strip()
+    s = _normalize_date_text(s)
     for fmt in _DATE_FORMATS:
         try:
             return datetime.strptime(s, fmt).date()
@@ -183,8 +222,10 @@ def find_next_listing_page(
 ) -> Optional[str]:
     """Find the URL of the next listing page, or ``None`` if last."""
     soup = BeautifulSoup(html, "html.parser")
-    # Common Drupal pager markup.
+    # Common WordPress/Drupal pager markup. The live Ombudsman archive exposes
+    # both a head <link rel="next"> and a visible <a class="next page-numbers">.
     nxt = soup.select_one(
+        "link[rel='next'], a.next.page-numbers, "
         "li.pager__item--next a, a.pager__item--next, a[rel='next']"
     )
     if nxt and nxt.get("href"):
@@ -210,8 +251,8 @@ _RECS_HEADERS = (
 _LABEL_DECISION_DATE = ("decision date", "date of determination", "date")
 _LABEL_LANDLORD = ("landlord", "respondent")
 _LABEL_CATEGORY = ("category", "categories", "complaint category", "complaint about")
-_LABEL_OUTCOME = ("outcome", "determination", "decision")
-_LABEL_CASE_REF = ("case reference", "reference", "case number")
+_LABEL_OUTCOME = ("outcome", "determination")
+_LABEL_CASE_REF = ("case reference", "case id", "reference", "case number")
 
 
 def parse_detail_html(
@@ -249,7 +290,6 @@ def parse_detail_html(
 
     landlord_name = _value_for(labelled, _LABEL_LANDLORD)
     decision_date = _parse_date(_value_for(labelled, _LABEL_DECISION_DATE))
-    outcome_raw = _value_for(labelled, _LABEL_OUTCOME)
 
     cats_text = _value_for(labelled, _LABEL_CATEGORY) or ""
     complaint_categories: List[str] = []
@@ -258,11 +298,14 @@ def parse_detail_html(
             c.strip() for c in re.split(r"[;,]", cats_text) if c.strip()
         ]
 
-    outcome_normalized, outcome_diags = _normalize_outcome(outcome_raw)
-    diagnostics.extend(outcome_diags)
-
     # Visible body text for ingestion + filtering.
     raw_text = _visible_text(soup)
+
+    outcome_raw = _value_for(labelled, _LABEL_OUTCOME)
+    if not outcome_raw:
+        outcome_raw = _derive_outcome_raw(soup, raw_text)
+    outcome_normalized, outcome_diags = _normalize_outcome(outcome_raw)
+    diagnostics.extend(outcome_diags)
 
     # Orders / recommendations: scan headings.
     orders = _list_after_heading(soup, _ORDERS_HEADERS)
@@ -314,29 +357,41 @@ def _extract_labelled_fields(soup: BeautifulSoup) -> dict:
     """
     out: dict = {}
 
+    # Two-column table markup used by current WordPress decision pages.
+    for tr in soup.find_all("tr"):
+        cells = tr.find_all(["th", "td"], recursive=False)
+        if len(cells) < 2:
+            continue
+        key = _clean_label(cells[0].get_text(" ", strip=True))
+        val = _clean_value(
+            " ".join(cell.get_text(" ", strip=True) for cell in cells[1:])
+        )
+        if key and val:
+            out.setdefault(key, val)
+
     # Definition lists.
     for dl in soup.find_all("dl"):
         dts = dl.find_all("dt")
         dds = dl.find_all("dd")
         for dt, dd in zip(dts, dds):
-            key = dt.get_text(" ", strip=True).rstrip(":").lower()
-            val = dd.get_text(" ", strip=True)
+            key = _clean_label(dt.get_text(" ", strip=True))
+            val = _clean_value(dd.get_text(" ", strip=True))
             if key:
-                out[key] = val
+                out.setdefault(key, val)
 
     # Drupal field markup.
     for field in soup.select("div.field, .field"):
         label_el = field.select_one(".field__label, .field-label")
         item_el = field.select_one(".field__item, .field-items, .field-item")
         if label_el and item_el:
-            key = label_el.get_text(" ", strip=True).rstrip(":").lower()
-            val = item_el.get_text(" ", strip=True)
+            key = _clean_label(label_el.get_text(" ", strip=True))
+            val = _clean_value(item_el.get_text(" ", strip=True))
             if key:
                 out.setdefault(key, val)
 
     # <strong>Label</strong> Value pattern.
     for strong in soup.find_all("strong"):
-        key = strong.get_text(" ", strip=True).rstrip(":").lower()
+        key = _clean_label(strong.get_text(" ", strip=True))
         if not key:
             continue
         sibling_text = ""
@@ -348,11 +403,34 @@ def _extract_labelled_fields(soup: BeautifulSoup) -> dict:
                 sibling_text += " " + sib.strip()
                 if sibling_text.strip():
                     break
-        sibling_text = sibling_text.strip()
+        sibling_text = _clean_value(sibling_text)
         if sibling_text:
             out.setdefault(key, sibling_text)
 
     return out
+
+
+def _clean_label(text: str) -> str:
+    return _clean_value(text).rstrip(":").lower()
+
+
+def _clean_value(text: str) -> str:
+    text = (text or "").replace("\xa0", " ")
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def _normalize_date_text(text: str) -> str:
+    text = _clean_value(text)
+    months = (
+        "January|February|March|April|May|June|July|August|September|"
+        "October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|"
+        "Oct|Nov|Dec"
+    )
+    # Current pages sometimes split day digits across adjacent spans:
+    # "2 8 November 2025" should parse as "28 November 2025".
+    text = re.sub(rf"\b(\d)\s+(\d)(?=\s+(?:{months})\b)", r"\1\2", text)
+    return text
 
 
 def _value_for(labelled: dict, candidate_keys) -> Optional[str]:
@@ -367,6 +445,85 @@ def _value_for(labelled: dict, candidate_keys) -> Optional[str]:
             if cand.lower() in key:
                 return v
     return None
+
+
+def _derive_outcome_raw(soup: BeautifulSoup, raw_text: str) -> Optional[str]:
+    labels: List[str] = []
+    labels.extend(_outcome_labels_from_decision_section(raw_text))
+    labels.extend(_outcome_labels_from_finding_rows(soup))
+    if not labels:
+        labels.extend(_outcome_labels_from_specific_resolution_phrases(raw_text))
+    labels = _dedupe(labels)
+    if not labels:
+        return None
+    return "; ".join(_human_outcome_label(label) for label in labels)
+
+
+def _outcome_labels_from_decision_section(raw_text: str) -> List[str]:
+    lines = [_clean_value(line) for line in raw_text.splitlines()]
+    lines = [line for line in lines if line]
+
+    section: List[str] = []
+    in_section = False
+    for line in lines:
+        lower = line.lower().rstrip(":")
+        if lower == "our decision (determination)":
+            in_section = True
+            continue
+        if in_section and lower in _OUTCOME_SECTION_END_HEADINGS:
+            break
+        if in_section:
+            section.append(line)
+
+    return _extract_outcome_labels(" ".join(section))
+
+
+def _outcome_labels_from_finding_rows(soup: BeautifulSoup) -> List[str]:
+    labels: List[str] = []
+    for tr in soup.find_all("tr"):
+        cells = tr.find_all(["th", "td"], recursive=False)
+        if len(cells) < 2:
+            continue
+        key = _clean_label(cells[0].get_text(" ", strip=True))
+        if key != "finding":
+            continue
+        val = _clean_value(" ".join(cell.get_text(" ", strip=True) for cell in cells[1:]))
+        labels.extend(_extract_outcome_labels(val))
+    return labels
+
+
+def _extract_outcome_labels(text: str) -> List[str]:
+    labels: List[str] = []
+    cleaned = _clean_value(text).lower()
+    for needle, slug in _OUTCOME_TEXT_TO_SLUG:
+        if needle in cleaned:
+            labels.append(slug)
+    return labels
+
+
+def _outcome_labels_from_specific_resolution_phrases(raw_text: str) -> List[str]:
+    cleaned = _clean_value(raw_text).lower()
+    labels: List[str] = []
+    if "resolved with our intervention" in cleaned:
+        labels.append("resolved-with-intervention")
+    if "satisfactorily resolves" in cleaned or "offered redress" in cleaned:
+        labels.append("reasonable-redress")
+    return labels
+
+
+def _dedupe(items: List[str]) -> List[str]:
+    seen = set()
+    out = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+    return out
+
+
+def _human_outcome_label(slug: str) -> str:
+    return slug.replace("-", " ")
 
 
 def _visible_text(soup: BeautifulSoup) -> str:

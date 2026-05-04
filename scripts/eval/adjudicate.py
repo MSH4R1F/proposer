@@ -93,6 +93,8 @@ def _expected_outcome_review_paths(case: Mapping[str, Any]) -> set[str]:
     """MandatoryReviewSet outcome expansion, mirroring append_gate."""
     out: set[str] = set()
     outcome = case.get("ground_truth_outcome") or {}
+    if not isinstance(outcome, Mapping):
+        return out
     if outcome.get("unapportioned_reason") is not None:
         out.add("ground_truth_outcome.unapportioned_reason")
         return out

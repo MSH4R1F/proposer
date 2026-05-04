@@ -47,6 +47,8 @@ def test_source_document_full_phase4_metadata():
     assert md.case_reference == "202300042"
     assert md.matter_types == ["repairs_damp_mould", "complaint_handling_failure"]
     assert md.decision_date == date(2024, 6, 1)
+    assert md.outcome_raw == "Maladministration"
+    assert md.outcome_normalized == "maladministration"
     assert md.source_url.endswith("/decisions/202300042/")
     assert md.corpus_version == "research_seed_2026_05"
     assert md.parser_version == "ombudsman-0.1.0"
@@ -91,3 +93,5 @@ def test_to_chroma_metadata_safe_scalars():
     assert chroma["source_publisher"] == "housing_ombudsman"
     assert chroma["source_kind"] == "ombudsman_determination"
     assert chroma["matter_types"] == "repairs_damp_mould"
+    assert chroma["outcome_raw"] == "Maladministration"
+    assert chroma["outcome_normalized"] == "maladministration"

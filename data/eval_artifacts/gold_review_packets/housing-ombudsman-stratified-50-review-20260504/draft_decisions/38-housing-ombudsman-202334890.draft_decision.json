@@ -1,0 +1,238 @@
+{
+  "_review_instructions": "Draft only. Verify every candidate field against the review packet and source text. Before appending, set human_adjudicator, mandatory_review_completed_at, adjudicated_fields, flip rates, and change mandatory field_provenance sources from deterministic_manifest to human_mandatory_review for confirmed cells.",
+  "_review_status": "needs_human_review",
+  "_source_bundle_preview": {
+    "paragraph_count": 51,
+    "section_counts": {
+      "order": 18,
+      "pre_decision_record": 23,
+      "tribunal_reasoning": 10
+    }
+  },
+  "case": {
+    "case_id": "housing-ombudsman-202334890",
+    "case_size": "large",
+    "cited_authorities": [],
+    "claim_types": [
+      "disrepair"
+    ],
+    "claimed_amounts": [
+      {
+        "amount_gbp": "2137.00",
+        "by_party": "tenant",
+        "issue": "ombudsman_compensation"
+      }
+    ],
+    "corpus_version": "research_seed_2026_05",
+    "decision_date": "2025-10-29",
+    "disputed_amount_gbp": "2137.00",
+    "domain_id": "housing.repairs_social.v1",
+    "evidence": [
+      {
+        "description": "Housing Ombudsman determination records the resident's complaint history, repair reports, and landlord response.",
+        "kind": "ombudsman_record",
+        "provenance": {
+          "page": 1,
+          "paragraph": 21,
+          "text_span": [
+            307,
+            566
+          ]
+        }
+      }
+    ],
+    "excluded_source_ids": [],
+    "expected_outcome": null,
+    "expected_redacted_text": null,
+    "expected_redactions": [],
+    "facts": "The landlord was aware of a damp bedroom wall at the resident’s property since November 2022. It inspected the wall and carried out some works over the next year. The resident complained to the landlord on 6 December 2023 as she said the wall was still damp. The complaint is about the landlord’s handling of the resident’s reports of a damp bedroom wall.",
+    "forum": "housing_ombudsman",
+    "ground_truth_outcome": {
+      "overall_winner": "tenant",
+      "per_issue": [],
+      "total_awarded_gbp": "2137.00",
+      "unapportioned_reason": "Housing Ombudsman determination made a global compensation order without apportioning the final total across housing_v1 issue categories."
+    },
+    "key_reasoning_quotes": [
+      {
+        "provenance": {
+          "page": 1,
+          "paragraph": 34,
+          "text_span": [
+            1774,
+            1781
+          ]
+        },
+        "text": "ed better and what it could do to resolve the resident’s complaint. Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom. The landlord agreed to apologise to the resident, increase the overall compensation payment to £2,137 (including the revised figure of £1,228 for loss of use of the bedroom) and £150 additional compensation for its calculation error. The landlord also agreed to inspect the resident’s bedroom wall again to check if rendering and drainage is required. Both parties agreed to this as a resolution of the complaint. We are t"
+      }
+    ],
+    "law_effective_date": "2025-10-29",
+    "matter_type": "repairs_damp_mould",
+    "negative_kind": null,
+    "ocr_confidence": null,
+    "parties": [
+      {
+        "represented": false,
+        "role": "tenant"
+      },
+      {
+        "represented": false,
+        "role": "landlord"
+      }
+    ],
+    "region": "london",
+    "region_source": "London & Quadrant Housing Trust (landlord_name_keyword; REVIEW_REQUIRED)",
+    "retrieval_namespace_id": "housing_repairs_social_v1",
+    "schema_version": "v1",
+    "source_kind": "ombudsman_determination",
+    "source_license": "unknown_housing_ombudsman_decisions_permission_pending",
+    "source_pdf_sha256": "0d24bc6ef7ea004f0bbafec2413b9c75aa01d11db95f66d018b3e62cc22e7a83",
+    "source_publisher": "housing_ombudsman",
+    "source_url": "https://www.housing-ombudsman.org.uk/decisions/london-quadrant-housing-trust-202334890/",
+    "statutory_basis": [],
+    "statutory_basis_unavailable_reason": "Housing Ombudsman repair/social determination; statutory basis is not extracted into this GoldCase field in the draft review packet.",
+    "target_source_id": "202334890",
+    "train_test_split": "test"
+  },
+  "labeling_provenance": {
+    "adjudicated_fields": [],
+    "anchor_set_id": null,
+    "audit_flip_rate": 0.0,
+    "field_provenance": [
+      {
+        "field_path": "facts",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              307,
+              566
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "disputed_amount_gbp",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "claim_types",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "matter_type",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "ground_truth_outcome.overall_winner",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "ground_truth_outcome.total_awarded_gbp",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "ground_truth_outcome.unapportioned_reason",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "claimed_amounts[issue=ombudsman_compensation|by_party=tenant].amount_gbp",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1774,
+              1781
+            ]
+          }
+        ]
+      }
+    ],
+    "human_adjudicator": null,
+    "inter_model_agreement_rate": 0.0,
+    "is_human_only_anchor": false,
+    "labeler_models": [],
+    "mandatory_review_completed_at": null,
+    "mandatory_review_flip_rate": 0.0
+  }
+}

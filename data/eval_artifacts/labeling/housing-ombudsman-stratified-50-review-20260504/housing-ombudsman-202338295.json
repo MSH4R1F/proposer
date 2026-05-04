@@ -1,0 +1,1157 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202338295",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 19 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='19 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='England', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Property damage/contamination', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Inadequate cleaning', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Failure to complete asbestos survey', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.3\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Chipped flooring', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.4\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Rochdale Bo...tenant': 'The resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Photographic evidence of... after ceiling puncture', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Photos showing material ...droom and hallway floor', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Photos of belongings covered in debris', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Propert...hwide Housing Limited'\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value=\"Service failure found re... and conduct inspection\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 12 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='19 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='England', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Property damage/contamination', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Inadequate cleaning', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Failure to complete asbestos survey', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.3\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Chipped flooring', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.4\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Rochdale Bo...tenant': 'The resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Photographic evidence of... after ceiling puncture', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Photos showing material ...droom and hallway floor', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Photos of belongings covered in debris', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value=\"Service failure found re... and conduct inspection\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.6153846153846154,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 22 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='19 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value=\"Complaint about the land... completing loft works.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value=\"Complaint about the land...ts of chipped flooring.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Rochdale Bo...nt': 'Unnamed resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Resident-supplied photos... ceiling hole was made.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='A 2015 asbestos survey r...red to by the landlord.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Resident's tenancy agree...erings to the resident.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Complaint correspondence..., and stage 2 response.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Absence of a record of t...er 2023 cleaning visit.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': [\"Complai...t': 'Unnamed resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'findings': ['Service fa...ith a written report.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'findings': ['Service fa...ith a written report.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.findings\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['Service failure in how ...s of chipped flooring.\"], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['The landlord must apolo...with a written report.'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 14 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='19 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value=\"Complaint about the land... completing loft works.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value=\"Complaint about the land...ts of chipped flooring.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Rochdale Bo...nt': 'Unnamed resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Resident-supplied photos... ceiling hole was made.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='A 2015 asbestos survey r...red to by the landlord.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Resident's tenancy agree...erings to the resident.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Complaint correspondence..., and stage 2 response.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Absence of a record of t...er 2023 cleaning visit.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'findings': ['Service fa...ith a written report.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'findings': ['Service fa...ith a written report.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.findings\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['Service failure in how ...s of chipped flooring.\"], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['The landlord must apolo...with a written report.'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              319,
+              570
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              652,
+              745
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              745,
+              789
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              789,
+              848
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              291,
+              308
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              7873,
+              7937
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 189,
+            "text_span": [
+              11541,
+              11760
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              319,
+              570
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 129,
+            "text_span": [
+              5246,
+              5452
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 134,
+            "text_span": [
+              5452,
+              5594
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              5594,
+              5697
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 137,
+            "text_span": [
+              5697,
+              5854
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              5854,
+              5984
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              877,
+              907
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              944,
+              1050
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              1050,
+              1084
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              1084,
+              1177
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1280,
+              1664
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 40,
+            "text_span": [
+              1682,
+              1985
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              166,
+              180
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              189,
+              226
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              189,
+              226
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              189,
+              226
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "No specific monetary amounts claimed by the resident are mentioned in the pre-decision record sections.",
+        "disputed_amount_gbp": "No specific disputed monetary amount is identified in the decision.",
+        "statutory_basis": "No specific statutory provisions or legal basis are cited in the decision."
+      },
+      "claim_types": [
+        "Property damage/contamination",
+        "Inadequate cleaning",
+        "Failure to complete asbestos survey",
+        "Chipped flooring",
+        "Complaint handling"
+      ],
+      "decision_date": "19 December 2025",
+      "evidence": [
+        "Photographic evidence of loft condition after ceiling puncture",
+        "Photos showing material covering bedroom and hallway floor",
+        "Photos of belongings covered in debris"
+      ],
+      "facts": "The resident lives in the property with her partner and 2 children. On 7-8 December 2023, while attending the property to decontaminate the loft and replace insulation following a rat infestation, a contractor put their foot through her children's bedroom ceiling. This caused large amounts of dirt, fibreglass, and rat droppings to fall into the bedroom and spread around the house. The resident noted it had chipped the flooring in the bedroom which was likely to cut the children's feet. She had serious concerns about contamination due to the rat infestation and explained that she was going to have to dispose of a large number of possessions. She explained her children's feet and throats were itchy, and she feared this was due to the fibres released from the insulation.",
+      "ground_truth_outcome": "Service failure found regarding landlord's response to ceiling collapse and complaint handling; no maladministration found regarding chipped flooring; landlord ordered to pay £200 compensation, provide written apology, and conduct inspection",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1280,
+              1664
+            ]
+          },
+          "text": "The landlord failed to properly satisfy itself and reassure the resident that it had cleaned the property and cleared it of potential hazards after its contractor punctured a hole in 1 of the bedroom ceilings while decontaminating the loft following a rat infestation. It also failed to complete an asbestos survey following this despite it offering to do so in its stage 1 response."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 40,
+            "text_span": [
+              1682,
+              1985
+            ]
+          },
+          "text": "Damage to floor coverings are defined as the resident's responsibility in her tenancy agreement. There is also no evidence that the chipped floor covering was caused by the accident on 7 December 2023."
+        }
+      ],
+      "matter_type": "Housing Ombudsman Investigation",
+      "parties": {
+        "landlord": "Rochdale Boroughwide Housing Limited",
+        "tenant": "The resident"
+      },
+      "region": "England",
+      "region_source": "Inferred from landlord name 'Rochdale Boroughwide Housing Limited'"
+    },
+    "raw_response": "```json\n{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"Property damage/contamination\", \"Inadequate cleaning\", \"Failure to complete asbestos survey\", \"Chipped flooring\", \"Complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [319, 570]},\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [652, 745]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [745, 789]},\n      {\"page\": 1, \"paragraph\": 26, \"text_span\": [789, 848]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific monetary amounts claimed by the resident are mentioned in the pre-decision record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"19 December 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [291, 308]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific disputed monetary amount is identified in the decision.\"\n  },\n  \"evidence\": {\n    \"value\": [\"Photographic evidence of loft condition after ceiling puncture\", \"Photos showing material covering bedroom and hallway floor\", \"Photos of belongings covered in debris\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 158, \"text_span\": [7873, 7937]},\n      {\"page\": 1, \"paragraph\": 189, \"text_span\": [11541, 11760]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident lives in the property with her partner and 2 children. On 7-8 December 2023, while attending the property to decontaminate the loft and replace insulation following a rat infestation, a contractor put their foot through her children's bedroom ceiling. This caused large amounts of dirt, fibreglass, and rat droppings to fall into the bedroom and spread around the house. The resident noted it had chipped the flooring in the bedroom which was likely to cut the children's feet. She had serious concerns about contamination due to the rat infestation and explained that she was going to have to dispose of a large number of possessions. She explained her children's feet and throats were itchy, and she feared this was due to the fibres released from the insulation.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [319, 570]},\n      {\"page\": 1, \"paragraph\": 129, \"text_span\": [5246, 5452]},\n      {\"page\": 1, \"paragraph\": 134, \"text_span\": [5452, 5594]},\n      {\"page\": 1, \"paragraph\": 136, \"text_span\": [5594, 5697]},\n      {\"page\": 1, \"paragraph\": 137, \"text_span\": [5697, 5854]},\n      {\"page\": 1, \"paragraph\": 138, \"text_span\": [5854, 5984]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"Service failure found regarding landlord's response to ceiling collapse and complaint handling; no maladministration found regarding chipped flooring; landlord ordered to pay £200 compensation, provide written apology, and conduct inspection\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 28, \"text_span\": [877, 907]},\n      {\"page\": 1, \"paragraph\": 30, \"text_span\": [944, 1050]},\n      {\"page\": 1, \"paragraph\": 31, \"text_span\": [1050, 1084]},\n      {\"page\": 1, \"paragraph\": 32, \"text_span\": [1084, 1177]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\"The landlord failed to properly satisfy itself and reassure the resident that it had cleaned the property and cleared it of potential hazards after its contractor punctured a hole in 1 of the bedroom ceilings while decontaminating the loft following a rat infestation. It also failed to complete an asbestos survey following this despite it offering to do so in its stage 1 response.\", \"Damage to floor coverings are defined as the resident's responsibility in her tenancy agreement. There is also no evidence that the chipped floor covering was caused by the accident on 7 December 2023.\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 38, \"text_span\": [1280, 1664]},\n      {\"page\": 1, \"paragraph\": 40, \"text_span\": [1682, 1985]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman Investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [166, 180]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Rochdale Boroughwide Housing Limited\",\n      \"tenant\": \"The resident\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [189, 226]}\n    ]\n  },\n  \"region\": {\n    \"value\": \"England\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [189, 226]}\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Inferred from landlord name 'Rochdale Boroughwide Housing Limited'\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [189, 226]}\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutory provisions or legal basis are cited in the decision.\"\n  }\n}\n```",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202338295\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 64, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Rochdale Boroughwide Housing Limited (202338295)\"}, {\"char_end\": 113, \"char_start\": 64, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Rochdale Boroughwide Housing Limited (202338295)\"}, {\"char_end\": 125, \"char_start\": 113, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 134, \"char_start\": 125, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 142, \"char_start\": 134, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 152, \"char_start\": 142, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202338295\"}, {\"char_end\": 166, \"char_start\": 152, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 180, \"char_start\": 166, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 189, \"char_start\": 180, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 226, \"char_start\": 189, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Rochdale Boroughwide Housing Limited\"}, {\"char_end\": 240, \"char_start\": 226, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 260, \"char_start\": 240, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 270, \"char_start\": 260, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 286, \"char_start\": 270, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 291, \"char_start\": 286, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 294, \"char_start\": 291, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"19\"}, {\"char_end\": 308, \"char_start\": 294, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2025\"}, {\"char_end\": 319, \"char_start\": 308, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 570, \"char_start\": 319, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives in the property with her partner and 2 children. She complains the landlord failed to adequately inspect or clean the property after its contractor accidentally put their foot through the ceiling while completing works in the loft.\"}, {\"char_end\": 598, \"char_start\": 570, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 652, \"char_start\": 598, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about how the landlord responded to:\"}, {\"char_end\": 745, \"char_start\": 652, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"Its contractor causing a partial collapse of the ceiling while completing works in the loft.\"}, {\"char_end\": 789, \"char_start\": 745, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident’s reports of chipped flooring.\"}, {\"char_end\": 848, \"char_start\": 789, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"We have also considered the landlord’s complaint handling.\"}, {\"char_end\": 877, \"char_start\": 848, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 907, \"char_start\": 877, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found that there was:\"}, {\"char_end\": 944, \"char_start\": 907, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure in how the landlord:\"}, {\"char_end\": 1050, \"char_start\": 944, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Responded to its contractor causing a partial collapse of the ceiling while completing works in the loft.\"}, {\"char_end\": 1084, \"char_start\": 1050, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Handled the resident’s complaint.\"}, {\"char_end\": 1177, \"char_start\": 1084, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration in how the landlord handled the resident’s reports of chipped flooring.\"}, {\"char_end\": 1180, \"char_start\": 1177, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 1185, \"char_start\": 1180, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 1235, \"char_start\": 1185, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 1254, \"char_start\": 1235, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1280, \"char_start\": 1254, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Partial ceiling collapse.\"}, {\"char_end\": 1664, \"char_start\": 1280, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to properly satisfy itself and reassure the resident that it had cleaned the property and cleared it of potential hazards after its contractor punctured a hole in 1 of the bedroom ceilings while decontaminating the loft following a rat infestation. It also failed to complete an asbestos survey following this despite it offering to do so in its stage 1 response.\"}, {\"char_end\": 1682, \"char_start\": 1664, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Chipped flooring.\"}, {\"char_end\": 1985, \"char_start\": 1682, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Damage to floor coverings are defined as the resident’s responsibility in her tenancy agreement. There is also no evidence that the chipped floor covering was caused by the accident on 7 December 2023. Therefore, the landlord acted appropriately by declining to complete a repair or offer compensation.\"}, {\"char_end\": 2005, \"char_start\": 1985, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling.\"}, {\"char_end\": 2315, \"char_start\": 2005, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord addressed the resident’s stage 1 complaint within its timescales. It took steps to mitigate the delay at stage 2 and offered appropriate compensation for this. However, its final response failed to address the resident’s concerns about excess moisture and incorrectly laid insulation in the loft.\"}, {\"char_end\": 2336, \"char_start\": 2315, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2394, \"char_start\": 2336, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 2396, \"char_start\": 2394, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 2471, \"char_start\": 2396, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2562, \"char_start\": 2471, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2569, \"char_start\": 2562, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 2579, \"char_start\": 2569, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 2584, \"char_start\": 2579, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 2695, \"char_start\": 2584, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2698, \"char_start\": 2695, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2709, \"char_start\": 2698, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2725, \"char_start\": 2709, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2732, \"char_start\": 2725, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2741, \"char_start\": 2732, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2746, \"char_start\": 2741, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2752, \"char_start\": 2746, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2778, \"char_start\": 2752, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2787, \"char_start\": 2778, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2789, \"char_start\": 2787, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2803, \"char_start\": 2789, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2831, \"char_start\": 2803, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2842, \"char_start\": 2831, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2862, \"char_start\": 2842, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"to the resident for\"}, {\"char_end\": 2866, \"char_start\": 2862, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"the\"}, {\"char_end\": 2902, \"char_start\": 2866, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"failures identified in this report.\"}, {\"char_end\": 2915, \"char_start\": 2902, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2928, \"char_start\": 2915, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2932, \"char_start\": 2928, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2940, \"char_start\": 2932, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2943, \"char_start\": 2940, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2952, \"char_start\": 2943, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2996, \"char_start\": 2952, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 3025, \"char_start\": 2996, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 3050, \"char_start\": 3025, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 3069, \"char_start\": 3050, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 3071, \"char_start\": 3069, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 3085, \"char_start\": 3071, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3101, \"char_start\": 3085, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"13 January 2026\"}, {\"char_end\": 3120, \"char_start\": 3101, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 3157, \"char_start\": 3120, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 3161, \"char_start\": 3157, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"200\"}, {\"char_end\": 3175, \"char_start\": 3161, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"comprised of:\"}, {\"char_end\": 3177, \"char_start\": 3175, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 3181, \"char_start\": 3177, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"200\"}, {\"char_end\": 3219, \"char_start\": 3181, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"for distress caused by its failure to\"}, {\"char_end\": 3259, \"char_start\": 3219, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"complete an asbestos survey or suitably\"}, {\"char_end\": 3366, \"char_start\": 3259, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"reassure the resident that it had removed all potential hazards following the accident on 7 December 2023.\"}, {\"char_end\": 3473, \"char_start\": 3366, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"If the landlord has yet to pay the resident the £380 offered at stage 2, it is to do so and evidence this.\"}, {\"char_end\": 3608, \"char_start\": 3473, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 3622, \"char_start\": 3608, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3638, \"char_start\": 3622, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"13 January 2026\"}, {\"char_end\": 3640, \"char_start\": 3638, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"3\"}, {\"char_end\": 3657, \"char_start\": 3640, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"Inspection order\"}, {\"char_end\": 3858, \"char_start\": 3657, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"The landlord must contact the resident to arrange an inspection. It must take all reasonable steps to ensure the inspection is completed by the due date. The inspection must be completed by a suitably\"}, {\"char_end\": 4052, \"char_start\": 3858, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"qualified person. If the landlord cannot gain access to complete the inspection, it must provide us with documentary evidence of its attempts to inspect the property no later than the due date.\"}, {\"char_end\": 4085, \"char_start\": 4052, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"What the inspection must achieve\"}, {\"char_end\": 4129, \"char_start\": 4085, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"The landlord must ensure that the surveyor:\"}, {\"char_end\": 4289, \"char_start\": 4129, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"Inspects the loft for excess and moisture and to ensure the insulation is laid appropriately. The surveyor must also produce a written report with photographs.\"}, {\"char_end\": 4321, \"char_start\": 4289, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"The survey report must set out:\"}, {\"char_end\": 4367, \"char_start\": 4321, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"Whether there is excess moisture in the loft.\"}, {\"char_end\": 4413, \"char_start\": 4367, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"Whether the insulation is laid appropriately.\"}, {\"char_end\": 4534, \"char_start\": 4413, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"Whether the landlord is responsible to repair or resolve the issue(s) together with reasons where it is not responsible.\"}, {\"char_end\": 4602, \"char_start\": 4534, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"A full scope of works to achieve a lasting and effective resolution\"}, {\"char_end\": 4616, \"char_start\": 4602, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"to the issue(\"}, {\"char_end\": 4619, \"char_start\": 4616, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \"s)\"}, {\"char_end\": 4653, \"char_start\": 4619, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"(if the landlord is responsible).\"}, {\"char_end\": 4710, \"char_start\": 4653, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"order\", \"text\": \"The likely timescales to commence and complete the work.\"}, {\"char_end\": 4724, \"char_start\": 4710, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 4740, \"char_start\": 4724, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"order\", \"text\": \"13 January 2026\"}, {\"char_end\": 4756, \"char_start\": 4740, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 4839, \"char_start\": 4756, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 4859, \"char_start\": 4839, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 4872, \"char_start\": 4859, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 4892, \"char_start\": 4872, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"order\", \"text\": \"should consider any\"}, {\"char_end\": 4967, \"char_start\": 4892, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"order\", \"text\": \"evidence the resident is able to submit in relation to her claims that she\"}, {\"char_end\": 4976, \"char_start\": 4967, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"order\", \"text\": \"replaced\"}, {\"char_end\": 5041, \"char_start\": 4976, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"order\", \"text\": \"mattresses and other possessions as a result of the accident. It\"}, {\"char_end\": 5048, \"char_start\": 5041, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"order\", \"text\": \"should\"}, {\"char_end\": 5164, \"char_start\": 5048, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"order\", \"text\": \"then explain its position on whether it will reimburse the resident for any items or facilitate an insurance claim.\"}, {\"char_end\": 5182, \"char_start\": 5164, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 5206, \"char_start\": 5182, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 5211, \"char_start\": 5206, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 5225, \"char_start\": 5211, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 5227, \"char_start\": 5225, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"7\"}, {\"char_end\": 5232, \"char_start\": 5227, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"to 8\"}, {\"char_end\": 5246, \"char_start\": 5232, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2023\"}, {\"char_end\": 5385, \"char_start\": 5246, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained that, while attending the property to decontaminate the loft and replace insulation following a rat infestation, a\"}, {\"char_end\": 5387, \"char_start\": 5385, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"c\"}, {\"char_end\": 5420, \"char_start\": 5387, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"ontractor put their foot through\"}, {\"char_end\": 5443, \"char_start\": 5420, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"her children’s bedroom\"}, {\"char_end\": 5452, \"char_start\": 5443, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"ceiling.\"}, {\"char_end\": 5548, \"char_start\": 5452, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \"She explained that this had caused large amounts of dirt, fibreglass, and rat droppings to fall\"}, {\"char_end\": 5594, \"char_start\": 5548, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"into the bedroom and spread around the house.\"}, {\"char_end\": 5697, \"char_start\": 5594, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"She also noted it had chipped the flooring in the bedroom which was likely to cut the children’s feet.\"}, {\"char_end\": 5854, \"char_start\": 5697, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"She noted serious concerns about contamination due to the rat infestation and explained that she was going to have dispose of a large number of possessions.\"}, {\"char_end\": 5984, \"char_start\": 5854, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"She explained her children’s feet and throats were itchy, and she feared this was due to the fibres released from the insulation.\"}, {\"char_end\": 6000, \"char_start\": 5984, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"8 December 2023\"}, {\"char_end\": 6059, \"char_start\": 6000, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued a stage 1 response. It explained that:\"}, {\"char_end\": 6140, \"char_start\": 6059, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"pre_decision_record\", \"text\": \"It cleared out the loft on 7 December 2023 following the recent rat infestation.\"}, {\"char_end\": 6236, \"char_start\": 6140, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"pre_decision_record\", \"text\": \"It removed all contaminated insulation and treated the area with “biocide” to remove pathogens.\"}, {\"char_end\": 6537, \"char_start\": 6236, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"pre_decision_record\", \"text\": \"When the contractor was laying new insulation they put their foot through the ceiling. However, they immediately cleaned and sealed this and re-laid insulation. This mistake occurred after the area had been decontaminated, so there was no contaminated insulation which could have entered the bedroom.\"}, {\"char_end\": 6648, \"char_start\": 6537, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"pre_decision_record\", \"text\": \"It attended the property on 8 December 2023 and cleaned the affected bedroom. It also wiped all surfaces down.\"}, {\"char_end\": 6717, \"char_start\": 6648, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident declined its offer to vacuum the children’s mattresses.\"}, {\"char_end\": 6750, \"char_start\": 6717, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"pre_decision_record\", \"text\": \"It also replastered the ceiling.\"}, {\"char_end\": 6849, \"char_start\": 6750, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"pre_decision_record\", \"text\": \"The floor was already chipped before 7 December 2023, so it would not offer compensation for this.\"}, {\"char_end\": 7011, \"char_start\": 6849, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"pre_decision_record\", \"text\": \"There was no asbestos containing materials (ACMS) in the loft which was confirmed by a 2015 survey. The resident was welcome to request a more up-to-date report.\"}, {\"char_end\": 7084, \"char_start\": 7011, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"pre_decision_record\", \"text\": \"The insulation used is “stone wool” and “poses no risk to human health.”\"}, {\"char_end\": 7299, \"char_start\": 7084, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord offered the resident £150 to have clothes and bedding professionally cleaned. It also offered to clean the 2 beds affected, but would not offer this service for any items which were not in the bedroom.\"}, {\"char_end\": 7316, \"char_start\": 7299, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"pre_decision_record\", \"text\": \"11 December 2023\"}, {\"char_end\": 7346, \"char_start\": 7316, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained that:\"}, {\"char_end\": 7643, \"char_start\": 7346, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"pre_decision_record\", \"text\": \"The visiting contractor on 8 December 2023 had noted that there was severe levels of excess moisture in the loft which meant the insulation was soaked. She noted that this was going to cause the new insulation to get mouldy, and that the 8 roof vents and PIV unit did not appear to be sufficient.\"}, {\"char_end\": 7692, \"char_start\": 7643, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"pre_decision_record\", \"text\": \"Her child had cut her foot on the chipped floor.\"}, {\"char_end\": 7765, \"char_start\": 7692, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord did not sufficiently clean the property on 8 December 2023.\"}, {\"char_end\": 7871, \"char_start\": 7765, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"pre_decision_record\", \"text\": \"She disagreed with the landlord’s position that the loft was decontaminated prior to the accident. She ha\"}, {\"char_end\": 7873, \"char_start\": 7871, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"pre_decision_record\", \"text\": \"d\"}, {\"char_end\": 7937, \"char_start\": 7873, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"pre_decision_record\", \"text\": \"photographic evidence to show it was not cleaned prior to this.\"}, {\"char_end\": 7982, \"char_start\": 7937, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"pre_decision_record\", \"text\": \"She would like an asbestos survey completed.\"}, {\"char_end\": 7998, \"char_start\": 7982, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"pre_decision_record\", \"text\": \"29 January 2024\"}, {\"char_end\": 8167, \"char_start\": 7998, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident forwarded the Ombudsman her stage 2 escalation request. She explained she wanted the landlord to complete outstanding works and offer greater compensation.\"}, {\"char_end\": 8183, \"char_start\": 8167, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"pre_decision_record\", \"text\": \"8 February 2024\"}, {\"char_end\": 8271, \"char_start\": 8183, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued a stage 2 response. It reiterated the positions set out at stage 1.\"}, {\"char_end\": 8280, \"char_start\": 8271, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"pre_decision_record\", \"text\": \"It also:\"}, {\"char_end\": 8427, \"char_start\": 8280, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"pre_decision_record\", \"text\": \"Recognised the resident was not happy with the standard of cleaning, and offered her a further £30 in compensation to pay for additional cleaning.\"}, {\"char_end\": 8612, \"char_start\": 8427, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"pre_decision_record\", \"text\": \"Explained that it had asked the resident for evidence to show she had replaced her children’s 2 mattresses, which she had not provided. Therefore, it could not reimburse her for these.\"}, {\"char_end\": 8727, \"char_start\": 8612, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"pre_decision_record\", \"text\": \"Offered her a further £150 in compensation for distress and inconvenience, and £50 for a delayed stage 2 response.\"}, {\"char_end\": 8749, \"char_start\": 8727, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 8773, \"char_start\": 8749, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 8776, \"char_start\": 8773, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 8795, \"char_start\": 8776, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 8801, \"char_start\": 8795, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 8835, \"char_start\": 8801, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 8839, \"char_start\": 8835, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 8870, \"char_start\": 8839, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 8936, \"char_start\": 8870, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 8976, \"char_start\": 8936, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 8981, \"char_start\": 8976, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 9013, \"char_start\": 8981, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 9075, \"char_start\": 9013, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 9085, \"char_start\": 9075, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 9208, \"char_start\": 9085, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"How the landlord responded to its contractor causing a partial collapse of the ceiling while completing works in the loft.\"}, {\"char_end\": 9216, \"char_start\": 9208, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 9232, \"char_start\": 9216, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 9432, \"char_start\": 9232, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has complained that her children have been caused physical injury by damage to the flooring caused by the accident, and by what she considers is fibreglass contamination in the property.\"}, {\"char_end\": 10092, \"char_start\": 9432, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While we have considered the distress these events may have caused the resident, this investigation will not consider any potential impact of them on the resident’s or her family’s health. The courts are the most effective place for disputes about personal injury and illness. This is largely because independent medical experts are appointed to give evidence. They have a duty to the court to provide unbiased insights on the diagnosis, prognosis, and cause of any illness or injury. When disputes arise over the cause of an injury, oral testimony can be examined in court. Therefore, this part to the resident’s complaint is better dealt with via the court.\"}, {\"char_end\": 10549, \"char_start\": 10092, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complains that the landlord failed to adequately clean the property after the accident. She complains that the loft was still contaminated when it happened due to a previous rat infestation. She is also concerned that asbestos containing materials were present in the loft at the time. Therefore, she considers the landlord should have completed an intense deep clean of the property following the accident to minimise any risks to her family.\"}, {\"char_end\": 10941, \"char_start\": 10549, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord has explained that it does not consider the property was at any risk of contamination from the historical rat infestation since the ceiling was punctured, and its contents spilled into the bedroom, after its contractors had already fully cleaned the area and treated it with biocide. It also explained that it had already removed all contaminated insulation before the accident.\"}, {\"char_end\": 11541, \"char_start\": 10941, \"page\": 1, \"paragraph\": 189, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, the resident has supplied photos of the inside of the loft immediately after the contractor made the hole in the ceiling. We can see the photo was taken immediately after since the hole is yet to be tarped over, and the landlord did so in the afternoon of 7 December 2023. These photos do not indicate that the loft had been fully cleaned. For instance, it appears to be full of loose fragments, dust, small pellets, and torn up pieces of insulation. Other photos then show this type of material covering the bedroom and hallway floor and many of the resident and her children’s belongings.\"}, {\"char_end\": 11760, \"char_start\": 11541, \"page\": 1, \"paragraph\": 190, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We can see the resident supplied the landlord with these photos on 8 December 2023 and explained that she was concerned that the property was now contaminated with rat droppings and loose insulation fibres as a result.\"}, {\"char_end\": 12161, \"char_start\": 11760, \"page\": 1, \"paragraph\": 191, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Based on the resident’s reports, we would expect the landlord to have considered the potential risks posed by any potential rodent droppings or loose fragments of the “stone wool” insulation in some kind of risk assessment, for it to have documented the actions it took to clean the bedroom, and to have explained this to the resident. There is no indication it completed any kind of risk assessment.\"}, {\"char_end\": 12352, \"char_start\": 12161, \"page\": 1, \"paragraph\": 192, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There is no record of the cleaning visit on 8 December 2023 which makes it difficult to establish whether the landlord did enough to satisfy itself that it had suitably cleaned the property.\"}, {\"char_end\": 12774, \"char_start\": 12352, \"page\": 1, \"paragraph\": 193, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We can see the resident raised concerns about the possible presence of asbestos in her stage 1 complaint. In its stage 1 response the landlord explained that it had seen a 2015 survey which did not identify any asbestos in the loft. It offered to complete a more up-to-date survey if the resident remained concerned. This was a positive step towards mitigating the distress the resident was likely caused by the accident.\"}, {\"char_end\": 12965, \"char_start\": 12774, \"page\": 1, \"paragraph\": 194, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, despite the resident then asking the landlord to commission a new survey after its stage 1 response on 11 December 2023, the landlord failed to organise this or address the request.\"}, {\"char_end\": 13588, \"char_start\": 12965, \"page\": 1, \"paragraph\": 195, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We note the landlord has already offered the resident £150 for distress and inconvenience. We also note that it offered £180 as a contribution towards any cleaning costs. However, the landlord has not acknowledged its failure to complete an asbestos inspection nor has it done enough to reassure the resident that there were no hazards present in the home, for these reasons, we do not consider the compensation offered to be sufficient. Our guidance on compensation sets out that payments between £100 and £600 are typically appropriate to put right failings which have adversely, but not permanently, impacted residents.\"}, {\"char_end\": 13972, \"char_start\": 13588, \"page\": 1, \"paragraph\": 196, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In calculating the correct sum of compensation we have considered the distress the resident was likely caused by the landlord’s omissions. We have considered how this distress was likely compounded by the resident’s responsibilities as a mother to her 2 young children. We will order the landlord pays a further £200 to bring the total compensation up to the higher end of our scale.\"}, {\"char_end\": 14459, \"char_start\": 13972, \"page\": 1, \"paragraph\": 197, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has advised us that she considers the landlord should reimburse her the cost of the 2 new children’s mattresses she bought to replace those damaged by the accident. We can see she asked the landlord to do so during the complaints process. In its stage 2 response the landlord declined to do so on the basis that the resident had failed to provide related evidence when it requested this. We cannot see that the resident made attempts to supply this evidence following this.\"}, {\"char_end\": 14635, \"char_start\": 14459, \"page\": 1, \"paragraph\": 198, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Therefore, we will recommend the landlord considers any evidence the resident has to demonstrate that she replaced the mattresses and other possessions following the accident.\"}, {\"char_end\": 14645, \"char_start\": 14635, \"page\": 1, \"paragraph\": 199, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 14714, \"char_start\": 14645, \"page\": 1, \"paragraph\": 200, \"section_tag\": \"tribunal_reasoning\", \"text\": \"How the landlord handled the resident’s reports of chipped flooring.\"}, {\"char_end\": 14722, \"char_start\": 14714, \"page\": 1, \"paragraph\": 201, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 14743, \"char_start\": 14722, \"page\": 1, \"paragraph\": 202, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration\"}, {\"char_end\": 15411, \"char_start\": 14743, \"page\": 1, \"paragraph\": 203, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident’s tenancy agreement sets out that she was responsible for maintaining and repairing any damage to floor coverings. She complains that the debris which fell due to the accident on 7 December 2023 chipped the flooring, and so the landlord should have repaired it. The landlord considered this and noted that the same chip had been identified before 7 December 2023, and therefore it was not responsible. While we have not seen the evidence the landlord referred to, there is no evidence to demonstrate that the damage was caused by the accident. Therefore, we do not consider the landlord was obligated to repair the floor covering or provide compensation.\"}, {\"char_end\": 15421, \"char_start\": 15411, \"page\": 1, \"paragraph\": 204, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 15440, \"char_start\": 15421, \"page\": 1, \"paragraph\": 205, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 15448, \"char_start\": 15440, \"page\": 1, \"paragraph\": 206, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 15464, \"char_start\": 15448, \"page\": 1, \"paragraph\": 207, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 15993, \"char_start\": 15464, \"page\": 1, \"paragraph\": 208, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord addressed the resident’s stage 1 complaint within its timescales. While it delayed by 20 working days in addressing her stage 2 complaint, it contacted her after 26 working days and explained why it had to delay the response. It also offered her £50 compensation for this delay. This aligns with the kind of minor compensation our guidance recommends for the kind of mild inconvenience the resident was likely caused by this. The landlord also did well to contact the resident and explain the reasons for the delay.\"}, {\"char_end\": 16543, \"char_start\": 15993, \"page\": 1, \"paragraph\": 209, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, we can see the resident raised concerns about excessive moisture and incorrectly laid insulation in her stage 2 escalation request which the landlord then failed to address in its final response. While we note these concerns were not explicitly referenced in the original complaint, the landlord should have at least explained this and committed to raising a service request. To put this right, we will order the landlord to engage with the resident to understand her concerns about the loft, and to complete an inspection to address these.\"}, {\"char_end\": 16552, \"char_start\": 16543, \"page\": 1, \"paragraph\": 210, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 16602, \"char_start\": 16552, \"page\": 1, \"paragraph\": 211, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 16947, \"char_start\": 16602, \"page\": 1, \"paragraph\": 212, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s record keeping was poor throughout the period in question. For instance, it failed to document the 8 December 2023 cleaning visit. We would encourage the landlord to reflect on the importance of good record keeping, and how it might have better managed the situation at hand had it kept clearer audit trails of any actions taken.\"}, {\"char_end\": 16961, \"char_start\": 16947, \"page\": 1, \"paragraph\": 213, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 17146, \"char_start\": 16961, \"page\": 1, \"paragraph\": 214, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Overall, the landlord was prompt and responsive in its communications with the resident. However, there were some omissions in the form of unacknowledged concerns in its final response.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              598,
+              652
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              652,
+              745
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              745,
+              789
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              789,
+              848
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              291,
+              294
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              294,
+              308
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 189,
+            "text_span": [
+              10941,
+              11541
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 193,
+            "text_span": [
+              12352,
+              12774
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 203,
+            "text_span": [
+              14743,
+              15411
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              7982,
+              7998
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              7998,
+              8167
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              8167,
+              8183
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              8183,
+              8271
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 192,
+            "text_span": [
+              12161,
+              12352
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              319,
+              570
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              598,
+              652
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              652,
+              745
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              745,
+              789
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              789,
+              848
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 126,
+            "text_span": [
+              5225,
+              5227
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 127,
+            "text_span": [
+              5227,
+              5232
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 128,
+            "text_span": [
+              5232,
+              5246
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 129,
+            "text_span": [
+              5246,
+              5385
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 130,
+            "text_span": [
+              5385,
+              5387
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              5387,
+              5420
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 132,
+            "text_span": [
+              5420,
+              5443
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              5443,
+              5452
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 134,
+            "text_span": [
+              5452,
+              5548
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 135,
+            "text_span": [
+              5548,
+              5594
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              5594,
+              5697
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 137,
+            "text_span": [
+              5697,
+              5854
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              5854,
+              5984
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 139,
+            "text_span": [
+              5984,
+              6000
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 140,
+            "text_span": [
+              6000,
+              6059
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 141,
+            "text_span": [
+              6059,
+              6140
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 142,
+            "text_span": [
+              6140,
+              6236
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 143,
+            "text_span": [
+              6236,
+              6537
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 144,
+            "text_span": [
+              6537,
+              6648
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 145,
+            "text_span": [
+              6648,
+              6717
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 146,
+            "text_span": [
+              6717,
+              6750
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 150,
+            "text_span": [
+              7084,
+              7299
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              7299,
+              7316
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              7316,
+              7346
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 153,
+            "text_span": [
+              7346,
+              7643
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 154,
+            "text_span": [
+              7643,
+              7692
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 155,
+            "text_span": [
+              7692,
+              7765
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 156,
+            "text_span": [
+              7765,
+              7871
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 157,
+            "text_span": [
+              7871,
+              7873
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              7873,
+              7937
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              7937,
+              7982
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              7982,
+              7998
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              7998,
+              8167
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              8167,
+              8183
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              8183,
+              8271
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              8280,
+              8427
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 166,
+            "text_span": [
+              8427,
+              8612
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 167,
+            "text_span": [
+              8612,
+              8727
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              907,
+              944
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              944,
+              1050
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              1050,
+              1084
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              1084,
+              1177
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 63,
+            "text_span": [
+              2803,
+              2831
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 64,
+            "text_span": [
+              2831,
+              2842
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              2842,
+              2862
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              2862,
+              2866
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 67,
+            "text_span": [
+              2866,
+              2902
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 82,
+            "text_span": [
+              3120,
+              3157
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 83,
+            "text_span": [
+              3157,
+              3161
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              3657,
+              3858
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              3858,
+              4052
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 100,
+            "text_span": [
+              4129,
+              4289
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1280,
+              1664
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 192,
+            "text_span": [
+              12161,
+              12352
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 194,
+            "text_span": [
+              12774,
+              12965
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 40,
+            "text_span": [
+              1682,
+              1985
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 42,
+            "text_span": [
+              2005,
+              2315
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              152,
+              166
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              166,
+              180
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 13,
+            "text_span": [
+              226,
+              240
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              240,
+              260
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              260,
+              270
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              270,
+              286
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              180,
+              189
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              189,
+              226
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              319,
+              570
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No case law, statutory citations, or other legal authorities are cited in the source text.",
+        "claimed_amounts": "The resident sought greater compensation and reimbursement for possessions, but the text does not state a specific amount claimed by the resident.",
+        "disputed_amount_gbp": "The text does not identify a single quantified disputed amount.",
+        "region": "The source text does not expressly state a region.",
+        "region_source": "No textual source for a region is provided in the decision.",
+        "statutory_basis": "The source text does not cite any statutory provision as the basis for the decision."
+      },
+      "claim_types": [
+        "Complaint about the landlord's response to its contractor causing a partial collapse of the ceiling while completing loft works.",
+        "Complaint about the landlord's handling of the resident's reports of chipped flooring.",
+        "Complaint handling."
+      ],
+      "decision_date": "19 December 2025",
+      "evidence": [
+        "Resident-supplied photos of the loft and debris after the ceiling hole was made.",
+        "A 2015 asbestos survey referred to by the landlord.",
+        "Resident's tenancy agreement allocating responsibility for floor coverings to the resident.",
+        "Complaint correspondence including stage 1, stage 2 escalation, and stage 2 response.",
+        "Absence of a record of the 8 December 2023 cleaning visit."
+      ],
+      "facts": "The resident lives in the property with her partner and two children. The complaint concerned a contractor putting their foot through a ceiling while completing works in the loft, reports of chipped flooring, and complaint handling. On 7 to 8 December 2023, the resident complained that a contractor put their foot through her children's bedroom ceiling while attending to decontaminate the loft and replace insulation following a rat infestation. The resident said dirt, fibreglass, and rat droppings fell into the bedroom and spread around the house, that flooring was chipped, and that her children experienced itchy feet and throats. The landlord's stage 1 response said it had cleaned the loft, removed contaminated insulation, treated the area with biocide, cleaned the affected bedroom, replastered the ceiling, and offered £150 for professional cleaning of clothes and bedding. On 11 December 2023, the resident complained about excess moisture in the loft, chipped flooring causing her child to cut her foot, insufficient cleaning, disputed decontamination before the accident, and requested an asbestos survey. The resident's stage 2 escalation request said she wanted outstanding works completed and greater compensation. The landlord's stage 2 response reiterated its stage 1 position, offered further compensation, and stated it could not reimburse replacement mattresses without evidence.",
+      "ground_truth_outcome": {
+        "findings": [
+          "Service failure in how the landlord responded to its contractor causing a partial collapse of the ceiling while completing works in the loft.",
+          "Service failure in how the landlord handled the resident's complaint.",
+          "No maladministration in how the landlord handled the resident's reports of chipped flooring."
+        ],
+        "orders": [
+          "The landlord must apologise in writing to the resident.",
+          "The landlord must pay the resident £200 compensation.",
+          "The landlord must arrange an inspection of the loft addressing excess moisture and insulation, with a written report."
+        ]
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1280,
+              1664
+            ]
+          },
+          "text": "The landlord failed to properly satisfy itself and reassure the resident that it had cleaned the property and cleared it of potential hazards after its contractor punctured a hole in 1 of the bedroom ceilings while decontaminating the loft following a rat infestation."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 192,
+            "text_span": [
+              12161,
+              12352
+            ]
+          },
+          "text": "There is no record of the cleaning visit on 8 December 2023 which makes it difficult to establish whether the landlord did enough to satisfy itself that it had suitably cleaned the property."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 194,
+            "text_span": [
+              12774,
+              12965
+            ]
+          },
+          "text": "However, despite the resident then asking the landlord to commission a new survey after its stage 1 response on 11 December 2023, the landlord failed to organise this or address the request."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 40,
+            "text_span": [
+              1682,
+              1985
+            ]
+          },
+          "text": "Damage to floor coverings are defined as the resident’s responsibility in her tenancy agreement. There is also no evidence that the chipped floor covering was caused by the accident on 7 December 2023."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 42,
+            "text_span": [
+              2005,
+              2315
+            ]
+          },
+          "text": "However, its final response failed to address the resident’s concerns about excess moisture and incorrectly laid insulation in the loft."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation concerning a housing association landlord and an assured tenancy",
+      "parties": {
+        "landlord": "Rochdale Boroughwide Housing Limited",
+        "resident": "Unnamed resident"
+      }
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":null,\"unavailable_reason\":\"No case law, statutory citations, or other legal authorities are cited in the source text.\"},\"claim_types\":{\"value\":[\"Complaint about the landlord's response to its contractor causing a partial collapse of the ceiling while completing loft works.\",\"Complaint about the landlord's handling of the resident's reports of chipped flooring.\",\"Complaint handling.\"],\"spans\":[{\"page\":1,\"paragraph\":23,\"text_span\":[598,652]},{\"page\":1,\"paragraph\":24,\"text_span\":[652,745]},{\"page\":1,\"paragraph\":25,\"text_span\":[745,789]},{\"page\":1,\"paragraph\":26,\"text_span\":[789,848]}]},\"claimed_amounts\":{\"value\":null,\"unavailable_reason\":\"The resident sought greater compensation and reimbursement for possessions, but the text does not state a specific amount claimed by the resident.\"},\"decision_date\":{\"value\":\"19 December 2025\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[291,294]},{\"page\":1,\"paragraph\":19,\"text_span\":[294,308]}]},\"disputed_amount_gbp\":{\"value\":null,\"unavailable_reason\":\"The text does not identify a single quantified disputed amount.\"},\"evidence\":{\"value\":[\"Resident-supplied photos of the loft and debris after the ceiling hole was made.\",\"A 2015 asbestos survey referred to by the landlord.\",\"Resident's tenancy agreement allocating responsibility for floor coverings to the resident.\",\"Complaint correspondence including stage 1, stage 2 escalation, and stage 2 response.\",\"Absence of a record of the 8 December 2023 cleaning visit.\"],\"spans\":[{\"page\":1,\"paragraph\":189,\"text_span\":[10941,11541]},{\"page\":1,\"paragraph\":193,\"text_span\":[12352,12774]},{\"page\":1,\"paragraph\":203,\"text_span\":[14743,15411]},{\"page\":1,\"paragraph\":160,\"text_span\":[7982,7998]},{\"page\":1,\"paragraph\":161,\"text_span\":[7998,8167]},{\"page\":1,\"paragraph\":162,\"text_span\":[8167,8183]},{\"page\":1,\"paragraph\":163,\"text_span\":[8183,8271]},{\"page\":1,\"paragraph\":192,\"text_span\":[12161,12352]}]},\"facts\":{\"value\":[\"The resident lives in the property with her partner and two children.\",\"The complaint concerned a contractor putting their foot through a ceiling while completing works in the loft, reports of chipped flooring, and complaint handling.\",\"On 7 to 8 December 2023, the resident complained that a contractor put their foot through her children's bedroom ceiling while attending to decontaminate the loft and replace insulation following a rat infestation.\",\"The resident said dirt, fibreglass, and rat droppings fell into the bedroom and spread around the house, that flooring was chipped, and that her children experienced itchy feet and throats.\",\"The landlord's stage 1 response said it had cleaned the loft, removed contaminated insulation, treated the area with biocide, cleaned the affected bedroom, replastered the ceiling, and offered £150 for professional cleaning of clothes and bedding.\",\"On 11 December 2023, the resident complained about excess moisture in the loft, chipped flooring causing her child to cut her foot, insufficient cleaning, disputed decontamination before the accident, and requested an asbestos survey.\",\"The resident's stage 2 escalation request said she wanted outstanding works completed and greater compensation.\",\"The landlord's stage 2 response reiterated its stage 1 position, offered further compensation, and stated it could not reimburse replacement mattresses without evidence.\"],\"spans\":[{\"page\":1,\"paragraph\":21,\"text_span\":[319,570]},{\"page\":1,\"paragraph\":23,\"text_span\":[598,652]},{\"page\":1,\"paragraph\":24,\"text_span\":[652,745]},{\"page\":1,\"paragraph\":25,\"text_span\":[745,789]},{\"page\":1,\"paragraph\":26,\"text_span\":[789,848]},{\"page\":1,\"paragraph\":126,\"text_span\":[5225,5227]},{\"page\":1,\"paragraph\":127,\"text_span\":[5227,5232]},{\"page\":1,\"paragraph\":128,\"text_span\":[5232,5246]},{\"page\":1,\"paragraph\":129,\"text_span\":[5246,5385]},{\"page\":1,\"paragraph\":130,\"text_span\":[5385,5387]},{\"page\":1,\"paragraph\":131,\"text_span\":[5387,5420]},{\"page\":1,\"paragraph\":132,\"text_span\":[5420,5443]},{\"page\":1,\"paragraph\":133,\"text_span\":[5443,5452]},{\"page\":1,\"paragraph\":134,\"text_span\":[5452,5548]},{\"page\":1,\"paragraph\":135,\"text_span\":[5548,5594]},{\"page\":1,\"paragraph\":136,\"text_span\":[5594,5697]},{\"page\":1,\"paragraph\":137,\"text_span\":[5697,5854]},{\"page\":1,\"paragraph\":138,\"text_span\":[5854,5984]},{\"page\":1,\"paragraph\":139,\"text_span\":[5984,6000]},{\"page\":1,\"paragraph\":140,\"text_span\":[6000,6059]},{\"page\":1,\"paragraph\":141,\"text_span\":[6059,6140]},{\"page\":1,\"paragraph\":142,\"text_span\":[6140,6236]},{\"page\":1,\"paragraph\":143,\"text_span\":[6236,6537]},{\"page\":1,\"paragraph\":144,\"text_span\":[6537,6648]},{\"page\":1,\"paragraph\":145,\"text_span\":[6648,6717]},{\"page\":1,\"paragraph\":146,\"text_span\":[6717,6750]},{\"page\":1,\"paragraph\":150,\"text_span\":[7084,7299]},{\"page\":1,\"paragraph\":151,\"text_span\":[7299,7316]},{\"page\":1,\"paragraph\":152,\"text_span\":[7316,7346]},{\"page\":1,\"paragraph\":153,\"text_span\":[7346,7643]},{\"page\":1,\"paragraph\":154,\"text_span\":[7643,7692]},{\"page\":1,\"paragraph\":155,\"text_span\":[7692,7765]},{\"page\":1,\"paragraph\":156,\"text_span\":[7765,7871]},{\"page\":1,\"paragraph\":157,\"text_span\":[7871,7873]},{\"page\":1,\"paragraph\":158,\"text_span\":[7873,7937]},{\"page\":1,\"paragraph\":159,\"text_span\":[7937,7982]},{\"page\":1,\"paragraph\":160,\"text_span\":[7982,7998]},{\"page\":1,\"paragraph\":161,\"text_span\":[7998,8167]},{\"page\":1,\"paragraph\":162,\"text_span\":[8167,8183]},{\"page\":1,\"paragraph\":163,\"text_span\":[8183,8271]},{\"page\":1,\"paragraph\":165,\"text_span\":[8280,8427]},{\"page\":1,\"paragraph\":166,\"text_span\":[8427,8612]},{\"page\":1,\"paragraph\":167,\"text_span\":[8612,8727]}]},\"ground_truth_outcome\":{\"value\":{\"findings\":[\"Service failure in how the landlord responded to its contractor causing a partial collapse of the ceiling while completing works in the loft.\",\"Service failure in how the landlord handled the resident's complaint.\",\"No maladministration in how the landlord handled the resident's reports of chipped flooring.\"],\"orders\":[\"The landlord must apologise in writing to the resident.\",\"The landlord must pay the resident £200 compensation.\",\"The landlord must arrange an inspection of the loft addressing excess moisture and insulation, with a written report.\"]},\"spans\":[{\"page\":1,\"paragraph\":29,\"text_span\":[907,944]},{\"page\":1,\"paragraph\":30,\"text_span\":[944,1050]},{\"page\":1,\"paragraph\":31,\"text_span\":[1050,1084]},{\"page\":1,\"paragraph\":32,\"text_span\":[1084,1177]},{\"page\":1,\"paragraph\":63,\"text_span\":[2803,2831]},{\"page\":1,\"paragraph\":64,\"text_span\":[2831,2842]},{\"page\":1,\"paragraph\":65,\"text_span\":[2842,2862]},{\"page\":1,\"paragraph\":66,\"text_span\":[2862,2866]},{\"page\":1,\"paragraph\":67,\"text_span\":[2866,2902]},{\"page\":1,\"paragraph\":82,\"text_span\":[3120,3157]},{\"page\":1,\"paragraph\":83,\"text_span\":[3157,3161]},{\"page\":1,\"paragraph\":96,\"text_span\":[3657,3858]},{\"page\":1,\"paragraph\":97,\"text_span\":[3858,4052]},{\"page\":1,\"paragraph\":100,\"text_span\":[4129,4289]}]},\"key_reasoning_quotes\":{\"value\":[\"The landlord failed to properly satisfy itself and reassure the resident that it had cleaned the property and cleared it of potential hazards after its contractor punctured a hole in 1 of the bedroom ceilings while decontaminating the loft following a rat infestation.\",\"There is no record of the cleaning visit on 8 December 2023 which makes it difficult to establish whether the landlord did enough to satisfy itself that it had suitably cleaned the property.\",\"However, despite the resident then asking the landlord to commission a new survey after its stage 1 response on 11 December 2023, the landlord failed to organise this or address the request.\",\"Damage to floor coverings are defined as the resident’s responsibility in her tenancy agreement. There is also no evidence that the chipped floor covering was caused by the accident on 7 December 2023.\",\"However, its final response failed to address the resident’s concerns about excess moisture and incorrectly laid insulation in the loft.\"],\"spans\":[{\"page\":1,\"paragraph\":38,\"text_span\":[1280,1664]},{\"page\":1,\"paragraph\":192,\"text_span\":[12161,12352]},{\"page\":1,\"paragraph\":194,\"text_span\":[12774,12965]},{\"page\":1,\"paragraph\":40,\"text_span\":[1682,1985]},{\"page\":1,\"paragraph\":42,\"text_span\":[2005,2315]}]},\"matter_type\":{\"value\":\"Housing Ombudsman investigation concerning a housing association landlord and an assured tenancy\",\"spans\":[{\"page\":1,\"paragraph\":9,\"text_span\":[152,166]},{\"page\":1,\"paragraph\":10,\"text_span\":[166,180]},{\"page\":1,\"paragraph\":13,\"text_span\":[226,240]},{\"page\":1,\"paragraph\":14,\"text_span\":[240,260]},{\"page\":1,\"paragraph\":15,\"text_span\":[260,270]},{\"page\":1,\"paragraph\":16,\"text_span\":[270,286]}]},\"parties\":{\"value\":{\"landlord\":\"Rochdale Boroughwide Housing Limited\",\"resident\":\"Unnamed resident\"},\"spans\":[{\"page\":1,\"paragraph\":11,\"text_span\":[180,189]},{\"page\":1,\"paragraph\":12,\"text_span\":[189,226]},{\"page\":1,\"paragraph\":21,\"text_span\":[319,570]}]},\"region\":{\"value\":null,\"unavailable_reason\":\"The source text does not expressly state a region.\"},\"region_source\":{\"value\":null,\"unavailable_reason\":\"No textual source for a region is provided in the decision.\"},\"statutory_basis\":{\"value\":null,\"unavailable_reason\":\"The source text does not cite any statutory provision as the basis for the decision.\"}}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202338295\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 64, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Rochdale Boroughwide Housing Limited (202338295)\"}, {\"char_end\": 113, \"char_start\": 64, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Rochdale Boroughwide Housing Limited (202338295)\"}, {\"char_end\": 125, \"char_start\": 113, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 134, \"char_start\": 125, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 142, \"char_start\": 134, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 152, \"char_start\": 142, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202338295\"}, {\"char_end\": 166, \"char_start\": 152, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 180, \"char_start\": 166, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 189, \"char_start\": 180, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 226, \"char_start\": 189, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Rochdale Boroughwide Housing Limited\"}, {\"char_end\": 240, \"char_start\": 226, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 260, \"char_start\": 240, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 270, \"char_start\": 260, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 286, \"char_start\": 270, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 291, \"char_start\": 286, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 294, \"char_start\": 291, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"19\"}, {\"char_end\": 308, \"char_start\": 294, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2025\"}, {\"char_end\": 319, \"char_start\": 308, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 570, \"char_start\": 319, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives in the property with her partner and 2 children. She complains the landlord failed to adequately inspect or clean the property after its contractor accidentally put their foot through the ceiling while completing works in the loft.\"}, {\"char_end\": 598, \"char_start\": 570, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 652, \"char_start\": 598, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about how the landlord responded to:\"}, {\"char_end\": 745, \"char_start\": 652, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"Its contractor causing a partial collapse of the ceiling while completing works in the loft.\"}, {\"char_end\": 789, \"char_start\": 745, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident’s reports of chipped flooring.\"}, {\"char_end\": 848, \"char_start\": 789, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"We have also considered the landlord’s complaint handling.\"}, {\"char_end\": 877, \"char_start\": 848, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 907, \"char_start\": 877, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found that there was:\"}, {\"char_end\": 944, \"char_start\": 907, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure in how the landlord:\"}, {\"char_end\": 1050, \"char_start\": 944, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Responded to its contractor causing a partial collapse of the ceiling while completing works in the loft.\"}, {\"char_end\": 1084, \"char_start\": 1050, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Handled the resident’s complaint.\"}, {\"char_end\": 1177, \"char_start\": 1084, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration in how the landlord handled the resident’s reports of chipped flooring.\"}, {\"char_end\": 1180, \"char_start\": 1177, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 1185, \"char_start\": 1180, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 1235, \"char_start\": 1185, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 1254, \"char_start\": 1235, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1280, \"char_start\": 1254, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Partial ceiling collapse.\"}, {\"char_end\": 1664, \"char_start\": 1280, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to properly satisfy itself and reassure the resident that it had cleaned the property and cleared it of potential hazards after its contractor punctured a hole in 1 of the bedroom ceilings while decontaminating the loft following a rat infestation. It also failed to complete an asbestos survey following this despite it offering to do so in its stage 1 response.\"}, {\"char_end\": 1682, \"char_start\": 1664, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Chipped flooring.\"}, {\"char_end\": 1985, \"char_start\": 1682, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Damage to floor coverings are defined as the resident’s responsibility in her tenancy agreement. There is also no evidence that the chipped floor covering was caused by the accident on 7 December 2023. Therefore, the landlord acted appropriately by declining to complete a repair or offer compensation.\"}, {\"char_end\": 2005, \"char_start\": 1985, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling.\"}, {\"char_end\": 2315, \"char_start\": 2005, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord addressed the resident’s stage 1 complaint within its timescales. It took steps to mitigate the delay at stage 2 and offered appropriate compensation for this. However, its final response failed to address the resident’s concerns about excess moisture and incorrectly laid insulation in the loft.\"}, {\"char_end\": 2336, \"char_start\": 2315, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2394, \"char_start\": 2336, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 2396, \"char_start\": 2394, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 2471, \"char_start\": 2396, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2562, \"char_start\": 2471, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2569, \"char_start\": 2562, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 2579, \"char_start\": 2569, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 2584, \"char_start\": 2579, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 2695, \"char_start\": 2584, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2698, \"char_start\": 2695, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2709, \"char_start\": 2698, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2725, \"char_start\": 2709, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2732, \"char_start\": 2725, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2741, \"char_start\": 2732, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2746, \"char_start\": 2741, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2752, \"char_start\": 2746, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2778, \"char_start\": 2752, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2787, \"char_start\": 2778, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2789, \"char_start\": 2787, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2803, \"char_start\": 2789, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2831, \"char_start\": 2803, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2842, \"char_start\": 2831, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2862, \"char_start\": 2842, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"to the resident for\"}, {\"char_end\": 2866, \"char_start\": 2862, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"the\"}, {\"char_end\": 2902, \"char_start\": 2866, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"failures identified in this report.\"}, {\"char_end\": 2915, \"char_start\": 2902, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2928, \"char_start\": 2915, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2932, \"char_start\": 2928, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2940, \"char_start\": 2932, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2943, \"char_start\": 2940, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2952, \"char_start\": 2943, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2996, \"char_start\": 2952, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 3025, \"char_start\": 2996, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 3050, \"char_start\": 3025, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 3069, \"char_start\": 3050, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 3071, \"char_start\": 3069, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 3085, \"char_start\": 3071, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3101, \"char_start\": 3085, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"13 January 2026\"}, {\"char_end\": 3120, \"char_start\": 3101, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 3157, \"char_start\": 3120, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 3161, \"char_start\": 3157, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"200\"}, {\"char_end\": 3175, \"char_start\": 3161, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"comprised of:\"}, {\"char_end\": 3177, \"char_start\": 3175, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 3181, \"char_start\": 3177, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"200\"}, {\"char_end\": 3219, \"char_start\": 3181, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"for distress caused by its failure to\"}, {\"char_end\": 3259, \"char_start\": 3219, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"complete an asbestos survey or suitably\"}, {\"char_end\": 3366, \"char_start\": 3259, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"reassure the resident that it had removed all potential hazards following the accident on 7 December 2023.\"}, {\"char_end\": 3473, \"char_start\": 3366, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"If the landlord has yet to pay the resident the £380 offered at stage 2, it is to do so and evidence this.\"}, {\"char_end\": 3608, \"char_start\": 3473, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 3622, \"char_start\": 3608, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3638, \"char_start\": 3622, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"13 January 2026\"}, {\"char_end\": 3640, \"char_start\": 3638, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"3\"}, {\"char_end\": 3657, \"char_start\": 3640, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"Inspection order\"}, {\"char_end\": 3858, \"char_start\": 3657, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"The landlord must contact the resident to arrange an inspection. It must take all reasonable steps to ensure the inspection is completed by the due date. The inspection must be completed by a suitably\"}, {\"char_end\": 4052, \"char_start\": 3858, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"qualified person. If the landlord cannot gain access to complete the inspection, it must provide us with documentary evidence of its attempts to inspect the property no later than the due date.\"}, {\"char_end\": 4085, \"char_start\": 4052, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"What the inspection must achieve\"}, {\"char_end\": 4129, \"char_start\": 4085, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"The landlord must ensure that the surveyor:\"}, {\"char_end\": 4289, \"char_start\": 4129, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"Inspects the loft for excess and moisture and to ensure the insulation is laid appropriately. The surveyor must also produce a written report with photographs.\"}, {\"char_end\": 4321, \"char_start\": 4289, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"The survey report must set out:\"}, {\"char_end\": 4367, \"char_start\": 4321, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"Whether there is excess moisture in the loft.\"}, {\"char_end\": 4413, \"char_start\": 4367, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"Whether the insulation is laid appropriately.\"}, {\"char_end\": 4534, \"char_start\": 4413, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"Whether the landlord is responsible to repair or resolve the issue(s) together with reasons where it is not responsible.\"}, {\"char_end\": 4602, \"char_start\": 4534, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"A full scope of works to achieve a lasting and effective resolution\"}, {\"char_end\": 4616, \"char_start\": 4602, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"to the issue(\"}, {\"char_end\": 4619, \"char_start\": 4616, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \"s)\"}, {\"char_end\": 4653, \"char_start\": 4619, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"(if the landlord is responsible).\"}, {\"char_end\": 4710, \"char_start\": 4653, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"order\", \"text\": \"The likely timescales to commence and complete the work.\"}, {\"char_end\": 4724, \"char_start\": 4710, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 4740, \"char_start\": 4724, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"order\", \"text\": \"13 January 2026\"}, {\"char_end\": 4756, \"char_start\": 4740, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 4839, \"char_start\": 4756, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 4859, \"char_start\": 4839, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 4872, \"char_start\": 4859, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 4892, \"char_start\": 4872, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"order\", \"text\": \"should consider any\"}, {\"char_end\": 4967, \"char_start\": 4892, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"order\", \"text\": \"evidence the resident is able to submit in relation to her claims that she\"}, {\"char_end\": 4976, \"char_start\": 4967, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"order\", \"text\": \"replaced\"}, {\"char_end\": 5041, \"char_start\": 4976, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"order\", \"text\": \"mattresses and other possessions as a result of the accident. It\"}, {\"char_end\": 5048, \"char_start\": 5041, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"order\", \"text\": \"should\"}, {\"char_end\": 5164, \"char_start\": 5048, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"order\", \"text\": \"then explain its position on whether it will reimburse the resident for any items or facilitate an insurance claim.\"}, {\"char_end\": 5182, \"char_start\": 5164, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 5206, \"char_start\": 5182, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 5211, \"char_start\": 5206, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 5225, \"char_start\": 5211, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 5227, \"char_start\": 5225, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"7\"}, {\"char_end\": 5232, \"char_start\": 5227, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"to 8\"}, {\"char_end\": 5246, \"char_start\": 5232, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2023\"}, {\"char_end\": 5385, \"char_start\": 5246, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained that, while attending the property to decontaminate the loft and replace insulation following a rat infestation, a\"}, {\"char_end\": 5387, \"char_start\": 5385, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"c\"}, {\"char_end\": 5420, \"char_start\": 5387, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"ontractor put their foot through\"}, {\"char_end\": 5443, \"char_start\": 5420, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"her children’s bedroom\"}, {\"char_end\": 5452, \"char_start\": 5443, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"ceiling.\"}, {\"char_end\": 5548, \"char_start\": 5452, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \"She explained that this had caused large amounts of dirt, fibreglass, and rat droppings to fall\"}, {\"char_end\": 5594, \"char_start\": 5548, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"into the bedroom and spread around the house.\"}, {\"char_end\": 5697, \"char_start\": 5594, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"She also noted it had chipped the flooring in the bedroom which was likely to cut the children’s feet.\"}, {\"char_end\": 5854, \"char_start\": 5697, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"She noted serious concerns about contamination due to the rat infestation and explained that she was going to have dispose of a large number of possessions.\"}, {\"char_end\": 5984, \"char_start\": 5854, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"She explained her children’s feet and throats were itchy, and she feared this was due to the fibres released from the insulation.\"}, {\"char_end\": 6000, \"char_start\": 5984, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"8 December 2023\"}, {\"char_end\": 6059, \"char_start\": 6000, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued a stage 1 response. It explained that:\"}, {\"char_end\": 6140, \"char_start\": 6059, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"pre_decision_record\", \"text\": \"It cleared out the loft on 7 December 2023 following the recent rat infestation.\"}, {\"char_end\": 6236, \"char_start\": 6140, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"pre_decision_record\", \"text\": \"It removed all contaminated insulation and treated the area with “biocide” to remove pathogens.\"}, {\"char_end\": 6537, \"char_start\": 6236, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"pre_decision_record\", \"text\": \"When the contractor was laying new insulation they put their foot through the ceiling. However, they immediately cleaned and sealed this and re-laid insulation. This mistake occurred after the area had been decontaminated, so there was no contaminated insulation which could have entered the bedroom.\"}, {\"char_end\": 6648, \"char_start\": 6537, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"pre_decision_record\", \"text\": \"It attended the property on 8 December 2023 and cleaned the affected bedroom. It also wiped all surfaces down.\"}, {\"char_end\": 6717, \"char_start\": 6648, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident declined its offer to vacuum the children’s mattresses.\"}, {\"char_end\": 6750, \"char_start\": 6717, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"pre_decision_record\", \"text\": \"It also replastered the ceiling.\"}, {\"char_end\": 6849, \"char_start\": 6750, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"pre_decision_record\", \"text\": \"The floor was already chipped before 7 December 2023, so it would not offer compensation for this.\"}, {\"char_end\": 7011, \"char_start\": 6849, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"pre_decision_record\", \"text\": \"There was no asbestos containing materials (ACMS) in the loft which was confirmed by a 2015 survey. The resident was welcome to request a more up-to-date report.\"}, {\"char_end\": 7084, \"char_start\": 7011, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"pre_decision_record\", \"text\": \"The insulation used is “stone wool” and “poses no risk to human health.”\"}, {\"char_end\": 7299, \"char_start\": 7084, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord offered the resident £150 to have clothes and bedding professionally cleaned. It also offered to clean the 2 beds affected, but would not offer this service for any items which were not in the bedroom.\"}, {\"char_end\": 7316, \"char_start\": 7299, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"pre_decision_record\", \"text\": \"11 December 2023\"}, {\"char_end\": 7346, \"char_start\": 7316, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained that:\"}, {\"char_end\": 7643, \"char_start\": 7346, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"pre_decision_record\", \"text\": \"The visiting contractor on 8 December 2023 had noted that there was severe levels of excess moisture in the loft which meant the insulation was soaked. She noted that this was going to cause the new insulation to get mouldy, and that the 8 roof vents and PIV unit did not appear to be sufficient.\"}, {\"char_end\": 7692, \"char_start\": 7643, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"pre_decision_record\", \"text\": \"Her child had cut her foot on the chipped floor.\"}, {\"char_end\": 7765, \"char_start\": 7692, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord did not sufficiently clean the property on 8 December 2023.\"}, {\"char_end\": 7871, \"char_start\": 7765, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"pre_decision_record\", \"text\": \"She disagreed with the landlord’s position that the loft was decontaminated prior to the accident. She ha\"}, {\"char_end\": 7873, \"char_start\": 7871, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"pre_decision_record\", \"text\": \"d\"}, {\"char_end\": 7937, \"char_start\": 7873, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"pre_decision_record\", \"text\": \"photographic evidence to show it was not cleaned prior to this.\"}, {\"char_end\": 7982, \"char_start\": 7937, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"pre_decision_record\", \"text\": \"She would like an asbestos survey completed.\"}, {\"char_end\": 7998, \"char_start\": 7982, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"pre_decision_record\", \"text\": \"29 January 2024\"}, {\"char_end\": 8167, \"char_start\": 7998, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident forwarded the Ombudsman her stage 2 escalation request. She explained she wanted the landlord to complete outstanding works and offer greater compensation.\"}, {\"char_end\": 8183, \"char_start\": 8167, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"pre_decision_record\", \"text\": \"8 February 2024\"}, {\"char_end\": 8271, \"char_start\": 8183, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued a stage 2 response. It reiterated the positions set out at stage 1.\"}, {\"char_end\": 8280, \"char_start\": 8271, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"pre_decision_record\", \"text\": \"It also:\"}, {\"char_end\": 8427, \"char_start\": 8280, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"pre_decision_record\", \"text\": \"Recognised the resident was not happy with the standard of cleaning, and offered her a further £30 in compensation to pay for additional cleaning.\"}, {\"char_end\": 8612, \"char_start\": 8427, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"pre_decision_record\", \"text\": \"Explained that it had asked the resident for evidence to show she had replaced her children’s 2 mattresses, which she had not provided. Therefore, it could not reimburse her for these.\"}, {\"char_end\": 8727, \"char_start\": 8612, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"pre_decision_record\", \"text\": \"Offered her a further £150 in compensation for distress and inconvenience, and £50 for a delayed stage 2 response.\"}, {\"char_end\": 8749, \"char_start\": 8727, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 8773, \"char_start\": 8749, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 8776, \"char_start\": 8773, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 8795, \"char_start\": 8776, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 8801, \"char_start\": 8795, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 8835, \"char_start\": 8801, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 8839, \"char_start\": 8835, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 8870, \"char_start\": 8839, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 8936, \"char_start\": 8870, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 8976, \"char_start\": 8936, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 8981, \"char_start\": 8976, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 9013, \"char_start\": 8981, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 9075, \"char_start\": 9013, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 9085, \"char_start\": 9075, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 9208, \"char_start\": 9085, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"How the landlord responded to its contractor causing a partial collapse of the ceiling while completing works in the loft.\"}, {\"char_end\": 9216, \"char_start\": 9208, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 9232, \"char_start\": 9216, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 9432, \"char_start\": 9232, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has complained that her children have been caused physical injury by damage to the flooring caused by the accident, and by what she considers is fibreglass contamination in the property.\"}, {\"char_end\": 10092, \"char_start\": 9432, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While we have considered the distress these events may have caused the resident, this investigation will not consider any potential impact of them on the resident’s or her family’s health. The courts are the most effective place for disputes about personal injury and illness. This is largely because independent medical experts are appointed to give evidence. They have a duty to the court to provide unbiased insights on the diagnosis, prognosis, and cause of any illness or injury. When disputes arise over the cause of an injury, oral testimony can be examined in court. Therefore, this part to the resident’s complaint is better dealt with via the court.\"}, {\"char_end\": 10549, \"char_start\": 10092, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complains that the landlord failed to adequately clean the property after the accident. She complains that the loft was still contaminated when it happened due to a previous rat infestation. She is also concerned that asbestos containing materials were present in the loft at the time. Therefore, she considers the landlord should have completed an intense deep clean of the property following the accident to minimise any risks to her family.\"}, {\"char_end\": 10941, \"char_start\": 10549, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord has explained that it does not consider the property was at any risk of contamination from the historical rat infestation since the ceiling was punctured, and its contents spilled into the bedroom, after its contractors had already fully cleaned the area and treated it with biocide. It also explained that it had already removed all contaminated insulation before the accident.\"}, {\"char_end\": 11541, \"char_start\": 10941, \"page\": 1, \"paragraph\": 189, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, the resident has supplied photos of the inside of the loft immediately after the contractor made the hole in the ceiling. We can see the photo was taken immediately after since the hole is yet to be tarped over, and the landlord did so in the afternoon of 7 December 2023. These photos do not indicate that the loft had been fully cleaned. For instance, it appears to be full of loose fragments, dust, small pellets, and torn up pieces of insulation. Other photos then show this type of material covering the bedroom and hallway floor and many of the resident and her children’s belongings.\"}, {\"char_end\": 11760, \"char_start\": 11541, \"page\": 1, \"paragraph\": 190, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We can see the resident supplied the landlord with these photos on 8 December 2023 and explained that she was concerned that the property was now contaminated with rat droppings and loose insulation fibres as a result.\"}, {\"char_end\": 12161, \"char_start\": 11760, \"page\": 1, \"paragraph\": 191, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Based on the resident’s reports, we would expect the landlord to have considered the potential risks posed by any potential rodent droppings or loose fragments of the “stone wool” insulation in some kind of risk assessment, for it to have documented the actions it took to clean the bedroom, and to have explained this to the resident. There is no indication it completed any kind of risk assessment.\"}, {\"char_end\": 12352, \"char_start\": 12161, \"page\": 1, \"paragraph\": 192, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There is no record of the cleaning visit on 8 December 2023 which makes it difficult to establish whether the landlord did enough to satisfy itself that it had suitably cleaned the property.\"}, {\"char_end\": 12774, \"char_start\": 12352, \"page\": 1, \"paragraph\": 193, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We can see the resident raised concerns about the possible presence of asbestos in her stage 1 complaint. In its stage 1 response the landlord explained that it had seen a 2015 survey which did not identify any asbestos in the loft. It offered to complete a more up-to-date survey if the resident remained concerned. This was a positive step towards mitigating the distress the resident was likely caused by the accident.\"}, {\"char_end\": 12965, \"char_start\": 12774, \"page\": 1, \"paragraph\": 194, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, despite the resident then asking the landlord to commission a new survey after its stage 1 response on 11 December 2023, the landlord failed to organise this or address the request.\"}, {\"char_end\": 13588, \"char_start\": 12965, \"page\": 1, \"paragraph\": 195, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We note the landlord has already offered the resident £150 for distress and inconvenience. We also note that it offered £180 as a contribution towards any cleaning costs. However, the landlord has not acknowledged its failure to complete an asbestos inspection nor has it done enough to reassure the resident that there were no hazards present in the home, for these reasons, we do not consider the compensation offered to be sufficient. Our guidance on compensation sets out that payments between £100 and £600 are typically appropriate to put right failings which have adversely, but not permanently, impacted residents.\"}, {\"char_end\": 13972, \"char_start\": 13588, \"page\": 1, \"paragraph\": 196, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In calculating the correct sum of compensation we have considered the distress the resident was likely caused by the landlord’s omissions. We have considered how this distress was likely compounded by the resident’s responsibilities as a mother to her 2 young children. We will order the landlord pays a further £200 to bring the total compensation up to the higher end of our scale.\"}, {\"char_end\": 14459, \"char_start\": 13972, \"page\": 1, \"paragraph\": 197, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has advised us that she considers the landlord should reimburse her the cost of the 2 new children’s mattresses she bought to replace those damaged by the accident. We can see she asked the landlord to do so during the complaints process. In its stage 2 response the landlord declined to do so on the basis that the resident had failed to provide related evidence when it requested this. We cannot see that the resident made attempts to supply this evidence following this.\"}, {\"char_end\": 14635, \"char_start\": 14459, \"page\": 1, \"paragraph\": 198, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Therefore, we will recommend the landlord considers any evidence the resident has to demonstrate that she replaced the mattresses and other possessions following the accident.\"}, {\"char_end\": 14645, \"char_start\": 14635, \"page\": 1, \"paragraph\": 199, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 14714, \"char_start\": 14645, \"page\": 1, \"paragraph\": 200, \"section_tag\": \"tribunal_reasoning\", \"text\": \"How the landlord handled the resident’s reports of chipped flooring.\"}, {\"char_end\": 14722, \"char_start\": 14714, \"page\": 1, \"paragraph\": 201, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 14743, \"char_start\": 14722, \"page\": 1, \"paragraph\": 202, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration\"}, {\"char_end\": 15411, \"char_start\": 14743, \"page\": 1, \"paragraph\": 203, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident’s tenancy agreement sets out that she was responsible for maintaining and repairing any damage to floor coverings. She complains that the debris which fell due to the accident on 7 December 2023 chipped the flooring, and so the landlord should have repaired it. The landlord considered this and noted that the same chip had been identified before 7 December 2023, and therefore it was not responsible. While we have not seen the evidence the landlord referred to, there is no evidence to demonstrate that the damage was caused by the accident. Therefore, we do not consider the landlord was obligated to repair the floor covering or provide compensation.\"}, {\"char_end\": 15421, \"char_start\": 15411, \"page\": 1, \"paragraph\": 204, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 15440, \"char_start\": 15421, \"page\": 1, \"paragraph\": 205, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 15448, \"char_start\": 15440, \"page\": 1, \"paragraph\": 206, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 15464, \"char_start\": 15448, \"page\": 1, \"paragraph\": 207, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 15993, \"char_start\": 15464, \"page\": 1, \"paragraph\": 208, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord addressed the resident’s stage 1 complaint within its timescales. While it delayed by 20 working days in addressing her stage 2 complaint, it contacted her after 26 working days and explained why it had to delay the response. It also offered her £50 compensation for this delay. This aligns with the kind of minor compensation our guidance recommends for the kind of mild inconvenience the resident was likely caused by this. The landlord also did well to contact the resident and explain the reasons for the delay.\"}, {\"char_end\": 16543, \"char_start\": 15993, \"page\": 1, \"paragraph\": 209, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, we can see the resident raised concerns about excessive moisture and incorrectly laid insulation in her stage 2 escalation request which the landlord then failed to address in its final response. While we note these concerns were not explicitly referenced in the original complaint, the landlord should have at least explained this and committed to raising a service request. To put this right, we will order the landlord to engage with the resident to understand her concerns about the loft, and to complete an inspection to address these.\"}, {\"char_end\": 16552, \"char_start\": 16543, \"page\": 1, \"paragraph\": 210, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 16602, \"char_start\": 16552, \"page\": 1, \"paragraph\": 211, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 16947, \"char_start\": 16602, \"page\": 1, \"paragraph\": 212, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s record keeping was poor throughout the period in question. For instance, it failed to document the 8 December 2023 cleaning visit. We would encourage the landlord to reflect on the importance of good record keeping, and how it might have better managed the situation at hand had it kept clearer audit trails of any actions taken.\"}, {\"char_end\": 16961, \"char_start\": 16947, \"page\": 1, \"paragraph\": 213, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 17146, \"char_start\": 16961, \"page\": 1, \"paragraph\": 214, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Overall, the landlord was prompt and responsive in its communications with the resident. However, there were some omissions in the form of unacknowledged concerns in its final response.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "feb35a0806e0473d19a55ca32a04d1bdd7b26abb79ad202f0bb3809256a1dc36",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T15:33:15.366647+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "97a1fe3608a55eddfd1ccb7a5cd26343696828de3b54bd4ca26dad3ab3d4e3b5"
+}

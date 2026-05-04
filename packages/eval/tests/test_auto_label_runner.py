@@ -19,6 +19,7 @@ from eval.auto_label.prompts.extraction import (
     render_extraction_prompt,
 )
 from eval.auto_label.runner import (
+    LABELER_MAX_TOKENS,
     RUNNER_VERSION,
     CasePass,
     LabelerOutput,
@@ -213,6 +214,7 @@ class TestRunOneCase:
         assert len(client_b.calls) == 1
         # System prompt is the canonical extraction prompt.
         assert client_a.calls[0]["system_prompt"] == EXTRACTION_SYSTEM_PROMPT
+        assert client_a.calls[0]["max_tokens"] == LABELER_MAX_TOKENS
 
     def test_handles_malformed_response(self, tmp_path: Path) -> None:
         run = _make_run(tmp_path)
@@ -239,6 +241,68 @@ class TestRunOneCase:
             )
         )
         assert case_pass.labeler_a.partial_case == {}
+
+    def test_unwraps_live_extraction_cells_before_grounding(
+        self, tmp_path: Path
+    ) -> None:
+        run = _make_run(tmp_path)
+        deps = _make_deps(tmp_path)
+        canned = {
+            "facts": {
+                "value": [
+                    "Tenant reported mould",
+                    {"text": "before the decision was made."},
+                ],
+                "spans": [{"page": 1, "paragraph": 1, "text_span": [0, 52]}],
+            },
+            "key_reasoning_quotes": {
+                "value": ["Tenant reported mould"],
+                "spans": [{"page": 1, "paragraph": 1, "text_span": [0, 52]}],
+            },
+            "decision_date": {
+                "value": "2025-10-23",
+                "spans": [{"page": 1, "paragraph": 2, "text_span": [53, 63]}],
+            },
+        }
+        clients = {
+            f"{run.labeler_a_spec.provider}:{run.labeler_a_spec.model}": StubLLMClient(canned),
+            f"{run.labeler_b_spec.provider}:{run.labeler_b_spec.model}": StubLLMClient(canned),
+        }
+
+        case_pass = asyncio.run(
+            run_one_case(
+                case_id="C",
+                pdf_triples=[
+                    {
+                        "page": 1,
+                        "paragraph": 1,
+                        "section_tag": "pre_decision_record",
+                        "char_start": 0,
+                        "char_end": 52,
+                        "text": "Tenant reported mould before the decision was made.",
+                    }
+                ],
+                page_text={1: "Tenant reported mould before the decision was made."},
+                page_sections={(1, 1): "pre_decision_record"},
+                source_pdf_sha256="a" * 64,
+                ocr_text_sha256="b" * 64,
+                run=run,
+                clients_by_spec=clients,
+                lookups=deps,
+            )
+        )
+
+        partial = case_pass.labeler_a.partial_case
+        assert partial["facts"] == "Tenant reported mould before the decision was made."
+        assert partial["_field_provenance"]["facts"] == [
+            {"page": 1, "paragraph": 1, "text_span": [0, 52]}
+        ]
+        assert partial["key_reasoning_quotes"] == [
+            {
+                "text": "Tenant reported mould",
+                "provenance": {"page": 1, "paragraph": 1, "text_span": [0, 52]},
+            }
+        ]
 
 
 # ---------------------------------------------------------------------------

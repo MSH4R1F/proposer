@@ -58,8 +58,12 @@ class TestSourceMetadata:
             char_end=350,
             content_sha256="abc",
             source_url="https://www.gov.uk/x",
+            outcome_raw="Maladministration",
+            outcome_normalized="maladministration",
         )
         d = meta.to_chroma_metadata()
+        assert d["outcome_raw"] == "Maladministration"
+        assert d["outcome_normalized"] == "maladministration"
         roundtrip = SourceMetadata.from_chroma_metadata(d)
         assert roundtrip.matter_types == ["rent_repayment_order"]
         assert roundtrip.paragraph == 12
@@ -67,6 +71,21 @@ class TestSourceMetadata:
         assert roundtrip.char_end == 350
         assert roundtrip.decision_date == date(2024, 6, 15)
         assert roundtrip.source_url == "https://www.gov.uk/x"
+        assert roundtrip.outcome_raw == "Maladministration"
+        assert roundtrip.outcome_normalized == "maladministration"
+
+    def test_chroma_projection_tolerates_old_pickled_metadata(self):
+        meta = _meta(
+            outcome_raw="Maladministration",
+            outcome_normalized="maladministration",
+        )
+        # Older BM25 pickles may contain SourceMetadata objects created before
+        # these optional fields existed. Projection must stay backwards-compatible.
+        delattr(meta, "outcome_raw")
+        delattr(meta, "outcome_normalized")
+        d = meta.to_chroma_metadata()
+        assert "outcome_raw" not in d
+        assert "outcome_normalized" not in d
 
     def test_char_end_must_not_precede_char_start(self):
         with pytest.raises(ValidationError):

@@ -42,6 +42,7 @@ from llm_orchestrator.clients.labeler_factory import LabelerModelSpec
 
 
 RUNNER_VERSION = "1.0.0"
+LABELER_MAX_TOKENS = 12000
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +135,128 @@ def _safe_json_loads(raw: str) -> dict[str, Any]:
         parsed = json.loads(text)
     except json.JSONDecodeError:
         return {}
-    return parsed if isinstance(parsed, dict) else {}
+    if not isinstance(parsed, dict):
+        return {}
+    return _normalise_extraction_shape(parsed)
+
+
+def _is_extraction_cell(value: Any) -> bool:
+    return isinstance(value, Mapping) and any(
+        key in value for key in ("value", "spans", "unavailable_reason")
+    )
+
+
+def _coerce_span(value: Any) -> Optional[dict[str, Any]]:
+    if not isinstance(value, Mapping):
+        return None
+    try:
+        page = int(value["page"])
+        paragraph = int(value["paragraph"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    out: dict[str, Any] = {"page": page, "paragraph": paragraph}
+    text_span = value.get("text_span")
+    if (
+        isinstance(text_span, (list, tuple))
+        and len(text_span) == 2
+        and all(isinstance(v, int) for v in text_span)
+    ):
+        if int(text_span[0]) >= int(text_span[1]):
+            return None
+        out["text_span"] = [int(text_span[0]), int(text_span[1])]
+    return out
+
+
+def _normalise_quotes(value: Any, spans: list[dict[str, Any]]) -> Any:
+    if not isinstance(value, list):
+        return value
+    out: list[Any] = []
+    for idx, item in enumerate(value):
+        if isinstance(item, Mapping):
+            out.append(dict(item))
+            continue
+        if isinstance(item, str):
+            quote: dict[str, Any] = {"text": item}
+            if spans:
+                quote["provenance"] = spans[min(idx, len(spans) - 1)]
+            out.append(quote)
+            continue
+        out.append(item)
+    return out
+
+
+def _normalise_facts(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        parts: list[str] = []
+        for item in value:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, Mapping):
+                text = item.get("text") or item.get("value") or item.get("description")
+                if text is not None:
+                    parts.append(str(text))
+            elif item is not None:
+                parts.append(str(item))
+        return " ".join(part for part in parts if part).strip()
+    if isinstance(value, Mapping):
+        text = value.get("text") or value.get("value") or value.get("summary")
+        if text is not None:
+            return str(text)
+        return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    return str(value)
+
+
+def _normalise_extraction_shape(parsed: dict[str, Any]) -> dict[str, Any]:
+    """Convert prompt-contract cells into the partial-case shape.
+
+    The live labelers are instructed to emit ``{"value": ..., "spans": ...}``
+    cells, while older offline fixtures used direct GoldCase-like values.
+    The grounder consumes the latter shape plus ``_field_provenance``. Keep
+    direct fixture rows unchanged, but unwrap live extraction cells before
+    grounding so real provider output does not crash on nested dict values.
+    """
+    normalised: dict[str, Any] = {}
+    field_provenance: dict[str, list[dict[str, Any]]] = {}
+    unavailable_reasons: dict[str, str] = {}
+
+    for field, cell in parsed.items():
+        if not _is_extraction_cell(cell):
+            normalised[field] = cell
+            continue
+
+        assert isinstance(cell, Mapping)
+        spans = [
+            span
+            for span in (_coerce_span(raw_span) for raw_span in cell.get("spans", []) or [])
+            if span is not None
+        ]
+        if spans:
+            field_provenance[field] = spans
+
+        if cell.get("unavailable_reason"):
+            unavailable_reasons[field] = str(cell["unavailable_reason"])
+
+        value = cell.get("value")
+        if value is None:
+            continue
+        if field == "facts":
+            value = _normalise_facts(value)
+        if field == "key_reasoning_quotes":
+            value = _normalise_quotes(value, spans)
+        normalised[field] = value
+
+    if field_provenance:
+        existing = normalised.get("_field_provenance", {})
+        if isinstance(existing, Mapping):
+            merged = {**existing, **field_provenance}
+        else:
+            merged = field_provenance
+        normalised["_field_provenance"] = merged
+    if unavailable_reasons:
+        normalised["_unavailable_reasons"] = unavailable_reasons
+    return normalised
 
 
 async def _run_labeler(
@@ -146,7 +268,7 @@ async def _run_labeler(
     raw = await client.generate(
         messages=[{"role": "user", "content": rendered_prompt}],
         system_prompt=EXTRACTION_SYSTEM_PROMPT,
-        max_tokens=4096,
+        max_tokens=LABELER_MAX_TOKENS,
         temperature=0.0,
     )
     partial = _safe_json_loads(raw)
@@ -300,6 +422,7 @@ def sha256_hex(data: bytes) -> str:
 
 __all__ = [
     "RUNNER_VERSION",
+    "LABELER_MAX_TOKENS",
     "CasePass",
     "LabelerOutput",
     "LabelingRun",

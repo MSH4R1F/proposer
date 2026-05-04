@@ -304,6 +304,15 @@ def _now_iso() -> str:
     "--max-listing-pages", type=int, default=None, help="Cap listing pages crawled."
 )
 @click.option(
+    "--data-dir",
+    type=click.Path(),
+    default=None,
+    help=(
+        "Override base data dir. Raw output is written to "
+        "<data-dir>/raw/housing_ombudsman, matching the ingest script."
+    ),
+)
+@click.option(
     "--rate", type=float, default=None, help="Requests per second (token bucket)."
 )
 @click.option(
@@ -316,6 +325,7 @@ def _now_iso() -> str:
 def main(
     max_keep: Optional[int],
     max_listing_pages: Optional[int],
+    data_dir: Optional[str],
     rate: Optional[float],
     no_robots: bool,
     verbose: bool,
@@ -327,6 +337,9 @@ def main(
         stream=sys.stdout,
     )
     config = ScraperConfig()
+    if data_dir is not None:
+        data_root = Path(data_dir).expanduser().resolve()
+        config.output_subdir = str(data_root / "raw" / "housing_ombudsman")
     if max_keep is not None:
         config.max_keep = max_keep
     if max_listing_pages is not None:

@@ -1,0 +1,246 @@
+{
+  "_review_instructions": "Draft only. Verify every candidate field against the review packet and source text. Before appending, set human_adjudicator, mandatory_review_completed_at, adjudicated_fields, flip rates, and change mandatory field_provenance sources from deterministic_manifest to human_mandatory_review for confirmed cells.",
+  "_review_status": "human_reviewed",
+  "_source_bundle_preview": {
+    "paragraph_count": 641,
+    "section_counts": {
+      "order": 66,
+      "pre_decision_record": 210,
+      "tribunal_reasoning": 365
+    }
+  },
+  "case": {
+    "case_id": "housing-ombudsman-202348669",
+    "case_size": "small",
+    "cited_authorities": [],
+    "claim_types": [
+      "disrepair"
+    ],
+    "claimed_amounts": [
+      {
+        "amount_gbp": "1010.00",
+        "by_party": "tenant",
+        "issue": "ombudsman_compensation"
+      }
+    ],
+    "corpus_version": "research_seed_2026_05",
+    "decision_date": "2025-10-27",
+    "disputed_amount_gbp": "1010.00",
+    "domain_id": "housing.repairs_social.v1",
+    "evidence": [
+      {
+        "description": "Housing Ombudsman determination records the resident's complaint history, repair reports, and landlord response.",
+        "kind": "ombudsman_record",
+        "provenance": {
+          "page": 1,
+          "paragraph": 22,
+          "text_span": [
+            308,
+            326
+          ]
+        }
+      }
+    ],
+    "excluded_source_ids": [],
+    "expected_outcome": null,
+    "expected_redacted_text": null,
+    "expected_redactions": [],
+    "facts": "The resident live d in a 2-bedroom flat with he r 2 children . She complained that there was a mice infestation and droppings in the property and disrepair was contributing to this. She also complained as she was unhappy with plaster ing and decorating in the property following leaks . The resident reported to the landlord that she and her children ha d vulnerabilities. They moved to another property in September 2025. The complaint is about the landlord\u2019s response to the resident\u2019s : reports of a mice infestation and related repairs . concerns about plastering and decorating. We have also investigated the landlord\u2019s complaint handling.",
+    "forum": "housing_ombudsman",
+    "ground_truth_outcome": {
+      "overall_winner": "tenant",
+      "per_issue": [],
+      "total_awarded_gbp": "1010.00",
+      "unapportioned_reason": "Housing Ombudsman determination made a global compensation order without apportioning the final total across housing_v1 issue categories."
+    },
+    "key_reasoning_quotes": [
+      {
+        "provenance": {
+          "page": 1,
+          "paragraph": 159,
+          "text_span": [
+            3447,
+            3457
+          ]
+        },
+        "text": "ing to the resident for the failures identified in this report. The landlord must ensure: The apology is specific to the failures identified in this decision , meaningful and empathetic. It has due regard to our apologies guidance . No later than 24 November 2025 2 Compensation order The landlord must pay the resident \u00a3 1, 01 0 made up as follows: \u00a3 8 0 0 for the distress and inconvenience caused by its response to the resident\u2019s reports that there was a mice infestation. \u00a3 5 0 for the distress and in and inconvenience caused by its response to the resident\u2019s dissatisfaction with its plastering and decorating. \u00a31 60 for the distress and incon"
+      }
+    ],
+    "law_effective_date": "2025-10-27",
+    "matter_type": "repairs_disrepair",
+    "negative_kind": null,
+    "ocr_confidence": null,
+    "parties": [
+      {
+        "represented": false,
+        "role": "tenant"
+      },
+      {
+        "represented": false,
+        "role": "landlord"
+      }
+    ],
+    "region": "london",
+    "region_source": "London & Quadrant Housing Trust (landlord_name_keyword; REVIEW_REQUIRED)",
+    "retrieval_namespace_id": "housing_repairs_social_v1",
+    "schema_version": "v1",
+    "source_kind": "ombudsman_determination",
+    "source_license": "unknown_housing_ombudsman_decisions_permission_pending",
+    "source_pdf_sha256": "4757cc682160677b86db83d35b25e4415df9e3f678719730a30701f4370e9e73",
+    "source_publisher": "housing_ombudsman",
+    "source_url": "https://www.housing-ombudsman.org.uk/decisions/london-quadrant-housing-trust-202348669/",
+    "statutory_basis": [],
+    "statutory_basis_unavailable_reason": "Housing Ombudsman repair/social determination; statutory basis is not extracted into this GoldCase field in the draft review packet.",
+    "target_source_id": "202348669",
+    "train_test_split": "test"
+  },
+  "labeling_provenance": {
+    "adjudicated_fields": [
+      "claim_types",
+      "disputed_amount_gbp",
+      "facts",
+      "ground_truth_outcome.overall_winner",
+      "ground_truth_outcome.total_awarded_gbp",
+      "ground_truth_outcome.unapportioned_reason",
+      "matter_type"
+    ],
+    "anchor_set_id": null,
+    "audit_flip_rate": 0.0,
+    "field_provenance": [
+      {
+        "field_path": "claim_types",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "claimed_amounts[issue=ombudsman_compensation|by_party=tenant].amount_gbp",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "DRAFT ONLY: human reviewer must verify this source span and change source to human_mandatory_review before append.",
+        "source": "deterministic_manifest",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "disputed_amount_gbp",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "facts",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              308,
+              326
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "ground_truth_outcome.overall_winner",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "ground_truth_outcome.total_awarded_gbp",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "ground_truth_outcome.unapportioned_reason",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      },
+      {
+        "field_path": "matter_type",
+        "match_strategy": "review_packet_candidate_span",
+        "reviewer_rationale": "Human mandatory review confirmed by Mohamed on 2026-05-04 against the review packet and source text.",
+        "source": "human_mandatory_review",
+        "source_spans": [
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              3447,
+              3457
+            ]
+          }
+        ]
+      }
+    ],
+    "human_adjudicator": "Mohamed Sharif",
+    "inter_model_agreement_rate": 0.5384615384615384,
+    "is_human_only_anchor": false,
+    "labeler_models": [],
+    "mandatory_review_completed_at": "2026-05-04T17:07:55.113452+00:00",
+    "mandatory_review_flip_rate": 0.0
+  }
+}

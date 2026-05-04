@@ -352,7 +352,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supports both full and lite mode rebuilding
   - Useful for recovering from index corruption without re-ingesting PDFs
 
-- **RAG Quality Test Script** (`scripts/test_rag_quality.py`) - Automated retrieval quality evaluation
+- **RAG Quality Test Script** (`scripts/test_deposit_rag_quality.py`) - Automated retrieval quality evaluation
   - Tests 5 sample queries with expected topics and case types
   - Calculates topic precision, case type precision, and confidence metrics
   - Compares hybrid search performance

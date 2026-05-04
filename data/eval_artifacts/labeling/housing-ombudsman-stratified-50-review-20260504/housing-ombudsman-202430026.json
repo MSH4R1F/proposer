@@ -1,0 +1,1218 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202430026",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "disputed_amount_gbp": "GROUNDED",
+      "facts": "UNGROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.45454545454545453,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 14 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='13 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repair requests', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='data breach response', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Islington a...tenant': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['repair ...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='maladministration found', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 6 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='13 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repair requests', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='data breach response', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Islington a...tenant': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='maladministration found', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "disputed_amount_gbp": "basis span present",
+      "facts": "facts leakage: span_outside_pre_decision:span at (page=1, paragraph=118) is in section 'tribunal_reasoning', expected 'pre_decision_record'; span_outside_pre_decision:span at (page=1, paragraph=120) is in section 'tribunal_reasoning', expected 'pre_decision_record'; span_outside_pre_decision:span at (page=1, paragraph=121) is in section 'tribunal_reasoning', expected 'pre_decision_record'; span_outside_pre_decision:span at (page=1, paragraph=123) is in section 'tribunal_reasoning', expected 'pre_decision_record'",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "cited_authorities[0]": "UNGROUNDED",
+      "cited_authorities[0].cited_date": "UNGROUNDED",
+      "cited_authorities[1]": "UNGROUNDED",
+      "cited_authorities[1].cited_date": "UNGROUNDED",
+      "cited_authorities[2]": "UNGROUNDED",
+      "cited_authorities[2].cited_date": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "GROUNDED",
+      "disputed_amount_gbp": "GROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "key_reasoning_quotes[5]": "UNGROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.47619047619047616,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 25 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'cited_authorities': ['T...: 'Landlord name/title'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'cited_authorities': ['T...: 'Landlord name/title'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='Islington and Shoreditch', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'cited_authorities': ['T...: 'Landlord name/title'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='response to the resident’s repair requests', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='response to reports of a data breach', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'cited_authorities': ['T...: 'Landlord name/title'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Islington a...nt': 'unnamed resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord repair records', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='An image of a bulge on t...or sent by the resident', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='A quote obtained by the ...dent to supply flooring', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Evidence of weekly rent of £104.54', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Internal evidence about ...r and garden step quote', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'cited_authorities': ['T...: 'Landlord name/title'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='The Ombudsman’s Complaint Handling Code', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Knowledge and Informatio... (KIM) spotlight report', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.2\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Spotlight report on repairs and maintenance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nclaimed_amounts\n  Field required [type=missing, input_value={'cited_authorities': ['T...: 'Landlord name/title'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'repair_requests': 'mala...ing replacement offer']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'repair_requests': 'mala...ing replacement offer']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.repair_requests\n  Extra inputs are not permitted [type=extra_forbidden, input_value='maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.data_breach_reports\n  Extra inputs are not permitted [type=extra_forbidden, input_value='outside jurisdiction', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['written apology', 'pay ...ring replacement offer'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 19 validation errors for GoldCase\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='Islington and Shoreditch', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='response to the resident’s repair requests', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='response to reports of a data breach', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Islington a...nt': 'unnamed resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord repair records', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='An image of a bulge on t...or sent by the resident', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='A quote obtained by the ...dent to supply flooring', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Evidence of weekly rent of £104.54', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Internal evidence about ...r and garden step quote', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='The Ombudsman’s Complaint Handling Code', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Knowledge and Informatio... (KIM) spotlight report', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.2\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Spotlight report on repairs and maintenance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'repair_requests': 'mala...ing replacement offer']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'repair_requests': 'mala...ing replacement offer']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.repair_requests\n  Extra inputs are not permitted [type=extra_forbidden, input_value='maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.data_breach_reports\n  Extra inputs are not permitted [type=extra_forbidden, input_value='outside jurisdiction', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['written apology', 'pay ...ring replacement offer'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "cited_authorities[0]": "missing name or cited_date",
+      "cited_authorities[0].cited_date": "cited_date missing or unparseable",
+      "cited_authorities[1]": "missing name or cited_date",
+      "cited_authorities[1].cited_date": "cited_date missing or unparseable",
+      "cited_authorities[2]": "missing name or cited_date",
+      "cited_authorities[2].cited_date": "cited_date missing or unparseable",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date present",
+      "disputed_amount_gbp": "basis span present",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "key_reasoning_quotes[5]": "quote not found in declared span",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              516,
+              560
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              560,
+              598
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              598,
+              618
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              338,
+              355
+            ]
+          }
+        ],
+        "disputed_amount_gbp": [
+          {
+            "page": 1,
+            "paragraph": 149,
+            "text_span": [
+              5348,
+              5353
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              366,
+              449
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 114,
+            "text_span": [
+              3685,
+              3709
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 118,
+            "text_span": [
+              3721,
+              3968
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 120,
+            "text_span": [
+              3972,
+              4020
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 121,
+            "text_span": [
+              4020,
+              4046
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 123,
+            "text_span": [
+              4048,
+              4099
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 147,
+            "text_span": [
+              5226,
+              5331
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 148,
+            "text_span": [
+              5331,
+              5348
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 149,
+            "text_span": [
+              5348,
+              5353
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 150,
+            "text_span": [
+              5353,
+              5391
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              5391,
+              5399
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              5399,
+              5403
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 153,
+            "text_span": [
+              5403,
+              5439
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 154,
+            "text_span": [
+              5439,
+              5456
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 155,
+            "text_span": [
+              5456,
+              5460
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 156,
+            "text_span": [
+              5460,
+              5466
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 157,
+            "text_span": [
+              5466,
+              5497
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              5497,
+              5708
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              5708,
+              5833
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              5833,
+              5890
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              5890,
+              6013
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              6013,
+              6087
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              6087,
+              6123
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              647,
+              739
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              823,
+              891
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 33,
+            "text_span": [
+              910,
+              1108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1228,
+              1468
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              198,
+              212
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              221,
+              274
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "No specific amounts claimed by the resident are mentioned in the pre-decision record sections.",
+        "evidence": "Specific evidence items are not detailed in the pre-decision record sections of the text.",
+        "region": "No specific region or geographical jurisdiction is mentioned in the text.",
+        "region_source": "No region information is available to source.",
+        "statutory_basis": "No specific statutory provisions or legal basis are cited in the decision."
+      },
+      "claim_types": [
+        "repair requests",
+        "data breach response",
+        "complaint handling"
+      ],
+      "decision_date": "13 November 2025",
+      "disputed_amount_gbp": 500,
+      "facts": "The resident is a secure tenant of the landlord. The property is a 3-bedroom flat. On 16 August 2024, the resident raised her complaint. She was unhappy with how the landlord had handled a number of repairs and was unhappy that there were outstanding repairs. She reported that over the past 4 months she had experienced significant inconvenience as the landlord carried out repairs. She missed work because of unnecessary appointments and she was unable to use 2 bedrooms for over a week because of floor repairs. The resident remained unhappy because of the delay in repairing the flooring. She said that the landlord had not paid the £500 it offered in its complaint response. She had not agreed to this figure as it did not adequately cover the total cost of the floor replacement. She was unhappy that 2 bedrooms were out of use for a week and the months of disruption to the house. She said that she took a lot of time off work because there were multiple visits to complete basic repairs. She said that a bathroom refurbishment was promised as a resolution to the leak in the cistern but this remains outstanding. She said that the compensation offer was not sufficient. She said that she paid for a dehumidifier to dry out the property after the leak and this increased her electricity costs. She reported that the landlord's offer of compensation was not sufficient for the distress and inconvenience.",
+      "ground_truth_outcome": "maladministration found",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 33,
+            "text_span": [
+              910,
+              1108
+            ]
+          },
+          "text": "The landlord failed to evidence that it responded to repairs within its set timeframes and it failed to communicate delays. The landlord's failings caused time, trouble, distress and inconvenience."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1228,
+              1468
+            ]
+          },
+          "text": "The landlord failed to effectively use its complaints process to identify failings and put things right for the resident and it failed to track agreed actions. These failings caused further time, trouble, and inconvenience to the resident."
+        }
+      ],
+      "matter_type": "Investigation",
+      "parties": {
+        "landlord": "Islington and Shoreditch Housing Association Limited",
+        "tenant": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"repair requests\", \"data breach response\", \"complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [516, 560]},\n      {\"page\": 1, \"paragraph\": 26, \"text_span\": [560, 598]},\n      {\"page\": 1, \"paragraph\": 27, \"text_span\": [598, 618]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific amounts claimed by the resident are mentioned in the pre-decision record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"13 November 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [338, 355]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": 500,\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 149, \"text_span\": [5348, 5353]}\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"Specific evidence items are not detailed in the pre-decision record sections of the text.\"\n  },\n  \"facts\": {\n    \"value\": \"The resident is a secure tenant of the landlord. The property is a 3-bedroom flat. On 16 August 2024, the resident raised her complaint. She was unhappy with how the landlord had handled a number of repairs and was unhappy that there were outstanding repairs. She reported that over the past 4 months she had experienced significant inconvenience as the landlord carried out repairs. She missed work because of unnecessary appointments and she was unable to use 2 bedrooms for over a week because of floor repairs. The resident remained unhappy because of the delay in repairing the flooring. She said that the landlord had not paid the £500 it offered in its complaint response. She had not agreed to this figure as it did not adequately cover the total cost of the floor replacement. She was unhappy that 2 bedrooms were out of use for a week and the months of disruption to the house. She said that she took a lot of time off work because there were multiple visits to complete basic repairs. She said that a bathroom refurbishment was promised as a resolution to the leak in the cistern but this remains outstanding. She said that the compensation offer was not sufficient. She said that she paid for a dehumidifier to dry out the property after the leak and this increased her electricity costs. She reported that the landlord's offer of compensation was not sufficient for the distress and inconvenience.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [366, 449]},\n      {\"page\": 1, \"paragraph\": 114, \"text_span\": [3685, 3709]},\n      {\"page\": 1, \"paragraph\": 118, \"text_span\": [3721, 3968]},\n      {\"page\": 1, \"paragraph\": 120, \"text_span\": [3972, 4020]},\n      {\"page\": 1, \"paragraph\": 121, \"text_span\": [4020, 4046]},\n      {\"page\": 1, \"paragraph\": 123, \"text_span\": [4048, 4099]},\n      {\"page\": 1, \"paragraph\": 147, \"text_span\": [5226, 5331]},\n      {\"page\": 1, \"paragraph\": 148, \"text_span\": [5331, 5348]},\n      {\"page\": 1, \"paragraph\": 149, \"text_span\": [5348, 5353]},\n      {\"page\": 1, \"paragraph\": 150, \"text_span\": [5353, 5391]},\n      {\"page\": 1, \"paragraph\": 151, \"text_span\": [5391, 5399]},\n      {\"page\": 1, \"paragraph\": 152, \"text_span\": [5399, 5403]},\n      {\"page\": 1, \"paragraph\": 153, \"text_span\": [5403, 5439]},\n      {\"page\": 1, \"paragraph\": 154, \"text_span\": [5439, 5456]},\n      {\"page\": 1, \"paragraph\": 155, \"text_span\": [5456, 5460]},\n      {\"page\": 1, \"paragraph\": 156, \"text_span\": [5460, 5466]},\n      {\"page\": 1, \"paragraph\": 157, \"text_span\": [5466, 5497]},\n      {\"page\": 1, \"paragraph\": 158, \"text_span\": [5497, 5708]},\n      {\"page\": 1, \"paragraph\": 159, \"text_span\": [5708, 5833]},\n      {\"page\": 1, \"paragraph\": 160, \"text_span\": [5833, 5890]},\n      {\"page\": 1, \"paragraph\": 161, \"text_span\": [5890, 6013]},\n      {\"page\": 1, \"paragraph\": 162, \"text_span\": [6013, 6087]},\n      {\"page\": 1, \"paragraph\": 163, \"text_span\": [6087, 6123]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"maladministration found\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 29, \"text_span\": [647, 739]},\n      {\"page\": 1, \"paragraph\": 31, \"text_span\": [823, 891]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord failed to evidence that it responded to repairs within its set timeframes and it failed to communicate delays. The landlord's failings caused time, trouble, distress and inconvenience.\",\n      \"The landlord failed to effectively use its complaints process to identify failings and put things right for the resident and it failed to track agreed actions. These failings caused further time, trouble, and inconvenience to the resident.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 33, \"text_span\": [910, 1108]},\n      {\"page\": 1, \"paragraph\": 35, \"text_span\": [1228, 1468]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [198, 212]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Islington and Shoreditch Housing Association Limited\",\n      \"tenant\": \"the resident\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [221, 274]}\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific region or geographical jurisdiction is mentioned in the text.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No region information is available to source.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutory provisions or legal basis are cited in the decision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202430026\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 80, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Islington and Shoreditch Housing Association Limited (202430026)\"}, {\"char_end\": 145, \"char_start\": 80, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Islington and Shoreditch Housing Association Limited (202430026)\"}, {\"char_end\": 157, \"char_start\": 145, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 166, \"char_start\": 157, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 174, \"char_start\": 166, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 184, \"char_start\": 174, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202430026\"}, {\"char_end\": 198, \"char_start\": 184, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 212, \"char_start\": 198, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 221, \"char_start\": 212, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 274, \"char_start\": 221, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Islington and Shoreditch Housing Association Limited\"}, {\"char_end\": 288, \"char_start\": 274, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 308, \"char_start\": 288, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 318, \"char_start\": 308, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 333, \"char_start\": 318, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 338, \"char_start\": 333, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 341, \"char_start\": 338, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"13\"}, {\"char_end\": 350, \"char_start\": 341, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"November\"}, {\"char_end\": 355, \"char_start\": 350, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 366, \"char_start\": 355, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 449, \"char_start\": 366, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident is a secure tenant of the landlord. The property is a 3-bedroom flat.\"}, {\"char_end\": 477, \"char_start\": 449, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 516, \"char_start\": 477, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s:\"}, {\"char_end\": 560, \"char_start\": 516, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"response to the resident’s repair requests.\"}, {\"char_end\": 598, \"char_start\": 560, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"response to reports of a data breach.\"}, {\"char_end\": 618, \"char_start\": 598, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint handling.\"}, {\"char_end\": 647, \"char_start\": 618, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 739, \"char_start\": 647, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was maladministration with the landlord’s response to the resident’s repair requests.\"}, {\"char_end\": 823, \"char_start\": 739, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to reports of a data breach is outside of our jurisdiction.\"}, {\"char_end\": 891, \"char_start\": 823, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was maladministration with the landlord’s complaint handling.\"}, {\"char_end\": 910, \"char_start\": 891, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1108, \"char_start\": 910, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to evidence that it responded to repairs within its set timeframes and it failed to communicate delays. The landlord’s failings caused time, trouble, distress and inconvenience.\"}, {\"char_end\": 1228, \"char_start\": 1108, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to reports of a data breach would be better dealt with by the Information Commissioners Office.\"}, {\"char_end\": 1468, \"char_start\": 1228, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to effectively use its complaints process to identify failings and put things right for the resident and it failed to track agreed actions. These failings caused further time, trouble, and inconvenience to the resident.\"}, {\"char_end\": 1489, \"char_start\": 1468, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1547, \"char_start\": 1489, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1549, \"char_start\": 1547, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1624, \"char_start\": 1549, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1715, \"char_start\": 1624, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1722, \"char_start\": 1715, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 1732, \"char_start\": 1722, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 1737, \"char_start\": 1732, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 1848, \"char_start\": 1737, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 1851, \"char_start\": 1848, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 1862, \"char_start\": 1851, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 1878, \"char_start\": 1862, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 1885, \"char_start\": 1878, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 1894, \"char_start\": 1885, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 1899, \"char_start\": 1894, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 1905, \"char_start\": 1899, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 1931, \"char_start\": 1905, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 1940, \"char_start\": 1931, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 1942, \"char_start\": 1940, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 1956, \"char_start\": 1942, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 1984, \"char_start\": 1956, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 1995, \"char_start\": 1984, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2055, \"char_start\": 1995, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"to the resident for the failures identified in this report.\"}, {\"char_end\": 2068, \"char_start\": 2055, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2081, \"char_start\": 2068, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2085, \"char_start\": 2081, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2093, \"char_start\": 2085, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2096, \"char_start\": 2093, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2105, \"char_start\": 2096, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2149, \"char_start\": 2105, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2178, \"char_start\": 2149, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 2203, \"char_start\": 2178, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 2222, \"char_start\": 2203, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2224, \"char_start\": 2222, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2238, \"char_start\": 2224, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2255, \"char_start\": 2238, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"12 December 2025\"}, {\"char_end\": 2257, \"char_start\": 2255, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2276, \"char_start\": 2257, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2313, \"char_start\": 2276, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 2320, \"char_start\": 2313, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"441.81\"}, {\"char_end\": 2340, \"char_start\": 2320, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"made up as follows:\"}, {\"char_end\": 2342, \"char_start\": 2340, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2346, \"char_start\": 2342, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"300\"}, {\"char_end\": 2350, \"char_start\": 2346, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"for\"}, {\"char_end\": 2435, \"char_start\": 2350, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"distress and inconvenience caused by its response to the resident’s repair requests.\"}, {\"char_end\": 2437, \"char_start\": 2435, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2439, \"char_start\": 2437, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2535, \"char_start\": 2439, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"00 for time, trouble, and inconvenience for the failings identified in its complaints handling.\"}, {\"char_end\": 2537, \"char_start\": 2535, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2572, \"char_start\": 2537, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"41.81 for loss of use of 2 bedroom\"}, {\"char_end\": 2574, \"char_start\": 2572, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"s\"}, {\"char_end\": 2586, \"char_start\": 2574, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"for 1 week.\"}, {\"char_end\": 2734, \"char_start\": 2586, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"The landlord must revisit its offer for flooring replacement to ensure that the offer for actual damaged flooring including fitting, is sufficient.\"}, {\"char_end\": 2783, \"char_start\": 2734, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"The landlord must write to the resident, copying\"}, {\"char_end\": 2786, \"char_start\": 2783, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"us\"}, {\"char_end\": 2789, \"char_start\": 2786, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"in\"}, {\"char_end\": 2791, \"char_start\": 2789, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \",\"}, {\"char_end\": 2821, \"char_start\": 2791, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"setting out its calculations.\"}, {\"char_end\": 2956, \"char_start\": 2821, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 3036, \"char_start\": 2956, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure any payments it has already paid.\"}, {\"char_end\": 3052, \"char_start\": 3036, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 3135, \"char_start\": 3052, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 3155, \"char_start\": 3135, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 3309, \"char_start\": 3155, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"It is recommended for the landlord to contact the resident to confirm if there are any outstanding repairs in the property and action them appropriately.\"}, {\"char_end\": 3416, \"char_start\": 3309, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"As set out in paragraph 21 and 22, the resident reported that the bathroom fan is not working efficiently.\"}, {\"char_end\": 3418, \"char_start\": 3416, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"W\"}, {\"char_end\": 3460, \"char_start\": 3418, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"hen the resident brought her complaint to\"}, {\"char_end\": 3464, \"char_start\": 3460, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"us,\"}, {\"char_end\": 3477, \"char_start\": 3464, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"she reported\"}, {\"char_end\": 3489, \"char_start\": 3477, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"a number of\"}, {\"char_end\": 3509, \"char_start\": 3489, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"outstanding repairs\"}, {\"char_end\": 3551, \"char_start\": 3509, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \", including a replacement bathroom suite,\"}, {\"char_end\": 3609, \"char_start\": 3551, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"that had not been brought through the complaints process.\"}, {\"char_end\": 3627, \"char_start\": 3609, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 3651, \"char_start\": 3627, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 3656, \"char_start\": 3651, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 3670, \"char_start\": 3656, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 3685, \"char_start\": 3670, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"16 August 2024\"}, {\"char_end\": 3705, \"char_start\": 3685, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised\"}, {\"char_end\": 3709, \"char_start\": 3705, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"her\"}, {\"char_end\": 3719, \"char_start\": 3709, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint\"}, {\"char_end\": 3721, \"char_start\": 3719, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"tribunal_reasoning\", \"text\": \".\"}, {\"char_end\": 3968, \"char_start\": 3721, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"tribunal_reasoning\", \"text\": \"She was unhappy with how the landlord had handled a number of repairs and was unhappy that there were outstanding repairs. She reported that over the past 4 months she had experienced significant inconvenience as the landlord carried out repairs.\"}, {\"char_end\": 3972, \"char_start\": 3968, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"She\"}, {\"char_end\": 4020, \"char_start\": 3972, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"missed work because of unnecessary appointments\"}, {\"char_end\": 4046, \"char_start\": 4020, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \"and she was unable to use\"}, {\"char_end\": 4048, \"char_start\": 4046, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"2\"}, {\"char_end\": 4099, \"char_start\": 4048, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"bedrooms for over a week because of floor repairs.\"}, {\"char_end\": 4116, \"char_start\": 4099, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"6 September 2024\"}, {\"char_end\": 4195, \"char_start\": 4116, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided its stage 1 complaint response. It upheld the complaint.\"}, {\"char_end\": 4289, \"char_start\": 4195, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It said that repairs had been completed and acknowledged the delay in completing the repairs.\"}, {\"char_end\": 4355, \"char_start\": 4289, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It apologised for the delay in responding to the complaint and it\"}, {\"char_end\": 4400, \"char_start\": 4355, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"said that the resident had accepted an offer\"}, {\"char_end\": 4405, \"char_start\": 4400, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of £\"}, {\"char_end\": 4432, \"char_start\": 4405, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"500 for damage caused to h\"}, {\"char_end\": 4435, \"char_start\": 4432, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"er\"}, {\"char_end\": 4445, \"char_start\": 4435, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"flooring.\"}, {\"char_end\": 4462, \"char_start\": 4445, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"9 September 2024\"}, {\"char_end\": 4489, \"char_start\": 4462, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident disputed that\"}, {\"char_end\": 4496, \"char_start\": 4489, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"all of\"}, {\"char_end\": 4528, \"char_start\": 4496, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the repairs had been completed.\"}, {\"char_end\": 4531, \"char_start\": 4528, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Sh\"}, {\"char_end\": 4655, \"char_start\": 4531, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"e said that compensation for the damaged flooring was not sufficient and asked for the complaint to be escalated to stage 2\"}, {\"char_end\": 4671, \"char_start\": 4655, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"14 October 2024\"}, {\"char_end\": 4750, \"char_start\": 4671, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided its stage 2 complaint response. It upheld the complaint.\"}, {\"char_end\": 4860, \"char_start\": 4750, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It found that its stage 1 complaint response did not meet its standards and that information was not correct.\"}, {\"char_end\": 4983, \"char_start\": 4860, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord said it had agreed £500 with the resident for the replacement flooring and it had now processed that payment.\"}, {\"char_end\": 5057, \"char_start\": 4983, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It provided an update on each repair issue the resident complained about.\"}, {\"char_end\": 5133, \"char_start\": 5057, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It apologised for its complaint handling failure at stage 1 and offered £50\"}, {\"char_end\": 5200, \"char_start\": 5133, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It offered a further £150 for her time, trouble and inconvenience.\"}, {\"char_end\": 5226, \"char_start\": 5200, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 5331, \"char_start\": 5226, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident remained unhappy because of the delay in repairing the flooring. She said that the landlord\"}, {\"char_end\": 5348, \"char_start\": 5331, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"pre_decision_record\", \"text\": \"had not paid the\"}, {\"char_end\": 5353, \"char_start\": 5348, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"pre_decision_record\", \"text\": \"£500\"}, {\"char_end\": 5391, \"char_start\": 5353, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"pre_decision_record\", \"text\": \"it offered in its complaint response.\"}, {\"char_end\": 5399, \"char_start\": 5391, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"pre_decision_record\", \"text\": \"She had\"}, {\"char_end\": 5403, \"char_start\": 5399, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"pre_decision_record\", \"text\": \"not\"}, {\"char_end\": 5439, \"char_start\": 5403, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"pre_decision_record\", \"text\": \"agreed to this figure as it did not\"}, {\"char_end\": 5456, \"char_start\": 5439, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"pre_decision_record\", \"text\": \"adequately cover\"}, {\"char_end\": 5460, \"char_start\": 5456, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"pre_decision_record\", \"text\": \"the\"}, {\"char_end\": 5466, \"char_start\": 5460, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"pre_decision_record\", \"text\": \"total\"}, {\"char_end\": 5497, \"char_start\": 5466, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"pre_decision_record\", \"text\": \"cost of the floor replacement.\"}, {\"char_end\": 5708, \"char_start\": 5497, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"pre_decision_record\", \"text\": \"She was unhappy that 2 bedrooms were out of use for a week and the months of disruption to the house.  She said that she took a lot of time off work because there were multiple visits to complete basic repairs.\"}, {\"char_end\": 5833, \"char_start\": 5708, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"pre_decision_record\", \"text\": \"She said that a bathroom refurbishment was promised as a resolution to the leak in the cistern but this remains outstanding.\"}, {\"char_end\": 5890, \"char_start\": 5833, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"pre_decision_record\", \"text\": \"She said that the compensation offer was not sufficient.\"}, {\"char_end\": 6013, \"char_start\": 5890, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"pre_decision_record\", \"text\": \"She said that she paid for a dehumidifier to dry out the property after the leak and this increased her electricity costs.\"}, {\"char_end\": 6087, \"char_start\": 6013, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"pre_decision_record\", \"text\": \"She reported that the landlord’s offer of compensation was not sufficient\"}, {\"char_end\": 6123, \"char_start\": 6087, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"pre_decision_record\", \"text\": \"for the distress and inconvenience.\"}, {\"char_end\": 6125, \"char_start\": 6123, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"pre_decision_record\", \"text\": \"W\"}, {\"char_end\": 6146, \"char_start\": 6125, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"pre_decision_record\", \"text\": \"hat we found and why\"}, {\"char_end\": 6170, \"char_start\": 6146, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"pre_decision_record\", \"text\": \"The circumstances of th\"}, {\"char_end\": 6173, \"char_start\": 6170, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"pre_decision_record\", \"text\": \"is\"}, {\"char_end\": 6192, \"char_start\": 6173, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint are well\"}, {\"char_end\": 6198, \"char_start\": 6192, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"pre_decision_record\", \"text\": \"known\"}, {\"char_end\": 6232, \"char_start\": 6198, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"pre_decision_record\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 6236, \"char_start\": 6232, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"pre_decision_record\", \"text\": \"not\"}, {\"char_end\": 6267, \"char_start\": 6236, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"pre_decision_record\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 6333, \"char_start\": 6267, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"pre_decision_record\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 6373, \"char_start\": 6333, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"pre_decision_record\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 6378, \"char_start\": 6373, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"pre_decision_record\", \"text\": \"that\"}, {\"char_end\": 6410, \"char_start\": 6378, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"pre_decision_record\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 6472, \"char_start\": 6410, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"pre_decision_record\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 6482, \"char_start\": 6472, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 6510, \"char_start\": 6482, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Response to repair requests\"}, {\"char_end\": 6518, \"char_start\": 6510, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 6536, \"char_start\": 6518, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Maladministration\"}, {\"char_end\": 6676, \"char_start\": 6536, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repairs policy states that it aims to complete emergency repairs within 4 hours and routine repairs within 28 calendar days.\"}, {\"char_end\": 6694, \"char_start\": 6676, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Leak and flooring\"}, {\"char_end\": 7077, \"char_start\": 6694, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It is not disputed that there were failings in the landlord’s handling of the leak and damaged flooring. In both complaint responses the landlord upheld her complaint for the delay in completing these repairs. When a landlord has accepted a failing, it is our role to consider if redress offered by the landlord put things right and resolved the resident’s complaint satisfactorily.\"}, {\"char_end\": 7545, \"char_start\": 7077, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlords repair records are not clear. The evidence provided only shows the date that the repair was reported, a brief description of the repair issue, if it was a routine or emergency repair, and if the repair had been completed. The evidence does not confirm the date of completion of repairs, what repairs it carried out, how many visits to the property, or any repair notes. This investigation was consequently hampered by the landlord’s poor record keeping.\"}, {\"char_end\": 7774, \"char_start\": 7545, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 19 February 2024, the resident reported an emergency repair because a recently installed radiator was leaking and damaging the flooring. It is not clear if the landlord attended to this emergency repair within its timescales.\"}, {\"char_end\": 8234, \"char_start\": 7774, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 22 April 2024 she sent an image of a bulge on the floor in the hallway and reported that she thought there was a leak in the pipes under the sub floor causing the floor to ‘mound’. On 2 May 2024, the resident reported a further emergency repair because of the leak in the hallway. The landlord inspected the leak the following day and raised a work order to relay the sub floor. Based on the landlord’s records, it is not clear when it completed this work.\"}, {\"char_end\": 8670, \"char_start\": 8234, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to evidence that it surveyed the initial report of a leak within a reasonable timeframe. The landlord’s records are again poor, but it is reasonable to conclude that the delay in surveying and attending to the initial report of a leak caused the leak to develop and cause damage, which may have been preventable. The landlord’s response to the report of a leak was inappropriate and caused distress to the resident.\"}, {\"char_end\": 9278, \"char_start\": 8670, \"page\": 1, \"paragraph\": 189, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord was reasonable in offering compensation for replacement flooring. However, there was a dispute if the amount offered was sufficient. The resident obtained a quote to supply flooring but said that further flooring was subsequently damaged and, as such, the original quote was not sufficient. The landlord failed to investigate the residents position and maintained that the resident accepted £500 as a resolution to her flooring complaint. This was unreasonable. The landlord should have checked its repair records to confirm the amount of flooring damaged and adjusted its offer if appropriate.\"}, {\"char_end\": 9660, \"char_start\": 9278, \"page\": 1, \"paragraph\": 190, \"section_tag\": \"tribunal_reasoning\", \"text\": \"When the resident brought her complaint to us, she advised that the landlord had not paid her the compensation offered in its stage 2 complaint response. Based on the evidence, the landlord contacted the resident on 17 March 2025, to ask if the floor had been fitted and if she had received the compensation offered at stage 2. This indicates poor record keeping from the landlord.\"}, {\"char_end\": 10013, \"char_start\": 9660, \"page\": 1, \"paragraph\": 191, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s delay in paying compensation left the resident without flooring for at least 7 months as she was not provided the compensation offered to replace the flooring. This caused loss of enjoyment of the property and time and trouble for the resident who reported frustration as the landlord could not determine if it had paid the compensation.\"}, {\"char_end\": 10378, \"char_start\": 10013, \"page\": 1, \"paragraph\": 192, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident reported that the work to repair the leak took over a week and, in that time, she did not have access to 2 bedrooms as she had to lift the flooring in the bedrooms to dry out and as such, she could not use her 2 bedrooms for over a week while the floors dried out. She reported that this disruption had a detrimental impact on her son’s mental health.\"}, {\"char_end\": 10902, \"char_start\": 10378, \"page\": 1, \"paragraph\": 193, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s compensation guidance allows for room loss allowance. This is 20% of the weekly rent for loss of bedrooms. The landlord’s records are not clear, but given the extent of the leak, it is reasonable to conclude that the resident was without use of the 2 bedrooms while the leak was repaired and the floors dried out for over a week. The evidence shows that the resident was paying £104.54 weekly rent. An order for the landlord to pay £41.81 representing 40% of the rent for 1 weeks has been made on this basis.\"}, {\"char_end\": 10925, \"char_start\": 10902, \"page\": 1, \"paragraph\": 194, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Leaking toilet cistern\"}, {\"char_end\": 11403, \"char_start\": 10925, \"page\": 1, \"paragraph\": 195, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In her initial complaint the resident reported that the landlord damaged tiles surrounding the cistern to repair a leak. She decided not to replace the tiles as they would not match. In its stage 2 complaint response it said that no leak had been found. Based on the landlords repair records, it is unclear how the landlord concluded that there was no leak from the toilet cistern. This issue was reported on 31 May 2024 but there are no repair notes confirming what was found.\"}, {\"char_end\": 11416, \"char_start\": 11403, \"page\": 1, \"paragraph\": 196, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Bathroom fan\"}, {\"char_end\": 11874, \"char_start\": 11416, \"page\": 1, \"paragraph\": 197, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 16 May 2024, the resident asked the landlord to check the fan in the bathroom. The landlord repaired the motor in the bathroom fan on 11 July 2024. This was beyond its timescales of a 28-day repair and there is no evidence of communication with the resident explaining the delay. When the resident raised a complaint, she reported that the fan needed to be replaced. When she brought her complaint to us, she felt that the fan is not working efficiently.\"}, {\"char_end\": 12133, \"char_start\": 11874, \"page\": 1, \"paragraph\": 198, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It is not clear if the issue of the fan not working efficiently has been raised with the landlord, and its records do not confirm if the fan had been tested after repair. It is recommended that the landlord survey the fan to ensure it is working efficiently.\"}, {\"char_end\": 12153, \"char_start\": 12133, \"page\": 1, \"paragraph\": 199, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Lagging of pipework\"}, {\"char_end\": 12832, \"char_start\": 12153, \"page\": 1, \"paragraph\": 200, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repair notes show that this repair was raised on 12 July 2024. In its complaint response it said the repair was complete on 23 August 2024. The resident expressed frustration because this repair took 4 visits for which she had to take time off work. She reported that the first visit was to measure the lagging, the second visit was to fit the lagging but the contractor did not have enough material, the work was complete on the third visit but the contractor had to return to rectify the work on a fourth visit. The landlord’s repair records are not clear on the number of visits and, as such, we have seen no evidence to reason to doubt the resident’s version.\"}, {\"char_end\": 13090, \"char_start\": 12832, \"page\": 1, \"paragraph\": 201, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident reported that this example was a common theme with the landlord’s repairs throughout all repairs complained about. She reported having to take 24 days total off work for the landlord to carry out repairs. This caused considerable inconvenience.\"}, {\"char_end\": 13111, \"char_start\": 13090, \"page\": 1, \"paragraph\": 202, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Garden door and step\"}, {\"char_end\": 13558, \"char_start\": 13111, \"page\": 1, \"paragraph\": 203, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 31 May 2024, a routine repair order was raised to quote for a new back door and repair the garden step. The landlord records do not show when a contractor attended but when the resident raised a complaint, she said a contractor attended on 20 June 2024. The landlord’s records show a further order was raised on 8 August 2024 and the resident complained that a further contractor contacted her on the 9 August 2024 to quote for the same issue.\"}, {\"char_end\": 13898, \"char_start\": 13558, \"page\": 1, \"paragraph\": 204, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Internal evidence shows that the first quote was expensive and the landlord was trying to obtain the best value for money. The resident was unhappy that there was no communication regarding this from the landlord. The landlord had missed its target timescale for repair and failed to communicate the reason for the delay with the resident.\"}, {\"char_end\": 14522, \"char_start\": 13898, \"page\": 1, \"paragraph\": 205, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records are not clear but the resident confirmed to us that this repair was completed in early 2025. This was 6 months after the repair was raised and significantly beyond its timescales. While it is often the case with non-urgent repairs that the landlord may not be able to consistently keep to its defined timescales, it is basic good practice is for a landlord to liaise regularly with the resident to explain the reason for any delays and take meaningful steps to resolve any outstanding repairs as quickly as possible. The landlord’s failure to do so caused frustration and uncertainty to the resident.\"}, {\"char_end\": 14532, \"char_start\": 14522, \"page\": 1, \"paragraph\": 206, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 14573, \"char_start\": 14532, \"page\": 1, \"paragraph\": 207, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The response to reports of a data breach\"}, {\"char_end\": 14581, \"char_start\": 14573, \"page\": 1, \"paragraph\": 208, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 14602, \"char_start\": 14581, \"page\": 1, \"paragraph\": 209, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Outside jurisdiction\"}, {\"char_end\": 15147, \"char_start\": 14602, \"page\": 1, \"paragraph\": 210, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We do not investigate complaints where it would be quicker, fairer, more reasonable or more effective to seek a remedy through the court, tribunal or other procedure. In this case, the complaint about the landlord response to reports of a data breach is better dealt with by the Information Commissioners Office because we are unable to investigate complaints concerning the landlord’s handling of data and failures to respond to a SAR request. For these reasons, we have decided not to investigate the complaint about reports of a data breach.\"}, {\"char_end\": 15157, \"char_start\": 15147, \"page\": 1, \"paragraph\": 211, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 15187, \"char_start\": 15157, \"page\": 1, \"paragraph\": 212, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 15195, \"char_start\": 15187, \"page\": 1, \"paragraph\": 213, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 15213, \"char_start\": 15195, \"page\": 1, \"paragraph\": 214, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Maladministration\"}, {\"char_end\": 15706, \"char_start\": 15213, \"page\": 1, \"paragraph\": 215, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The Ombudsman’s Complaint Handling Code (The Code) sets out the Ombudsman’s expectations for landlords’ complaint handling practices. The Code states that a stage 1 response should be acknowledged within 5 working days and a response then provided within 10 working days. It also states that a stage 2 response should acknowledged within 5 working days and a response should then be provided within 20 working days. The landlord’s complaints policy references the same timescales as the Code.\"}, {\"char_end\": 16071, \"char_start\": 15706, \"page\": 1, \"paragraph\": 216, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have not seen if the landlord acknowledged the complaint at either stage. The landlord provided its stage 1 complaint response 15 working days after the complaint was raised and 25 working days after the stage 2 complaint escalation. This was a shortcoming by the landlord. The landlord did acknowledge its delay at stage 1 and apologised which was appropriate.\"}, {\"char_end\": 16452, \"char_start\": 16071, \"page\": 1, \"paragraph\": 217, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaint handling process is an opportunity for the landlord to identify where things went wrong and put it right for the resident. The landlord failed to identify that the resident had not accepted the offer for flooring as further damage had been caused. It failed to appropriately investigate if the offer of compensation was sufficient to replace the flooring.\"}, {\"char_end\": 16584, \"char_start\": 16452, \"page\": 1, \"paragraph\": 218, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord also failed to acknowledge the loss of use of the resident’s bedrooms and make an offer of compensation for this loss.\"}, {\"char_end\": 17032, \"char_start\": 16584, \"page\": 1, \"paragraph\": 219, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The Code sets out that after a stage 2 complaint response, outstanding actions must still be tracked and actioned promptly with appropriate updates provided to the resident. Based on the evidence, the landlord did not track the action of compensation and when the resident brought her complaint to us, she had not received the compensation offered. This caused further inconvenience, time, and trouble for the resident in chasing the compensation.\"}, {\"char_end\": 17041, \"char_start\": 17032, \"page\": 1, \"paragraph\": 220, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 17091, \"char_start\": 17041, \"page\": 1, \"paragraph\": 221, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 17426, \"char_start\": 17091, \"page\": 1, \"paragraph\": 222, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This investigation was hampered by the landlord’s repair record keeping as set out in paragraph 11. The onus is on the landlord to maintain good records. If there are a disputed version of events and no audit trail, we may not be able to conclude that an action took place or that the landlord followed its own policies or procedures.\"}, {\"char_end\": 17803, \"char_start\": 17426, \"page\": 1, \"paragraph\": 223, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our Knowledge and Information Management (KIM) spotlight report highlights the importance of good record keeping. The evidence assessed in this investigation shows the landlord’s practice was not in line with that recommended in the Spotlight report. We encourage the landlord to consider the findings and recommendations of our Spotlight report if it has not already done so.\"}, {\"char_end\": 17817, \"char_start\": 17803, \"page\": 1, \"paragraph\": 224, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 17919, \"char_start\": 17817, \"page\": 1, \"paragraph\": 225, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our spotlight report on repairs and maintenance explains that failures can be avoided when landlords:\"}, {\"char_end\": 18018, \"char_start\": 17919, \"page\": 1, \"paragraph\": 226, \"section_tag\": \"tribunal_reasoning\", \"text\": \"let residents know what to expect regarding repairs and provide a clear schedule for repair visits\"}, {\"char_end\": 18108, \"char_start\": 18018, \"page\": 1, \"paragraph\": 227, \"section_tag\": \"tribunal_reasoning\", \"text\": \"gather feedback from residents and conduct inspections to ensure the work is satisfactory\"}, {\"char_end\": 18367, \"char_start\": 18108, \"page\": 1, \"paragraph\": 228, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In this case, the records do not show if the landlord regularly updated the resident on the status of repairs. Frustration and dissatisfaction may have been avoided if the landlord’s repairs and maintenance team followed our spotlight report recommendations.\"}, {\"char_end\": 18386, \"char_start\": 18367, \"page\": 1, \"paragraph\": 229, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 18613, \"char_start\": 18386, \"page\": 1, \"paragraph\": 230, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This investigation identified complaint handling practices that did not comply with the Code. We encourage the landlord to review this case against the Code and implement any learning it finds to improve its complaint handling.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "cited_authorities": [
+          {
+            "page": 1,
+            "paragraph": 215,
+            "text_span": [
+              15213,
+              15706
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 223,
+            "text_span": [
+              17426,
+              17803
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 225,
+            "text_span": [
+              17817,
+              17919
+            ]
+          }
+        ],
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              477,
+              516
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              516,
+              560
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              560,
+              598
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              598,
+              618
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 17,
+            "text_span": [
+              333,
+              338
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              338,
+              341
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              341,
+              350
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              350,
+              355
+            ]
+          }
+        ],
+        "disputed_amount_gbp": [
+          {
+            "page": 1,
+            "paragraph": 147,
+            "text_span": [
+              5226,
+              5331
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 148,
+            "text_span": [
+              5331,
+              5348
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 149,
+            "text_span": [
+              5348,
+              5353
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 150,
+            "text_span": [
+              5353,
+              5391
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              5391,
+              5399
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              5399,
+              5403
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 153,
+            "text_span": [
+              5403,
+              5439
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 154,
+            "text_span": [
+              5439,
+              5456
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 155,
+            "text_span": [
+              5456,
+              5460
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 156,
+            "text_span": [
+              5460,
+              5466
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 157,
+            "text_span": [
+              5466,
+              5497
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 185,
+            "text_span": [
+              7077,
+              7545
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 187,
+            "text_span": [
+              7774,
+              8234
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 189,
+            "text_span": [
+              8670,
+              9278
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 193,
+            "text_span": [
+              10378,
+              10902
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 204,
+            "text_span": [
+              13558,
+              13898
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              366,
+              449
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              477,
+              516
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              516,
+              560
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              560,
+              598
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              598,
+              618
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 147,
+            "text_span": [
+              5226,
+              5331
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 148,
+            "text_span": [
+              5331,
+              5348
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 149,
+            "text_span": [
+              5348,
+              5353
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 150,
+            "text_span": [
+              5353,
+              5391
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              5391,
+              5399
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              5399,
+              5403
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 153,
+            "text_span": [
+              5403,
+              5439
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 154,
+            "text_span": [
+              5439,
+              5456
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 155,
+            "text_span": [
+              5456,
+              5460
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 156,
+            "text_span": [
+              5460,
+              5466
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 157,
+            "text_span": [
+              5466,
+              5497
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              5497,
+              5708
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              5708,
+              5833
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              5833,
+              5890
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              5890,
+              6013
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              6013,
+              6087
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              6087,
+              6123
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              647,
+              739
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              739,
+              823
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              823,
+              891
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 56,
+            "text_span": [
+              1956,
+              1984
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1984,
+              1995
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              1995,
+              2055
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 74,
+            "text_span": [
+              2276,
+              2313
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 75,
+            "text_span": [
+              2313,
+              2320
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 88,
+            "text_span": [
+              2586,
+              2734
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 33,
+            "text_span": [
+              910,
+              1108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 185,
+            "text_span": [
+              7077,
+              7545
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 188,
+            "text_span": [
+              8234,
+              8670
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 189,
+            "text_span": [
+              8670,
+              9278
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 210,
+            "text_span": [
+              14602,
+              15147
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 219,
+            "text_span": [
+              16584,
+              17032
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              184,
+              198
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              198,
+              212
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              308,
+              318
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              318,
+              333
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              477,
+              516
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              516,
+              560
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              560,
+              598
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              598,
+              618
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              212,
+              221
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              221,
+              274
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              366,
+              449
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              15,
+              80
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              15,
+              80
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              221,
+              274
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "claimed_amounts": "The resident disputed the adequacy and payment of compensation, but the text does not state a specific amount that she claimed.",
+        "statutory_basis": "The text does not cite any statutory provision or section as the basis for the decision."
+      },
+      "cited_authorities": [
+        "The Ombudsman’s Complaint Handling Code",
+        "Knowledge and Information Management (KIM) spotlight report",
+        "Spotlight report on repairs and maintenance"
+      ],
+      "claim_types": [
+        "response to the resident’s repair requests",
+        "response to reports of a data breach",
+        "complaint handling"
+      ],
+      "decision_date": "2025-11-13",
+      "disputed_amount_gbp": 500,
+      "evidence": [
+        "Landlord repair records",
+        "An image of a bulge on the floor sent by the resident",
+        "A quote obtained by the resident to supply flooring",
+        "Evidence of weekly rent of £104.54",
+        "Internal evidence about the back door and garden step quote"
+      ],
+      "facts": "The resident is a secure tenant of the landlord and the property is a 3-bedroom flat. The complaint concerned the landlord’s response to repair requests, response to reports of a data breach, and complaint handling. The resident remained unhappy because of delay in repairing the flooring and said the landlord had not paid the £500 offered in its complaint response. The resident said she had not agreed to the £500 figure because it did not adequately cover the total cost of floor replacement. The resident said 2 bedrooms were out of use for a week, there had been months of disruption, and she had taken time off work for multiple repair visits. The resident said a bathroom refurbishment remained outstanding, that she paid for a dehumidifier and increased electricity costs, and that the compensation offer was not sufficient for distress and inconvenience.",
+      "ground_truth_outcome": {
+        "complaint_handling": "maladministration",
+        "data_breach_reports": "outside jurisdiction",
+        "orders": [
+          "written apology",
+          "pay the resident £441.81",
+          "revisit flooring replacement offer"
+        ],
+        "repair_requests": "maladministration"
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 33,
+            "text_span": [
+              910,
+              1108
+            ]
+          },
+          "text": "The landlord failed to evidence that it responded to repairs within its set timeframes and it failed to communicate delays."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 185,
+            "text_span": [
+              7077,
+              7545
+            ]
+          },
+          "text": "This investigation was consequently hampered by the landlord’s poor record keeping."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 188,
+            "text_span": [
+              8234,
+              8670
+            ]
+          },
+          "text": "The landlord failed to evidence that it surveyed the initial report of a leak within a reasonable timeframe."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 189,
+            "text_span": [
+              8670,
+              9278
+            ]
+          },
+          "text": "The landlord failed to investigate the residents position and maintained that the resident accepted £500 as a resolution to her flooring complaint. This was unreasonable."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 210,
+            "text_span": [
+              14602,
+              15147
+            ]
+          },
+          "text": "For these reasons, we have decided not to investigate the complaint about reports of a data breach."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 219,
+            "text_span": [
+              16584,
+              17032
+            ]
+          },
+          "text": "The landlord did not track the action of compensation and when the resident brought her complaint to us, she had not received the compensation offered."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation concerning a secure tenancy and complaints about repairs, a reported data breach, and complaint handling.",
+      "parties": {
+        "landlord": "Islington and Shoreditch Housing Association Limited",
+        "resident": "unnamed resident"
+      },
+      "region": "Islington and Shoreditch",
+      "region_source": "Landlord name/title"
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      \"The Ombudsman’s Complaint Handling Code\",\n      \"Knowledge and Information Management (KIM) spotlight report\",\n      \"Spotlight report on repairs and maintenance\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 215,\n        \"text_span\": [\n          15213,\n          15706\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 223,\n        \"text_span\": [\n          17426,\n          17803\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 225,\n        \"text_span\": [\n          17817,\n          17919\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"response to the resident’s repair requests\",\n      \"response to reports of a data breach\",\n      \"complaint handling\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          477,\n          516\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          516,\n          560\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 26,\n        \"text_span\": [\n          560,\n          598\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          598,\n          618\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The resident disputed the adequacy and payment of compensation, but the text does not state a specific amount that she claimed.\"\n  },\n  \"decision_date\": {\n    \"value\": \"2025-11-13\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 17,\n        \"text_span\": [\n          333,\n          338\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          338,\n          341\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          341,\n          350\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 20,\n        \"text_span\": [\n          350,\n          355\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": 500,\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 147,\n        \"text_span\": [\n          5226,\n          5331\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 148,\n        \"text_span\": [\n          5331,\n          5348\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 149,\n        \"text_span\": [\n          5348,\n          5353\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 150,\n        \"text_span\": [\n          5353,\n          5391\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 151,\n        \"text_span\": [\n          5391,\n          5399\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 152,\n        \"text_span\": [\n          5399,\n          5403\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 153,\n        \"text_span\": [\n          5403,\n          5439\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 154,\n        \"text_span\": [\n          5439,\n          5456\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 155,\n        \"text_span\": [\n          5456,\n          5460\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 156,\n        \"text_span\": [\n          5460,\n          5466\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 157,\n        \"text_span\": [\n          5466,\n          5497\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": [\n      \"Landlord repair records\",\n      \"An image of a bulge on the floor sent by the resident\",\n      \"A quote obtained by the resident to supply flooring\",\n      \"Evidence of weekly rent of £104.54\",\n      \"Internal evidence about the back door and garden step quote\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 185,\n        \"text_span\": [\n          7077,\n          7545\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 187,\n        \"text_span\": [\n          7774,\n          8234\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 189,\n        \"text_span\": [\n          8670,\n          9278\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 193,\n        \"text_span\": [\n          10378,\n          10902\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 204,\n        \"text_span\": [\n          13558,\n          13898\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": [\n      \"The resident is a secure tenant of the landlord and the property is a 3-bedroom flat.\",\n      \"The complaint concerned the landlord’s response to repair requests, response to reports of a data breach, and complaint handling.\",\n      \"The resident remained unhappy because of delay in repairing the flooring and said the landlord had not paid the £500 offered in its complaint response.\",\n      \"The resident said she had not agreed to the £500 figure because it did not adequately cover the total cost of floor replacement.\",\n      \"The resident said 2 bedrooms were out of use for a week, there had been months of disruption, and she had taken time off work for multiple repair visits.\",\n      \"The resident said a bathroom refurbishment remained outstanding, that she paid for a dehumidifier and increased electricity costs, and that the compensation offer was not sufficient for distress and inconvenience.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          366,\n          449\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          477,\n          516\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          516,\n          560\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 26,\n        \"text_span\": [\n          560,\n          598\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          598,\n          618\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 147,\n        \"text_span\": [\n          5226,\n          5331\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 148,\n        \"text_span\": [\n          5331,\n          5348\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 149,\n        \"text_span\": [\n          5348,\n          5353\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 150,\n        \"text_span\": [\n          5353,\n          5391\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 151,\n        \"text_span\": [\n          5391,\n          5399\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 152,\n        \"text_span\": [\n          5399,\n          5403\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 153,\n        \"text_span\": [\n          5403,\n          5439\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 154,\n        \"text_span\": [\n          5439,\n          5456\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 155,\n        \"text_span\": [\n          5456,\n          5460\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 156,\n        \"text_span\": [\n          5460,\n          5466\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 157,\n        \"text_span\": [\n          5466,\n          5497\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 158,\n        \"text_span\": [\n          5497,\n          5708\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 159,\n        \"text_span\": [\n          5708,\n          5833\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 160,\n        \"text_span\": [\n          5833,\n          5890\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 161,\n        \"text_span\": [\n          5890,\n          6013\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 162,\n        \"text_span\": [\n          6013,\n          6087\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 163,\n        \"text_span\": [\n          6087,\n          6123\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": {\n      \"repair_requests\": \"maladministration\",\n      \"data_breach_reports\": \"outside jurisdiction\",\n      \"complaint_handling\": \"maladministration\",\n      \"orders\": [\n        \"written apology\",\n        \"pay the resident £441.81\",\n        \"revisit flooring replacement offer\"\n      ]\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 29,\n        \"text_span\": [\n          647,\n          739\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 30,\n        \"text_span\": [\n          739,\n          823\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 31,\n        \"text_span\": [\n          823,\n          891\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 56,\n        \"text_span\": [\n          1956,\n          1984\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 57,\n        \"text_span\": [\n          1984,\n          1995\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 58,\n        \"text_span\": [\n          1995,\n          2055\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 74,\n        \"text_span\": [\n          2276,\n          2313\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 75,\n        \"text_span\": [\n          2313,\n          2320\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 88,\n        \"text_span\": [\n          2586,\n          2734\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord failed to evidence that it responded to repairs within its set timeframes and it failed to communicate delays.\",\n      \"This investigation was consequently hampered by the landlord’s poor record keeping.\",\n      \"The landlord failed to evidence that it surveyed the initial report of a leak within a reasonable timeframe.\",\n      \"The landlord failed to investigate the residents position and maintained that the resident accepted £500 as a resolution to her flooring complaint. This was unreasonable.\",\n      \"For these reasons, we have decided not to investigate the complaint about reports of a data breach.\",\n      \"The landlord did not track the action of compensation and when the resident brought her complaint to us, she had not received the compensation offered.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 33,\n        \"text_span\": [\n          910,\n          1108\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 185,\n        \"text_span\": [\n          7077,\n          7545\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 188,\n        \"text_span\": [\n          8234,\n          8670\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 189,\n        \"text_span\": [\n          8670,\n          9278\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 210,\n        \"text_span\": [\n          14602,\n          15147\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 219,\n        \"text_span\": [\n          16584,\n          17032\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman investigation concerning a secure tenancy and complaints about repairs, a reported data breach, and complaint handling.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 9,\n        \"text_span\": [\n          184,\n          198\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          198,\n          212\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 15,\n        \"text_span\": [\n          308,\n          318\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 16,\n        \"text_span\": [\n          318,\n          333\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          477,\n          516\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          516,\n          560\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 26,\n        \"text_span\": [\n          560,\n          598\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          598,\n          618\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Islington and Shoreditch Housing Association Limited\",\n      \"resident\": \"unnamed resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 11,\n        \"text_span\": [\n          212,\n          221\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          221,\n          274\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          366,\n          449\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"Islington and Shoreditch\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          15,\n          80\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Landlord name/title\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          15,\n          80\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          221,\n          274\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not cite any statutory provision or section as the basis for the decision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202430026\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 80, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Islington and Shoreditch Housing Association Limited (202430026)\"}, {\"char_end\": 145, \"char_start\": 80, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Islington and Shoreditch Housing Association Limited (202430026)\"}, {\"char_end\": 157, \"char_start\": 145, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 166, \"char_start\": 157, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 174, \"char_start\": 166, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 184, \"char_start\": 174, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202430026\"}, {\"char_end\": 198, \"char_start\": 184, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 212, \"char_start\": 198, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 221, \"char_start\": 212, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 274, \"char_start\": 221, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Islington and Shoreditch Housing Association Limited\"}, {\"char_end\": 288, \"char_start\": 274, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 308, \"char_start\": 288, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 318, \"char_start\": 308, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 333, \"char_start\": 318, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 338, \"char_start\": 333, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 341, \"char_start\": 338, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"13\"}, {\"char_end\": 350, \"char_start\": 341, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"November\"}, {\"char_end\": 355, \"char_start\": 350, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 366, \"char_start\": 355, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 449, \"char_start\": 366, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident is a secure tenant of the landlord. The property is a 3-bedroom flat.\"}, {\"char_end\": 477, \"char_start\": 449, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 516, \"char_start\": 477, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s:\"}, {\"char_end\": 560, \"char_start\": 516, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"response to the resident’s repair requests.\"}, {\"char_end\": 598, \"char_start\": 560, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"response to reports of a data breach.\"}, {\"char_end\": 618, \"char_start\": 598, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint handling.\"}, {\"char_end\": 647, \"char_start\": 618, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 739, \"char_start\": 647, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was maladministration with the landlord’s response to the resident’s repair requests.\"}, {\"char_end\": 823, \"char_start\": 739, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to reports of a data breach is outside of our jurisdiction.\"}, {\"char_end\": 891, \"char_start\": 823, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was maladministration with the landlord’s complaint handling.\"}, {\"char_end\": 910, \"char_start\": 891, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1108, \"char_start\": 910, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to evidence that it responded to repairs within its set timeframes and it failed to communicate delays. The landlord’s failings caused time, trouble, distress and inconvenience.\"}, {\"char_end\": 1228, \"char_start\": 1108, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to reports of a data breach would be better dealt with by the Information Commissioners Office.\"}, {\"char_end\": 1468, \"char_start\": 1228, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to effectively use its complaints process to identify failings and put things right for the resident and it failed to track agreed actions. These failings caused further time, trouble, and inconvenience to the resident.\"}, {\"char_end\": 1489, \"char_start\": 1468, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1547, \"char_start\": 1489, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1549, \"char_start\": 1547, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1624, \"char_start\": 1549, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1715, \"char_start\": 1624, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1722, \"char_start\": 1715, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 1732, \"char_start\": 1722, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 1737, \"char_start\": 1732, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 1848, \"char_start\": 1737, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 1851, \"char_start\": 1848, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 1862, \"char_start\": 1851, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 1878, \"char_start\": 1862, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 1885, \"char_start\": 1878, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 1894, \"char_start\": 1885, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 1899, \"char_start\": 1894, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 1905, \"char_start\": 1899, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 1931, \"char_start\": 1905, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 1940, \"char_start\": 1931, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 1942, \"char_start\": 1940, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 1956, \"char_start\": 1942, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 1984, \"char_start\": 1956, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 1995, \"char_start\": 1984, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2055, \"char_start\": 1995, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"to the resident for the failures identified in this report.\"}, {\"char_end\": 2068, \"char_start\": 2055, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2081, \"char_start\": 2068, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2085, \"char_start\": 2081, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2093, \"char_start\": 2085, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2096, \"char_start\": 2093, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2105, \"char_start\": 2096, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2149, \"char_start\": 2105, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2178, \"char_start\": 2149, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 2203, \"char_start\": 2178, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 2222, \"char_start\": 2203, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2224, \"char_start\": 2222, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2238, \"char_start\": 2224, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2255, \"char_start\": 2238, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"12 December 2025\"}, {\"char_end\": 2257, \"char_start\": 2255, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2276, \"char_start\": 2257, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2313, \"char_start\": 2276, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 2320, \"char_start\": 2313, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"441.81\"}, {\"char_end\": 2340, \"char_start\": 2320, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"made up as follows:\"}, {\"char_end\": 2342, \"char_start\": 2340, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2346, \"char_start\": 2342, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"300\"}, {\"char_end\": 2350, \"char_start\": 2346, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"for\"}, {\"char_end\": 2435, \"char_start\": 2350, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"distress and inconvenience caused by its response to the resident’s repair requests.\"}, {\"char_end\": 2437, \"char_start\": 2435, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2439, \"char_start\": 2437, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2535, \"char_start\": 2439, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"00 for time, trouble, and inconvenience for the failings identified in its complaints handling.\"}, {\"char_end\": 2537, \"char_start\": 2535, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2572, \"char_start\": 2537, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"41.81 for loss of use of 2 bedroom\"}, {\"char_end\": 2574, \"char_start\": 2572, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"s\"}, {\"char_end\": 2586, \"char_start\": 2574, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"for 1 week.\"}, {\"char_end\": 2734, \"char_start\": 2586, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"The landlord must revisit its offer for flooring replacement to ensure that the offer for actual damaged flooring including fitting, is sufficient.\"}, {\"char_end\": 2783, \"char_start\": 2734, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"The landlord must write to the resident, copying\"}, {\"char_end\": 2786, \"char_start\": 2783, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"us\"}, {\"char_end\": 2789, \"char_start\": 2786, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"in\"}, {\"char_end\": 2791, \"char_start\": 2789, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \",\"}, {\"char_end\": 2821, \"char_start\": 2791, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"setting out its calculations.\"}, {\"char_end\": 2956, \"char_start\": 2821, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 3036, \"char_start\": 2956, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure any payments it has already paid.\"}, {\"char_end\": 3052, \"char_start\": 3036, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 3135, \"char_start\": 3052, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 3155, \"char_start\": 3135, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 3309, \"char_start\": 3155, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"It is recommended for the landlord to contact the resident to confirm if there are any outstanding repairs in the property and action them appropriately.\"}, {\"char_end\": 3416, \"char_start\": 3309, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"As set out in paragraph 21 and 22, the resident reported that the bathroom fan is not working efficiently.\"}, {\"char_end\": 3418, \"char_start\": 3416, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"W\"}, {\"char_end\": 3460, \"char_start\": 3418, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"hen the resident brought her complaint to\"}, {\"char_end\": 3464, \"char_start\": 3460, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"us,\"}, {\"char_end\": 3477, \"char_start\": 3464, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"she reported\"}, {\"char_end\": 3489, \"char_start\": 3477, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"a number of\"}, {\"char_end\": 3509, \"char_start\": 3489, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"outstanding repairs\"}, {\"char_end\": 3551, \"char_start\": 3509, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \", including a replacement bathroom suite,\"}, {\"char_end\": 3609, \"char_start\": 3551, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"that had not been brought through the complaints process.\"}, {\"char_end\": 3627, \"char_start\": 3609, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 3651, \"char_start\": 3627, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 3656, \"char_start\": 3651, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 3670, \"char_start\": 3656, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 3685, \"char_start\": 3670, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"16 August 2024\"}, {\"char_end\": 3705, \"char_start\": 3685, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised\"}, {\"char_end\": 3709, \"char_start\": 3705, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"her\"}, {\"char_end\": 3719, \"char_start\": 3709, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint\"}, {\"char_end\": 3721, \"char_start\": 3719, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"tribunal_reasoning\", \"text\": \".\"}, {\"char_end\": 3968, \"char_start\": 3721, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"tribunal_reasoning\", \"text\": \"She was unhappy with how the landlord had handled a number of repairs and was unhappy that there were outstanding repairs. She reported that over the past 4 months she had experienced significant inconvenience as the landlord carried out repairs.\"}, {\"char_end\": 3972, \"char_start\": 3968, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"She\"}, {\"char_end\": 4020, \"char_start\": 3972, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"missed work because of unnecessary appointments\"}, {\"char_end\": 4046, \"char_start\": 4020, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \"and she was unable to use\"}, {\"char_end\": 4048, \"char_start\": 4046, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"2\"}, {\"char_end\": 4099, \"char_start\": 4048, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"bedrooms for over a week because of floor repairs.\"}, {\"char_end\": 4116, \"char_start\": 4099, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"6 September 2024\"}, {\"char_end\": 4195, \"char_start\": 4116, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided its stage 1 complaint response. It upheld the complaint.\"}, {\"char_end\": 4289, \"char_start\": 4195, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It said that repairs had been completed and acknowledged the delay in completing the repairs.\"}, {\"char_end\": 4355, \"char_start\": 4289, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It apologised for the delay in responding to the complaint and it\"}, {\"char_end\": 4400, \"char_start\": 4355, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"said that the resident had accepted an offer\"}, {\"char_end\": 4405, \"char_start\": 4400, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of £\"}, {\"char_end\": 4432, \"char_start\": 4405, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"500 for damage caused to h\"}, {\"char_end\": 4435, \"char_start\": 4432, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"er\"}, {\"char_end\": 4445, \"char_start\": 4435, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"flooring.\"}, {\"char_end\": 4462, \"char_start\": 4445, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"9 September 2024\"}, {\"char_end\": 4489, \"char_start\": 4462, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident disputed that\"}, {\"char_end\": 4496, \"char_start\": 4489, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"all of\"}, {\"char_end\": 4528, \"char_start\": 4496, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the repairs had been completed.\"}, {\"char_end\": 4531, \"char_start\": 4528, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Sh\"}, {\"char_end\": 4655, \"char_start\": 4531, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"e said that compensation for the damaged flooring was not sufficient and asked for the complaint to be escalated to stage 2\"}, {\"char_end\": 4671, \"char_start\": 4655, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"14 October 2024\"}, {\"char_end\": 4750, \"char_start\": 4671, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided its stage 2 complaint response. It upheld the complaint.\"}, {\"char_end\": 4860, \"char_start\": 4750, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It found that its stage 1 complaint response did not meet its standards and that information was not correct.\"}, {\"char_end\": 4983, \"char_start\": 4860, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord said it had agreed £500 with the resident for the replacement flooring and it had now processed that payment.\"}, {\"char_end\": 5057, \"char_start\": 4983, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It provided an update on each repair issue the resident complained about.\"}, {\"char_end\": 5133, \"char_start\": 5057, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It apologised for its complaint handling failure at stage 1 and offered £50\"}, {\"char_end\": 5200, \"char_start\": 5133, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It offered a further £150 for her time, trouble and inconvenience.\"}, {\"char_end\": 5226, \"char_start\": 5200, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 5331, \"char_start\": 5226, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident remained unhappy because of the delay in repairing the flooring. She said that the landlord\"}, {\"char_end\": 5348, \"char_start\": 5331, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"pre_decision_record\", \"text\": \"had not paid the\"}, {\"char_end\": 5353, \"char_start\": 5348, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"pre_decision_record\", \"text\": \"£500\"}, {\"char_end\": 5391, \"char_start\": 5353, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"pre_decision_record\", \"text\": \"it offered in its complaint response.\"}, {\"char_end\": 5399, \"char_start\": 5391, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"pre_decision_record\", \"text\": \"She had\"}, {\"char_end\": 5403, \"char_start\": 5399, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"pre_decision_record\", \"text\": \"not\"}, {\"char_end\": 5439, \"char_start\": 5403, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"pre_decision_record\", \"text\": \"agreed to this figure as it did not\"}, {\"char_end\": 5456, \"char_start\": 5439, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"pre_decision_record\", \"text\": \"adequately cover\"}, {\"char_end\": 5460, \"char_start\": 5456, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"pre_decision_record\", \"text\": \"the\"}, {\"char_end\": 5466, \"char_start\": 5460, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"pre_decision_record\", \"text\": \"total\"}, {\"char_end\": 5497, \"char_start\": 5466, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"pre_decision_record\", \"text\": \"cost of the floor replacement.\"}, {\"char_end\": 5708, \"char_start\": 5497, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"pre_decision_record\", \"text\": \"She was unhappy that 2 bedrooms were out of use for a week and the months of disruption to the house.  She said that she took a lot of time off work because there were multiple visits to complete basic repairs.\"}, {\"char_end\": 5833, \"char_start\": 5708, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"pre_decision_record\", \"text\": \"She said that a bathroom refurbishment was promised as a resolution to the leak in the cistern but this remains outstanding.\"}, {\"char_end\": 5890, \"char_start\": 5833, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"pre_decision_record\", \"text\": \"She said that the compensation offer was not sufficient.\"}, {\"char_end\": 6013, \"char_start\": 5890, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"pre_decision_record\", \"text\": \"She said that she paid for a dehumidifier to dry out the property after the leak and this increased her electricity costs.\"}, {\"char_end\": 6087, \"char_start\": 6013, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"pre_decision_record\", \"text\": \"She reported that the landlord’s offer of compensation was not sufficient\"}, {\"char_end\": 6123, \"char_start\": 6087, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"pre_decision_record\", \"text\": \"for the distress and inconvenience.\"}, {\"char_end\": 6125, \"char_start\": 6123, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"pre_decision_record\", \"text\": \"W\"}, {\"char_end\": 6146, \"char_start\": 6125, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"pre_decision_record\", \"text\": \"hat we found and why\"}, {\"char_end\": 6170, \"char_start\": 6146, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"pre_decision_record\", \"text\": \"The circumstances of th\"}, {\"char_end\": 6173, \"char_start\": 6170, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"pre_decision_record\", \"text\": \"is\"}, {\"char_end\": 6192, \"char_start\": 6173, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint are well\"}, {\"char_end\": 6198, \"char_start\": 6192, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"pre_decision_record\", \"text\": \"known\"}, {\"char_end\": 6232, \"char_start\": 6198, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"pre_decision_record\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 6236, \"char_start\": 6232, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"pre_decision_record\", \"text\": \"not\"}, {\"char_end\": 6267, \"char_start\": 6236, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"pre_decision_record\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 6333, \"char_start\": 6267, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"pre_decision_record\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 6373, \"char_start\": 6333, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"pre_decision_record\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 6378, \"char_start\": 6373, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"pre_decision_record\", \"text\": \"that\"}, {\"char_end\": 6410, \"char_start\": 6378, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"pre_decision_record\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 6472, \"char_start\": 6410, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"pre_decision_record\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 6482, \"char_start\": 6472, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 6510, \"char_start\": 6482, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Response to repair requests\"}, {\"char_end\": 6518, \"char_start\": 6510, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 6536, \"char_start\": 6518, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Maladministration\"}, {\"char_end\": 6676, \"char_start\": 6536, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repairs policy states that it aims to complete emergency repairs within 4 hours and routine repairs within 28 calendar days.\"}, {\"char_end\": 6694, \"char_start\": 6676, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Leak and flooring\"}, {\"char_end\": 7077, \"char_start\": 6694, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It is not disputed that there were failings in the landlord’s handling of the leak and damaged flooring. In both complaint responses the landlord upheld her complaint for the delay in completing these repairs. When a landlord has accepted a failing, it is our role to consider if redress offered by the landlord put things right and resolved the resident’s complaint satisfactorily.\"}, {\"char_end\": 7545, \"char_start\": 7077, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlords repair records are not clear. The evidence provided only shows the date that the repair was reported, a brief description of the repair issue, if it was a routine or emergency repair, and if the repair had been completed. The evidence does not confirm the date of completion of repairs, what repairs it carried out, how many visits to the property, or any repair notes. This investigation was consequently hampered by the landlord’s poor record keeping.\"}, {\"char_end\": 7774, \"char_start\": 7545, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 19 February 2024, the resident reported an emergency repair because a recently installed radiator was leaking and damaging the flooring. It is not clear if the landlord attended to this emergency repair within its timescales.\"}, {\"char_end\": 8234, \"char_start\": 7774, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 22 April 2024 she sent an image of a bulge on the floor in the hallway and reported that she thought there was a leak in the pipes under the sub floor causing the floor to ‘mound’. On 2 May 2024, the resident reported a further emergency repair because of the leak in the hallway. The landlord inspected the leak the following day and raised a work order to relay the sub floor. Based on the landlord’s records, it is not clear when it completed this work.\"}, {\"char_end\": 8670, \"char_start\": 8234, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to evidence that it surveyed the initial report of a leak within a reasonable timeframe. The landlord’s records are again poor, but it is reasonable to conclude that the delay in surveying and attending to the initial report of a leak caused the leak to develop and cause damage, which may have been preventable. The landlord’s response to the report of a leak was inappropriate and caused distress to the resident.\"}, {\"char_end\": 9278, \"char_start\": 8670, \"page\": 1, \"paragraph\": 189, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord was reasonable in offering compensation for replacement flooring. However, there was a dispute if the amount offered was sufficient. The resident obtained a quote to supply flooring but said that further flooring was subsequently damaged and, as such, the original quote was not sufficient. The landlord failed to investigate the residents position and maintained that the resident accepted £500 as a resolution to her flooring complaint. This was unreasonable. The landlord should have checked its repair records to confirm the amount of flooring damaged and adjusted its offer if appropriate.\"}, {\"char_end\": 9660, \"char_start\": 9278, \"page\": 1, \"paragraph\": 190, \"section_tag\": \"tribunal_reasoning\", \"text\": \"When the resident brought her complaint to us, she advised that the landlord had not paid her the compensation offered in its stage 2 complaint response. Based on the evidence, the landlord contacted the resident on 17 March 2025, to ask if the floor had been fitted and if she had received the compensation offered at stage 2. This indicates poor record keeping from the landlord.\"}, {\"char_end\": 10013, \"char_start\": 9660, \"page\": 1, \"paragraph\": 191, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s delay in paying compensation left the resident without flooring for at least 7 months as she was not provided the compensation offered to replace the flooring. This caused loss of enjoyment of the property and time and trouble for the resident who reported frustration as the landlord could not determine if it had paid the compensation.\"}, {\"char_end\": 10378, \"char_start\": 10013, \"page\": 1, \"paragraph\": 192, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident reported that the work to repair the leak took over a week and, in that time, she did not have access to 2 bedrooms as she had to lift the flooring in the bedrooms to dry out and as such, she could not use her 2 bedrooms for over a week while the floors dried out. She reported that this disruption had a detrimental impact on her son’s mental health.\"}, {\"char_end\": 10902, \"char_start\": 10378, \"page\": 1, \"paragraph\": 193, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s compensation guidance allows for room loss allowance. This is 20% of the weekly rent for loss of bedrooms. The landlord’s records are not clear, but given the extent of the leak, it is reasonable to conclude that the resident was without use of the 2 bedrooms while the leak was repaired and the floors dried out for over a week. The evidence shows that the resident was paying £104.54 weekly rent. An order for the landlord to pay £41.81 representing 40% of the rent for 1 weeks has been made on this basis.\"}, {\"char_end\": 10925, \"char_start\": 10902, \"page\": 1, \"paragraph\": 194, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Leaking toilet cistern\"}, {\"char_end\": 11403, \"char_start\": 10925, \"page\": 1, \"paragraph\": 195, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In her initial complaint the resident reported that the landlord damaged tiles surrounding the cistern to repair a leak. She decided not to replace the tiles as they would not match. In its stage 2 complaint response it said that no leak had been found. Based on the landlords repair records, it is unclear how the landlord concluded that there was no leak from the toilet cistern. This issue was reported on 31 May 2024 but there are no repair notes confirming what was found.\"}, {\"char_end\": 11416, \"char_start\": 11403, \"page\": 1, \"paragraph\": 196, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Bathroom fan\"}, {\"char_end\": 11874, \"char_start\": 11416, \"page\": 1, \"paragraph\": 197, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 16 May 2024, the resident asked the landlord to check the fan in the bathroom. The landlord repaired the motor in the bathroom fan on 11 July 2024. This was beyond its timescales of a 28-day repair and there is no evidence of communication with the resident explaining the delay. When the resident raised a complaint, she reported that the fan needed to be replaced. When she brought her complaint to us, she felt that the fan is not working efficiently.\"}, {\"char_end\": 12133, \"char_start\": 11874, \"page\": 1, \"paragraph\": 198, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It is not clear if the issue of the fan not working efficiently has been raised with the landlord, and its records do not confirm if the fan had been tested after repair. It is recommended that the landlord survey the fan to ensure it is working efficiently.\"}, {\"char_end\": 12153, \"char_start\": 12133, \"page\": 1, \"paragraph\": 199, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Lagging of pipework\"}, {\"char_end\": 12832, \"char_start\": 12153, \"page\": 1, \"paragraph\": 200, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repair notes show that this repair was raised on 12 July 2024. In its complaint response it said the repair was complete on 23 August 2024. The resident expressed frustration because this repair took 4 visits for which she had to take time off work. She reported that the first visit was to measure the lagging, the second visit was to fit the lagging but the contractor did not have enough material, the work was complete on the third visit but the contractor had to return to rectify the work on a fourth visit. The landlord’s repair records are not clear on the number of visits and, as such, we have seen no evidence to reason to doubt the resident’s version.\"}, {\"char_end\": 13090, \"char_start\": 12832, \"page\": 1, \"paragraph\": 201, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident reported that this example was a common theme with the landlord’s repairs throughout all repairs complained about. She reported having to take 24 days total off work for the landlord to carry out repairs. This caused considerable inconvenience.\"}, {\"char_end\": 13111, \"char_start\": 13090, \"page\": 1, \"paragraph\": 202, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Garden door and step\"}, {\"char_end\": 13558, \"char_start\": 13111, \"page\": 1, \"paragraph\": 203, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 31 May 2024, a routine repair order was raised to quote for a new back door and repair the garden step. The landlord records do not show when a contractor attended but when the resident raised a complaint, she said a contractor attended on 20 June 2024. The landlord’s records show a further order was raised on 8 August 2024 and the resident complained that a further contractor contacted her on the 9 August 2024 to quote for the same issue.\"}, {\"char_end\": 13898, \"char_start\": 13558, \"page\": 1, \"paragraph\": 204, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Internal evidence shows that the first quote was expensive and the landlord was trying to obtain the best value for money. The resident was unhappy that there was no communication regarding this from the landlord. The landlord had missed its target timescale for repair and failed to communicate the reason for the delay with the resident.\"}, {\"char_end\": 14522, \"char_start\": 13898, \"page\": 1, \"paragraph\": 205, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records are not clear but the resident confirmed to us that this repair was completed in early 2025. This was 6 months after the repair was raised and significantly beyond its timescales. While it is often the case with non-urgent repairs that the landlord may not be able to consistently keep to its defined timescales, it is basic good practice is for a landlord to liaise regularly with the resident to explain the reason for any delays and take meaningful steps to resolve any outstanding repairs as quickly as possible. The landlord’s failure to do so caused frustration and uncertainty to the resident.\"}, {\"char_end\": 14532, \"char_start\": 14522, \"page\": 1, \"paragraph\": 206, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 14573, \"char_start\": 14532, \"page\": 1, \"paragraph\": 207, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The response to reports of a data breach\"}, {\"char_end\": 14581, \"char_start\": 14573, \"page\": 1, \"paragraph\": 208, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 14602, \"char_start\": 14581, \"page\": 1, \"paragraph\": 209, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Outside jurisdiction\"}, {\"char_end\": 15147, \"char_start\": 14602, \"page\": 1, \"paragraph\": 210, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We do not investigate complaints where it would be quicker, fairer, more reasonable or more effective to seek a remedy through the court, tribunal or other procedure. In this case, the complaint about the landlord response to reports of a data breach is better dealt with by the Information Commissioners Office because we are unable to investigate complaints concerning the landlord’s handling of data and failures to respond to a SAR request. For these reasons, we have decided not to investigate the complaint about reports of a data breach.\"}, {\"char_end\": 15157, \"char_start\": 15147, \"page\": 1, \"paragraph\": 211, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 15187, \"char_start\": 15157, \"page\": 1, \"paragraph\": 212, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 15195, \"char_start\": 15187, \"page\": 1, \"paragraph\": 213, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 15213, \"char_start\": 15195, \"page\": 1, \"paragraph\": 214, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Maladministration\"}, {\"char_end\": 15706, \"char_start\": 15213, \"page\": 1, \"paragraph\": 215, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The Ombudsman’s Complaint Handling Code (The Code) sets out the Ombudsman’s expectations for landlords’ complaint handling practices. The Code states that a stage 1 response should be acknowledged within 5 working days and a response then provided within 10 working days. It also states that a stage 2 response should acknowledged within 5 working days and a response should then be provided within 20 working days. The landlord’s complaints policy references the same timescales as the Code.\"}, {\"char_end\": 16071, \"char_start\": 15706, \"page\": 1, \"paragraph\": 216, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have not seen if the landlord acknowledged the complaint at either stage. The landlord provided its stage 1 complaint response 15 working days after the complaint was raised and 25 working days after the stage 2 complaint escalation. This was a shortcoming by the landlord. The landlord did acknowledge its delay at stage 1 and apologised which was appropriate.\"}, {\"char_end\": 16452, \"char_start\": 16071, \"page\": 1, \"paragraph\": 217, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaint handling process is an opportunity for the landlord to identify where things went wrong and put it right for the resident. The landlord failed to identify that the resident had not accepted the offer for flooring as further damage had been caused. It failed to appropriately investigate if the offer of compensation was sufficient to replace the flooring.\"}, {\"char_end\": 16584, \"char_start\": 16452, \"page\": 1, \"paragraph\": 218, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord also failed to acknowledge the loss of use of the resident’s bedrooms and make an offer of compensation for this loss.\"}, {\"char_end\": 17032, \"char_start\": 16584, \"page\": 1, \"paragraph\": 219, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The Code sets out that after a stage 2 complaint response, outstanding actions must still be tracked and actioned promptly with appropriate updates provided to the resident. Based on the evidence, the landlord did not track the action of compensation and when the resident brought her complaint to us, she had not received the compensation offered. This caused further inconvenience, time, and trouble for the resident in chasing the compensation.\"}, {\"char_end\": 17041, \"char_start\": 17032, \"page\": 1, \"paragraph\": 220, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 17091, \"char_start\": 17041, \"page\": 1, \"paragraph\": 221, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 17426, \"char_start\": 17091, \"page\": 1, \"paragraph\": 222, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This investigation was hampered by the landlord’s repair record keeping as set out in paragraph 11. The onus is on the landlord to maintain good records. If there are a disputed version of events and no audit trail, we may not be able to conclude that an action took place or that the landlord followed its own policies or procedures.\"}, {\"char_end\": 17803, \"char_start\": 17426, \"page\": 1, \"paragraph\": 223, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our Knowledge and Information Management (KIM) spotlight report highlights the importance of good record keeping. The evidence assessed in this investigation shows the landlord’s practice was not in line with that recommended in the Spotlight report. We encourage the landlord to consider the findings and recommendations of our Spotlight report if it has not already done so.\"}, {\"char_end\": 17817, \"char_start\": 17803, \"page\": 1, \"paragraph\": 224, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 17919, \"char_start\": 17817, \"page\": 1, \"paragraph\": 225, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our spotlight report on repairs and maintenance explains that failures can be avoided when landlords:\"}, {\"char_end\": 18018, \"char_start\": 17919, \"page\": 1, \"paragraph\": 226, \"section_tag\": \"tribunal_reasoning\", \"text\": \"let residents know what to expect regarding repairs and provide a clear schedule for repair visits\"}, {\"char_end\": 18108, \"char_start\": 18018, \"page\": 1, \"paragraph\": 227, \"section_tag\": \"tribunal_reasoning\", \"text\": \"gather feedback from residents and conduct inspections to ensure the work is satisfactory\"}, {\"char_end\": 18367, \"char_start\": 18108, \"page\": 1, \"paragraph\": 228, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In this case, the records do not show if the landlord regularly updated the resident on the status of repairs. Frustration and dissatisfaction may have been avoided if the landlord’s repairs and maintenance team followed our spotlight report recommendations.\"}, {\"char_end\": 18386, \"char_start\": 18367, \"page\": 1, \"paragraph\": 229, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 18613, \"char_start\": 18386, \"page\": 1, \"paragraph\": 230, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This investigation identified complaint handling practices that did not comply with the Code. We encourage the landlord to review this case against the Code and implement any learning it finds to improve its complaint handling.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "a058962d1db4a5ab3e168314c3f0d76171f8c2d17d8c355c8b349400d198838a",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T15:53:37.998430+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "9d4dd6b1e0bee2b3571bc3cc9fab7dc2d685fd7fb8c8213950cb4d273a9c037e"
+}

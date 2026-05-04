@@ -21,7 +21,11 @@ KNOWN_OUTCOMES = {
     "severe-maladministration",
     "maladministration",
     "partial-maladministration",
+    "service-failure",
+    "reasonable-redress",
+    "resolved-with-intervention",
     "no-maladministration",
+    "outside-jurisdiction",
 }
 
 
