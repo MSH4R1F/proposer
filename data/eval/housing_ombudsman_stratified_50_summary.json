@@ -1,0 +1,45 @@
+{
+  "allocated_outcome_quotas": {
+    "maladministration": 32,
+    "outside-jurisdiction": 1,
+    "reasonable-redress": 4,
+    "resolved-with-intervention": 2,
+    "service-failure": 7,
+    "severe-maladministration": 3,
+    "unknown": 1
+  },
+  "data_dir": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system",
+  "decision_date_max": "2026-03-31",
+  "decision_date_min": "2025-01-08",
+  "eligible_cases": 936,
+  "excluded_missing_decision_date": 64,
+  "generated_at": "2026-05-04T13:37:04.900455+00:00",
+  "output": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval/housing_ombudsman_stratified_50.jsonl",
+  "sample_size": 50,
+  "schema_version": "housing_ombudsman_eval_manifest_v1",
+  "selected_outcome_counts": {
+    "maladministration": 32,
+    "outside-jurisdiction": 1,
+    "reasonable-redress": 4,
+    "resolved-with-intervention": 2,
+    "service-failure": 7,
+    "severe-maladministration": 3,
+    "unknown": 1
+  },
+  "selected_primary_matter_counts": {
+    "repairs_damp_mould": 24,
+    "repairs_disrepair": 26
+  },
+  "selection_seed": 42,
+  "source_cases": 1000,
+  "source_master_index": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/raw/housing_ombudsman/master_index.json",
+  "source_outcome_counts": {
+    "maladministration": 670,
+    "outside-jurisdiction": 6,
+    "reasonable-redress": 56,
+    "resolved-with-intervention": 17,
+    "service-failure": 128,
+    "severe-maladministration": 52,
+    "unknown": 7
+  }
+}

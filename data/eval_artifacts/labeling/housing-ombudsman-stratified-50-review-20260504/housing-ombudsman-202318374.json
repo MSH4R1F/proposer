@@ -1,0 +1,1328 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202318374",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5454545454545454,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 14 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='22 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='leak response', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'resident',...ndent': 'Peabody Trust'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Input should be a valid list [type=list_type, input_value=\"Contractor records, plum...cy, compensation policy\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['leak re...dent': 'Peabody Trust'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 6 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='22 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='leak response', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'resident',...ndent': 'Peabody Trust'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Input should be a valid list [type=list_type, input_value=\"Contractor records, plum...cy, compensation policy\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "disputed_amount_gbp": "GROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "key_reasoning_quotes[5]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.6666666666666666,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 21 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='22 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Landlord response to reports of a leak', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Peabody Tru...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord repairs policy response standards', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Records of plumbers and ...een 18 and 19 July 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Contractor records confi... on 3 and 4 August 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord compensation policy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord complaints policy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'determination': 'Reason... 2 if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'determination': 'Reason... 2 if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.determination\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Reasonable redress for t...of a leak and complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value='No orders made', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Landlord recommended to ...e 2 if not already paid', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 14 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='22 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Landlord response to reports of a leak', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Peabody Tru...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord repairs policy response standards', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Records of plumbers and ...een 18 and 19 July 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Contractor records confi... on 3 and 4 August 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord compensation policy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord complaints policy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'determination': 'Reason... 2 if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'determination': 'Reason... 2 if not already paid'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.determination\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Reasonable redress for t...of a leak and complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value='No orders made', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Landlord recommended to ...e 2 if not already paid', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "disputed_amount_gbp": "basis span present",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "key_reasoning_quotes[5]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              385,
+              466
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              451,
+              470
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              470,
+              481
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              222,
+              239
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 129,
+            "text_span": [
+              6144,
+              6387
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 128,
+            "text_span": [
+              5786,
+              6144
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              7275,
+              7645
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              250,
+              357
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              2045,
+              2344
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              2361,
+              2402
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 61,
+            "text_span": [
+              2404,
+              2586
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 62,
+            "text_span": [
+              2586,
+              2599
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 63,
+            "text_span": [
+              2599,
+              2601
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 64,
+            "text_span": [
+              2601,
+              2680
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              2680,
+              2682
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              2682,
+              2693
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 68,
+            "text_span": [
+              2710,
+              2723
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 69,
+            "text_span": [
+              2723,
+              2737
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 70,
+            "text_span": [
+              2737,
+              2776
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 71,
+            "text_span": [
+              2776,
+              2808
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              2808,
+              2876
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              2876,
+              2925
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 84,
+            "text_span": [
+              3172,
+              3213
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 85,
+            "text_span": [
+              3213,
+              3217
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 86,
+            "text_span": [
+              3217,
+              3224
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 87,
+            "text_span": [
+              3224,
+              3228
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 88,
+            "text_span": [
+              3228,
+              3241
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 89,
+            "text_span": [
+              3241,
+              3247
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 90,
+            "text_span": [
+              3247,
+              3255
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 91,
+            "text_span": [
+              3255,
+              3259
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 92,
+            "text_span": [
+              3259,
+              3282
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 93,
+            "text_span": [
+              3282,
+              3284
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 94,
+            "text_span": [
+              3284,
+              3291
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              3291,
+              3314
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              3314,
+              3336
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              3336,
+              3338
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 98,
+            "text_span": [
+              3338,
+              3349
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              3379,
+              3472
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 103,
+            "text_span": [
+              3474,
+              3723
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              510,
+              589
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4150,
+              4169
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 145,
+            "text_span": [
+              9804,
+              9823
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              700,
+              1074
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              6646,
+              7046
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 141,
+            "text_span": [
+              9522,
+              9756
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              120,
+              134
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              143,
+              157
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "The resident sought increased compensation but no specific amount was claimed in the pre-decision record sections.",
+        "disputed_amount_gbp": "No specific disputed amount is mentioned in the pre-decision record sections.",
+        "region": "No specific region or geographical location is mentioned in the decision text.",
+        "region_source": "No region information is available to source.",
+        "statutory_basis": "No specific statutory provisions or legal basis are cited in the decision text."
+      },
+      "claim_types": [
+        "leak response",
+        "complaint handling"
+      ],
+      "decision_date": "22 December 2025",
+      "evidence": "Contractor records, plumber and drainage contractor attendance records, supervisory inspection reports, landlord's repairs policy, complaints policy, compensation policy",
+      "facts": "The resident reported recurring leaks affecting the bathroom and kitchen in July 2023. On 1 August 2023, the resident emailed the landlord about long-running leaks to her bathroom and kitchen, damage to her belongings, and the landlord's failure to resolve the issue over several years. The landlord logged this as a stage 1 complaint on 2 August 2023. The landlord issued its stage 1 response on 22 November 2023, acknowledging delays in resolving the July 2023 leak and awarding £200 for time, trouble and inconvenience and £300 for poor complaint handling (£500 total). On 12 December 2023, the resident escalated her complaint to stage 2, disputing key findings and stating that leaks had been ongoing for years. The landlord issued its stage 2 response on 6 February 2024, revising its compensation offer to £500 for time and trouble and £300 for poor complaint handling (£800 total). The resident told the ombudsman she did not consider the compensation appropriate and was seeking an increased award to reflect the length of time the leak affected her home, the disruption caused by repeated attendances, and the effort she spent pursuing the matter.",
+      "ground_truth_outcome": "reasonable redress",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              700,
+              1074
+            ]
+          },
+          "text": "The landlord did not fully resolve the impact of the leak within its expected timescales, particularly in relation to the completion and communication of internal remedial works following the main repair. The landlord acknowledged this failing and offered compensation which reasonably recognised the inconvenience and disruption caused, in line with our remedy's guidance."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              6646,
+              7046
+            ]
+          },
+          "text": "While some investigation time was unavoidable due to the complexity of the communal pipework and the need for access to neighbouring flats, we consider that a three-week period to resolve an active leak causing repeated disruption was longer than would reasonably be expected under the landlord's routine repairs obligations."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 141,
+            "text_span": [
+              9522,
+              9756
+            ]
+          },
+          "text": "Our remedies guidance suggests awards of this level are appropriate where a service failure causes prolonged inconvenience but no permanent impact. In the circumstances, the landlord's award reasonably reflects the impact identified."
+        }
+      ],
+      "matter_type": "housing ombudsman investigation",
+      "parties": {
+        "applicant": "resident",
+        "respondent": "Peabody Trust"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"leak response\", \"complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 23, \"text_span\": [385, 466]},\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [451, 470]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [470, 481]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The resident sought increased compensation but no specific amount was claimed in the pre-decision record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"22 December 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [222, 239]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific disputed amount is mentioned in the pre-decision record sections.\"\n  },\n  \"evidence\": {\n    \"value\": \"Contractor records, plumber and drainage contractor attendance records, supervisory inspection reports, landlord's repairs policy, complaints policy, compensation policy\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 129, \"text_span\": [6144, 6387]},\n      {\"page\": 1, \"paragraph\": 128, \"text_span\": [5786, 6144]},\n      {\"page\": 1, \"paragraph\": 133, \"text_span\": [7275, 7645]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident reported recurring leaks affecting the bathroom and kitchen in July 2023. On 1 August 2023, the resident emailed the landlord about long-running leaks to her bathroom and kitchen, damage to her belongings, and the landlord's failure to resolve the issue over several years. The landlord logged this as a stage 1 complaint on 2 August 2023. The landlord issued its stage 1 response on 22 November 2023, acknowledging delays in resolving the July 2023 leak and awarding £200 for time, trouble and inconvenience and £300 for poor complaint handling (£500 total). On 12 December 2023, the resident escalated her complaint to stage 2, disputing key findings and stating that leaks had been ongoing for years. The landlord issued its stage 2 response on 6 February 2024, revising its compensation offer to £500 for time and trouble and £300 for poor complaint handling (£800 total). The resident told the ombudsman she did not consider the compensation appropriate and was seeking an increased award to reflect the length of time the leak affected her home, the disruption caused by repeated attendances, and the effort she spent pursuing the matter.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [250, 357]},\n      {\"page\": 1, \"paragraph\": 57, \"text_span\": [2045, 2344]},\n      {\"page\": 1, \"paragraph\": 59, \"text_span\": [2361, 2402]},\n      {\"page\": 1, \"paragraph\": 61, \"text_span\": [2404, 2586]},\n      {\"page\": 1, \"paragraph\": 62, \"text_span\": [2586, 2599]},\n      {\"page\": 1, \"paragraph\": 63, \"text_span\": [2599, 2601]},\n      {\"page\": 1, \"paragraph\": 64, \"text_span\": [2601, 2680]},\n      {\"page\": 1, \"paragraph\": 65, \"text_span\": [2680, 2682]},\n      {\"page\": 1, \"paragraph\": 66, \"text_span\": [2682, 2693]},\n      {\"page\": 1, \"paragraph\": 68, \"text_span\": [2710, 2723]},\n      {\"page\": 1, \"paragraph\": 69, \"text_span\": [2723, 2737]},\n      {\"page\": 1, \"paragraph\": 70, \"text_span\": [2737, 2776]},\n      {\"page\": 1, \"paragraph\": 71, \"text_span\": [2776, 2808]},\n      {\"page\": 1, \"paragraph\": 72, \"text_span\": [2808, 2876]},\n      {\"page\": 1, \"paragraph\": 73, \"text_span\": [2876, 2925]},\n      {\"page\": 1, \"paragraph\": 84, \"text_span\": [3172, 3213]},\n      {\"page\": 1, \"paragraph\": 85, \"text_span\": [3213, 3217]},\n      {\"page\": 1, \"paragraph\": 86, \"text_span\": [3217, 3224]},\n      {\"page\": 1, \"paragraph\": 87, \"text_span\": [3224, 3228]},\n      {\"page\": 1, \"paragraph\": 88, \"text_span\": [3228, 3241]},\n      {\"page\": 1, \"paragraph\": 89, \"text_span\": [3241, 3247]},\n      {\"page\": 1, \"paragraph\": 90, \"text_span\": [3247, 3255]},\n      {\"page\": 1, \"paragraph\": 91, \"text_span\": [3255, 3259]},\n      {\"page\": 1, \"paragraph\": 92, \"text_span\": [3259, 3282]},\n      {\"page\": 1, \"paragraph\": 93, \"text_span\": [3282, 3284]},\n      {\"page\": 1, \"paragraph\": 94, \"text_span\": [3284, 3291]},\n      {\"page\": 1, \"paragraph\": 95, \"text_span\": [3291, 3314]},\n      {\"page\": 1, \"paragraph\": 96, \"text_span\": [3314, 3336]},\n      {\"page\": 1, \"paragraph\": 97, \"text_span\": [3336, 3338]},\n      {\"page\": 1, \"paragraph\": 98, \"text_span\": [3338, 3349]},\n      {\"page\": 1, \"paragraph\": 101, \"text_span\": [3379, 3472]},\n      {\"page\": 1, \"paragraph\": 103, \"text_span\": [3474, 3723]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"reasonable redress\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 27, \"text_span\": [510, 589]},\n      {\"page\": 1, \"paragraph\": 122, \"text_span\": [4150, 4169]},\n      {\"page\": 1, \"paragraph\": 145, \"text_span\": [9804, 9823]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord did not fully resolve the impact of the leak within its expected timescales, particularly in relation to the completion and communication of internal remedial works following the main repair. The landlord acknowledged this failing and offered compensation which reasonably recognised the inconvenience and disruption caused, in line with our remedy's guidance.\",\n      \"While some investigation time was unavoidable due to the complexity of the communal pipework and the need for access to neighbouring flats, we consider that a three-week period to resolve an active leak causing repeated disruption was longer than would reasonably be expected under the landlord's routine repairs obligations.\",\n      \"Our remedies guidance suggests awards of this level are appropriate where a service failure causes prolonged inconvenience but no permanent impact. In the circumstances, the landlord's award reasonably reflects the impact identified.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 34, \"text_span\": [700, 1074]},\n      {\"page\": 1, \"paragraph\": 131, \"text_span\": [6646, 7046]},\n      {\"page\": 1, \"paragraph\": 141, \"text_span\": [9522, 9756]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"housing ombudsman investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [120, 134]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"applicant\": \"resident\",\n      \"respondent\": \"Peabody Trust\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [143, 157]}\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific region or geographical location is mentioned in the decision text.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No region information is available to source.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutory provisions or legal basis are cited in the decision text.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202318374\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 41, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Peabody Trust (202318374)\"}, {\"char_end\": 67, \"char_start\": 41, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Peabody Trust (202318374)\"}, {\"char_end\": 79, \"char_start\": 67, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 88, \"char_start\": 79, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 96, \"char_start\": 88, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 106, \"char_start\": 96, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202318374\"}, {\"char_end\": 120, \"char_start\": 106, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 134, \"char_start\": 120, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 143, \"char_start\": 134, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 157, \"char_start\": 143, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Peabody Trust\"}, {\"char_end\": 171, \"char_start\": 157, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 191, \"char_start\": 171, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 201, \"char_start\": 191, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 217, \"char_start\": 201, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 222, \"char_start\": 217, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 225, \"char_start\": 222, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"22\"}, {\"char_end\": 239, \"char_start\": 225, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2025\"}, {\"char_end\": 250, \"char_start\": 239, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 357, \"char_start\": 250, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident has reported recurring leaks affecting the bathroom and kitchen in the property in July 2023.\"}, {\"char_end\": 385, \"char_start\": 357, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 451, \"char_start\": 385, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s response to the resident’s:\"}, {\"char_end\": 470, \"char_start\": 451, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"Reports of a leak.\"}, {\"char_end\": 481, \"char_start\": 470, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"Complaint.\"}, {\"char_end\": 510, \"char_start\": 481, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 589, \"char_start\": 510, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found reasonable redress in the landlord’s response to the resident’s:\"}, {\"char_end\": 608, \"char_start\": 589, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reports of a leak.\"}, {\"char_end\": 619, \"char_start\": 608, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint.\"}, {\"char_end\": 622, \"char_start\": 619, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 631, \"char_start\": 622, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have not\"}, {\"char_end\": 681, \"char_start\": 631, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 700, \"char_start\": 681, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1074, \"char_start\": 700, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not fully resolve the impact of the leak within its expected timescales, particularly in relation to the completion and communication of internal remedial works following the main repair. The landlord acknowledged this failing and offered compensation which reasonably recognised the inconvenience and disruption caused, in line with our remedy’s guidance.\"}, {\"char_end\": 1258, \"char_start\": 1074, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord delayed issuing its stage 1 complaint response. It acknowledged this failing and awarded compensation, which provided reasonable redress for the complaint-handling delay.\"}, {\"char_end\": 1279, \"char_start\": 1258, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1337, \"char_start\": 1279, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1339, \"char_start\": 1337, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1414, \"char_start\": 1339, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1505, \"char_start\": 1414, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1521, \"char_start\": 1505, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 1604, \"char_start\": 1521, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 1624, \"char_start\": 1604, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 1696, \"char_start\": 1624, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"It is recommended that the landlord pays the resident £800 compensation\"}, {\"char_end\": 1715, \"char_start\": 1696, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"offered at Stage 2\"}, {\"char_end\": 1764, \"char_start\": 1715, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \", if it has not already done so. This comprises:\"}, {\"char_end\": 1810, \"char_start\": 1764, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"£500 for time, trouble and inconvenience; and\"}, {\"char_end\": 1879, \"char_start\": 1810, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"£300 reflecting the delay in issuing the stage 1 complaint response.\"}, {\"char_end\": 1936, \"char_start\": 1879, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"Our determination of reasonable redress is based on this\"}, {\"char_end\": 1968, \"char_start\": 1936, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"sum being paid to the resident.\"}, {\"char_end\": 1970, \"char_start\": 1968, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 1988, \"char_start\": 1970, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 2012, \"char_start\": 1988, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 2017, \"char_start\": 2012, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 2031, \"char_start\": 2017, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 2045, \"char_start\": 2031, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"pre_decision_record\", \"text\": \"1 August 2023\"}, {\"char_end\": 2344, \"char_start\": 2045, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident emailed the landlord on 1 August 2023 about long-running leaks to her bathroom and kitchen, damage to her belongings, and the landlord’s failure to resolve the issue over several years. On 2 August 2023 the landlord logged this as a stage 1 complaint and allocated a complaint handler.\"}, {\"char_end\": 2361, \"char_start\": 2344, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"pre_decision_record\", \"text\": \"22 November 2023\"}, {\"char_end\": 2402, \"char_start\": 2361, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued its stage 1 response\"}, {\"char_end\": 2404, \"char_start\": 2402, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 2586, \"char_start\": 2404, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged delays in resolving the July 2023 leak, stated that works were now complete, and signposted the resident to make an insurance claim for damaged belongings.\"}, {\"char_end\": 2599, \"char_start\": 2586, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"pre_decision_record\", \"text\": \"It awarded £\"}, {\"char_end\": 2601, \"char_start\": 2599, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"pre_decision_record\", \"text\": \"2\"}, {\"char_end\": 2680, \"char_start\": 2601, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"pre_decision_record\", \"text\": \"00 for time, trouble and inconvenience and £300 for poor complaint handling (£\"}, {\"char_end\": 2682, \"char_start\": 2680, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"pre_decision_record\", \"text\": \"5\"}, {\"char_end\": 2693, \"char_start\": 2682, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"pre_decision_record\", \"text\": \"00 total).\"}, {\"char_end\": 2710, \"char_start\": 2693, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"pre_decision_record\", \"text\": \"12 December 2023\"}, {\"char_end\": 2723, \"char_start\": 2710, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident\"}, {\"char_end\": 2737, \"char_start\": 2723, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"pre_decision_record\", \"text\": \"escalated her\"}, {\"char_end\": 2776, \"char_start\": 2737, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint to stage 2. She disputed key\"}, {\"char_end\": 2808, \"char_start\": 2776, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"pre_decision_record\", \"text\": \"findings in the stage response,\"}, {\"char_end\": 2876, \"char_start\": 2808, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"pre_decision_record\", \"text\": \"stated that leaks had been ongoing for years, and explained why the\"}, {\"char_end\": 2925, \"char_start\": 2876, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"pre_decision_record\", \"text\": \"proposed compensation did not reflect the impact\"}, {\"char_end\": 2929, \"char_start\": 2925, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"pre_decision_record\", \"text\": \"she\"}, {\"char_end\": 2946, \"char_start\": 2929, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"pre_decision_record\", \"text\": \"experienced. She\"}, {\"char_end\": 2951, \"char_start\": 2946, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"pre_decision_record\", \"text\": \"also\"}, {\"char_end\": 3018, \"char_start\": 2951, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"pre_decision_record\", \"text\": \"disputed the supervisor’s November 2023 assessment that no further\"}, {\"char_end\": 3039, \"char_start\": 3018, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"pre_decision_record\", \"text\": \"works were required.\"}, {\"char_end\": 3056, \"char_start\": 3039, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"pre_decision_record\", \"text\": \"21 December 2023\"}, {\"char_end\": 3124, \"char_start\": 3056, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the stage 2 escalation and confirmed that\"}, {\"char_end\": 3127, \"char_start\": 3124, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"pre_decision_record\", \"text\": \"it\"}, {\"char_end\": 3155, \"char_start\": 3127, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"pre_decision_record\", \"text\": \"would carry out the review.\"}, {\"char_end\": 3172, \"char_start\": 3155, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"pre_decision_record\", \"text\": \"06 February 2024\"}, {\"char_end\": 3213, \"char_start\": 3172, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued its stage 2 response\"}, {\"char_end\": 3217, \"char_start\": 3213, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"pre_decision_record\", \"text\": \", r\"}, {\"char_end\": 3224, \"char_start\": 3217, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"pre_decision_record\", \"text\": \"evised\"}, {\"char_end\": 3228, \"char_start\": 3224, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"pre_decision_record\", \"text\": \"its\"}, {\"char_end\": 3241, \"char_start\": 3228, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"pre_decision_record\", \"text\": \"compensation\"}, {\"char_end\": 3247, \"char_start\": 3241, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"pre_decision_record\", \"text\": \"offer\"}, {\"char_end\": 3255, \"char_start\": 3247, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"to £500\"}, {\"char_end\": 3259, \"char_start\": 3255, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"for\"}, {\"char_end\": 3282, \"char_start\": 3259, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"time and trouble and £\"}, {\"char_end\": 3284, \"char_start\": 3282, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"3\"}, {\"char_end\": 3291, \"char_start\": 3284, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"00 for\"}, {\"char_end\": 3314, \"char_start\": 3291, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"the impact of its poor\"}, {\"char_end\": 3336, \"char_start\": 3314, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint handling (£\"}, {\"char_end\": 3338, \"char_start\": 3336, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \"8\"}, {\"char_end\": 3349, \"char_start\": 3338, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \"00 total).\"}, {\"char_end\": 3375, \"char_start\": 3349, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 3379, \"char_start\": 3375, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"The\"}, {\"char_end\": 3472, \"char_start\": 3379, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"resident told us she did not consider the compensation the landlord offered was appropriate.\"}, {\"char_end\": 3474, \"char_start\": 3472, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"S\"}, {\"char_end\": 3723, \"char_start\": 3474, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"he said she was seeking an increased compensation award to reflect the length of time the leak affected her home, the disruption caused by repeated attendances, and the effort she spent pursuing the matter through the landlord’s complaints process.\"}, {\"char_end\": 3745, \"char_start\": 3723, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 3769, \"char_start\": 3745, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 3772, \"char_start\": 3769, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 3791, \"char_start\": 3772, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 3797, \"char_start\": 3791, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 3831, \"char_start\": 3797, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 3835, \"char_start\": 3831, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 3866, \"char_start\": 3835, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 3932, \"char_start\": 3866, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 3972, \"char_start\": 3932, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 3977, \"char_start\": 3972, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 4009, \"char_start\": 3977, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 4071, \"char_start\": 4009, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 4081, \"char_start\": 4071, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 4130, \"char_start\": 4081, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to the resident’s report\"}, {\"char_end\": 4132, \"char_start\": 4130, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 4142, \"char_start\": 4132, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of a leak\"}, {\"char_end\": 4150, \"char_start\": 4142, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 4169, \"char_start\": 4150, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 4606, \"char_start\": 4169, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has reported recurring leaks affecting her bathroom and kitchen. Similar issues were raised in 2022; however, as the resident did not request a stage 2 review at that time, the landlord’s complaints process was not exhausted, and those matters fall outside the scope of this investigation. This report therefore focuses on the landlord’s handling of leak reports raised from July 2023 and the associated complaint handling.\"}, {\"char_end\": 4917, \"char_start\": 4606, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repairs policy sets out clear response standards. Emergency repairs are those that present an immediate risk to health or safety and require prompt attendance to make safe. Routine repairs must be completed within a reasonable timeframe, taking account of the nature and complexity of the issue.\"}, {\"char_end\": 5123, \"char_start\": 4917, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident reported renewed leaking on 14 July 2023. The evidence shows that water ingress affected the bathroom and kitchen and caused electrical failures, including the boiler and lighting cutting out.\"}, {\"char_end\": 5436, \"char_start\": 5123, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord responded by arranging out-of-hours and follow-up electrical attendances to isolate and make the electrics safe. This action addressed the immediate health and safety risk. We are satisfied that the landlord appropriately treated the electrical risk as urgent under its emergency repair obligations.\"}, {\"char_end\": 5786, \"char_start\": 5436, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not classify the underlying cause of the leak itself as an emergency repair. That was appropriate. The evidence shows the source of the leak was linked to communal pipework and neighbouring flats and required investigation rather than immediate replacement. This falls within the landlord’s routine repairs process under its policy.\"}, {\"char_end\": 6144, \"char_start\": 5786, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Once the issue was treated as a routine repair, the landlord was required to investigate and resolve the defect within a reasonable timeframe. The records show that plumbers and drainage contractors attended between 18 and 19 July 2023. These visits identified a bowed horizontal pipe, fat and grease build-up, and defective pipework serving multiple flats.\"}, {\"char_end\": 6387, \"char_start\": 6144, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord approved a back-to-back repair on 24 July 2023 and booked works for 3 and 4 August 2023. Contractor records confirm that the pipework was replaced and realigned on those dates and that the system was tested and left free-flowing.\"}, {\"char_end\": 6646, \"char_start\": 6387, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The leak was therefore resolved approximately three weeks after it was first reported, from 14 July to 4 August 2023. During this period, the resident experienced ongoing water ingress, repeated electrical isolation, and disruption to normal use of her home.\"}, {\"char_end\": 7046, \"char_start\": 6646, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While some investigation time was unavoidable due to the complexity of the communal pipework and the need for access to neighbouring flats, we consider that a three-week period to resolve an active leak causing repeated disruption was longer than would reasonably be expected under the landlord’s routine repairs obligations. This represents a service failure in the timeliness of repair completion.\"}, {\"char_end\": 7275, \"char_start\": 7046, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"After the leak was resolved, the resident raised concerns about internal damage, including flooring, staining, cracks, and a non-functioning extractor fan. These issues related to making good, rather than the source of the leak.\"}, {\"char_end\": 7645, \"char_start\": 7275, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The evidence shows that the landlord did not formally conclude its position on the making-good works until a supervisory inspection on 21 November 2023. This was over three months after the leak repair was completed. During this period, there is no evidence that the landlord clearly set out what remedial works would be completed, which would not, and the reasons why.\"}, {\"char_end\": 7846, \"char_start\": 7645, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This delay in addressing and concluding the making-good stage represents a further service failure. It prolonged the resident’s uncertainty and frustration after the primary repair had been completed.\"}, {\"char_end\": 7895, \"char_start\": 7846, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In summary, the service failures identified are:\"}, {\"char_end\": 7966, \"char_start\": 7895, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"tribunal_reasoning\", \"text\": \"a delay of approximately three weeks in resolving the leak itself; and\"}, {\"char_end\": 8061, \"char_start\": 7966, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"a further delay of approximately three and a half months in concluding the making-good issues.\"}, {\"char_end\": 8586, \"char_start\": 8061, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s service failure resulted in two periods of delay. The leak itself was resolved over a period of approximately three weeks, from 14 July to 4 August 2023. While the landlord attended during this period, the repair exceeded the timescales set out in its repairs policy for non-emergency repairs. Following the resolution of the leak, the landlord did not complete or clearly conclude the associated making-good works until 21 November 2023, representing a further delay of approximately three and a half months.\"}, {\"char_end\": 9037, \"char_start\": 8586, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The evidence shows that these delays had a tangible impact on the resident. During the leak period, she experienced repeated water ingress, disruption to electrical services, and uncertainty about the safety and usability of parts of her home. After the leak was stopped, the lack of clarity about outstanding remedial works caused ongoing inconvenience and frustration, as the resident was left uncertain about when her home would be fully restored.\"}, {\"char_end\": 9522, \"char_start\": 9037, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s compensation policy allows for discretionary awards where residents experience distress, inconvenience, or time and trouble due to service failure. It provides for higher awards where issues are prolonged or require repeated attendance. In this case, the landlord acknowledged delays in resolving the leak and the disruption caused. It awarded £500 in line with its compensation policy, having regard to the duration of the issue and the number of attendances required.\"}, {\"char_end\": 9756, \"char_start\": 9522, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our remedies guidance suggests awards of this level are appropriate where a service failure causes prolonged inconvenience but no permanent impact. In the circumstances, the landlord’s award reasonably reflects the impact identified.\"}, {\"char_end\": 9766, \"char_start\": 9756, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 9796, \"char_start\": 9766, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 9804, \"char_start\": 9796, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 9823, \"char_start\": 9804, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 10051, \"char_start\": 9823, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaints policy sets out a two-stage process. It says it will issue a stage 1 response within its published timescales and a stage 2 response within 20 working days of escalation, unless it agrees an extension.\"}, {\"char_end\": 10509, \"char_start\": 10051, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident raised her complaint in August 2023 following the July 2023 leak. Under the landlord’s complaints policy, it should issue a stage 1 response within 10 working days. The landlord issued its stage 1 response on 22 November 2023, approximately 14 weeks (around 70 working days) after the complaint was logged. This was around 60 working days outside the landlord’s stated timescale and represented a significant delay in progressing the complaint.\"}, {\"char_end\": 10791, \"char_start\": 10509, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident requested escalation to stage 2 on 12 December 2023. The landlord acknowledged the escalation on 21 December 2023, confirming the scope of the stage 2 review and the issues it would consider. This acknowledgement was appropriate and in line with the landlord’s policy.\"}, {\"char_end\": 11252, \"char_start\": 10791, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Under the landlord’s complaints policy, a stage 2 response should be issued within 20 working days of escalation. In calculating timescales, this investigation has excluded the Christmas and New Year period when normal services were reduced. Allowing for this, the landlord’s stage 2 response was due by late January 2024. The landlord issued its stage 2 response on 6 February 2024. This was around 14 days outside its stated timescale and represents a delay.\"}, {\"char_end\": 11660, \"char_start\": 11252, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 2 response, the landlord acknowledged that it had not responded within its published timescales and apologised for the delay. The response referred to an award of £100 for poor complaint handling. However, the response also expressly stated that the landlord was maintaining the £300 award made at stage 1 for complaint-handling failures and did not indicate that this element had been reduced.\"}, {\"char_end\": 11976, \"char_start\": 11660, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On the balance of the evidence, we have treated the reference to £100 in the stage 2 response as a typographical error. We are satisfied that the landlord’s intended and maintained offer for complaint-handling failures was £300 in total, reflecting the significant delay at stage 1 and the further delay at stage 2.\"}, {\"char_end\": 12359, \"char_start\": 11976, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In line with our remedies guidance, which recognises that prolonged complaint-handling delays without lasting impact are appropriately remedied by financial redress for time and trouble, we are satisfied that the total award of £300 reasonably compensates for the detriment caused. We therefore find that the landlord provided reasonable redress for its complaint-handling failures.\"}, {\"char_end\": 12647, \"char_start\": 12359, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord also demonstrated learning from the complaint, including improvements to oversight of repairs cases and clearer monitoring of complex issues. This supports the conclusion that the landlord used the complaints process appropriately to identify and address service weaknesses.\"}, {\"char_end\": 12656, \"char_start\": 12647, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 12870, \"char_start\": 12656, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord acknowledged that the repair to resolve the leak took longer than expected and that the case required closer oversight due to its complexity and the involvement of multiple contractors and properties.\"}, {\"char_end\": 13112, \"char_start\": 12870, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It explained that it has since strengthened oversight of complex repairs, including monitoring contractor performance more closely, reallocating work where necessary, and involving its repairs project team to oversee progress and timescales.\"}, {\"char_end\": 13450, \"char_start\": 13112, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We consider these learning actions to be appropriate. We also recommend that, following the completion of complex repairs, the landlord clearly communicates to residents which remedial works will be completed, which will not, and the reasons for those decisions, to ensure expectations are clear and reduce the risk of further complaints.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              385,
+              451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              451,
+              470
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              470,
+              481
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              222,
+              225
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              225,
+              239
+            ]
+          }
+        ],
+        "disputed_amount_gbp": [
+          {
+            "page": 1,
+            "paragraph": 84,
+            "text_span": [
+              3172,
+              3213
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 90,
+            "text_span": [
+              3247,
+              3255
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 92,
+            "text_span": [
+              3259,
+              3282
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 93,
+            "text_span": [
+              3282,
+              3284
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 94,
+            "text_span": [
+              3284,
+              3291
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              3336,
+              3338
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 98,
+            "text_span": [
+              3338,
+              3349
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              3379,
+              3472
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 103,
+            "text_span": [
+              3474,
+              3723
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 124,
+            "text_span": [
+              4606,
+              4917
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 128,
+            "text_span": [
+              5786,
+              6144
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 129,
+            "text_span": [
+              6144,
+              6387
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 140,
+            "text_span": [
+              9037,
+              9522
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 146,
+            "text_span": [
+              9823,
+              10051
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              250,
+              357
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              385,
+              451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              451,
+              470
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              470,
+              481
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 56,
+            "text_span": [
+              2031,
+              2045
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              2045,
+              2344
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              2344,
+              2361
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              2361,
+              2402
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 61,
+            "text_span": [
+              2404,
+              2586
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 62,
+            "text_span": [
+              2586,
+              2599
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 63,
+            "text_span": [
+              2599,
+              2601
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 64,
+            "text_span": [
+              2601,
+              2680
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              2680,
+              2682
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              2682,
+              2693
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 67,
+            "text_span": [
+              2693,
+              2710
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 68,
+            "text_span": [
+              2710,
+              2723
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 69,
+            "text_span": [
+              2723,
+              2737
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 70,
+            "text_span": [
+              2737,
+              2776
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 71,
+            "text_span": [
+              2776,
+              2808
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              2808,
+              2876
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              2876,
+              2925
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 75,
+            "text_span": [
+              2929,
+              2946
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 83,
+            "text_span": [
+              3155,
+              3172
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 84,
+            "text_span": [
+              3172,
+              3213
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 86,
+            "text_span": [
+              3217,
+              3224
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 88,
+            "text_span": [
+              3228,
+              3241
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 89,
+            "text_span": [
+              3241,
+              3247
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 90,
+            "text_span": [
+              3247,
+              3255
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 92,
+            "text_span": [
+              3259,
+              3282
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 93,
+            "text_span": [
+              3282,
+              3284
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 94,
+            "text_span": [
+              3284,
+              3291
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              3291,
+              3314
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              3314,
+              3336
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              3336,
+              3338
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 98,
+            "text_span": [
+              3338,
+              3349
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              3379,
+              3472
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 103,
+            "text_span": [
+              3474,
+              3723
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              510,
+              589
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              589,
+              608
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              608,
+              619
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              619,
+              622
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              622,
+              631
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              631,
+              681
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 44,
+            "text_span": [
+              1624,
+              1696
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 45,
+            "text_span": [
+              1696,
+              1715
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 46,
+            "text_span": [
+              1715,
+              1764
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 47,
+            "text_span": [
+              1764,
+              1810
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 48,
+            "text_span": [
+              1810,
+              1879
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              700,
+              1074
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1074,
+              1258
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              6646,
+              7046
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 134,
+            "text_span": [
+              7645,
+              7846
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 141,
+            "text_span": [
+              9522,
+              9756
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              11976,
+              12359
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              106,
+              120
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              120,
+              134
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              385,
+              451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              451,
+              470
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              470,
+              481
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              134,
+              143
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              143,
+              157
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              250,
+              357
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "The text does not cite any cases, statutes, regulations, or other legal authorities.",
+        "claimed_amounts": "The resident sought increased compensation, but the text does not state a quantified amount claimed by the resident.",
+        "region": "The text does not identify a geographic region for the property or dispute.",
+        "region_source": "No region is stated in the text, so there is no source span for a region.",
+        "statutory_basis": "The text does not state any statutory basis or statutory provisions."
+      },
+      "claim_types": [
+        "Landlord response to reports of a leak",
+        "Complaint handling"
+      ],
+      "decision_date": "22 December 2025",
+      "disputed_amount_gbp": 800,
+      "evidence": [
+        "Landlord repairs policy response standards",
+        "Records of plumbers and drainage contractors attending between 18 and 19 July 2023",
+        "Contractor records confirming pipework replacement and testing on 3 and 4 August 2023",
+        "Landlord compensation policy",
+        "Landlord complaints policy"
+      ],
+      "facts": "The resident reported recurring leaks affecting the bathroom and kitchen in July 2023. The complaint concerned the landlord’s response to the resident’s reports of a leak and complaint. On 1 August 2023, the resident emailed the landlord about long-running leaks, damage to belongings, and alleged failure to resolve the issue over several years; on 2 August 2023, the landlord logged a stage 1 complaint. On 22 November 2023, the landlord issued its stage 1 response, acknowledged delays in resolving the July 2023 leak, said works were complete, signposted an insurance claim for damaged belongings, and awarded £500 total compensation. On 12 December 2023, the resident escalated her complaint to stage 2 and disputed the stage response and adequacy of the proposed compensation. On 6 February 2024, the landlord issued its stage 2 response and revised its compensation offer to £800 total. The resident told the Ombudsman she did not consider the compensation appropriate and sought an increased compensation award.",
+      "ground_truth_outcome": {
+        "determination": "Reasonable redress for the landlord’s response to the resident’s reports of a leak and complaint",
+        "orders": "No orders made",
+        "recommendation": "Landlord recommended to pay the resident £800 compensation offered at Stage 2 if not already paid"
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              700,
+              1074
+            ]
+          },
+          "text": "The landlord did not fully resolve the impact of the leak within its expected timescales, particularly in relation to the completion and communication of internal remedial works following the main repair."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1074,
+              1258
+            ]
+          },
+          "text": "The landlord delayed issuing its stage 1 complaint response."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              6646,
+              7046
+            ]
+          },
+          "text": "While some investigation time was unavoidable due to the complexity of the communal pipework and the need for access to neighbouring flats, we consider that a three-week period to resolve an active leak causing repeated disruption was longer than would reasonably be expected under the landlord’s routine repairs obligations."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 134,
+            "text_span": [
+              7645,
+              7846
+            ]
+          },
+          "text": "This delay in addressing and concluding the making-good stage represents a further service failure."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 141,
+            "text_span": [
+              9522,
+              9756
+            ]
+          },
+          "text": "In the circumstances, the landlord’s award reasonably reflects the impact identified."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              11976,
+              12359
+            ]
+          },
+          "text": "We therefore find that the landlord provided reasonable redress for its complaint-handling failures."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation concerning landlord response to leak reports and complaint handling",
+      "parties": {
+        "landlord": "Peabody Trust",
+        "resident": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not cite any cases, statutes, regulations, or other legal authorities.\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"Landlord response to reports of a leak\",\n      \"Complaint handling\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          385,\n          451\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          451,\n          470\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          470,\n          481\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The resident sought increased compensation, but the text does not state a quantified amount claimed by the resident.\"\n  },\n  \"decision_date\": {\n    \"value\": \"22 December 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          222,\n          225\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          225,\n          239\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": 800,\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 84,\n        \"text_span\": [\n          3172,\n          3213\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 90,\n        \"text_span\": [\n          3247,\n          3255\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 92,\n        \"text_span\": [\n          3259,\n          3282\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 93,\n        \"text_span\": [\n          3282,\n          3284\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 94,\n        \"text_span\": [\n          3284,\n          3291\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 97,\n        \"text_span\": [\n          3336,\n          3338\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 98,\n        \"text_span\": [\n          3338,\n          3349\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 101,\n        \"text_span\": [\n          3379,\n          3472\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 103,\n        \"text_span\": [\n          3474,\n          3723\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": [\n      \"Landlord repairs policy response standards\",\n      \"Records of plumbers and drainage contractors attending between 18 and 19 July 2023\",\n      \"Contractor records confirming pipework replacement and testing on 3 and 4 August 2023\",\n      \"Landlord compensation policy\",\n      \"Landlord complaints policy\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 124,\n        \"text_span\": [\n          4606,\n          4917\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 128,\n        \"text_span\": [\n          5786,\n          6144\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 129,\n        \"text_span\": [\n          6144,\n          6387\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 140,\n        \"text_span\": [\n          9037,\n          9522\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 146,\n        \"text_span\": [\n          9823,\n          10051\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": [\n      \"The resident reported recurring leaks affecting the bathroom and kitchen in July 2023.\",\n      \"The complaint concerned the landlord’s response to the resident’s reports of a leak and complaint.\",\n      \"On 1 August 2023, the resident emailed the landlord about long-running leaks, damage to belongings, and alleged failure to resolve the issue over several years; on 2 August 2023, the landlord logged a stage 1 complaint.\",\n      \"On 22 November 2023, the landlord issued its stage 1 response, acknowledged delays in resolving the July 2023 leak, said works were complete, signposted an insurance claim for damaged belongings, and awarded £500 total compensation.\",\n      \"On 12 December 2023, the resident escalated her complaint to stage 2 and disputed the stage response and adequacy of the proposed compensation.\",\n      \"On 6 February 2024, the landlord issued its stage 2 response and revised its compensation offer to £800 total.\",\n      \"The resident told the Ombudsman she did not consider the compensation appropriate and sought an increased compensation award.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          250,\n          357\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          385,\n          451\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          451,\n          470\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          470,\n          481\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 56,\n        \"text_span\": [\n          2031,\n          2045\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 57,\n        \"text_span\": [\n          2045,\n          2344\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 58,\n        \"text_span\": [\n          2344,\n          2361\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 59,\n        \"text_span\": [\n          2361,\n          2402\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 61,\n        \"text_span\": [\n          2404,\n          2586\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 62,\n        \"text_span\": [\n          2586,\n          2599\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 63,\n        \"text_span\": [\n          2599,\n          2601\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 64,\n        \"text_span\": [\n          2601,\n          2680\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 65,\n        \"text_span\": [\n          2680,\n          2682\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 66,\n        \"text_span\": [\n          2682,\n          2693\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 67,\n        \"text_span\": [\n          2693,\n          2710\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 68,\n        \"text_span\": [\n          2710,\n          2723\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 69,\n        \"text_span\": [\n          2723,\n          2737\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 70,\n        \"text_span\": [\n          2737,\n          2776\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 71,\n        \"text_span\": [\n          2776,\n          2808\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 72,\n        \"text_span\": [\n          2808,\n          2876\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 73,\n        \"text_span\": [\n          2876,\n          2925\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 75,\n        \"text_span\": [\n          2929,\n          2946\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 83,\n        \"text_span\": [\n          3155,\n          3172\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 84,\n        \"text_span\": [\n          3172,\n          3213\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 86,\n        \"text_span\": [\n          3217,\n          3224\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 88,\n        \"text_span\": [\n          3228,\n          3241\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 89,\n        \"text_span\": [\n          3241,\n          3247\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 90,\n        \"text_span\": [\n          3247,\n          3255\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 92,\n        \"text_span\": [\n          3259,\n          3282\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 93,\n        \"text_span\": [\n          3282,\n          3284\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 94,\n        \"text_span\": [\n          3284,\n          3291\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 95,\n        \"text_span\": [\n          3291,\n          3314\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 96,\n        \"text_span\": [\n          3314,\n          3336\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 97,\n        \"text_span\": [\n          3336,\n          3338\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 98,\n        \"text_span\": [\n          3338,\n          3349\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 101,\n        \"text_span\": [\n          3379,\n          3472\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 103,\n        \"text_span\": [\n          3474,\n          3723\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": {\n      \"determination\": \"Reasonable redress for the landlord’s response to the resident’s reports of a leak and complaint\",\n      \"orders\": \"No orders made\",\n      \"recommendation\": \"Landlord recommended to pay the resident £800 compensation offered at Stage 2 if not already paid\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          510,\n          589\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 28,\n        \"text_span\": [\n          589,\n          608\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 29,\n        \"text_span\": [\n          608,\n          619\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 30,\n        \"text_span\": [\n          619,\n          622\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 31,\n        \"text_span\": [\n          622,\n          631\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 32,\n        \"text_span\": [\n          631,\n          681\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 44,\n        \"text_span\": [\n          1624,\n          1696\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 45,\n        \"text_span\": [\n          1696,\n          1715\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 46,\n        \"text_span\": [\n          1715,\n          1764\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 47,\n        \"text_span\": [\n          1764,\n          1810\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 48,\n        \"text_span\": [\n          1810,\n          1879\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord did not fully resolve the impact of the leak within its expected timescales, particularly in relation to the completion and communication of internal remedial works following the main repair.\",\n      \"The landlord delayed issuing its stage 1 complaint response.\",\n      \"While some investigation time was unavoidable due to the complexity of the communal pipework and the need for access to neighbouring flats, we consider that a three-week period to resolve an active leak causing repeated disruption was longer than would reasonably be expected under the landlord’s routine repairs obligations.\",\n      \"This delay in addressing and concluding the making-good stage represents a further service failure.\",\n      \"In the circumstances, the landlord’s award reasonably reflects the impact identified.\",\n      \"We therefore find that the landlord provided reasonable redress for its complaint-handling failures.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 34,\n        \"text_span\": [\n          700,\n          1074\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 35,\n        \"text_span\": [\n          1074,\n          1258\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 131,\n        \"text_span\": [\n          6646,\n          7046\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 134,\n        \"text_span\": [\n          7645,\n          7846\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 141,\n        \"text_span\": [\n          9522,\n          9756\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 152,\n        \"text_span\": [\n          11976,\n          12359\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman investigation concerning landlord response to leak reports and complaint handling\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 9,\n        \"text_span\": [\n          106,\n          120\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          120,\n          134\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          385,\n          451\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          451,\n          470\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          470,\n          481\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Peabody Trust\",\n      \"resident\": \"the resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 11,\n        \"text_span\": [\n          134,\n          143\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          143,\n          157\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          250,\n          357\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not identify a geographic region for the property or dispute.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No region is stated in the text, so there is no source span for a region.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not state any statutory basis or statutory provisions.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202318374\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 41, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Peabody Trust (202318374)\"}, {\"char_end\": 67, \"char_start\": 41, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Peabody Trust (202318374)\"}, {\"char_end\": 79, \"char_start\": 67, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 88, \"char_start\": 79, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 96, \"char_start\": 88, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 106, \"char_start\": 96, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202318374\"}, {\"char_end\": 120, \"char_start\": 106, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 134, \"char_start\": 120, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 143, \"char_start\": 134, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 157, \"char_start\": 143, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Peabody Trust\"}, {\"char_end\": 171, \"char_start\": 157, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 191, \"char_start\": 171, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 201, \"char_start\": 191, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 217, \"char_start\": 201, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 222, \"char_start\": 217, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 225, \"char_start\": 222, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"22\"}, {\"char_end\": 239, \"char_start\": 225, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2025\"}, {\"char_end\": 250, \"char_start\": 239, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 357, \"char_start\": 250, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident has reported recurring leaks affecting the bathroom and kitchen in the property in July 2023.\"}, {\"char_end\": 385, \"char_start\": 357, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 451, \"char_start\": 385, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s response to the resident’s:\"}, {\"char_end\": 470, \"char_start\": 451, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"Reports of a leak.\"}, {\"char_end\": 481, \"char_start\": 470, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"Complaint.\"}, {\"char_end\": 510, \"char_start\": 481, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 589, \"char_start\": 510, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found reasonable redress in the landlord’s response to the resident’s:\"}, {\"char_end\": 608, \"char_start\": 589, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reports of a leak.\"}, {\"char_end\": 619, \"char_start\": 608, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint.\"}, {\"char_end\": 622, \"char_start\": 619, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 631, \"char_start\": 622, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have not\"}, {\"char_end\": 681, \"char_start\": 631, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 700, \"char_start\": 681, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1074, \"char_start\": 700, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not fully resolve the impact of the leak within its expected timescales, particularly in relation to the completion and communication of internal remedial works following the main repair. The landlord acknowledged this failing and offered compensation which reasonably recognised the inconvenience and disruption caused, in line with our remedy’s guidance.\"}, {\"char_end\": 1258, \"char_start\": 1074, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord delayed issuing its stage 1 complaint response. It acknowledged this failing and awarded compensation, which provided reasonable redress for the complaint-handling delay.\"}, {\"char_end\": 1279, \"char_start\": 1258, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1337, \"char_start\": 1279, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1339, \"char_start\": 1337, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1414, \"char_start\": 1339, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1505, \"char_start\": 1414, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1521, \"char_start\": 1505, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 1604, \"char_start\": 1521, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 1624, \"char_start\": 1604, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 1696, \"char_start\": 1624, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"It is recommended that the landlord pays the resident £800 compensation\"}, {\"char_end\": 1715, \"char_start\": 1696, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"offered at Stage 2\"}, {\"char_end\": 1764, \"char_start\": 1715, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \", if it has not already done so. This comprises:\"}, {\"char_end\": 1810, \"char_start\": 1764, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"£500 for time, trouble and inconvenience; and\"}, {\"char_end\": 1879, \"char_start\": 1810, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"£300 reflecting the delay in issuing the stage 1 complaint response.\"}, {\"char_end\": 1936, \"char_start\": 1879, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"Our determination of reasonable redress is based on this\"}, {\"char_end\": 1968, \"char_start\": 1936, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"sum being paid to the resident.\"}, {\"char_end\": 1970, \"char_start\": 1968, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 1988, \"char_start\": 1970, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 2012, \"char_start\": 1988, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 2017, \"char_start\": 2012, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 2031, \"char_start\": 2017, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 2045, \"char_start\": 2031, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"pre_decision_record\", \"text\": \"1 August 2023\"}, {\"char_end\": 2344, \"char_start\": 2045, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident emailed the landlord on 1 August 2023 about long-running leaks to her bathroom and kitchen, damage to her belongings, and the landlord’s failure to resolve the issue over several years. On 2 August 2023 the landlord logged this as a stage 1 complaint and allocated a complaint handler.\"}, {\"char_end\": 2361, \"char_start\": 2344, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"pre_decision_record\", \"text\": \"22 November 2023\"}, {\"char_end\": 2402, \"char_start\": 2361, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued its stage 1 response\"}, {\"char_end\": 2404, \"char_start\": 2402, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 2586, \"char_start\": 2404, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged delays in resolving the July 2023 leak, stated that works were now complete, and signposted the resident to make an insurance claim for damaged belongings.\"}, {\"char_end\": 2599, \"char_start\": 2586, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"pre_decision_record\", \"text\": \"It awarded £\"}, {\"char_end\": 2601, \"char_start\": 2599, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"pre_decision_record\", \"text\": \"2\"}, {\"char_end\": 2680, \"char_start\": 2601, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"pre_decision_record\", \"text\": \"00 for time, trouble and inconvenience and £300 for poor complaint handling (£\"}, {\"char_end\": 2682, \"char_start\": 2680, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"pre_decision_record\", \"text\": \"5\"}, {\"char_end\": 2693, \"char_start\": 2682, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"pre_decision_record\", \"text\": \"00 total).\"}, {\"char_end\": 2710, \"char_start\": 2693, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"pre_decision_record\", \"text\": \"12 December 2023\"}, {\"char_end\": 2723, \"char_start\": 2710, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident\"}, {\"char_end\": 2737, \"char_start\": 2723, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"pre_decision_record\", \"text\": \"escalated her\"}, {\"char_end\": 2776, \"char_start\": 2737, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint to stage 2. She disputed key\"}, {\"char_end\": 2808, \"char_start\": 2776, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"pre_decision_record\", \"text\": \"findings in the stage response,\"}, {\"char_end\": 2876, \"char_start\": 2808, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"pre_decision_record\", \"text\": \"stated that leaks had been ongoing for years, and explained why the\"}, {\"char_end\": 2925, \"char_start\": 2876, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"pre_decision_record\", \"text\": \"proposed compensation did not reflect the impact\"}, {\"char_end\": 2929, \"char_start\": 2925, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"pre_decision_record\", \"text\": \"she\"}, {\"char_end\": 2946, \"char_start\": 2929, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"pre_decision_record\", \"text\": \"experienced. She\"}, {\"char_end\": 2951, \"char_start\": 2946, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"pre_decision_record\", \"text\": \"also\"}, {\"char_end\": 3018, \"char_start\": 2951, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"pre_decision_record\", \"text\": \"disputed the supervisor’s November 2023 assessment that no further\"}, {\"char_end\": 3039, \"char_start\": 3018, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"pre_decision_record\", \"text\": \"works were required.\"}, {\"char_end\": 3056, \"char_start\": 3039, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"pre_decision_record\", \"text\": \"21 December 2023\"}, {\"char_end\": 3124, \"char_start\": 3056, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the stage 2 escalation and confirmed that\"}, {\"char_end\": 3127, \"char_start\": 3124, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"pre_decision_record\", \"text\": \"it\"}, {\"char_end\": 3155, \"char_start\": 3127, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"pre_decision_record\", \"text\": \"would carry out the review.\"}, {\"char_end\": 3172, \"char_start\": 3155, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"pre_decision_record\", \"text\": \"06 February 2024\"}, {\"char_end\": 3213, \"char_start\": 3172, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued its stage 2 response\"}, {\"char_end\": 3217, \"char_start\": 3213, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"pre_decision_record\", \"text\": \", r\"}, {\"char_end\": 3224, \"char_start\": 3217, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"pre_decision_record\", \"text\": \"evised\"}, {\"char_end\": 3228, \"char_start\": 3224, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"pre_decision_record\", \"text\": \"its\"}, {\"char_end\": 3241, \"char_start\": 3228, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"pre_decision_record\", \"text\": \"compensation\"}, {\"char_end\": 3247, \"char_start\": 3241, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"pre_decision_record\", \"text\": \"offer\"}, {\"char_end\": 3255, \"char_start\": 3247, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"to £500\"}, {\"char_end\": 3259, \"char_start\": 3255, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"for\"}, {\"char_end\": 3282, \"char_start\": 3259, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"time and trouble and £\"}, {\"char_end\": 3284, \"char_start\": 3282, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"3\"}, {\"char_end\": 3291, \"char_start\": 3284, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"00 for\"}, {\"char_end\": 3314, \"char_start\": 3291, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"the impact of its poor\"}, {\"char_end\": 3336, \"char_start\": 3314, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"complaint handling (£\"}, {\"char_end\": 3338, \"char_start\": 3336, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \"8\"}, {\"char_end\": 3349, \"char_start\": 3338, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \"00 total).\"}, {\"char_end\": 3375, \"char_start\": 3349, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 3379, \"char_start\": 3375, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"The\"}, {\"char_end\": 3472, \"char_start\": 3379, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"resident told us she did not consider the compensation the landlord offered was appropriate.\"}, {\"char_end\": 3474, \"char_start\": 3472, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"S\"}, {\"char_end\": 3723, \"char_start\": 3474, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"he said she was seeking an increased compensation award to reflect the length of time the leak affected her home, the disruption caused by repeated attendances, and the effort she spent pursuing the matter through the landlord’s complaints process.\"}, {\"char_end\": 3745, \"char_start\": 3723, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 3769, \"char_start\": 3745, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 3772, \"char_start\": 3769, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 3791, \"char_start\": 3772, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 3797, \"char_start\": 3791, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 3831, \"char_start\": 3797, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 3835, \"char_start\": 3831, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 3866, \"char_start\": 3835, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 3932, \"char_start\": 3866, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 3972, \"char_start\": 3932, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 3977, \"char_start\": 3972, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 4009, \"char_start\": 3977, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 4071, \"char_start\": 4009, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 4081, \"char_start\": 4071, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 4130, \"char_start\": 4081, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to the resident’s report\"}, {\"char_end\": 4132, \"char_start\": 4130, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 4142, \"char_start\": 4132, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of a leak\"}, {\"char_end\": 4150, \"char_start\": 4142, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 4169, \"char_start\": 4150, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 4606, \"char_start\": 4169, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has reported recurring leaks affecting her bathroom and kitchen. Similar issues were raised in 2022; however, as the resident did not request a stage 2 review at that time, the landlord’s complaints process was not exhausted, and those matters fall outside the scope of this investigation. This report therefore focuses on the landlord’s handling of leak reports raised from July 2023 and the associated complaint handling.\"}, {\"char_end\": 4917, \"char_start\": 4606, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repairs policy sets out clear response standards. Emergency repairs are those that present an immediate risk to health or safety and require prompt attendance to make safe. Routine repairs must be completed within a reasonable timeframe, taking account of the nature and complexity of the issue.\"}, {\"char_end\": 5123, \"char_start\": 4917, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident reported renewed leaking on 14 July 2023. The evidence shows that water ingress affected the bathroom and kitchen and caused electrical failures, including the boiler and lighting cutting out.\"}, {\"char_end\": 5436, \"char_start\": 5123, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord responded by arranging out-of-hours and follow-up electrical attendances to isolate and make the electrics safe. This action addressed the immediate health and safety risk. We are satisfied that the landlord appropriately treated the electrical risk as urgent under its emergency repair obligations.\"}, {\"char_end\": 5786, \"char_start\": 5436, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not classify the underlying cause of the leak itself as an emergency repair. That was appropriate. The evidence shows the source of the leak was linked to communal pipework and neighbouring flats and required investigation rather than immediate replacement. This falls within the landlord’s routine repairs process under its policy.\"}, {\"char_end\": 6144, \"char_start\": 5786, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Once the issue was treated as a routine repair, the landlord was required to investigate and resolve the defect within a reasonable timeframe. The records show that plumbers and drainage contractors attended between 18 and 19 July 2023. These visits identified a bowed horizontal pipe, fat and grease build-up, and defective pipework serving multiple flats.\"}, {\"char_end\": 6387, \"char_start\": 6144, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord approved a back-to-back repair on 24 July 2023 and booked works for 3 and 4 August 2023. Contractor records confirm that the pipework was replaced and realigned on those dates and that the system was tested and left free-flowing.\"}, {\"char_end\": 6646, \"char_start\": 6387, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The leak was therefore resolved approximately three weeks after it was first reported, from 14 July to 4 August 2023. During this period, the resident experienced ongoing water ingress, repeated electrical isolation, and disruption to normal use of her home.\"}, {\"char_end\": 7046, \"char_start\": 6646, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"While some investigation time was unavoidable due to the complexity of the communal pipework and the need for access to neighbouring flats, we consider that a three-week period to resolve an active leak causing repeated disruption was longer than would reasonably be expected under the landlord’s routine repairs obligations. This represents a service failure in the timeliness of repair completion.\"}, {\"char_end\": 7275, \"char_start\": 7046, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"After the leak was resolved, the resident raised concerns about internal damage, including flooring, staining, cracks, and a non-functioning extractor fan. These issues related to making good, rather than the source of the leak.\"}, {\"char_end\": 7645, \"char_start\": 7275, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The evidence shows that the landlord did not formally conclude its position on the making-good works until a supervisory inspection on 21 November 2023. This was over three months after the leak repair was completed. During this period, there is no evidence that the landlord clearly set out what remedial works would be completed, which would not, and the reasons why.\"}, {\"char_end\": 7846, \"char_start\": 7645, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This delay in addressing and concluding the making-good stage represents a further service failure. It prolonged the resident’s uncertainty and frustration after the primary repair had been completed.\"}, {\"char_end\": 7895, \"char_start\": 7846, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In summary, the service failures identified are:\"}, {\"char_end\": 7966, \"char_start\": 7895, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"tribunal_reasoning\", \"text\": \"a delay of approximately three weeks in resolving the leak itself; and\"}, {\"char_end\": 8061, \"char_start\": 7966, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"a further delay of approximately three and a half months in concluding the making-good issues.\"}, {\"char_end\": 8586, \"char_start\": 8061, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s service failure resulted in two periods of delay. The leak itself was resolved over a period of approximately three weeks, from 14 July to 4 August 2023. While the landlord attended during this period, the repair exceeded the timescales set out in its repairs policy for non-emergency repairs. Following the resolution of the leak, the landlord did not complete or clearly conclude the associated making-good works until 21 November 2023, representing a further delay of approximately three and a half months.\"}, {\"char_end\": 9037, \"char_start\": 8586, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The evidence shows that these delays had a tangible impact on the resident. During the leak period, she experienced repeated water ingress, disruption to electrical services, and uncertainty about the safety and usability of parts of her home. After the leak was stopped, the lack of clarity about outstanding remedial works caused ongoing inconvenience and frustration, as the resident was left uncertain about when her home would be fully restored.\"}, {\"char_end\": 9522, \"char_start\": 9037, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s compensation policy allows for discretionary awards where residents experience distress, inconvenience, or time and trouble due to service failure. It provides for higher awards where issues are prolonged or require repeated attendance. In this case, the landlord acknowledged delays in resolving the leak and the disruption caused. It awarded £500 in line with its compensation policy, having regard to the duration of the issue and the number of attendances required.\"}, {\"char_end\": 9756, \"char_start\": 9522, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our remedies guidance suggests awards of this level are appropriate where a service failure causes prolonged inconvenience but no permanent impact. In the circumstances, the landlord’s award reasonably reflects the impact identified.\"}, {\"char_end\": 9766, \"char_start\": 9756, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 9796, \"char_start\": 9766, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 9804, \"char_start\": 9796, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 9823, \"char_start\": 9804, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 10051, \"char_start\": 9823, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaints policy sets out a two-stage process. It says it will issue a stage 1 response within its published timescales and a stage 2 response within 20 working days of escalation, unless it agrees an extension.\"}, {\"char_end\": 10509, \"char_start\": 10051, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident raised her complaint in August 2023 following the July 2023 leak. Under the landlord’s complaints policy, it should issue a stage 1 response within 10 working days. The landlord issued its stage 1 response on 22 November 2023, approximately 14 weeks (around 70 working days) after the complaint was logged. This was around 60 working days outside the landlord’s stated timescale and represented a significant delay in progressing the complaint.\"}, {\"char_end\": 10791, \"char_start\": 10509, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident requested escalation to stage 2 on 12 December 2023. The landlord acknowledged the escalation on 21 December 2023, confirming the scope of the stage 2 review and the issues it would consider. This acknowledgement was appropriate and in line with the landlord’s policy.\"}, {\"char_end\": 11252, \"char_start\": 10791, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Under the landlord’s complaints policy, a stage 2 response should be issued within 20 working days of escalation. In calculating timescales, this investigation has excluded the Christmas and New Year period when normal services were reduced. Allowing for this, the landlord’s stage 2 response was due by late January 2024. The landlord issued its stage 2 response on 6 February 2024. This was around 14 days outside its stated timescale and represents a delay.\"}, {\"char_end\": 11660, \"char_start\": 11252, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 2 response, the landlord acknowledged that it had not responded within its published timescales and apologised for the delay. The response referred to an award of £100 for poor complaint handling. However, the response also expressly stated that the landlord was maintaining the £300 award made at stage 1 for complaint-handling failures and did not indicate that this element had been reduced.\"}, {\"char_end\": 11976, \"char_start\": 11660, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On the balance of the evidence, we have treated the reference to £100 in the stage 2 response as a typographical error. We are satisfied that the landlord’s intended and maintained offer for complaint-handling failures was £300 in total, reflecting the significant delay at stage 1 and the further delay at stage 2.\"}, {\"char_end\": 12359, \"char_start\": 11976, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In line with our remedies guidance, which recognises that prolonged complaint-handling delays without lasting impact are appropriately remedied by financial redress for time and trouble, we are satisfied that the total award of £300 reasonably compensates for the detriment caused. We therefore find that the landlord provided reasonable redress for its complaint-handling failures.\"}, {\"char_end\": 12647, \"char_start\": 12359, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord also demonstrated learning from the complaint, including improvements to oversight of repairs cases and clearer monitoring of complex issues. This supports the conclusion that the landlord used the complaints process appropriately to identify and address service weaknesses.\"}, {\"char_end\": 12656, \"char_start\": 12647, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 12870, \"char_start\": 12656, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord acknowledged that the repair to resolve the leak took longer than expected and that the case required closer oversight due to its complexity and the involvement of multiple contractors and properties.\"}, {\"char_end\": 13112, \"char_start\": 12870, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It explained that it has since strengthened oversight of complex repairs, including monitoring contractor performance more closely, reallocating work where necessary, and involving its repairs project team to oversee progress and timescales.\"}, {\"char_end\": 13450, \"char_start\": 13112, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We consider these learning actions to be appropriate. We also recommend that, following the completion of complex repairs, the landlord clearly communicates to residents which remedial works will be completed, which will not, and the reasons for those decisions, to ensure expectations are clear and reduce the risk of further complaints.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "494d1c10a417b5d056cca09bf41c0ffa8469c5343c0cbf024dec6515c43fc217",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T16:29:34.581928+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "a9cbcca1a16c4e2167114c8280a1cb9d2cc177ce5d3adc3273eaeb3b8ff69905"
+}

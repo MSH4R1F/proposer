@@ -17,6 +17,8 @@ from ..config import DocumentChunk, RAGConfig, RetrievalFilterEnvelope
 
 logger = structlog.get_logger()
 
+_DEFAULT_CHROMA_INSERT_BATCH_SIZE = 5000
+
 
 class ChromaStore(BaseVectorStore):
     """
@@ -116,21 +118,44 @@ class ChromaStore(BaseVectorStore):
         documents = [chunk.text for chunk in chunks]
         metadatas = [chunk.to_chroma_metadata() for chunk in chunks]
 
-        # Add to collection
-        self._collection.add(
-            ids=ids,
-            embeddings=embeddings,
-            documents=documents,
-            metadatas=metadatas
-        )
+        batch_size = self._max_insert_batch_size()
+        for start in range(0, len(chunks), batch_size):
+            end = start + batch_size
+            self._collection.add(
+                ids=ids[start:end],
+                embeddings=embeddings[start:end],
+                documents=documents[start:end],
+                metadatas=metadatas[start:end]
+            )
 
-        self._stats["chunks_added"] += len(chunks)
+            batch_count = min(end, len(chunks)) - start
+            self._stats["chunks_added"] += batch_count
 
-        logger.debug(
-            "chunks_added_to_chroma",
-            count=len(chunks),
-            total=self._collection.count()
-        )
+            logger.debug(
+                "chunks_added_to_chroma",
+                count=batch_count,
+                total=self._collection.count(),
+                batch_start=start,
+                batch_size=batch_size,
+            )
+
+    def _max_insert_batch_size(self) -> int:
+        """Return Chroma's insert limit, with a conservative fallback."""
+        get_max_batch_size = getattr(self._client, "get_max_batch_size", None)
+        if callable(get_max_batch_size):
+            try:
+                return max(1, int(get_max_batch_size()))
+            except (TypeError, ValueError):
+                pass
+
+        max_batch_size = getattr(self._client, "max_batch_size", None)
+        if max_batch_size is not None:
+            try:
+                return max(1, int(max_batch_size))
+            except (TypeError, ValueError):
+                pass
+
+        return _DEFAULT_CHROMA_INSERT_BATCH_SIZE
 
     async def query(
         self,

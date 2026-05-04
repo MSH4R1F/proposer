@@ -1,0 +1,1295 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202445527",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "cited_authorities[0]": "UNGROUNDED",
+      "cited_authorities[1]": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "matter_type": "GROUNDED",
+      "statutory_basis[0]": "UNGROUNDED",
+      "statutory_basis[1]": "UNGROUNDED"
+    },
+    "grounding_pass_rate": 0.4,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 22 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'cited_authorities': ['L...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'cited_authorities': ['L...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='14 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='England', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'cited_authorities': ['L...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'cited_authorities': ['L...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='mould reports', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='compensation for mould damage', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'cited_authorities': ['L...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties.0\n  Input should be a valid dictionary or instance of Party [type=model_type, input_value='Colchester City Council', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nparties.1\n  Input should be a valid dictionary or instance of Party [type=model_type, input_value='resident', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='photographs showing sect...g and affected by mould', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='damp and mould survey from December 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"landlord's internal correspondence\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"landlord's file records\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.0\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Landlord and Tenant Act 1985', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.1\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Housing Health and Safety Rating System (HHSRS)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Landlord and Tenant Act 1985', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Housing Health and Safety Rating System (HHSRS)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nclaimed_amounts\n  Field required [type=missing, input_value={'cited_authorities': ['L...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='reasonable redress for m... for complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 16 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='14 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='England', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='mould reports', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='compensation for mould damage', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties.0\n  Input should be a valid dictionary or instance of Party [type=model_type, input_value='Colchester City Council', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nparties.1\n  Input should be a valid dictionary or instance of Party [type=model_type, input_value='resident', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='photographs showing sect...g and affected by mould', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='damp and mould survey from December 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"landlord's internal correspondence\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"landlord's file records\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.0\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Landlord and Tenant Act 1985', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.1\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Housing Health and Safety Rating System (HHSRS)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Landlord and Tenant Act 1985', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Housing Health and Safety Rating System (HHSRS)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='reasonable redress for m... for complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "cited_authorities[0]": "missing name or cited_date",
+      "cited_authorities[1]": "missing name or cited_date",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "matter_type": "basis span present",
+      "statutory_basis[0]": "missing statute or section",
+      "statutory_basis[1]": "missing statute or section"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "disputed_amount_gbp": "GROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "UNGROUNDED",
+      "key_reasoning_quotes[2]": "UNGROUNDED",
+      "key_reasoning_quotes[3]": "UNGROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "key_reasoning_quotes[5]": "GROUNDED",
+      "matter_type": "GROUNDED",
+      "statutory_basis[0]": "UNGROUNDED",
+      "statutory_basis[1]": "UNGROUNDED"
+    },
+    "grounding_pass_rate": 0.4117647058823529,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 23 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Handlin...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Handlin...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='14 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='Colchester', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Handlin...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Handling of mould report...sation for mould damage', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Handling of the resident’s complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Handlin...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Colchester ...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord’s file confir...updates to the resident', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord internal corres...for mould-damaged items', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Evidence that necessary ...025, had been completed', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Resident photographs sho...g and affected by mould', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='December 2023 damp and m...oting peeling wallpaper', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.0\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Landlord and Tenant Act 1985', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.1\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Housing Health and Safety Rating System (HHSRS)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Handlin...Rating System (HHSRS)']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'mould_reports_and_compe...ed claim if she wishes'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'mould_reports_and_compe...ed claim if she wishes'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.mould_reports_and_compensation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='no maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value='no orders made', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='provide the resident wit...ted claim if she wishes', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 18 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='14 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='Colchester', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Handling of mould report...sation for mould damage', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Handling of the resident’s complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Colchester ...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord’s file confir...updates to the resident', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord internal corres...for mould-damaged items', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Evidence that necessary ...025, had been completed', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Resident photographs sho...g and affected by mould', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='December 2023 damp and m...oting peeling wallpaper', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.0\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Landlord and Tenant Act 1985', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis.1\n  Input should be a valid dictionary or instance of StatutoryReference [type=model_type, input_value='Housing Health and Safety Rating System (HHSRS)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'mould_reports_and_compe...ed claim if she wishes'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'mould_reports_and_compe...ed claim if she wishes'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.mould_reports_and_compensation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='no maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value='no orders made', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='provide the resident wit...ted claim if she wishes', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "disputed_amount_gbp": "basis span present",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "quote not found in declared span",
+      "key_reasoning_quotes[2]": "quote not found in declared span",
+      "key_reasoning_quotes[3]": "quote not found in declared span",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "key_reasoning_quotes[5]": "canonical_exact",
+      "matter_type": "basis span present",
+      "statutory_basis[0]": "missing statute or section",
+      "statutory_basis[1]": "missing statute or section"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "cited_authorities": [
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              8389,
+              8438
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              9170,
+              9225
+            ]
+          }
+        ],
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              749,
+              800
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              800,
+              849
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              849,
+              875
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              261,
+              279
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 169,
+            "text_span": [
+              11615,
+              11715
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 169,
+            "text_span": [
+              11715,
+              11785
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              10259,
+              10315
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              7376,
+              7420
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              290,
+              721
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 56,
+            "text_span": [
+              2616,
+              2680
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              2680,
+              2793
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              2793,
+              2875
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              2875,
+              2973
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              3226,
+              3328
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 67,
+            "text_span": [
+              3328,
+              3365
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 70,
+            "text_span": [
+              3371,
+              3384
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 71,
+            "text_span": [
+              3384,
+              3437
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              3437,
+              3451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 74,
+            "text_span": [
+              3473,
+              3489
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 76,
+            "text_span": [
+              3492,
+              3505
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              3855,
+              3924
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              3998,
+              4117
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 105,
+            "text_span": [
+              4221,
+              4279
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 108,
+            "text_span": [
+              4336,
+              4409
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 117,
+            "text_span": [
+              4612,
+              4675
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 119,
+            "text_span": [
+              4679,
+              4714
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 121,
+            "text_span": [
+              4731,
+              4794
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 123,
+            "text_span": [
+              4811,
+              4826
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              904,
+              1022
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              1022,
+              1108
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1278,
+              1676
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1676,
+              1812
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1880,
+              1981
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              140,
+              154
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              163,
+              187
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              290,
+              298
+            ]
+          }
+        ],
+        "statutory_basis": [
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              8389,
+              8438
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              9170,
+              9225
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "claimed_amounts": "The resident's specific claimed amounts are not stated in the pre_decision_record sections.",
+        "disputed_amount_gbp": "No specific disputed monetary amount is identified in the pre_decision_record sections.",
+        "region": "Region not explicitly stated in the pre_decision_record sections.",
+        "region_source": "No explicit region source provided in the pre_decision_record sections."
+      },
+      "cited_authorities": [
+        "Landlord and Tenant Act 1985",
+        "Housing Health and Safety Rating System (HHSRS)"
+      ],
+      "claim_types": [
+        "mould reports",
+        "compensation for mould damage",
+        "complaint handling"
+      ],
+      "decision_date": "14 November 2025",
+      "evidence": [
+        "photographs showing sections of wallpaper peeling and affected by mould",
+        "damp and mould survey from December 2023",
+        "landlord's internal correspondence",
+        "landlord's file records"
+      ],
+      "facts": "The resident lives in a 2-bedroom flat with her partner and 2 young children. She reported mould to the landlord on 16 October 2023. She said the landlord delayed addressing the mould which affected her and her children's health and damaged personal belongings. The resident said compensation provided by the landlord was not enough to replace mould damaged belongings, complete redecoration or address the impact on their health. On 28 May 2024, the resident raised a complaint stating she reported mould in October 2023, the landlord completed a mould spray treatment but the mould came back, she was pregnant and the mould was affecting her and her 1-year-old son's health, mould in kitchen, bedrooms, toilet and living room damaged wallpaper and personal belongings. The landlord issued its stage 1 complaint response on 10 June 2024, acknowledging it completed a specialist damp and mould survey on 7 December 2023 and mould treatment on 9 April 2024. On 30 October 2024, the resident escalated her complaint as little work had been completed and she was worried about her small child and 5-week-old baby who both had respiratory issues. The landlord provided its stage 2 response on 21 November 2024, offering £300 compensation for service failure. On 30 January 2025, the landlord offered a further £1000 compensation for delay, distress and inconvenience. On 10 February 2025, the landlord told its insurer to consider compensation for the resident's mould damaged items.",
+      "ground_truth_outcome": "reasonable redress for mould handling, no maladministration for complaint handling",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1278,
+              1676
+            ]
+          },
+          "text": "There was an unreasonable delay in the landlord's response to the resident's mould report and completion of recommended actions. It did not show it had considered the resident's and her children's vulnerabilities. The landlord later apologised and offered fair compensation for the inconvenience and distress caused. This response was reasonable and in line with our Dispute Resolution Principles."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1676,
+              1812
+            ]
+          },
+          "text": "The landlord appropriately agreed to consider compensation for the resident's mould damaged items under its liability insurance policy."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1880,
+              1981
+            ]
+          },
+          "text": "The landlord's complaint responses were timely and in line with its complaint policy response times."
+        }
+      ],
+      "matter_type": "Investigation",
+      "parties": [
+        "Colchester City Council",
+        "resident"
+      ],
+      "region": "England",
+      "statutory_basis": [
+        "Landlord and Tenant Act 1985",
+        "Housing Health and Safety Rating System (HHSRS)"
+      ]
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\"Landlord and Tenant Act 1985\", \"Housing Health and Safety Rating System (HHSRS)\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 161, \"text_span\": [8389, 8438]},\n      {\"page\": 1, \"paragraph\": 162, \"text_span\": [9170, 9225]}\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\"mould reports\", \"compensation for mould damage\", \"complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [749, 800]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [800, 849]},\n      {\"page\": 1, \"paragraph\": 26, \"text_span\": [849, 875]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The resident's specific claimed amounts are not stated in the pre_decision_record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"14 November 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [261, 279]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific disputed monetary amount is identified in the pre_decision_record sections.\"\n  },\n  \"evidence\": {\n    \"value\": [\"photographs showing sections of wallpaper peeling and affected by mould\", \"damp and mould survey from December 2023\", \"landlord's internal correspondence\", \"landlord's file records\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 169, \"text_span\": [11615, 11715]},\n      {\"page\": 1, \"paragraph\": 169, \"text_span\": [11715, 11785]},\n      {\"page\": 1, \"paragraph\": 165, \"text_span\": [10259, 10315]},\n      {\"page\": 1, \"paragraph\": 160, \"text_span\": [7376, 7420]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident lives in a 2-bedroom flat with her partner and 2 young children. She reported mould to the landlord on 16 October 2023. She said the landlord delayed addressing the mould which affected her and her children's health and damaged personal belongings. The resident said compensation provided by the landlord was not enough to replace mould damaged belongings, complete redecoration or address the impact on their health. On 28 May 2024, the resident raised a complaint stating she reported mould in October 2023, the landlord completed a mould spray treatment but the mould came back, she was pregnant and the mould was affecting her and her 1-year-old son's health, mould in kitchen, bedrooms, toilet and living room damaged wallpaper and personal belongings. The landlord issued its stage 1 complaint response on 10 June 2024, acknowledging it completed a specialist damp and mould survey on 7 December 2023 and mould treatment on 9 April 2024. On 30 October 2024, the resident escalated her complaint as little work had been completed and she was worried about her small child and 5-week-old baby who both had respiratory issues. The landlord provided its stage 2 response on 21 November 2024, offering £300 compensation for service failure. On 30 January 2025, the landlord offered a further £1000 compensation for delay, distress and inconvenience. On 10 February 2025, the landlord told its insurer to consider compensation for the resident's mould damaged items.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [290, 721]},\n      {\"page\": 1, \"paragraph\": 56, \"text_span\": [2616, 2680]},\n      {\"page\": 1, \"paragraph\": 57, \"text_span\": [2680, 2793]},\n      {\"page\": 1, \"paragraph\": 58, \"text_span\": [2793, 2875]},\n      {\"page\": 1, \"paragraph\": 59, \"text_span\": [2875, 2973]},\n      {\"page\": 1, \"paragraph\": 66, \"text_span\": [3226, 3328]},\n      {\"page\": 1, \"paragraph\": 67, \"text_span\": [3328, 3365]},\n      {\"page\": 1, \"paragraph\": 70, \"text_span\": [3371, 3384]},\n      {\"page\": 1, \"paragraph\": 71, \"text_span\": [3384, 3437]},\n      {\"page\": 1, \"paragraph\": 72, \"text_span\": [3437, 3451]},\n      {\"page\": 1, \"paragraph\": 74, \"text_span\": [3473, 3489]},\n      {\"page\": 1, \"paragraph\": 76, \"text_span\": [3492, 3505]},\n      {\"page\": 1, \"paragraph\": 96, \"text_span\": [3855, 3924]},\n      {\"page\": 1, \"paragraph\": 101, \"text_span\": [3998, 4117]},\n      {\"page\": 1, \"paragraph\": 105, \"text_span\": [4221, 4279]},\n      {\"page\": 1, \"paragraph\": 108, \"text_span\": [4336, 4409]},\n      {\"page\": 1, \"paragraph\": 117, \"text_span\": [4612, 4675]},\n      {\"page\": 1, \"paragraph\": 119, \"text_span\": [4679, 4714]},\n      {\"page\": 1, \"paragraph\": 121, \"text_span\": [4731, 4794]},\n      {\"page\": 1, \"paragraph\": 123, \"text_span\": [4811, 4826]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"reasonable redress for mould handling, no maladministration for complaint handling\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 28, \"text_span\": [904, 1022]},\n      {\"page\": 1, \"paragraph\": 29, \"text_span\": [1022, 1108]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\"There was an unreasonable delay in the landlord's response to the resident's mould report and completion of recommended actions. It did not show it had considered the resident's and her children's vulnerabilities. The landlord later apologised and offered fair compensation for the inconvenience and distress caused. This response was reasonable and in line with our Dispute Resolution Principles.\", \"The landlord appropriately agreed to consider compensation for the resident's mould damaged items under its liability insurance policy.\", \"The landlord's complaint responses were timely and in line with its complaint policy response times.\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 34, \"text_span\": [1278, 1676]},\n      {\"page\": 1, \"paragraph\": 35, \"text_span\": [1676, 1812]},\n      {\"page\": 1, \"paragraph\": 38, \"text_span\": [1880, 1981]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [140, 154]}\n    ]\n  },\n  \"parties\": {\n    \"value\": [\"Colchester City Council\", \"resident\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [163, 187]},\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [290, 298]}\n    ]\n  },\n  \"region\": {\n    \"value\": \"England\",\n    \"unavailable_reason\": \"Region not explicitly stated in the pre_decision_record sections.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No explicit region source provided in the pre_decision_record sections.\"\n  },\n  \"statutory_basis\": {\n    \"value\": [\"Landlord and Tenant Act 1985\", \"Housing Health and Safety Rating System (HHSRS)\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 161, \"text_span\": [8389, 8438]},\n      {\"page\": 1, \"paragraph\": 162, \"text_span\": [9170, 9225]}\n    ]\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202445527\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 51, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Colchester City Council (202445527)\"}, {\"char_end\": 87, \"char_start\": 51, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Colchester City Council (202445527)\"}, {\"char_end\": 99, \"char_start\": 87, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 108, \"char_start\": 99, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 116, \"char_start\": 108, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 126, \"char_start\": 116, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202445527\"}, {\"char_end\": 140, \"char_start\": 126, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 154, \"char_start\": 140, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 163, \"char_start\": 154, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 187, \"char_start\": 163, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Colchester City Council\"}, {\"char_end\": 201, \"char_start\": 187, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 231, \"char_start\": 201, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Local Authority / ALMO or TMO\"}, {\"char_end\": 241, \"char_start\": 231, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 256, \"char_start\": 241, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 261, \"char_start\": 256, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 263, \"char_start\": 261, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"1\"}, {\"char_end\": 265, \"char_start\": 263, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"4\"}, {\"char_end\": 279, \"char_start\": 265, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"November 2025\"}, {\"char_end\": 290, \"char_start\": 279, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 721, \"char_start\": 290, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives in a 2-bedroom flat with her partner and 2 young children. She reported mould to the landlord on 16 October 2023. She said the landlord delayed addressing the mould which affected her and her children’s health and damaged personal belongings. The resident said compensation provided by the landlord was not enough to replace mould damaged belongings, complete redecoration or address the impact on their health.\"}, {\"char_end\": 749, \"char_start\": 721, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 800, \"char_start\": 749, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of:\"}, {\"char_end\": 849, \"char_start\": 800, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"Mould reports and compensation for mould damage.\"}, {\"char_end\": 875, \"char_start\": 849, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident’s complaint.\"}, {\"char_end\": 904, \"char_start\": 875, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 1022, \"char_start\": 904, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found the landlord provided reasonable redress in its handling of mould reports and compensation for mould damage.\"}, {\"char_end\": 1108, \"char_start\": 1022, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found no maladministration in the landlord’s handling of the resident’s complaint.\"}, {\"char_end\": 1170, \"char_start\": 1108, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have not made orders for the landlord to put things right.\"}, {\"char_end\": 1189, \"char_start\": 1170, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1263, \"char_start\": 1189, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlords handling of mould reports and compensation for mould damage\"}, {\"char_end\": 1278, \"char_start\": 1263, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found that:\"}, {\"char_end\": 1676, \"char_start\": 1278, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was an unreasonable delay in the landlord’s response to the resident’s mould report and completion of recommended actions. It did not show it had considered the resident’s and her children’s vulnerabilities. The landlord later apologised and offered fair compensation for the inconvenience and distress caused. This response was reasonable and in line with our Dispute Resolution Principles.\"}, {\"char_end\": 1812, \"char_start\": 1676, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord appropriately agreed to consider compensation for the resident’s mould damaged items under its liability insurance policy.\"}, {\"char_end\": 1865, \"char_start\": 1812, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s complaint.\"}, {\"char_end\": 1880, \"char_start\": 1865, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found that:\"}, {\"char_end\": 1981, \"char_start\": 1880, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaint responses were timely and in line with its complaint policy response times.\"}, {\"char_end\": 2002, \"char_start\": 1981, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2060, \"char_start\": 2002, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 2062, \"char_start\": 2060, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 2137, \"char_start\": 2062, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2228, \"char_start\": 2137, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2244, \"char_start\": 2228, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 2327, \"char_start\": 2244, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 2347, \"char_start\": 2327, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 2451, \"char_start\": 2347, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"Provide the resident with details of its relevant liability insurance policy to enable the resident, if\"}, {\"char_end\": 2494, \"char_start\": 2451, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"she wishes, to claim for the effect on her\"}, {\"char_end\": 2513, \"char_start\": 2494, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"and her children’s\"}, {\"char_end\": 2543, \"char_start\": 2513, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"health due to damp and mould.\"}, {\"char_end\": 2561, \"char_start\": 2543, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 2585, \"char_start\": 2561, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 2590, \"char_start\": 2585, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 2604, \"char_start\": 2590, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 2616, \"char_start\": 2604, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"pre_decision_record\", \"text\": \"28 May 2024\"}, {\"char_end\": 2680, \"char_start\": 2616, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised a complaint to the landlord. She said that:\"}, {\"char_end\": 2793, \"char_start\": 2680, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"pre_decision_record\", \"text\": \"She reported mould in October 2023, and the landlord completed a mould spray treatment, but the mould came back.\"}, {\"char_end\": 2875, \"char_start\": 2793, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"pre_decision_record\", \"text\": \"She was pregnant and the mould was affecting her and her 1-year-old son’s health.\"}, {\"char_end\": 2973, \"char_start\": 2875, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"pre_decision_record\", \"text\": \"Mould in the kitchen, bedrooms, toilet and living room damaged wallpaper and personal belongings.\"}, {\"char_end\": 3083, \"char_start\": 2973, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord had not cleaned walls before they moved in, and she was unhappy with cleaning of communal areas.\"}, {\"char_end\": 3095, \"char_start\": 3083, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"pre_decision_record\", \"text\": \"29 May 2024\"}, {\"char_end\": 3196, \"char_start\": 3095, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the resident’s complaint and stated she would receive a complaint response\"}, {\"char_end\": 3199, \"char_start\": 3196, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"pre_decision_record\", \"text\": \"by\"}, {\"char_end\": 3213, \"char_start\": 3199, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"pre_decision_record\", \"text\": \"11 June 2024.\"}, {\"char_end\": 3226, \"char_start\": 3213, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"pre_decision_record\", \"text\": \"10 June 2024\"}, {\"char_end\": 3328, \"char_start\": 3226, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued its stage 1 complaint response. It upheld the resident’s complaint and said that:\"}, {\"char_end\": 3365, \"char_start\": 3328, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"pre_decision_record\", \"text\": \"Following the residents mould report\"}, {\"char_end\": 3368, \"char_start\": 3365, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 3371, \"char_start\": 3368, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"pre_decision_record\", \"text\": \"16\"}, {\"char_end\": 3384, \"char_start\": 3371, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"pre_decision_record\", \"text\": \"October 2023\"}, {\"char_end\": 3437, \"char_start\": 3384, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"pre_decision_record\", \"text\": \"it completed a specialist damp and mould survey on 7\"}, {\"char_end\": 3451, \"char_start\": 3437, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2023\"}, {\"char_end\": 3473, \"char_start\": 3451, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"pre_decision_record\", \"text\": \". It then completed a\"}, {\"char_end\": 3489, \"char_start\": 3473, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"pre_decision_record\", \"text\": \"mould treatment\"}, {\"char_end\": 3492, \"char_start\": 3489, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 3505, \"char_start\": 3492, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"pre_decision_record\", \"text\": \"9 April 2024\"}, {\"char_end\": 3507, \"char_start\": 3505, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 3618, \"char_start\": 3507, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"pre_decision_record\", \"text\": \"A damp surveyor would complete a further inspection, and it would monitor progress of any recommended actions.\"}, {\"char_end\": 3631, \"char_start\": 3618, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"pre_decision_record\", \"text\": \"It was sorry\"}, {\"char_end\": 3635, \"char_start\": 3631, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"pre_decision_record\", \"text\": \"for\"}, {\"char_end\": 3639, \"char_start\": 3635, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"pre_decision_record\", \"text\": \"the\"}, {\"char_end\": 3653, \"char_start\": 3639, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"pre_decision_record\", \"text\": \"inconvenience\"}, {\"char_end\": 3660, \"char_start\": 3653, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"pre_decision_record\", \"text\": \"caused\"}, {\"char_end\": 3664, \"char_start\": 3660, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"pre_decision_record\", \"text\": \"and\"}, {\"char_end\": 3681, \"char_start\": 3664, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"pre_decision_record\", \"text\": \"lack of updates,\"}, {\"char_end\": 3687, \"char_start\": 3681, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"pre_decision_record\", \"text\": \"but a\"}, {\"char_end\": 3692, \"char_start\": 3687, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"pre_decision_record\", \"text\": \"high\"}, {\"char_end\": 3702, \"char_start\": 3692, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"pre_decision_record\", \"text\": \"volume of\"}, {\"char_end\": 3717, \"char_start\": 3702, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"pre_decision_record\", \"text\": \"damp and mould\"}, {\"char_end\": 3727, \"char_start\": 3717, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"enquiries\"}, {\"char_end\": 3740, \"char_start\": 3727, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"affected its\"}, {\"char_end\": 3751, \"char_start\": 3740, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"inspection\"}, {\"char_end\": 3771, \"char_start\": 3751, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"response timelines.\"}, {\"char_end\": 3839, \"char_start\": 3771, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"It would contact relevant staff about the communal cleaning issues.\"}, {\"char_end\": 3855, \"char_start\": 3839, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"30 October 2024\"}, {\"char_end\": 3924, \"char_start\": 3855, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked the landlord to escalate her complaint as she was\"}, {\"char_end\": 3952, \"char_start\": 3924, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \"unhappy that little work ha\"}, {\"char_end\": 3954, \"char_start\": 3952, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \"d\"}, {\"char_end\": 3959, \"char_start\": 3954, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"been\"}, {\"char_end\": 3998, \"char_start\": 3959, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"completed since it’s stage 1 complaint\"}, {\"char_end\": 4117, \"char_start\": 3998, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"response. She was worried about the health of her small child and her 5-week-old baby who both had respiratory issues.\"}, {\"char_end\": 4133, \"char_start\": 4117, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"4 November 2024\"}, {\"char_end\": 4204, \"char_start\": 4133, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the resident’s complaint escalation request.\"}, {\"char_end\": 4221, \"char_start\": 4204, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"pre_decision_record\", \"text\": \"21 November 2024\"}, {\"char_end\": 4279, \"char_start\": 4221, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord provided its stage 2 response. It said that:\"}, {\"char_end\": 4318, \"char_start\": 4279, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"pre_decision_record\", \"text\": \"It was sorry it had not progressed its\"}, {\"char_end\": 4336, \"char_start\": 4318, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"pre_decision_record\", \"text\": \"stage 1 complaint\"}, {\"char_end\": 4409, \"char_start\": 4336, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"pre_decision_record\", \"text\": \"response actions and offered £300 compensation for this service failure.\"}, {\"char_end\": 4429, \"char_start\": 4409, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"pre_decision_record\", \"text\": \"It would complete a\"}, {\"char_end\": 4439, \"char_start\": 4429, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"pre_decision_record\", \"text\": \"review of\"}, {\"char_end\": 4443, \"char_start\": 4439, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"pre_decision_record\", \"text\": \"its\"}, {\"char_end\": 4466, \"char_start\": 4443, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"damp and mould reports\"}, {\"char_end\": 4475, \"char_start\": 4466, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"process.\"}, {\"char_end\": 4535, \"char_start\": 4475, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"It would complete more tests and keep the resident updated.\"}, {\"char_end\": 4596, \"char_start\": 4535, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"It would then consider if more compensation was appropriate.\"}, {\"char_end\": 4612, \"char_start\": 4596, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \"30 January 2025\"}, {\"char_end\": 4675, \"char_start\": 4612, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord offered the resident a further £1000 compensation\"}, {\"char_end\": 4679, \"char_start\": 4675, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"for\"}, {\"char_end\": 4714, \"char_start\": 4679, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"pre_decision_record\", \"text\": \"delay, distress and inconvenience.\"}, {\"char_end\": 4731, \"char_start\": 4714, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"pre_decision_record\", \"text\": \"10 February 2025\"}, {\"char_end\": 4794, \"char_start\": 4731, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord told its insurer to consider compensation for the\"}, {\"char_end\": 4811, \"char_start\": 4794, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"resident’s mould\"}, {\"char_end\": 4826, \"char_start\": 4811, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \"damaged items.\"}, {\"char_end\": 4852, \"char_start\": 4826, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 4930, \"char_start\": 4852, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked us to investigate her complaint. She said the compensation\"}, {\"char_end\": 5000, \"char_start\": 4930, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"awarded did not cover the loss of mould damaged items or redecorating\"}, {\"char_end\": 5005, \"char_start\": 5000, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"she?\"}, {\"char_end\": 5045, \"char_start\": 5005, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"needed to do. She said she has not been\"}, {\"char_end\": 5051, \"char_start\": 5045, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"fully\"}, {\"char_end\": 5087, \"char_start\": 5051, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"compensated for the distress caused\"}, {\"char_end\": 5094, \"char_start\": 5087, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"or for\"}, {\"char_end\": 5117, \"char_start\": 5094, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"time spent in hospital\"}, {\"char_end\": 5122, \"char_start\": 5117, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"with\"}, {\"char_end\": 5170, \"char_start\": 5122, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \"children ill from sleeping in rooms with mould.\"}, {\"char_end\": 5190, \"char_start\": 5170, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"She also wanted the\"}, {\"char_end\": 5221, \"char_start\": 5190, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"cavity wall repairs completed.\"}, {\"char_end\": 5243, \"char_start\": 5221, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 5267, \"char_start\": 5243, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 5270, \"char_start\": 5267, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 5289, \"char_start\": 5270, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 5295, \"char_start\": 5289, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 5329, \"char_start\": 5295, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 5333, \"char_start\": 5329, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 5364, \"char_start\": 5333, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 5430, \"char_start\": 5364, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 5470, \"char_start\": 5430, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 5475, \"char_start\": 5470, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 5507, \"char_start\": 5475, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 5569, \"char_start\": 5507, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 5579, \"char_start\": 5569, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 5637, \"char_start\": 5579, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlords handling of mould and compensation request.\"}, {\"char_end\": 5645, \"char_start\": 5637, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 5664, \"char_start\": 5645, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 5691, \"char_start\": 5664, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we have not looked at\"}, {\"char_end\": 6243, \"char_start\": 5691, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident raised concerns about impact of the mould on her and her young children’s health. The resident’s concerns were understandable as mould is a recognised health hazard, and she said her young children have respiratory conditions. It would be fairer, more reasonable and more effective for the resident to make a personal injury claim for any injury caused. The courts are best placed to deal with this type of dispute as they will have the benefit of independent medical advice to decide on the cause of any injury and how long it will last.\"}, {\"char_end\": 6495, \"char_start\": 6243, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have therefore not investigated this further however we recommend that the landlord provide the resident with details of its health insurance. We can however decide if a landlord has provided appropriate compensation for distress and inconvenience.\"}, {\"char_end\": 6561, \"char_start\": 6495, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of mould reports and compensation request\"}, {\"char_end\": 7028, \"char_start\": 6561, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident first reported mould in the toilet, living room and bedrooms on 16 October 2023. The landlord’s damp and mould policy states following a report of damp or mould it will complete a survey and detail any recommendations within 20 days. The landlord did not complete a mould survey until 7 December 2023 which was a delay of 24 days. It did not share the survey recommendations until 7 January 2024 a further 26 days delay which was an inappropriate delay.\"}, {\"char_end\": 7376, \"char_start\": 7028, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The survey identified some mould present in the bedrooms, living room, around the front door and toilet. It also identified some damp in a bedroom and toilet but noted no penetrating or rising damp. It stated the mould was related to condensation. It recommended a number of actions to improve ventilation and checks to the cavity wall insulation.\"}, {\"char_end\": 7854, \"char_start\": 7376, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s damp and mould policy states survey actions will be completed in line with its repairs policy response times. It also states it will keep residents updated regarding the progress of actions. However, the landlord’s file confirms that the only action completed was a mould spray treatment 4 months later on 9 April 2024. There is no record of updates to the resident despite the excessive delay. This was not appropriate and a breach of its policy response times.\"}, {\"char_end\": 8389, \"char_start\": 7854, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complained to the landlord on 10 June 2024  she said the mould had returned. In its stage 1 complaint response, the landlord apologised for delays in completing the mould survey actions due to a high volume of mould cases. Under the Landlord and Tenant Act 1985, landlords must complete repairs within a reasonable timeframe, and any delays should be unavoidable. It is the landlord’s responsibility to allocate sufficient resources to meet demand and prioritise repairs appropriately and it failed to do so in this case.\"}, {\"char_end\": 9170, \"char_start\": 8389, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 1 complaint response the landlord said it would appoint a damp surveyor to inspect and recommend actions. This was appropriate given the Housing Health and Safety Rating System (HHSRS) classes damp and mould as a category one hazard. However, the landlord failed to monitor progress of its stage 1 actions which led to continued mould exposure for the family. The health risks associated with damp and mould is well documented. The landlord was aware of the specific vulnerabilities in the resident’s household, resident’s asthma and young children with respiratory issues, and there is no evidence to show that a risk assessment was completed by the landlord. This would have been an appropriate action to assess the potential effect of this hazard on the household.\"}, {\"char_end\": 9479, \"char_start\": 9170, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s lack of monitoring and urgency was not appropriate. It also missed an opportunity to consider how it could enhance its service to vulnerable residents in line with its repairs policy. Instead, the resident had to escalate her complaint to seek appropriate action which could have been avoided.\"}, {\"char_end\": 10259, \"char_start\": 9479, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s stage 2 complaint response (21 November 2024) however acknowledged its failure to progress its stage 1 complaint response actions which was appropriate. It committed to carrying out a mould inspection and completing all necessary works. It took steps to provide redress by apologising, offering £300 compensation and agreeing to review the compensation once the works were complete. It also said it would review how its contractor manages mould reports which showed efforts to prevent future occurrences. On 30 January 2025 it offered the resident an additional £1,000 compensation to reflect the delay, inconvenience and distress which the resident experienced. These were appropriate steps towards offering redress in line with our dispute resolution principles.\"}, {\"char_end\": 10695, \"char_start\": 10259, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident said the total £1300 compensation paid did not cover the loss of items affected by mould damage. The landlord’s internal correspondence shows on 10 February 2025 it told its insurer to consider compensation for the resident’s mould damaged items. The landlord had failed to inform the resident however and this communication failing led the resident to believe the landlord had not considered this aspect of her complaint.\"}, {\"char_end\": 11007, \"char_start\": 10695, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord previously noted the mould damage to the resident’s personal items in its mould survey of December 2023. It was therefore appropriate that it considered offering compensation for these damaged items. It is noted however that the landlord has not advised the resident of a compensation decision yet.\"}, {\"char_end\": 11311, \"char_start\": 11007, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided evidence to show it completed the necessary works including the cavity wall works (completed on 25 March 2025) which the resident had specifically requested be completed. The resident has stated that the property is much better and there is no evidence of further mould recurrence.\"}, {\"char_end\": 11615, \"char_start\": 11311, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident said the landlord did not provide compensation for redecoration that was needed. The landlords damp and mould policy states it will make good internal decoration following remedial works and its remedies policy allows for a goodwill payment where its actions or inaction have caused damage.\"}, {\"char_end\": 12055, \"char_start\": 11615, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident provided photographs that show sections of wallpaper peeling and affected by mould. The damp and mould survey also noted peeling wallpaper in December 2023.  However, it is not possible from the information provided to determine the extent of mould damage to internal decoration. It is noted that the landlord completed a mould wash (April 2024) and completed anti mould painting (November 2024) to address the internal mould.\"}, {\"char_end\": 12428, \"char_start\": 12055, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has not provided us or the landlord evidence of any redecoration completed yet or of any redecoration costs incurred. It is therefore understandable why the landlord did not consider redecoration costs. The resident may wish to liaise directly with the landlord regarding potential redecoration costs which the landlord can consider in line with its policies.\"}, {\"char_end\": 12987, \"char_start\": 12428, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Overall, the landlord took over 14 months to complete the relevant mould works. In its stage 1 and stage 2 complaint responses the landlord acknowledged delays which was appropriate. It apologised for inconvenience and distress the resident experienced due to the outstanding repairs, and it offered the resident £1300 total compensation. It also advised it would review its damp and mould process. This shows the landlord took accountability for its failings and had made efforts to prevent future occurrences in line with our dispute resolution principles.\"}, {\"char_end\": 13573, \"char_start\": 12987, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The apology, compensation and learning were appropriate steps by the landlord to acknowledge its failings and offer redress to the resident. Also, the total compensation of £1300 paid to the resident is in line with our remedies guidance for severe maladministration where there was a failure which adversely affected the resident. The compensation was proportionate redress for the prolonged delay in resolving the mould issues and lack of regard for vulnerabilities. It is therefore our view that the landlord has provided the resident reasonable redress for the failings identified.\"}, {\"char_end\": 13583, \"char_start\": 13573, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 13613, \"char_start\": 13583, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 13621, \"char_start\": 13613, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 13642, \"char_start\": 13621, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration\"}, {\"char_end\": 14035, \"char_start\": 13642, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaint responses were procedurally compliant. It acknowledged the resident’s formal complaint of 28 May 2024, within its 5-day acknowledgement response time frame on 29 May 2024.  It provided its stage 1 complaint response on 10 June 2024, which allowing for its 5 working day acknowledgement response period was within the 10-working day timeframe of its complaints policy.\"}, {\"char_end\": 14343, \"char_start\": 14035, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident asked the landlord to escalate her complaint on 30 October 2024 which it acknowledged on 4 November 2024, within its 5 days acknowledgement time period. It provided its stage 2 complaint response on 21 November 2024 which was within its 20- working day timeframe for stage 2 complaint response.\"}, {\"char_end\": 14352, \"char_start\": 14343, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 14623, \"char_start\": 14352, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord noted relevant learning. It stated it would complete a review of its management of damp and mould reports. This  was an appropriate action to ensure damp and mould reports are promptly assessed, appropriately prioritised and help prevent future occurrences.\"}, {\"char_end\": 14673, \"char_start\": 14623, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 14780, \"char_start\": 14673, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records were clear and detailed and enabled an effective assessment of the complaint issue.\"}, {\"char_end\": 14794, \"char_start\": 14780, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 15101, \"char_start\": 14794, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to update the resident on a number of occasions regarding its mould repair actions which added to the resident’s distress and frustration. It should reflect on its communication in this case as effective communication is key to providing assurance to residents and helping rebuild trust.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              749,
+              800
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              800,
+              849
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              849,
+              875
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              261,
+              263
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              263,
+              265
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              265,
+              279
+            ]
+          }
+        ],
+        "disputed_amount_gbp": [
+          {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              10259,
+              10695
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              7376,
+              7854
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              10259,
+              10695
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 167,
+            "text_span": [
+              11007,
+              11311
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 169,
+            "text_span": [
+              11615,
+              12055
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              290,
+              721
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              749,
+              800
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              800,
+              849
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              849,
+              875
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 55,
+            "text_span": [
+              2604,
+              2616
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 56,
+            "text_span": [
+              2616,
+              2680
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              2680,
+              2793
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              2793,
+              2875
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              2875,
+              2973
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              3226,
+              3328
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 67,
+            "text_span": [
+              3328,
+              3365
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 68,
+            "text_span": [
+              3365,
+              3368
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 69,
+            "text_span": [
+              3368,
+              3371
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 70,
+            "text_span": [
+              3371,
+              3384
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 71,
+            "text_span": [
+              3384,
+              3437
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              3437,
+              3451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              3451,
+              3473
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 74,
+            "text_span": [
+              3473,
+              3489
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 75,
+            "text_span": [
+              3489,
+              3492
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 76,
+            "text_span": [
+              3492,
+              3505
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 105,
+            "text_span": [
+              4221,
+              4279
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 106,
+            "text_span": [
+              4279,
+              4318
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 107,
+            "text_span": [
+              4318,
+              4336
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 108,
+            "text_span": [
+              4336,
+              4409
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 116,
+            "text_span": [
+              4596,
+              4612
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 117,
+            "text_span": [
+              4612,
+              4675
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 118,
+            "text_span": [
+              4675,
+              4679
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 119,
+            "text_span": [
+              4679,
+              4714
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 120,
+            "text_span": [
+              4714,
+              4731
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 121,
+            "text_span": [
+              4731,
+              4794
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4794,
+              4811
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 123,
+            "text_span": [
+              4811,
+              4826
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 125,
+            "text_span": [
+              4852,
+              4930
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 126,
+            "text_span": [
+              4930,
+              5000
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 128,
+            "text_span": [
+              5005,
+              5045
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 129,
+            "text_span": [
+              5045,
+              5051
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 130,
+            "text_span": [
+              5051,
+              5087
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 131,
+            "text_span": [
+              5087,
+              5094
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 132,
+            "text_span": [
+              5094,
+              5117
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 133,
+            "text_span": [
+              5117,
+              5122
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 134,
+            "text_span": [
+              5122,
+              5170
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 135,
+            "text_span": [
+              5170,
+              5190
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              5190,
+              5221
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              904,
+              1022
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              1022,
+              1108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              1108,
+              1170
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 47,
+            "text_span": [
+              2347,
+              2451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 48,
+            "text_span": [
+              2451,
+              2494
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 49,
+            "text_span": [
+              2494,
+              2513
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 50,
+            "text_span": [
+              2513,
+              2543
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1278,
+              1676
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1880,
+              1981
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 171,
+            "text_span": [
+              12428,
+              12987
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 172,
+            "text_span": [
+              12987,
+              13573
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              140,
+              154
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              241,
+              256
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              749,
+              800
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              800,
+              849
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 26,
+            "text_span": [
+              849,
+              875
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              154,
+              163
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              163,
+              187
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              290,
+              721
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              15,
+              51
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              163,
+              187
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              15,
+              51
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              163,
+              187
+            ]
+          }
+        ],
+        "statutory_basis": [
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              7854,
+              8389
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              8389,
+              9170
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No case authorities or judicial decisions are cited in the provided text.",
+        "claimed_amounts": "The resident disputed the adequacy of compensation but the text does not state any specific amount claimed by the resident."
+      },
+      "claim_types": [
+        "Handling of mould reports and compensation for mould damage",
+        "Handling of the resident’s complaint"
+      ],
+      "decision_date": "14 November 2025",
+      "disputed_amount_gbp": 1300,
+      "evidence": [
+        "Landlord’s file confirming only a mould spray treatment was completed four months later and no record of updates to the resident",
+        "Landlord internal correspondence showing that on 10 February 2025 it told its insurer to consider compensation for mould-damaged items",
+        "Evidence that necessary works, including cavity wall works completed on 25 March 2025, had been completed",
+        "Resident photographs showing wallpaper peeling and affected by mould",
+        "December 2023 damp and mould survey noting peeling wallpaper"
+      ],
+      "facts": "The resident lived in a 2-bedroom flat with her partner and 2 young children. She reported mould to the landlord on 16 October 2023 and said delay in addressing it affected her and her children’s health and damaged belongings. The complaint concerned the landlord’s handling of mould reports and compensation for mould damage, and its handling of the complaint. On 28 May 2024 the resident complained that mould reported in October 2023 had returned, that she was pregnant, that mould affected her and her 1-year-old son’s health, and that mould in the kitchen, bedrooms, toilet and living room damaged wallpaper and personal belongings. The landlord’s stage 1 response said a damp and mould survey had been completed on 7 December 2023 and a mould treatment on 9 April 2024. At stage 2 the landlord offered £300 compensation for failure to progress stage 1 actions; on 30 January 2025 it offered a further £1000 for delay, distress and inconvenience; and on 10 February 2025 it told its insurer to consider compensation for mould-damaged items. The resident later asked the Ombudsman to investigate because she said the compensation did not cover mould-damaged items, redecoration, distress, hospital time with children ill from mould exposure, or the cavity wall repairs she wanted completed.",
+      "ground_truth_outcome": {
+        "complaint_handling": "no maladministration",
+        "mould_reports_and_compensation": "reasonable redress",
+        "orders": "no orders made",
+        "recommendation": "provide the resident with details of the relevant liability insurance policy to enable a health-related claim if she wishes"
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1278,
+              1676
+            ]
+          },
+          "text": "There was an unreasonable delay in the landlord’s response to the resident’s mould report and completion of recommended actions. It did not show it had considered the resident’s and her children’s vulnerabilities."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1880,
+              1981
+            ]
+          },
+          "text": "The landlord later apologised and offered fair compensation for the inconvenience and distress caused. This response was reasonable and in line with our Dispute Resolution Principles."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 171,
+            "text_span": [
+              12428,
+              12987
+            ]
+          },
+          "text": "The landlord’s complaint responses were timely and in line with its complaint policy response times."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 172,
+            "text_span": [
+              12987,
+              13573
+            ]
+          },
+          "text": "Overall, the landlord took over 14 months to complete the relevant mould works."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 172,
+            "text_span": [
+              12987,
+              13573
+            ]
+          },
+          "text": "The compensation was proportionate redress for the prolonged delay in resolving the mould issues and lack of regard for vulnerabilities."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 172,
+            "text_span": [
+              12987,
+              13573
+            ]
+          },
+          "text": "It is therefore our view that the landlord has provided the resident reasonable redress for the failings identified."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation concerning a secure tenancy, mould reports and compensation for mould damage, and complaint handling",
+      "parties": {
+        "landlord": "Colchester City Council",
+        "resident": "the resident"
+      },
+      "region": "Colchester",
+      "region_source": "Derived from the named landlord, Colchester City Council, and the case title.",
+      "statutory_basis": [
+        "Landlord and Tenant Act 1985",
+        "Housing Health and Safety Rating System (HHSRS)"
+      ]
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":null,\"unavailable_reason\":\"No case authorities or judicial decisions are cited in the provided text.\"},\"claim_types\":{\"value\":[\"Handling of mould reports and compensation for mould damage\",\"Handling of the resident’s complaint\"],\"spans\":[{\"page\":1,\"paragraph\":24,\"text_span\":[749,800]},{\"page\":1,\"paragraph\":25,\"text_span\":[800,849]},{\"page\":1,\"paragraph\":26,\"text_span\":[849,875]}]},\"claimed_amounts\":{\"value\":null,\"unavailable_reason\":\"The resident disputed the adequacy of compensation but the text does not state any specific amount claimed by the resident.\"},\"decision_date\":{\"value\":\"14 November 2025\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[261,263]},{\"page\":1,\"paragraph\":19,\"text_span\":[263,265]},{\"page\":1,\"paragraph\":20,\"text_span\":[265,279]}]},\"disputed_amount_gbp\":{\"value\":1300,\"spans\":[{\"page\":1,\"paragraph\":165,\"text_span\":[10259,10695]}]},\"evidence\":{\"value\":[\"Landlord’s file confirming only a mould spray treatment was completed four months later and no record of updates to the resident\",\"Landlord internal correspondence showing that on 10 February 2025 it told its insurer to consider compensation for mould-damaged items\",\"Evidence that necessary works, including cavity wall works completed on 25 March 2025, had been completed\",\"Resident photographs showing wallpaper peeling and affected by mould\",\"December 2023 damp and mould survey noting peeling wallpaper\"],\"spans\":[{\"page\":1,\"paragraph\":160,\"text_span\":[7376,7854]},{\"page\":1,\"paragraph\":165,\"text_span\":[10259,10695]},{\"page\":1,\"paragraph\":167,\"text_span\":[11007,11311]},{\"page\":1,\"paragraph\":169,\"text_span\":[11615,12055]}]},\"facts\":{\"value\":\"The resident lived in a 2-bedroom flat with her partner and 2 young children. She reported mould to the landlord on 16 October 2023 and said delay in addressing it affected her and her children’s health and damaged belongings. The complaint concerned the landlord’s handling of mould reports and compensation for mould damage, and its handling of the complaint. On 28 May 2024 the resident complained that mould reported in October 2023 had returned, that she was pregnant, that mould affected her and her 1-year-old son’s health, and that mould in the kitchen, bedrooms, toilet and living room damaged wallpaper and personal belongings. The landlord’s stage 1 response said a damp and mould survey had been completed on 7 December 2023 and a mould treatment on 9 April 2024. At stage 2 the landlord offered £300 compensation for failure to progress stage 1 actions; on 30 January 2025 it offered a further £1000 for delay, distress and inconvenience; and on 10 February 2025 it told its insurer to consider compensation for mould-damaged items. The resident later asked the Ombudsman to investigate because she said the compensation did not cover mould-damaged items, redecoration, distress, hospital time with children ill from mould exposure, or the cavity wall repairs she wanted completed.\",\"spans\":[{\"page\":1,\"paragraph\":22,\"text_span\":[290,721]},{\"page\":1,\"paragraph\":24,\"text_span\":[749,800]},{\"page\":1,\"paragraph\":25,\"text_span\":[800,849]},{\"page\":1,\"paragraph\":26,\"text_span\":[849,875]},{\"page\":1,\"paragraph\":55,\"text_span\":[2604,2616]},{\"page\":1,\"paragraph\":56,\"text_span\":[2616,2680]},{\"page\":1,\"paragraph\":57,\"text_span\":[2680,2793]},{\"page\":1,\"paragraph\":58,\"text_span\":[2793,2875]},{\"page\":1,\"paragraph\":59,\"text_span\":[2875,2973]},{\"page\":1,\"paragraph\":66,\"text_span\":[3226,3328]},{\"page\":1,\"paragraph\":67,\"text_span\":[3328,3365]},{\"page\":1,\"paragraph\":68,\"text_span\":[3365,3368]},{\"page\":1,\"paragraph\":69,\"text_span\":[3368,3371]},{\"page\":1,\"paragraph\":70,\"text_span\":[3371,3384]},{\"page\":1,\"paragraph\":71,\"text_span\":[3384,3437]},{\"page\":1,\"paragraph\":72,\"text_span\":[3437,3451]},{\"page\":1,\"paragraph\":73,\"text_span\":[3451,3473]},{\"page\":1,\"paragraph\":74,\"text_span\":[3473,3489]},{\"page\":1,\"paragraph\":75,\"text_span\":[3489,3492]},{\"page\":1,\"paragraph\":76,\"text_span\":[3492,3505]},{\"page\":1,\"paragraph\":105,\"text_span\":[4221,4279]},{\"page\":1,\"paragraph\":106,\"text_span\":[4279,4318]},{\"page\":1,\"paragraph\":107,\"text_span\":[4318,4336]},{\"page\":1,\"paragraph\":108,\"text_span\":[4336,4409]},{\"page\":1,\"paragraph\":116,\"text_span\":[4596,4612]},{\"page\":1,\"paragraph\":117,\"text_span\":[4612,4675]},{\"page\":1,\"paragraph\":118,\"text_span\":[4675,4679]},{\"page\":1,\"paragraph\":119,\"text_span\":[4679,4714]},{\"page\":1,\"paragraph\":120,\"text_span\":[4714,4731]},{\"page\":1,\"paragraph\":121,\"text_span\":[4731,4794]},{\"page\":1,\"paragraph\":122,\"text_span\":[4794,4811]},{\"page\":1,\"paragraph\":123,\"text_span\":[4811,4826]},{\"page\":1,\"paragraph\":125,\"text_span\":[4852,4930]},{\"page\":1,\"paragraph\":126,\"text_span\":[4930,5000]},{\"page\":1,\"paragraph\":128,\"text_span\":[5005,5045]},{\"page\":1,\"paragraph\":129,\"text_span\":[5045,5051]},{\"page\":1,\"paragraph\":130,\"text_span\":[5051,5087]},{\"page\":1,\"paragraph\":131,\"text_span\":[5087,5094]},{\"page\":1,\"paragraph\":132,\"text_span\":[5094,5117]},{\"page\":1,\"paragraph\":133,\"text_span\":[5117,5122]},{\"page\":1,\"paragraph\":134,\"text_span\":[5122,5170]},{\"page\":1,\"paragraph\":135,\"text_span\":[5170,5190]},{\"page\":1,\"paragraph\":136,\"text_span\":[5190,5221]}]},\"ground_truth_outcome\":{\"value\":{\"mould_reports_and_compensation\":\"reasonable redress\",\"complaint_handling\":\"no maladministration\",\"orders\":\"no orders made\",\"recommendation\":\"provide the resident with details of the relevant liability insurance policy to enable a health-related claim if she wishes\"},\"spans\":[{\"page\":1,\"paragraph\":28,\"text_span\":[904,1022]},{\"page\":1,\"paragraph\":29,\"text_span\":[1022,1108]},{\"page\":1,\"paragraph\":30,\"text_span\":[1108,1170]},{\"page\":1,\"paragraph\":47,\"text_span\":[2347,2451]},{\"page\":1,\"paragraph\":48,\"text_span\":[2451,2494]},{\"page\":1,\"paragraph\":49,\"text_span\":[2494,2513]},{\"page\":1,\"paragraph\":50,\"text_span\":[2513,2543]}]},\"key_reasoning_quotes\":{\"value\":[\"There was an unreasonable delay in the landlord’s response to the resident’s mould report and completion of recommended actions. It did not show it had considered the resident’s and her children’s vulnerabilities.\",\"The landlord later apologised and offered fair compensation for the inconvenience and distress caused. This response was reasonable and in line with our Dispute Resolution Principles.\",\"The landlord’s complaint responses were timely and in line with its complaint policy response times.\",\"Overall, the landlord took over 14 months to complete the relevant mould works.\",\"The compensation was proportionate redress for the prolonged delay in resolving the mould issues and lack of regard for vulnerabilities.\",\"It is therefore our view that the landlord has provided the resident reasonable redress for the failings identified.\"],\"spans\":[{\"page\":1,\"paragraph\":34,\"text_span\":[1278,1676]},{\"page\":1,\"paragraph\":38,\"text_span\":[1880,1981]},{\"page\":1,\"paragraph\":171,\"text_span\":[12428,12987]},{\"page\":1,\"paragraph\":172,\"text_span\":[12987,13573]}]},\"matter_type\":{\"value\":\"Housing Ombudsman investigation concerning a secure tenancy, mould reports and compensation for mould damage, and complaint handling\",\"spans\":[{\"page\":1,\"paragraph\":10,\"text_span\":[140,154]},{\"page\":1,\"paragraph\":16,\"text_span\":[241,256]},{\"page\":1,\"paragraph\":24,\"text_span\":[749,800]},{\"page\":1,\"paragraph\":25,\"text_span\":[800,849]},{\"page\":1,\"paragraph\":26,\"text_span\":[849,875]}]},\"parties\":{\"value\":{\"landlord\":\"Colchester City Council\",\"resident\":\"the resident\"},\"spans\":[{\"page\":1,\"paragraph\":11,\"text_span\":[154,163]},{\"page\":1,\"paragraph\":12,\"text_span\":[163,187]},{\"page\":1,\"paragraph\":22,\"text_span\":[290,721]}]},\"region\":{\"value\":\"Colchester\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[15,51]},{\"page\":1,\"paragraph\":12,\"text_span\":[163,187]}]},\"region_source\":{\"value\":\"Derived from the named landlord, Colchester City Council, and the case title.\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[15,51]},{\"page\":1,\"paragraph\":12,\"text_span\":[163,187]}]},\"statutory_basis\":{\"value\":[\"Landlord and Tenant Act 1985\",\"Housing Health and Safety Rating System (HHSRS)\"],\"spans\":[{\"page\":1,\"paragraph\":161,\"text_span\":[7854,8389]},{\"page\":1,\"paragraph\":162,\"text_span\":[8389,9170]}]}}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202445527\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 51, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Colchester City Council (202445527)\"}, {\"char_end\": 87, \"char_start\": 51, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Colchester City Council (202445527)\"}, {\"char_end\": 99, \"char_start\": 87, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 108, \"char_start\": 99, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 116, \"char_start\": 108, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 126, \"char_start\": 116, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202445527\"}, {\"char_end\": 140, \"char_start\": 126, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 154, \"char_start\": 140, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 163, \"char_start\": 154, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 187, \"char_start\": 163, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Colchester City Council\"}, {\"char_end\": 201, \"char_start\": 187, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 231, \"char_start\": 201, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Local Authority / ALMO or TMO\"}, {\"char_end\": 241, \"char_start\": 231, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 256, \"char_start\": 241, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 261, \"char_start\": 256, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 263, \"char_start\": 261, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"1\"}, {\"char_end\": 265, \"char_start\": 263, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"4\"}, {\"char_end\": 279, \"char_start\": 265, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"November 2025\"}, {\"char_end\": 290, \"char_start\": 279, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 721, \"char_start\": 290, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives in a 2-bedroom flat with her partner and 2 young children. She reported mould to the landlord on 16 October 2023. She said the landlord delayed addressing the mould which affected her and her children’s health and damaged personal belongings. The resident said compensation provided by the landlord was not enough to replace mould damaged belongings, complete redecoration or address the impact on their health.\"}, {\"char_end\": 749, \"char_start\": 721, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 800, \"char_start\": 749, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of:\"}, {\"char_end\": 849, \"char_start\": 800, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"Mould reports and compensation for mould damage.\"}, {\"char_end\": 875, \"char_start\": 849, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident’s complaint.\"}, {\"char_end\": 904, \"char_start\": 875, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 1022, \"char_start\": 904, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found the landlord provided reasonable redress in its handling of mould reports and compensation for mould damage.\"}, {\"char_end\": 1108, \"char_start\": 1022, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found no maladministration in the landlord’s handling of the resident’s complaint.\"}, {\"char_end\": 1170, \"char_start\": 1108, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have not made orders for the landlord to put things right.\"}, {\"char_end\": 1189, \"char_start\": 1170, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1263, \"char_start\": 1189, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlords handling of mould reports and compensation for mould damage\"}, {\"char_end\": 1278, \"char_start\": 1263, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found that:\"}, {\"char_end\": 1676, \"char_start\": 1278, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was an unreasonable delay in the landlord’s response to the resident’s mould report and completion of recommended actions. It did not show it had considered the resident’s and her children’s vulnerabilities. The landlord later apologised and offered fair compensation for the inconvenience and distress caused. This response was reasonable and in line with our Dispute Resolution Principles.\"}, {\"char_end\": 1812, \"char_start\": 1676, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord appropriately agreed to consider compensation for the resident’s mould damaged items under its liability insurance policy.\"}, {\"char_end\": 1865, \"char_start\": 1812, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s complaint.\"}, {\"char_end\": 1880, \"char_start\": 1865, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found that:\"}, {\"char_end\": 1981, \"char_start\": 1880, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaint responses were timely and in line with its complaint policy response times.\"}, {\"char_end\": 2002, \"char_start\": 1981, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2060, \"char_start\": 2002, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 2062, \"char_start\": 2060, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 2137, \"char_start\": 2062, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2228, \"char_start\": 2137, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2244, \"char_start\": 2228, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 2327, \"char_start\": 2244, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 2347, \"char_start\": 2327, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 2451, \"char_start\": 2347, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"Provide the resident with details of its relevant liability insurance policy to enable the resident, if\"}, {\"char_end\": 2494, \"char_start\": 2451, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"she wishes, to claim for the effect on her\"}, {\"char_end\": 2513, \"char_start\": 2494, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"and her children’s\"}, {\"char_end\": 2543, \"char_start\": 2513, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"health due to damp and mould.\"}, {\"char_end\": 2561, \"char_start\": 2543, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 2585, \"char_start\": 2561, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 2590, \"char_start\": 2585, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 2604, \"char_start\": 2590, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 2616, \"char_start\": 2604, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"pre_decision_record\", \"text\": \"28 May 2024\"}, {\"char_end\": 2680, \"char_start\": 2616, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised a complaint to the landlord. She said that:\"}, {\"char_end\": 2793, \"char_start\": 2680, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"pre_decision_record\", \"text\": \"She reported mould in October 2023, and the landlord completed a mould spray treatment, but the mould came back.\"}, {\"char_end\": 2875, \"char_start\": 2793, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"pre_decision_record\", \"text\": \"She was pregnant and the mould was affecting her and her 1-year-old son’s health.\"}, {\"char_end\": 2973, \"char_start\": 2875, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"pre_decision_record\", \"text\": \"Mould in the kitchen, bedrooms, toilet and living room damaged wallpaper and personal belongings.\"}, {\"char_end\": 3083, \"char_start\": 2973, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord had not cleaned walls before they moved in, and she was unhappy with cleaning of communal areas.\"}, {\"char_end\": 3095, \"char_start\": 3083, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"pre_decision_record\", \"text\": \"29 May 2024\"}, {\"char_end\": 3196, \"char_start\": 3095, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the resident’s complaint and stated she would receive a complaint response\"}, {\"char_end\": 3199, \"char_start\": 3196, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"pre_decision_record\", \"text\": \"by\"}, {\"char_end\": 3213, \"char_start\": 3199, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"pre_decision_record\", \"text\": \"11 June 2024.\"}, {\"char_end\": 3226, \"char_start\": 3213, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"pre_decision_record\", \"text\": \"10 June 2024\"}, {\"char_end\": 3328, \"char_start\": 3226, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord issued its stage 1 complaint response. It upheld the resident’s complaint and said that:\"}, {\"char_end\": 3365, \"char_start\": 3328, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"pre_decision_record\", \"text\": \"Following the residents mould report\"}, {\"char_end\": 3368, \"char_start\": 3365, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 3371, \"char_start\": 3368, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"pre_decision_record\", \"text\": \"16\"}, {\"char_end\": 3384, \"char_start\": 3371, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"pre_decision_record\", \"text\": \"October 2023\"}, {\"char_end\": 3437, \"char_start\": 3384, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"pre_decision_record\", \"text\": \"it completed a specialist damp and mould survey on 7\"}, {\"char_end\": 3451, \"char_start\": 3437, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2023\"}, {\"char_end\": 3473, \"char_start\": 3451, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"pre_decision_record\", \"text\": \". It then completed a\"}, {\"char_end\": 3489, \"char_start\": 3473, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"pre_decision_record\", \"text\": \"mould treatment\"}, {\"char_end\": 3492, \"char_start\": 3489, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 3505, \"char_start\": 3492, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"pre_decision_record\", \"text\": \"9 April 2024\"}, {\"char_end\": 3507, \"char_start\": 3505, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 3618, \"char_start\": 3507, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"pre_decision_record\", \"text\": \"A damp surveyor would complete a further inspection, and it would monitor progress of any recommended actions.\"}, {\"char_end\": 3631, \"char_start\": 3618, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"pre_decision_record\", \"text\": \"It was sorry\"}, {\"char_end\": 3635, \"char_start\": 3631, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"pre_decision_record\", \"text\": \"for\"}, {\"char_end\": 3639, \"char_start\": 3635, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"pre_decision_record\", \"text\": \"the\"}, {\"char_end\": 3653, \"char_start\": 3639, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"pre_decision_record\", \"text\": \"inconvenience\"}, {\"char_end\": 3660, \"char_start\": 3653, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"pre_decision_record\", \"text\": \"caused\"}, {\"char_end\": 3664, \"char_start\": 3660, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"pre_decision_record\", \"text\": \"and\"}, {\"char_end\": 3681, \"char_start\": 3664, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"pre_decision_record\", \"text\": \"lack of updates,\"}, {\"char_end\": 3687, \"char_start\": 3681, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"pre_decision_record\", \"text\": \"but a\"}, {\"char_end\": 3692, \"char_start\": 3687, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"pre_decision_record\", \"text\": \"high\"}, {\"char_end\": 3702, \"char_start\": 3692, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"pre_decision_record\", \"text\": \"volume of\"}, {\"char_end\": 3717, \"char_start\": 3702, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"pre_decision_record\", \"text\": \"damp and mould\"}, {\"char_end\": 3727, \"char_start\": 3717, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"enquiries\"}, {\"char_end\": 3740, \"char_start\": 3727, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"affected its\"}, {\"char_end\": 3751, \"char_start\": 3740, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"inspection\"}, {\"char_end\": 3771, \"char_start\": 3751, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"response timelines.\"}, {\"char_end\": 3839, \"char_start\": 3771, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"It would contact relevant staff about the communal cleaning issues.\"}, {\"char_end\": 3855, \"char_start\": 3839, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"30 October 2024\"}, {\"char_end\": 3924, \"char_start\": 3855, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked the landlord to escalate her complaint as she was\"}, {\"char_end\": 3952, \"char_start\": 3924, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \"unhappy that little work ha\"}, {\"char_end\": 3954, \"char_start\": 3952, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \"d\"}, {\"char_end\": 3959, \"char_start\": 3954, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"been\"}, {\"char_end\": 3998, \"char_start\": 3959, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"completed since it’s stage 1 complaint\"}, {\"char_end\": 4117, \"char_start\": 3998, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"response. She was worried about the health of her small child and her 5-week-old baby who both had respiratory issues.\"}, {\"char_end\": 4133, \"char_start\": 4117, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"4 November 2024\"}, {\"char_end\": 4204, \"char_start\": 4133, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the resident’s complaint escalation request.\"}, {\"char_end\": 4221, \"char_start\": 4204, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"pre_decision_record\", \"text\": \"21 November 2024\"}, {\"char_end\": 4279, \"char_start\": 4221, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord provided its stage 2 response. It said that:\"}, {\"char_end\": 4318, \"char_start\": 4279, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"pre_decision_record\", \"text\": \"It was sorry it had not progressed its\"}, {\"char_end\": 4336, \"char_start\": 4318, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"pre_decision_record\", \"text\": \"stage 1 complaint\"}, {\"char_end\": 4409, \"char_start\": 4336, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"pre_decision_record\", \"text\": \"response actions and offered £300 compensation for this service failure.\"}, {\"char_end\": 4429, \"char_start\": 4409, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"pre_decision_record\", \"text\": \"It would complete a\"}, {\"char_end\": 4439, \"char_start\": 4429, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"pre_decision_record\", \"text\": \"review of\"}, {\"char_end\": 4443, \"char_start\": 4439, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"pre_decision_record\", \"text\": \"its\"}, {\"char_end\": 4466, \"char_start\": 4443, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"damp and mould reports\"}, {\"char_end\": 4475, \"char_start\": 4466, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"process.\"}, {\"char_end\": 4535, \"char_start\": 4475, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"It would complete more tests and keep the resident updated.\"}, {\"char_end\": 4596, \"char_start\": 4535, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"It would then consider if more compensation was appropriate.\"}, {\"char_end\": 4612, \"char_start\": 4596, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \"30 January 2025\"}, {\"char_end\": 4675, \"char_start\": 4612, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord offered the resident a further £1000 compensation\"}, {\"char_end\": 4679, \"char_start\": 4675, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"for\"}, {\"char_end\": 4714, \"char_start\": 4679, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"pre_decision_record\", \"text\": \"delay, distress and inconvenience.\"}, {\"char_end\": 4731, \"char_start\": 4714, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"pre_decision_record\", \"text\": \"10 February 2025\"}, {\"char_end\": 4794, \"char_start\": 4731, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord told its insurer to consider compensation for the\"}, {\"char_end\": 4811, \"char_start\": 4794, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"resident’s mould\"}, {\"char_end\": 4826, \"char_start\": 4811, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \"damaged items.\"}, {\"char_end\": 4852, \"char_start\": 4826, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 4930, \"char_start\": 4852, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked us to investigate her complaint. She said the compensation\"}, {\"char_end\": 5000, \"char_start\": 4930, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"awarded did not cover the loss of mould damaged items or redecorating\"}, {\"char_end\": 5005, \"char_start\": 5000, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"she?\"}, {\"char_end\": 5045, \"char_start\": 5005, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"needed to do. She said she has not been\"}, {\"char_end\": 5051, \"char_start\": 5045, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"fully\"}, {\"char_end\": 5087, \"char_start\": 5051, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"compensated for the distress caused\"}, {\"char_end\": 5094, \"char_start\": 5087, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"or for\"}, {\"char_end\": 5117, \"char_start\": 5094, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"time spent in hospital\"}, {\"char_end\": 5122, \"char_start\": 5117, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"with\"}, {\"char_end\": 5170, \"char_start\": 5122, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \"children ill from sleeping in rooms with mould.\"}, {\"char_end\": 5190, \"char_start\": 5170, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"She also wanted the\"}, {\"char_end\": 5221, \"char_start\": 5190, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"cavity wall repairs completed.\"}, {\"char_end\": 5243, \"char_start\": 5221, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 5267, \"char_start\": 5243, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 5270, \"char_start\": 5267, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 5289, \"char_start\": 5270, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 5295, \"char_start\": 5289, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 5329, \"char_start\": 5295, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 5333, \"char_start\": 5329, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 5364, \"char_start\": 5333, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 5430, \"char_start\": 5364, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 5470, \"char_start\": 5430, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 5475, \"char_start\": 5470, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 5507, \"char_start\": 5475, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 5569, \"char_start\": 5507, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 5579, \"char_start\": 5569, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 5637, \"char_start\": 5579, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlords handling of mould and compensation request.\"}, {\"char_end\": 5645, \"char_start\": 5637, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 5664, \"char_start\": 5645, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 5691, \"char_start\": 5664, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we have not looked at\"}, {\"char_end\": 6243, \"char_start\": 5691, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident raised concerns about impact of the mould on her and her young children’s health. The resident’s concerns were understandable as mould is a recognised health hazard, and she said her young children have respiratory conditions. It would be fairer, more reasonable and more effective for the resident to make a personal injury claim for any injury caused. The courts are best placed to deal with this type of dispute as they will have the benefit of independent medical advice to decide on the cause of any injury and how long it will last.\"}, {\"char_end\": 6495, \"char_start\": 6243, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have therefore not investigated this further however we recommend that the landlord provide the resident with details of its health insurance. We can however decide if a landlord has provided appropriate compensation for distress and inconvenience.\"}, {\"char_end\": 6561, \"char_start\": 6495, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of mould reports and compensation request\"}, {\"char_end\": 7028, \"char_start\": 6561, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident first reported mould in the toilet, living room and bedrooms on 16 October 2023. The landlord’s damp and mould policy states following a report of damp or mould it will complete a survey and detail any recommendations within 20 days. The landlord did not complete a mould survey until 7 December 2023 which was a delay of 24 days. It did not share the survey recommendations until 7 January 2024 a further 26 days delay which was an inappropriate delay.\"}, {\"char_end\": 7376, \"char_start\": 7028, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The survey identified some mould present in the bedrooms, living room, around the front door and toilet. It also identified some damp in a bedroom and toilet but noted no penetrating or rising damp. It stated the mould was related to condensation. It recommended a number of actions to improve ventilation and checks to the cavity wall insulation.\"}, {\"char_end\": 7854, \"char_start\": 7376, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s damp and mould policy states survey actions will be completed in line with its repairs policy response times. It also states it will keep residents updated regarding the progress of actions. However, the landlord’s file confirms that the only action completed was a mould spray treatment 4 months later on 9 April 2024. There is no record of updates to the resident despite the excessive delay. This was not appropriate and a breach of its policy response times.\"}, {\"char_end\": 8389, \"char_start\": 7854, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complained to the landlord on 10 June 2024  she said the mould had returned. In its stage 1 complaint response, the landlord apologised for delays in completing the mould survey actions due to a high volume of mould cases. Under the Landlord and Tenant Act 1985, landlords must complete repairs within a reasonable timeframe, and any delays should be unavoidable. It is the landlord’s responsibility to allocate sufficient resources to meet demand and prioritise repairs appropriately and it failed to do so in this case.\"}, {\"char_end\": 9170, \"char_start\": 8389, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 1 complaint response the landlord said it would appoint a damp surveyor to inspect and recommend actions. This was appropriate given the Housing Health and Safety Rating System (HHSRS) classes damp and mould as a category one hazard. However, the landlord failed to monitor progress of its stage 1 actions which led to continued mould exposure for the family. The health risks associated with damp and mould is well documented. The landlord was aware of the specific vulnerabilities in the resident’s household, resident’s asthma and young children with respiratory issues, and there is no evidence to show that a risk assessment was completed by the landlord. This would have been an appropriate action to assess the potential effect of this hazard on the household.\"}, {\"char_end\": 9479, \"char_start\": 9170, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s lack of monitoring and urgency was not appropriate. It also missed an opportunity to consider how it could enhance its service to vulnerable residents in line with its repairs policy. Instead, the resident had to escalate her complaint to seek appropriate action which could have been avoided.\"}, {\"char_end\": 10259, \"char_start\": 9479, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s stage 2 complaint response (21 November 2024) however acknowledged its failure to progress its stage 1 complaint response actions which was appropriate. It committed to carrying out a mould inspection and completing all necessary works. It took steps to provide redress by apologising, offering £300 compensation and agreeing to review the compensation once the works were complete. It also said it would review how its contractor manages mould reports which showed efforts to prevent future occurrences. On 30 January 2025 it offered the resident an additional £1,000 compensation to reflect the delay, inconvenience and distress which the resident experienced. These were appropriate steps towards offering redress in line with our dispute resolution principles.\"}, {\"char_end\": 10695, \"char_start\": 10259, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident said the total £1300 compensation paid did not cover the loss of items affected by mould damage. The landlord’s internal correspondence shows on 10 February 2025 it told its insurer to consider compensation for the resident’s mould damaged items. The landlord had failed to inform the resident however and this communication failing led the resident to believe the landlord had not considered this aspect of her complaint.\"}, {\"char_end\": 11007, \"char_start\": 10695, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord previously noted the mould damage to the resident’s personal items in its mould survey of December 2023. It was therefore appropriate that it considered offering compensation for these damaged items. It is noted however that the landlord has not advised the resident of a compensation decision yet.\"}, {\"char_end\": 11311, \"char_start\": 11007, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided evidence to show it completed the necessary works including the cavity wall works (completed on 25 March 2025) which the resident had specifically requested be completed. The resident has stated that the property is much better and there is no evidence of further mould recurrence.\"}, {\"char_end\": 11615, \"char_start\": 11311, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident said the landlord did not provide compensation for redecoration that was needed. The landlords damp and mould policy states it will make good internal decoration following remedial works and its remedies policy allows for a goodwill payment where its actions or inaction have caused damage.\"}, {\"char_end\": 12055, \"char_start\": 11615, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident provided photographs that show sections of wallpaper peeling and affected by mould. The damp and mould survey also noted peeling wallpaper in December 2023.  However, it is not possible from the information provided to determine the extent of mould damage to internal decoration. It is noted that the landlord completed a mould wash (April 2024) and completed anti mould painting (November 2024) to address the internal mould.\"}, {\"char_end\": 12428, \"char_start\": 12055, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident has not provided us or the landlord evidence of any redecoration completed yet or of any redecoration costs incurred. It is therefore understandable why the landlord did not consider redecoration costs. The resident may wish to liaise directly with the landlord regarding potential redecoration costs which the landlord can consider in line with its policies.\"}, {\"char_end\": 12987, \"char_start\": 12428, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Overall, the landlord took over 14 months to complete the relevant mould works. In its stage 1 and stage 2 complaint responses the landlord acknowledged delays which was appropriate. It apologised for inconvenience and distress the resident experienced due to the outstanding repairs, and it offered the resident £1300 total compensation. It also advised it would review its damp and mould process. This shows the landlord took accountability for its failings and had made efforts to prevent future occurrences in line with our dispute resolution principles.\"}, {\"char_end\": 13573, \"char_start\": 12987, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The apology, compensation and learning were appropriate steps by the landlord to acknowledge its failings and offer redress to the resident. Also, the total compensation of £1300 paid to the resident is in line with our remedies guidance for severe maladministration where there was a failure which adversely affected the resident. The compensation was proportionate redress for the prolonged delay in resolving the mould issues and lack of regard for vulnerabilities. It is therefore our view that the landlord has provided the resident reasonable redress for the failings identified.\"}, {\"char_end\": 13583, \"char_start\": 13573, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 13613, \"char_start\": 13583, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 13621, \"char_start\": 13613, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 13642, \"char_start\": 13621, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration\"}, {\"char_end\": 14035, \"char_start\": 13642, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s complaint responses were procedurally compliant. It acknowledged the resident’s formal complaint of 28 May 2024, within its 5-day acknowledgement response time frame on 29 May 2024.  It provided its stage 1 complaint response on 10 June 2024, which allowing for its 5 working day acknowledgement response period was within the 10-working day timeframe of its complaints policy.\"}, {\"char_end\": 14343, \"char_start\": 14035, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident asked the landlord to escalate her complaint on 30 October 2024 which it acknowledged on 4 November 2024, within its 5 days acknowledgement time period. It provided its stage 2 complaint response on 21 November 2024 which was within its 20- working day timeframe for stage 2 complaint response.\"}, {\"char_end\": 14352, \"char_start\": 14343, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 14623, \"char_start\": 14352, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord noted relevant learning. It stated it would complete a review of its management of damp and mould reports. This  was an appropriate action to ensure damp and mould reports are promptly assessed, appropriately prioritised and help prevent future occurrences.\"}, {\"char_end\": 14673, \"char_start\": 14623, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 14780, \"char_start\": 14673, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records were clear and detailed and enabled an effective assessment of the complaint issue.\"}, {\"char_end\": 14794, \"char_start\": 14780, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 15101, \"char_start\": 14794, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord failed to update the resident on a number of occasions regarding its mould repair actions which added to the resident’s distress and frustration. It should reflect on its communication in this case as effective communication is key to providing assurance to residents and helping rebuild trust.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "fedec3c3ff8f731898a0fc5666ce36bded6d5e87c824c9d8c18bb4cbe20e0249",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T15:24:09.326088+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "2bb9e16bcc62dbd7af458f1f33063d683c652cb3fdac5336d50662186b807cdf"
+}

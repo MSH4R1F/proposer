@@ -1,0 +1,21 @@
+{
+  "n_cases": 50,
+  "train_count": 0,
+  "test_count": 50,
+  "leakage_violations": [],
+  "understratified_types": {
+    "cleaning": 0,
+    "damages": 0,
+    "deposit_non_protection": 0,
+    "end_of_tenancy": 0
+  },
+  "region_distribution": {
+    "london": 48,
+    "west_midlands": 2
+  },
+  "case_size_distribution": {
+    "small": 46,
+    "large": 4
+  },
+  "is_clean": false
+}

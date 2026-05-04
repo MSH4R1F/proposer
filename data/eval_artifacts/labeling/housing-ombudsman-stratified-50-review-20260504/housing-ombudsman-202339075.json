@@ -1,0 +1,572 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202339075",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "UNGROUNDED",
+      "key_reasoning_quotes[1]": "UNGROUNDED",
+      "key_reasoning_quotes[2]": "UNGROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.2727272727272727,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 15 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='24 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='poor communication', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='delays', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='inconvenience', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Clarion Hou...tenant': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['poor co...enant': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='resolved with intervention', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 6 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='24 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='poor communication', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='delays', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.2\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='inconvenience', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Clarion Hou...tenant': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='resolved with intervention', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "quote not found in declared span",
+      "key_reasoning_quotes[1]": "quote not found in declared span",
+      "key_reasoning_quotes[2]": "quote not found in declared span",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "UNGROUNDED",
+      "key_reasoning_quotes[2]": "UNGROUNDED",
+      "key_reasoning_quotes[3]": "UNGROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.3333333333333333,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 13 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='24 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint about the land...cerns about insulation.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Clarion Hou...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='The complaint was resolv... a written explanation.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 4 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='24 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint about the land...cerns about insulation.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Clarion Hou...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='The complaint was resolv... a written explanation.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "quote not found in declared span",
+      "key_reasoning_quotes[2]": "quote not found in declared span",
+      "key_reasoning_quotes[3]": "quote not found in declared span",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              973,
+              1001
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 39,
+            "text_span": [
+              1001,
+              1026
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              284,
+              287
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              287,
+              301
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              312,
+              461
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              461,
+              479
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              479,
+              611
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              760,
+              806
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              892,
+              1108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 49,
+            "text_span": [
+              1108,
+              1285
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1569,
+              1776
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              639,
+              731
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              187,
+              223
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              312,
+              461
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "No specific amounts claimed by the resident are mentioned in the pre-decision record sections.",
+        "disputed_amount_gbp": "No disputed monetary amount is mentioned in the case.",
+        "evidence": "No specific evidence or documentation is described in the pre-decision record sections.",
+        "region": "No geographic region or jurisdiction is specified in the decision text.",
+        "region_source": "No geographic region information is available to source.",
+        "statutory_basis": "No specific statutes, regulations, or legal provisions are referenced in the decision."
+      },
+      "claim_types": [
+        "poor communication",
+        "delays",
+        "inconvenience"
+      ],
+      "decision_date": "24 November 2025",
+      "facts": "In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft. She chased the landlord for updates about her reports throughout 2022. Despite multiple inspections, at the time of making her complaint in March 2023, the repairs remained outstanding.",
+      "ground_truth_outcome": "resolved with intervention",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              892,
+              1108
+            ]
+          },
+          "text": "At the end of the complaints process the landlord apologised to the resident for its poor communication, the delays and inconvenience caused. It awarded her £1,345 compensation and completed the outstanding works."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 49,
+            "text_span": [
+              1108,
+              1285
+            ]
+          },
+          "text": "The landlord did not provide the resident with an explanation of the steps it would take to improve communication with its residents, which was the outcomes she was seeking."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1569,
+              1776
+            ]
+          },
+          "text": "Following our intervention, the landlord offered to pay the resident £250 compensation and provide her with the explanations she was seeking. Both parties agreed to this as a resolution to the complaint."
+        }
+      ],
+      "matter_type": "housing complaint",
+      "parties": {
+        "landlord": "Clarion Housing Association Limited",
+        "tenant": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"poor communication\", \"delays\", \"inconvenience\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 38, \"text_span\": [973, 1001]},\n      {\"page\": 1, \"paragraph\": 39, \"text_span\": [1001, 1026]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific amounts claimed by the resident are mentioned in the pre-decision record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"24 November 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [284, 287]},\n      {\"page\": 1, \"paragraph\": 19, \"text_span\": [287, 301]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No disputed monetary amount is mentioned in the case.\"\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific evidence or documentation is described in the pre-decision record sections.\"\n  },\n  \"facts\": {\n    \"value\": \"In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft. She chased the landlord for updates about her reports throughout 2022. Despite multiple inspections, at the time of making her complaint in March 2023, the repairs remained outstanding.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [312, 461]},\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [461, 479]},\n      {\"page\": 1, \"paragraph\": 23, \"text_span\": [479, 611]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"resolved with intervention\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 27, \"text_span\": [760, 806]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"At the end of the complaints process the landlord apologised to the resident for its poor communication, the delays and inconvenience caused. It awarded her £1,345 compensation and completed the outstanding works.\",\n      \"The landlord did not provide the resident with an explanation of the steps it would take to improve communication with its residents, which was the outcomes she was seeking.\",\n      \"Following our intervention, the landlord offered to pay the resident £250 compensation and provide her with the explanations she was seeking. Both parties agreed to this as a resolution to the complaint.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 34, \"text_span\": [892, 1108]},\n      {\"page\": 1, \"paragraph\": 49, \"text_span\": [1108, 1285]},\n      {\"page\": 1, \"paragraph\": 57, \"text_span\": [1569, 1776]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"housing complaint\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [639, 731]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Clarion Housing Association Limited\",\n      \"tenant\": \"the resident\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [187, 223]},\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [312, 461]}\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No geographic region or jurisdiction is specified in the decision text.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No geographic region information is available to source.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutes, regulations, or legal provisions are referenced in the decision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202339075\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 63, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Clarion Housing Association Limited (202339075)\"}, {\"char_end\": 111, \"char_start\": 63, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Clarion Housing Association Limited (202339075)\"}, {\"char_end\": 123, \"char_start\": 111, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 132, \"char_start\": 123, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 140, \"char_start\": 132, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 150, \"char_start\": 140, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202339075\"}, {\"char_end\": 164, \"char_start\": 150, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 178, \"char_start\": 164, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 187, \"char_start\": 178, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 223, \"char_start\": 187, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Clarion Housing Association Limited\"}, {\"char_end\": 237, \"char_start\": 223, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 257, \"char_start\": 237, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 267, \"char_start\": 257, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 279, \"char_start\": 267, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Leaseholder\"}, {\"char_end\": 284, \"char_start\": 279, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 287, \"char_start\": 284, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"24\"}, {\"char_end\": 301, \"char_start\": 287, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"November 2025\"}, {\"char_end\": 312, \"char_start\": 301, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 461, \"char_start\": 312, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft. She chased the landlord for updates\"}, {\"char_end\": 479, \"char_start\": 461, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"about her reports\"}, {\"char_end\": 611, \"char_start\": 479, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"throughout 2022. Despite multiple inspections, at the time of making her complaint in March 2023, the repairs remained outstanding.\"}, {\"char_end\": 639, \"char_start\": 611, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 731, \"char_start\": 639, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s response to the resident’s concerns about insulation.\"}, {\"char_end\": 760, \"char_start\": 731, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 806, \"char_start\": 760, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The complaint was resolved with intervention.\"}, {\"char_end\": 809, \"char_start\": 806, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 814, \"char_start\": 809, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 819, \"char_start\": 814, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made\"}, {\"char_end\": 835, \"char_start\": 819, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"order\", \"text\": \"recommendations\"}, {\"char_end\": 873, \"char_start\": 835, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"order\", \"text\": \"for the landlord to put things right.\"}, {\"char_end\": 892, \"char_start\": 873, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 942, \"char_start\": 892, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"At the end of the complaints process the landlord\"}, {\"char_end\": 956, \"char_start\": 942, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"apologised to\"}, {\"char_end\": 969, \"char_start\": 956, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the resident\"}, {\"char_end\": 973, \"char_start\": 969, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"for\"}, {\"char_end\": 1001, \"char_start\": 973, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"its poor communication, the\"}, {\"char_end\": 1026, \"char_start\": 1001, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"tribunal_reasoning\", \"text\": \"delays and inconvenience\"}, {\"char_end\": 1033, \"char_start\": 1026, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"tribunal_reasoning\", \"text\": \"caused\"}, {\"char_end\": 1035, \"char_start\": 1033, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"tribunal_reasoning\", \"text\": \".\"}, {\"char_end\": 1038, \"char_start\": 1035, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It\"}, {\"char_end\": 1048, \"char_start\": 1038, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"tribunal_reasoning\", \"text\": \"awarded h\"}, {\"char_end\": 1051, \"char_start\": 1048, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"tribunal_reasoning\", \"text\": \"er\"}, {\"char_end\": 1054, \"char_start\": 1051, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"tribunal_reasoning\", \"text\": \"£1\"}, {\"char_end\": 1059, \"char_start\": 1054, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"tribunal_reasoning\", \"text\": \",345\"}, {\"char_end\": 1072, \"char_start\": 1059, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"tribunal_reasoning\", \"text\": \"compensation\"}, {\"char_end\": 1108, \"char_start\": 1072, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"tribunal_reasoning\", \"text\": \"and completed the outstanding works\"}, {\"char_end\": 1172, \"char_start\": 1108, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"tribunal_reasoning\", \"text\": \". The landlord did not provide the resident with an explanation\"}, {\"char_end\": 1243, \"char_start\": 1172, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of the steps it would take to improve communication with its residents\"}, {\"char_end\": 1267, \"char_start\": 1243, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"tribunal_reasoning\", \"text\": \", which was the outcome\"}, {\"char_end\": 1269, \"char_start\": 1267, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 1285, \"char_start\": 1269, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"tribunal_reasoning\", \"text\": \"he was seeking.\"}, {\"char_end\": 1363, \"char_start\": 1285, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We contacted the landlord and provided it with a summary of our understanding\"}, {\"char_end\": 1365, \"char_start\": 1363, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"tribunal_reasoning\", \"text\": \"o\"}, {\"char_end\": 1569, \"char_start\": 1365, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"tribunal_reasoning\", \"text\": \"f events. This included some comments on areas that could have been handled better, such as providing the resident with an explanation, and what the landlord could do to resolve the resident’s complaint.\"}, {\"char_end\": 1641, \"char_start\": 1569, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Following our intervention, the landlord offered to pay the resident £2\"}, {\"char_end\": 1643, \"char_start\": 1641, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"tribunal_reasoning\", \"text\": \"5\"}, {\"char_end\": 1672, \"char_start\": 1643, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"tribunal_reasoning\", \"text\": \"0 compensation and provide h\"}, {\"char_end\": 1675, \"char_start\": 1672, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"tribunal_reasoning\", \"text\": \"er\"}, {\"char_end\": 1696, \"char_start\": 1675, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"tribunal_reasoning\", \"text\": \"with the explanation\"}, {\"char_end\": 1698, \"char_start\": 1696, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 1776, \"char_start\": 1698, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"tribunal_reasoning\", \"text\": \"he was seeking. Both parties agreed to this as a resolution to the complaint.\"}, {\"char_end\": 1900, \"char_start\": 1776, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy the matters.\"}, {\"char_end\": 2071, \"char_start\": 1900, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Subject to the landlord paying the compensation and providing an explanation to the points outlined below, we are satisfied the complaint will be resolved satisfactorily.\"}, {\"char_end\": 2092, \"char_start\": 2071, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2108, \"char_start\": 2092, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 2212, \"char_start\": 2108, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"The complaint has been resolved with intervention on the basis the landlord follows our recommendations\"}, {\"char_end\": 2214, \"char_start\": 2212, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2234, \"char_start\": 2214, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 2237, \"char_start\": 2234, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"1.\"}, {\"char_end\": 2308, \"char_start\": 2237, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"Within 14 days the landlord should pay the resident £250 compensation.\"}, {\"char_end\": 2311, \"char_start\": 2308, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"2.\"}, {\"char_end\": 2326, \"char_start\": 2311, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"Within 14 days\"}, {\"char_end\": 2394, \"char_start\": 2326, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"the landlord should provide the resident with a written explanation\"}, {\"char_end\": 2535, \"char_start\": 2394, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"to set out the steps it has taken since this incident / timeframe to improve its communication to ensure the same mistakes are not repeated.\"}, {\"char_end\": 2563, \"char_start\": 2535, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"The landlord should provide\"}, {\"char_end\": 2571, \"char_start\": 2563, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"us with\"}, {\"char_end\": 2605, \"char_start\": 2571, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"documentary evidence of the above\"}, {\"char_end\": 2606, \"char_start\": 2605, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \".\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              639,
+              731
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              284,
+              287
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              287,
+              301
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              312,
+              461
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              461,
+              479
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              479,
+              611
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              639,
+              731
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              760,
+              806
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 68,
+            "text_span": [
+              2108,
+              2212
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              2237,
+              2308
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 75,
+            "text_span": [
+              2326,
+              2394
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 76,
+            "text_span": [
+              2394,
+              2535
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              760,
+              806
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1569,
+              1641
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              1641,
+              1643
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              1643,
+              1672
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 60,
+            "text_span": [
+              1672,
+              1675
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 61,
+            "text_span": [
+              1675,
+              1696
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 62,
+            "text_span": [
+              1696,
+              1698
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 63,
+            "text_span": [
+              1698,
+              1776
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 64,
+            "text_span": [
+              1776,
+              1900
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              1900,
+              2071
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              164,
+              178
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              187,
+              223
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              639,
+              731
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No cited cases, authorities, or legal precedents appear in the source text.",
+        "claimed_amounts": "The source text does not state any amount claimed by the resident.",
+        "disputed_amount_gbp": "The source text does not identify a disputed monetary amount.",
+        "evidence": "The source text does not set out a distinct body of evidence considered, beyond background references to reports and inspections.",
+        "region": "The source text does not state a geographic region.",
+        "region_source": "No source for a geographic region is provided in the source text.",
+        "statutory_basis": "The source text does not cite any statutory provision or legal basis."
+      },
+      "claim_types": [
+        "Complaint about the landlord’s response to the resident’s concerns about insulation."
+      ],
+      "decision_date": "24 November 2025",
+      "facts": "In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft. She chased the landlord for updates about her reports throughout 2022. Despite multiple inspections, at the time of making her complaint in March 2023, the repairs remained outstanding. The complaint is about the landlord’s response to the resident’s concerns about insulation.",
+      "ground_truth_outcome": "The complaint was resolved with intervention, with recommendations for the landlord to pay the resident £250 compensation and provide a written explanation.",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              760,
+              806
+            ]
+          },
+          "text": "The complaint was resolved with intervention."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1569,
+              1641
+            ]
+          },
+          "text": "Following our intervention, the landlord offered to pay the resident £250 compensation and provide her with the explanations she was seeking. Both parties agreed to this as a resolution to the complaint."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              1641,
+              1643
+            ]
+          },
+          "text": "We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy the matters."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              1643,
+              1672
+            ]
+          },
+          "text": "Subject to the landlord paying the compensation and providing an explanation to the points outlined below, we are satisfied the complaint will be resolved satisfactorily."
+        }
+      ],
+      "matter_type": "Investigation",
+      "parties": {
+        "landlord": "Clarion Housing Association Limited",
+        "resident": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No cited cases, authorities, or legal precedents appear in the source text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"Complaint about the landlord’s response to the resident’s concerns about insulation.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          639,\n          731\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not state any amount claimed by the resident.\"\n  },\n  \"decision_date\": {\n    \"value\": \"24 November 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          284,\n          287\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          287,\n          301\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not identify a disputed monetary amount.\"\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not set out a distinct body of evidence considered, beyond background references to reports and inspections.\"\n  },\n  \"facts\": {\n    \"value\": [\n      \"In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft.\",\n      \"She chased the landlord for updates about her reports throughout 2022.\",\n      \"Despite multiple inspections, at the time of making her complaint in March 2023, the repairs remained outstanding.\",\n      \"The complaint is about the landlord’s response to the resident’s concerns about insulation.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          312,\n          461\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          461,\n          479\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          479,\n          611\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          639,\n          731\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"The complaint was resolved with intervention, with recommendations for the landlord to pay the resident £250 compensation and provide a written explanation.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          760,\n          806\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 68,\n        \"text_span\": [\n          2108,\n          2212\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 72,\n        \"text_span\": [\n          2237,\n          2308\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 75,\n        \"text_span\": [\n          2326,\n          2394\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 76,\n        \"text_span\": [\n          2394,\n          2535\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The complaint was resolved with intervention.\",\n      \"Following our intervention, the landlord offered to pay the resident £250 compensation and provide her with the explanations she was seeking. Both parties agreed to this as a resolution to the complaint.\",\n      \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy the matters.\",\n      \"Subject to the landlord paying the compensation and providing an explanation to the points outlined below, we are satisfied the complaint will be resolved satisfactorily.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          760,\n          806\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 57,\n        \"text_span\": [\n          1569,\n          1641\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 58,\n        \"text_span\": [\n          1641,\n          1643\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 59,\n        \"text_span\": [\n          1643,\n          1672\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 60,\n        \"text_span\": [\n          1672,\n          1675\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 61,\n        \"text_span\": [\n          1675,\n          1696\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 62,\n        \"text_span\": [\n          1696,\n          1698\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 63,\n        \"text_span\": [\n          1698,\n          1776\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 64,\n        \"text_span\": [\n          1776,\n          1900\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 65,\n        \"text_span\": [\n          1900,\n          2071\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Investigation\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          164,\n          178\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Clarion Housing Association Limited\",\n      \"resident\": \"the resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          187,\n          223\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          639,\n          731\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not state a geographic region.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No source for a geographic region is provided in the source text.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not cite any statutory provision or legal basis.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202339075\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 63, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Clarion Housing Association Limited (202339075)\"}, {\"char_end\": 111, \"char_start\": 63, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Clarion Housing Association Limited (202339075)\"}, {\"char_end\": 123, \"char_start\": 111, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 132, \"char_start\": 123, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 140, \"char_start\": 132, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 150, \"char_start\": 140, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202339075\"}, {\"char_end\": 164, \"char_start\": 150, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 178, \"char_start\": 164, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 187, \"char_start\": 178, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 223, \"char_start\": 187, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Clarion Housing Association Limited\"}, {\"char_end\": 237, \"char_start\": 223, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 257, \"char_start\": 237, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 267, \"char_start\": 257, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 279, \"char_start\": 267, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Leaseholder\"}, {\"char_end\": 284, \"char_start\": 279, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 287, \"char_start\": 284, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"24\"}, {\"char_end\": 301, \"char_start\": 287, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"November 2025\"}, {\"char_end\": 312, \"char_start\": 301, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 461, \"char_start\": 312, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft. She chased the landlord for updates\"}, {\"char_end\": 479, \"char_start\": 461, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"about her reports\"}, {\"char_end\": 611, \"char_start\": 479, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"throughout 2022. Despite multiple inspections, at the time of making her complaint in March 2023, the repairs remained outstanding.\"}, {\"char_end\": 639, \"char_start\": 611, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 731, \"char_start\": 639, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s response to the resident’s concerns about insulation.\"}, {\"char_end\": 760, \"char_start\": 731, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 806, \"char_start\": 760, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The complaint was resolved with intervention.\"}, {\"char_end\": 809, \"char_start\": 806, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 814, \"char_start\": 809, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 819, \"char_start\": 814, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made\"}, {\"char_end\": 835, \"char_start\": 819, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"order\", \"text\": \"recommendations\"}, {\"char_end\": 873, \"char_start\": 835, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"order\", \"text\": \"for the landlord to put things right.\"}, {\"char_end\": 892, \"char_start\": 873, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 942, \"char_start\": 892, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"At the end of the complaints process the landlord\"}, {\"char_end\": 956, \"char_start\": 942, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"apologised to\"}, {\"char_end\": 969, \"char_start\": 956, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the resident\"}, {\"char_end\": 973, \"char_start\": 969, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"for\"}, {\"char_end\": 1001, \"char_start\": 973, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"its poor communication, the\"}, {\"char_end\": 1026, \"char_start\": 1001, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"tribunal_reasoning\", \"text\": \"delays and inconvenience\"}, {\"char_end\": 1033, \"char_start\": 1026, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"tribunal_reasoning\", \"text\": \"caused\"}, {\"char_end\": 1035, \"char_start\": 1033, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"tribunal_reasoning\", \"text\": \".\"}, {\"char_end\": 1038, \"char_start\": 1035, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It\"}, {\"char_end\": 1048, \"char_start\": 1038, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"tribunal_reasoning\", \"text\": \"awarded h\"}, {\"char_end\": 1051, \"char_start\": 1048, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"tribunal_reasoning\", \"text\": \"er\"}, {\"char_end\": 1054, \"char_start\": 1051, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"tribunal_reasoning\", \"text\": \"£1\"}, {\"char_end\": 1059, \"char_start\": 1054, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"tribunal_reasoning\", \"text\": \",345\"}, {\"char_end\": 1072, \"char_start\": 1059, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"tribunal_reasoning\", \"text\": \"compensation\"}, {\"char_end\": 1108, \"char_start\": 1072, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"tribunal_reasoning\", \"text\": \"and completed the outstanding works\"}, {\"char_end\": 1172, \"char_start\": 1108, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"tribunal_reasoning\", \"text\": \". The landlord did not provide the resident with an explanation\"}, {\"char_end\": 1243, \"char_start\": 1172, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of the steps it would take to improve communication with its residents\"}, {\"char_end\": 1267, \"char_start\": 1243, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"tribunal_reasoning\", \"text\": \", which was the outcome\"}, {\"char_end\": 1269, \"char_start\": 1267, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 1285, \"char_start\": 1269, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"tribunal_reasoning\", \"text\": \"he was seeking.\"}, {\"char_end\": 1363, \"char_start\": 1285, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We contacted the landlord and provided it with a summary of our understanding\"}, {\"char_end\": 1365, \"char_start\": 1363, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"tribunal_reasoning\", \"text\": \"o\"}, {\"char_end\": 1569, \"char_start\": 1365, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"tribunal_reasoning\", \"text\": \"f events. This included some comments on areas that could have been handled better, such as providing the resident with an explanation, and what the landlord could do to resolve the resident’s complaint.\"}, {\"char_end\": 1641, \"char_start\": 1569, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Following our intervention, the landlord offered to pay the resident £2\"}, {\"char_end\": 1643, \"char_start\": 1641, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"tribunal_reasoning\", \"text\": \"5\"}, {\"char_end\": 1672, \"char_start\": 1643, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"tribunal_reasoning\", \"text\": \"0 compensation and provide h\"}, {\"char_end\": 1675, \"char_start\": 1672, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"tribunal_reasoning\", \"text\": \"er\"}, {\"char_end\": 1696, \"char_start\": 1675, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"tribunal_reasoning\", \"text\": \"with the explanation\"}, {\"char_end\": 1698, \"char_start\": 1696, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 1776, \"char_start\": 1698, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"tribunal_reasoning\", \"text\": \"he was seeking. Both parties agreed to this as a resolution to the complaint.\"}, {\"char_end\": 1900, \"char_start\": 1776, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy the matters.\"}, {\"char_end\": 2071, \"char_start\": 1900, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Subject to the landlord paying the compensation and providing an explanation to the points outlined below, we are satisfied the complaint will be resolved satisfactorily.\"}, {\"char_end\": 2092, \"char_start\": 2071, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2108, \"char_start\": 2092, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 2212, \"char_start\": 2108, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"The complaint has been resolved with intervention on the basis the landlord follows our recommendations\"}, {\"char_end\": 2214, \"char_start\": 2212, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2234, \"char_start\": 2214, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 2237, \"char_start\": 2234, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"1.\"}, {\"char_end\": 2308, \"char_start\": 2237, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"Within 14 days the landlord should pay the resident £250 compensation.\"}, {\"char_end\": 2311, \"char_start\": 2308, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"2.\"}, {\"char_end\": 2326, \"char_start\": 2311, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"Within 14 days\"}, {\"char_end\": 2394, \"char_start\": 2326, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"the landlord should provide the resident with a written explanation\"}, {\"char_end\": 2535, \"char_start\": 2394, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"to set out the steps it has taken since this incident / timeframe to improve its communication to ensure the same mistakes are not repeated.\"}, {\"char_end\": 2563, \"char_start\": 2535, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"The landlord should provide\"}, {\"char_end\": 2571, \"char_start\": 2563, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"us with\"}, {\"char_end\": 2605, \"char_start\": 2571, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"documentary evidence of the above\"}, {\"char_end\": 2606, \"char_start\": 2605, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \".\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "e2c140c4ce150f11acc3541322b8e24b0752c1883a12f4a135f4bd44a46fb385",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T16:31:06.224036+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "bbd61f027b25da9d7df6b95a802d4c1986d2d7470d4123d3935aa20dd0c1df16"
+}

@@ -1,0 +1,858 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202325309",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 18 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='18 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Garden condition complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'Resident (...ared Ownership Limited'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Shared ownership agreement', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's inspection records\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Email correspondence bet...n resident and landlord', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Developer's landscaping contractor inspection\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Complaint correspondence', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Garden ...red Ownership Limited'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='Reasonable redress for g... for complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 10 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='18 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Garden condition complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'Resident (...ared Ownership Limited'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Shared ownership agreement', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's inspection records\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Email correspondence bet...n resident and landlord', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Developer's landscaping contractor inspection\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Complaint correspondence', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='Reasonable redress for g... for complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.6153846153846154,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 21 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='18 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value=\"Landlord's handling of t...condition of her garden\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Sparrow Sha...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='The shared ownership agr...esponsible for repairs.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"The landlord's records a...liability period ended.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"The resident's emails an...urfing or compensation.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"The landlord's complaint...and stage 2 complaints.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': [\"Landlor...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'garden_condition_handli...aint handling failure']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'garden_condition_handli...aint handling failure']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.garden_condition_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Service failure', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['Written apology to the ...laint handling failure'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 13 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='18 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value=\"Landlord's handling of t...condition of her garden\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'Sparrow Sha...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='The shared ownership agr...esponsible for repairs.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"The landlord's records a...liability period ended.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"The resident's emails an...urfing or compensation.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"The landlord's complaint...and stage 2 complaints.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'garden_condition_handli...aint handling failure']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'garden_condition_handli...aint handling failure']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.garden_condition_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Reasonable redress', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Service failure', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.orders\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['Written apology to the ...laint handling failure'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              533,
+              642
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              642,
+              701
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              271,
+              288
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              4993,
+              5299
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              5600,
+              5813
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 140,
+            "text_span": [
+              6012,
+              6351
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 141,
+            "text_span": [
+              6351,
+              6786
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              3538,
+              3674
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              299,
+              505
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              3538,
+              3674
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 100,
+            "text_span": [
+              3689,
+              3788
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 108,
+            "text_span": [
+              3878,
+              4042
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 110,
+            "text_span": [
+              4058,
+              4147
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 114,
+            "text_span": [
+              4164,
+              4379
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 118,
+            "text_span": [
+              4405,
+              4523
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              750,
+              868
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              868,
+              932
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1094,
+              1541
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1560,
+              1824
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              158,
+              172
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              181,
+              214
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              299,
+              505
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "No specific monetary amounts claimed by the resident are mentioned in the pre-decision record sections.",
+        "disputed_amount_gbp": "No specific disputed monetary amount is identified in the case.",
+        "region": "No specific geographical region or jurisdiction is mentioned in the decision text.",
+        "region_source": "No regional information is provided in the decision.",
+        "statutory_basis": "No specific statutory provisions or legal basis are cited in the decision text."
+      },
+      "claim_types": [
+        "Garden condition complaint",
+        "Complaint handling"
+      ],
+      "decision_date": "18 December 2025",
+      "evidence": [
+        "Shared ownership agreement",
+        "Landlord's inspection records",
+        "Email correspondence between resident and landlord",
+        "Developer's landscaping contractor inspection",
+        "Complaint correspondence"
+      ],
+      "facts": "The resident has been a shared owner of the property since March 2022. The resident told the landlord she was not happy with the condition of the garden following repair works carried out in December 2022. The resident contacted the landlord regarding the condition of her garden following the repairs carried out by the property developer. On 6 October 2023, the resident complained to the landlord about the condition of her garden following repair works. The landlord replied at stage 1 on 31 October 2023, saying the developer had offered to fill the trenched area and level the garden, but the resident had declined as she wanted it to be re-turfed. The resident escalated her complaint on 1 December 2023 as she was not happy with the landlord's response. On 29 December 2023, the landlord sent its stage 2 complaint response, apologising and offering £50 compensation for not replying to her correspondence, and £15 for not acknowledging her escalated complaint. The resident referred her complaint to the Ombudsman as she remained dissatisfied with the landlord's handling of her complaint.",
+      "ground_truth_outcome": "Reasonable redress for garden handling; Service failure for complaint handling",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1094,
+              1541
+            ]
+          },
+          "text": "The landlord was not responsible to carry out remedial works in the resident's garden. Its attempts to arrange for the property developer to repair damage it had caused were reasonable."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 37,
+            "text_span": [
+              1560,
+              1824
+            ]
+          },
+          "text": "The landlord did not always follow its policy timescales when it replied to the resident's complaint. The landlord apologised and offered redress for its delayed response, however, its offer failed to address the distress and inconvenience caused to the resident."
+        }
+      ],
+      "matter_type": "Housing Ombudsman Investigation",
+      "parties": {
+        "applicant": "Resident (shared owner)",
+        "respondent": "Sparrow Shared Ownership Limited"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"Garden condition complaint\", \"Complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [533, 642]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [642, 701]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific monetary amounts claimed by the resident are mentioned in the pre-decision record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"18 December 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [271, 288]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific disputed monetary amount is identified in the case.\"\n  },\n  \"evidence\": {\n    \"value\": [\"Shared ownership agreement\", \"Landlord's inspection records\", \"Email correspondence between resident and landlord\", \"Developer's landscaping contractor inspection\", \"Complaint correspondence\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 136, \"text_span\": [4993, 5299]},\n      {\"page\": 1, \"paragraph\": 138, \"text_span\": [5600, 5813]},\n      {\"page\": 1, \"paragraph\": 140, \"text_span\": [6012, 6351]},\n      {\"page\": 1, \"paragraph\": 141, \"text_span\": [6351, 6786]},\n      {\"page\": 1, \"paragraph\": 95, \"text_span\": [3538, 3674]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident has been a shared owner of the property since March 2022. The resident told the landlord she was not happy with the condition of the garden following repair works carried out in December 2022. The resident contacted the landlord regarding the condition of her garden following the repairs carried out by the property developer. On 6 October 2023, the resident complained to the landlord about the condition of her garden following repair works. The landlord replied at stage 1 on 31 October 2023, saying the developer had offered to fill the trenched area and level the garden, but the resident had declined as she wanted it to be re-turfed. The resident escalated her complaint on 1 December 2023 as she was not happy with the landlord's response. On 29 December 2023, the landlord sent its stage 2 complaint response, apologising and offering £50 compensation for not replying to her correspondence, and £15 for not acknowledging her escalated complaint. The resident referred her complaint to the Ombudsman as she remained dissatisfied with the landlord's handling of her complaint.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [299, 505]},\n      {\"page\": 1, \"paragraph\": 95, \"text_span\": [3538, 3674]},\n      {\"page\": 1, \"paragraph\": 100, \"text_span\": [3689, 3788]},\n      {\"page\": 1, \"paragraph\": 108, \"text_span\": [3878, 4042]},\n      {\"page\": 1, \"paragraph\": 110, \"text_span\": [4058, 4147]},\n      {\"page\": 1, \"paragraph\": 114, \"text_span\": [4164, 4379]},\n      {\"page\": 1, \"paragraph\": 118, \"text_span\": [4405, 4523]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"Reasonable redress for garden handling; Service failure for complaint handling\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 28, \"text_span\": [750, 868]},\n      {\"page\": 1, \"paragraph\": 29, \"text_span\": [868, 932]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord was not responsible to carry out remedial works in the resident's garden. Its attempts to arrange for the property developer to repair damage it had caused were reasonable.\",\n      \"The landlord did not always follow its policy timescales when it replied to the resident's complaint. The landlord apologised and offered redress for its delayed response, however, its offer failed to address the distress and inconvenience caused to the resident.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 35, \"text_span\": [1094, 1541]},\n      {\"page\": 1, \"paragraph\": 37, \"text_span\": [1560, 1824]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman Investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [158, 172]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"applicant\": \"Resident (shared owner)\",\n      \"respondent\": \"Sparrow Shared Ownership Limited\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [181, 214]},\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [299, 505]}\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific geographical region or jurisdiction is mentioned in the decision text.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No regional information is provided in the decision.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutory provisions or legal basis are cited in the decision text.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202325309\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 60, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Sparrow Shared Ownership Limited (202325309)\"}, {\"char_end\": 105, \"char_start\": 60, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Sparrow Shared Ownership Limited (202325309)\"}, {\"char_end\": 117, \"char_start\": 105, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 126, \"char_start\": 117, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 134, \"char_start\": 126, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 144, \"char_start\": 134, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202325309\"}, {\"char_end\": 158, \"char_start\": 144, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 172, \"char_start\": 158, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 181, \"char_start\": 172, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 214, \"char_start\": 181, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Sparrow Shared Ownership Limited\"}, {\"char_end\": 228, \"char_start\": 214, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 239, \"char_start\": 228, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"For profit\"}, {\"char_end\": 249, \"char_start\": 239, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 266, \"char_start\": 249, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Shared Ownership\"}, {\"char_end\": 271, \"char_start\": 266, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 274, \"char_start\": 271, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"18\"}, {\"char_end\": 283, \"char_start\": 274, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December\"}, {\"char_end\": 288, \"char_start\": 283, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 299, \"char_start\": 288, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 505, \"char_start\": 299, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident has been a shared owner of the property since March 2022. The resident told the landlord she was not happy with the condition of the garden following repair works carried out in December 2022.\"}, {\"char_end\": 533, \"char_start\": 505, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 642, \"char_start\": 533, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of the resident’s concerns about the condition of her garden.\"}, {\"char_end\": 701, \"char_start\": 642, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"We have also considered the landlord’s complaint handling.\"}, {\"char_end\": 730, \"char_start\": 701, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 750, \"char_start\": 730, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found that:\"}, {\"char_end\": 868, \"char_start\": 750, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was reasonable redress in the landlord’s handling of the resident’s concerns about the condition of her garden.\"}, {\"char_end\": 932, \"char_start\": 868, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was service failure in the landlord’s complaint handling.\"}, {\"char_end\": 935, \"char_start\": 932, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 940, \"char_start\": 935, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 990, \"char_start\": 940, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 1009, \"char_start\": 990, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1094, \"char_start\": 1009, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s concerns about the condition of her garden\"}, {\"char_end\": 1541, \"char_start\": 1094, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord was not responsible to carry out remedial works in the resident’s garden. Its attempts to arrange for the property developer to repair damage it had caused were reasonable. The landlord apologised and offered £50 compensation for the time it took to provide updates during its complaints process. The redress offered by the landlord was proportionate to the level of failings identified by our investigation to resolve the complaint.\"}, {\"char_end\": 1560, \"char_start\": 1541, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 1824, \"char_start\": 1560, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not always follow its policy timescales when it replied to the resident’s complaint. The landlord apologised and offered redress for its delayed response, however, its offer failed to address the distress and inconvenience caused to the resident.\"}, {\"char_end\": 1845, \"char_start\": 1824, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1903, \"char_start\": 1845, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1905, \"char_start\": 1903, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1980, \"char_start\": 1905, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2071, \"char_start\": 1980, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2078, \"char_start\": 2071, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 2088, \"char_start\": 2078, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 2093, \"char_start\": 2088, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 2204, \"char_start\": 2093, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2207, \"char_start\": 2204, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2218, \"char_start\": 2207, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2234, \"char_start\": 2218, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2241, \"char_start\": 2234, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2250, \"char_start\": 2241, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2255, \"char_start\": 2250, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2261, \"char_start\": 2255, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2287, \"char_start\": 2261, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2296, \"char_start\": 2287, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2298, \"char_start\": 2296, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2312, \"char_start\": 2298, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2340, \"char_start\": 2312, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2351, \"char_start\": 2340, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2371, \"char_start\": 2351, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"to the resident for\"}, {\"char_end\": 2375, \"char_start\": 2371, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"the\"}, {\"char_end\": 2411, \"char_start\": 2375, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"failures identified in this report.\"}, {\"char_end\": 2424, \"char_start\": 2411, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2437, \"char_start\": 2424, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2441, \"char_start\": 2437, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2449, \"char_start\": 2441, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2452, \"char_start\": 2449, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2461, \"char_start\": 2452, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2505, \"char_start\": 2461, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2534, \"char_start\": 2505, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 2559, \"char_start\": 2534, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 2578, \"char_start\": 2559, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2580, \"char_start\": 2578, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2594, \"char_start\": 2580, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2610, \"char_start\": 2594, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"19 January 2026\"}, {\"char_end\": 2612, \"char_start\": 2610, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2631, \"char_start\": 2612, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2756, \"char_start\": 2631, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £50 to recognise the distress and inconvenience caused by its complaint handling failure.\"}, {\"char_end\": 2903, \"char_start\": 2756, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide us with documentary evidence of the payment by the due date.\"}, {\"char_end\": 3029, \"char_start\": 2903, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure the sum of £15 offered during its internal complaints process, if already paid.\"}, {\"char_end\": 3043, \"char_start\": 3029, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3045, \"char_start\": 3043, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 3047, \"char_start\": 3045, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"9\"}, {\"char_end\": 3060, \"char_start\": 3047, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"January 2026\"}, {\"char_end\": 3075, \"char_start\": 3060, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"Recommendation\"}, {\"char_end\": 3158, \"char_start\": 3075, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 3177, \"char_start\": 3158, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"Our recommendation\"}, {\"char_end\": 3191, \"char_start\": 3177, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"If it has not\"}, {\"char_end\": 3457, \"char_start\": 3191, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"already done so, the landlord should re-offer the resident the £50 compensation offered during its complaints process. Our finding of reasonable redress for the landlord’s complaint handling is made on the basis that this compensation is re-offered to the resident.\"}, {\"char_end\": 3475, \"char_start\": 3457, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 3499, \"char_start\": 3475, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 3504, \"char_start\": 3499, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 3518, \"char_start\": 3504, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 3538, \"char_start\": 3518, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"June to August 2023\"}, {\"char_end\": 3612, \"char_start\": 3538, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident contacted the landlord regarding the condition of her garden\"}, {\"char_end\": 3634, \"char_start\": 3612, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"following the repairs\"}, {\"char_end\": 3672, \"char_start\": 3634, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \"carried out by the property developer\"}, {\"char_end\": 3674, \"char_start\": 3672, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 3689, \"char_start\": 3674, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"6 October 2023\"}, {\"char_end\": 3739, \"char_start\": 3689, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained to the landlord about the\"}, {\"char_end\": 3749, \"char_start\": 3739, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"condition\"}, {\"char_end\": 3763, \"char_start\": 3749, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"of her garden\"}, {\"char_end\": 3786, \"char_start\": 3763, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"following repair works\"}, {\"char_end\": 3788, \"char_start\": 3786, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 3804, \"char_start\": 3788, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"pre_decision_record\", \"text\": \"31 October 2023\"}, {\"char_end\": 3841, \"char_start\": 3804, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord replied to the resident\"}, {\"char_end\": 3878, \"char_start\": 3841, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"pre_decision_record\", \"text\": \"at stage 1 of its complaints process\"}, {\"char_end\": 4042, \"char_start\": 3878, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"pre_decision_record\", \"text\": \". It said the developer of the property had offered to fill the trenched area and level the garden, but the resident had declined as she wanted it to be re-turfed.\"}, {\"char_end\": 4058, \"char_start\": 4042, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"pre_decision_record\", \"text\": \"1 December 2023\"}, {\"char_end\": 4095, \"char_start\": 4058, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident escalated her complaint\"}, {\"char_end\": 4145, \"char_start\": 4095, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"pre_decision_record\", \"text\": \"as she was not happy with the landlord’s response\"}, {\"char_end\": 4147, \"char_start\": 4145, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4164, \"char_start\": 4147, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"29 December 2023\"}, {\"char_end\": 4287, \"char_start\": 4164, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 2 complaint response to the resident. The landlord apologised and offered £50 compensation for\"}, {\"char_end\": 4322, \"char_start\": 4287, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"not replying to her correspondence\"}, {\"char_end\": 4379, \"char_start\": 4322, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \", and £15 for not acknowledging her escalated complaint.\"}, {\"char_end\": 4405, \"char_start\": 4379, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 4523, \"char_start\": 4405, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident referred her complaint to us as she remained dissatisfied with the landlord’s handling of her complaint.\"}, {\"char_end\": 4545, \"char_start\": 4523, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 4569, \"char_start\": 4545, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 4572, \"char_start\": 4569, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 4591, \"char_start\": 4572, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 4597, \"char_start\": 4591, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 4631, \"char_start\": 4597, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 4635, \"char_start\": 4631, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 4666, \"char_start\": 4635, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 4732, \"char_start\": 4666, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 4772, \"char_start\": 4732, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 4777, \"char_start\": 4772, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 4809, \"char_start\": 4777, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 4871, \"char_start\": 4809, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 4881, \"char_start\": 4871, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 4966, \"char_start\": 4881, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s concerns about the condition of her garden\"}, {\"char_end\": 4974, \"char_start\": 4966, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 4993, \"char_start\": 4974, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 5299, \"char_start\": 4993, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The shared ownership agreement for the property stated the resident could report defects with the property during the defect liability period, which ended on 15 December 2022. The agreement said once the defect liability period ended the resident would be responsible to carry out repairs to the property.\"}, {\"char_end\": 5600, \"char_start\": 5299, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Between March and December 2022, the landlord recorded there were issues with the drains at the property. During that time the landlord arranged for the property developer to carry out repairs to the drains as the developer was still responsible for them under the property’s defect liability period.\"}, {\"char_end\": 5813, \"char_start\": 5600, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord inspected the property on 13 December 2022 and recorded a list of defects reported by the resident. The landlord’s records do not show the resident raised any issues with the condition of the garden.\"}, {\"char_end\": 6012, \"char_start\": 5813, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 15 December 2022 the developer repaired the drainage at the property. During the repairs the developer dug up the garden to access a pipe, then it filled the trench hole once they were completed.\"}, {\"char_end\": 6351, \"char_start\": 6012, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident emailed the landlord on 1 June 2023. She said following the repairs to the drainage pipes the garden was left uneven, with cracks, mud patches and large weeds growing in it. The landlord inspected the garden and told the developer the garden was a trip hazard following the repair works they completed several months earlier.\"}, {\"char_end\": 6786, \"char_start\": 6351, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The developer sent a landscaping contractor to inspect the garden on 12 June 2023. The developer told the landlord on 3 July 2023 the contractor said the resident had not maintained the garden after it had filled the trench following the repairs, and children had been playing on it before it had settled. The landlord disputed that was the reason why the garden was uneven and asked the developer to take action to correct the issue.\"}, {\"char_end\": 6903, \"char_start\": 6786, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident emailed the landlord several times during July and August 2023 asking for updates regarding the garden.\"}, {\"char_end\": 7127, \"char_start\": 6903, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord aims to reply to correspondence within 5 working days. Although it told her during this time it was still discussing the matter with the developer, it did not always reply to the resident within this timescale.\"}, {\"char_end\": 7455, \"char_start\": 7127, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 17 August 2023 the property developer agreed to fill the low areas of the garden with topsoil and grass seeds to level it out. It is not clear from the landlord’s records when the developer tried to arrange these works with the resident, but the evidence shows she declined them as she wanted the garden turf to be replaced.\"}, {\"char_end\": 7913, \"char_start\": 7455, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complained to the landlord on 6 October 2023. She said she had maintained the garden, but it was uneven when she moved in, and it was made worse after the drain repairs. The resident said a family member had been told by the developer’s landscaping contractor when it inspected the garden that it needed to be dug up and re-turfed. The landlord has no record of the developer’s contractor reporting the garden needed to be dug up and re-turfed.\"}, {\"char_end\": 8476, \"char_start\": 7913, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 31 October 2023 the landlord sent its stage 1 complaint response to the resident. The landlord said it asked the developer to fill the trenched area and level the garden. It said when the developer tried to arrange the garden works the resident declined the proposed works as she wanted the garden to be re-turfed. The landlord told the resident to contact it if she changed her mind on the matter. It also referred the resident to the National House Building Council (NHBC) with the view to make a claim against the developer through the property’s warranty.\"}, {\"char_end\": 8827, \"char_start\": 8476, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident escalated her complaint to the landlord on 1 December 2023. She said she was told the garden needed to be re-turfed, so she wanted the landlord to arrange this or give her compensation to allow her to get the works completed herself. The resident added that the landlord did not previously reply to her emails when she asked for updates.\"}, {\"char_end\": 9207, \"char_start\": 8827, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord sent its stage 2 complaint response to the resident on 29 December 2023. The landlord apologised and offered £50 compensation for not always replying to her emails promptly. The landlord reiterated that she could arrange for the developer to do the previously proposed garden works, or she could contact the NHBC about making a claim against the property’s warranty.\"}, {\"char_end\": 9477, \"char_start\": 9207, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"During this investigation the landlord told us no further action was taken regarding the garden as the resident did not accept the proposed works from the developer. The landlord said that due to the time passed, the developer will no longer carry out the garden works.\"}, {\"char_end\": 9879, \"char_start\": 9477, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"When failures are identified, as in this case, our role is to consider whether the redress offered by the landlord put things right and resolved the resident’s complaint satisfactorily. In considering this, we take into account whether the offer of redress was in line with our Dispute Resolution Principles: Be Fair, Put Things Right, and Learn from Outcomes, as well as our own guidance on remedies.\"}, {\"char_end\": 10108, \"char_start\": 9879, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord was not responsible to carry out maintenance or to make good damage caused to the garden. Its offer to arrange for the property developer to level the garden and put things right was reasonable in the circumstances.\"}, {\"char_end\": 10396, \"char_start\": 10108, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s offer of £50 compensation for its lack of communication with the resident was also proportionate and consistent with an amount we would expect when considering our remedies guidance where there had been a failing by the landlord which caused inconvenience to the resident.\"}, {\"char_end\": 10620, \"char_start\": 10396, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord made an offer which satisfactorily resolved the failings it was responsible for. This leads to a determination of reasonable redress in its handling of the resident’s concerns about the condition of the garden.\"}, {\"char_end\": 10630, \"char_start\": 10620, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 10660, \"char_start\": 10630, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 10668, \"char_start\": 10660, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 10684, \"char_start\": 10668, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 11031, \"char_start\": 10684, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord operates a 2 stage complaints process. Its complaints policy states it will acknowledge complaints within 5 working days from when it is raised. It should respond to stage 1 complaints within 10 working days. It should acknowledge stage 2 complaints within 5 working days of the escalation and respond to them within 20 working days.\"}, {\"char_end\": 11133, \"char_start\": 11031, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complained to the landlord on 6 October 2023. The landlord acknowledged it the same day.\"}, {\"char_end\": 11378, \"char_start\": 11133, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord sent its stage 1 complaint response to the resident on 31 October 2023. This was outside of its policy timescale to reply to the resident’s complaint. The landlord did not offer any redress to the resident for its delayed response.\"}, {\"char_end\": 11546, \"char_start\": 11378, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident escalated her complaint on 1 December 2023. The landlord acknowledged the complaint on 13 December 2023, which was outside of its 5 working day timescale.\"}, {\"char_end\": 11832, \"char_start\": 11546, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 29 December 2023 the landlord sent its stage 2 complaint response to the resident. This was within its policy timescale to reply to an escalated complaint. The landlord apologised and offered £15 compensation for taking too long to acknowledge the request to escalate the complaint.\"}, {\"char_end\": 12037, \"char_start\": 11832, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In summary, the evidence shows there were delays in the landlord’s complaint handling process. Although the landlord offered some redress, it did not address the delayed response to the initial complaint.\"}, {\"char_end\": 12370, \"char_start\": 12037, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This failure leads to a determination of service failure in the landlord’s complaint handling. The landlord is ordered to pay £50 compensation to the resident. This amount has been calculated in accordance with our remedies guidance for situations where there have been failures by the landlord and it did not put the matters right.\"}, {\"char_end\": 12379, \"char_start\": 12370, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 12429, \"char_start\": 12379, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 12542, \"char_start\": 12429, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord demonstrated sufficient record keeping in respect of the matters we have investigated in this case.\"}, {\"char_end\": 12556, \"char_start\": 12542, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 12919, \"char_start\": 12556, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The evidence shows the landlord did not always reply to the resident’s correspondence. This lack of communication contributed to the distress and inconvenience caused to the resident and is reflected in the compensation order above. The landlord should look for opportunities to draw learning from this complaint to inform improved customer service going forward.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              533,
+              642
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              642,
+              701
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              271,
+              274
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              274,
+              283
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              283,
+              288
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              4993,
+              5299
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              5600,
+              5813
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 140,
+            "text_span": [
+              6012,
+              6351
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 145,
+            "text_span": [
+              7455,
+              7913
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 158,
+            "text_span": [
+              10684,
+              11031
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              299,
+              505
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              533,
+              642
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              642,
+              701
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 94,
+            "text_span": [
+              3518,
+              3538
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              3538,
+              3612
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              3612,
+              3634
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              3634,
+              3672
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 99,
+            "text_span": [
+              3674,
+              3689
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 100,
+            "text_span": [
+              3689,
+              3739
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              3739,
+              3749
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 102,
+            "text_span": [
+              3749,
+              3763
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 103,
+            "text_span": [
+              3763,
+              3786
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 105,
+            "text_span": [
+              3788,
+              3804
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 106,
+            "text_span": [
+              3804,
+              3841
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 107,
+            "text_span": [
+              3841,
+              3878
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 108,
+            "text_span": [
+              3878,
+              4042
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 109,
+            "text_span": [
+              4042,
+              4058
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 110,
+            "text_span": [
+              4058,
+              4095
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 111,
+            "text_span": [
+              4095,
+              4145
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 113,
+            "text_span": [
+              4147,
+              4164
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 114,
+            "text_span": [
+              4164,
+              4287
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 115,
+            "text_span": [
+              4287,
+              4322
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 116,
+            "text_span": [
+              4322,
+              4379
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 118,
+            "text_span": [
+              4405,
+              4523
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              750,
+              868
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              868,
+              932
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 58,
+            "text_span": [
+              2312,
+              2340
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 60,
+            "text_span": [
+              2351,
+              2371
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 62,
+            "text_span": [
+              2375,
+              2411
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 78,
+            "text_span": [
+              2631,
+              2756
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              9879,
+              10108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              10108,
+              10396
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 153,
+            "text_span": [
+              10396,
+              10620
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              11832,
+              12037
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              12037,
+              12370
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              158,
+              172
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              249,
+              266
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              533,
+              642
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              181,
+              214
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              299,
+              311
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "The source text does not identify any cited cases, legislation, or other legal authorities.",
+        "claimed_amounts": "The text states that the resident wanted works or compensation, but it does not state any monetary amount claimed by the resident.",
+        "disputed_amount_gbp": "The source text does not state a quantified amount in dispute.",
+        "region": "The source text does not state a geographic region.",
+        "region_source": "No region source is available because the source text does not state a geographic region.",
+        "statutory_basis": "The source text does not cite any statutory basis."
+      },
+      "claim_types": [
+        "Landlord's handling of the resident's concerns about the condition of her garden",
+        "Complaint handling"
+      ],
+      "decision_date": "18 December 2025",
+      "evidence": [
+        "The shared ownership agreement stated that defects could be reported during the defect liability period ending on 15 December 2022, after which the resident was responsible for repairs.",
+        "The landlord's records and inspection evidence addressed drainage repairs and whether garden-condition issues had been raised before the defect liability period ended.",
+        "The resident's emails and complaint correspondence described the garden as uneven after the drainage repairs and sought re-turfing or compensation.",
+        "The landlord's complaint policy set timescales for acknowledging and responding to stage 1 and stage 2 complaints."
+      ],
+      "facts": "The resident had been a shared owner of the property since March 2022 and told the landlord she was unhappy with the garden's condition following repair works carried out in December 2022. The complaint concerned the landlord's handling of the resident's concerns about the condition of her garden and the landlord's complaint handling. Between June and August 2023, the resident contacted the landlord regarding the condition of her garden following repairs carried out by the property developer. On 6 October 2023, the resident complained to the landlord about the condition of her garden following repair works. On 31 October 2023, the landlord replied at stage 1 and said the developer had offered to fill the trenched area and level the garden, but the resident had declined because she wanted it re-turfed. The resident escalated her complaint on 1 December 2023, and the landlord sent its stage 2 response on 29 December 2023, apologising and offering £50 and £15 compensation for communication and acknowledgement issues. The resident referred her complaint to the Ombudsman because she remained dissatisfied with the landlord's handling of her complaint.",
+      "ground_truth_outcome": {
+        "complaint_handling": "Service failure",
+        "garden_condition_handling": "Reasonable redress",
+        "orders": [
+          "Written apology to the resident",
+          "Payment of £50 to the resident for distress and inconvenience caused by complaint handling failure"
+        ]
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              9879,
+              10108
+            ]
+          },
+          "text": "The landlord was not responsible to carry out maintenance or to make good damage caused to the garden. Its offer to arrange for the property developer to level the garden and put things right was reasonable in the circumstances."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 152,
+            "text_span": [
+              10108,
+              10396
+            ]
+          },
+          "text": "The landlord’s offer of £50 compensation for its lack of communication with the resident was also proportionate and consistent with an amount we would expect when considering our remedies guidance where there had been a failing by the landlord which caused inconvenience to the resident."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 153,
+            "text_span": [
+              10396,
+              10620
+            ]
+          },
+          "text": "The landlord made an offer which satisfactorily resolved the failings it was responsible for. This leads to a determination of reasonable redress in its handling of the resident’s concerns about the condition of the garden."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              11832,
+              12037
+            ]
+          },
+          "text": "In summary, the evidence shows there were delays in the landlord’s complaint handling process. Although the landlord offered some redress, it did not address the delayed response to the initial complaint."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              12037,
+              12370
+            ]
+          },
+          "text": "This failure leads to a determination of service failure in the landlord’s complaint handling. The landlord is ordered to pay £50 compensation to the resident."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation concerning a shared ownership complaint",
+      "parties": {
+        "landlord": "Sparrow Shared Ownership Limited",
+        "resident": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not identify any cited cases, legislation, or other legal authorities.\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"Landlord's handling of the resident's concerns about the condition of her garden\",\n      \"Complaint handling\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          533,\n          642\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          642,\n          701\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text states that the resident wanted works or compensation, but it does not state any monetary amount claimed by the resident.\"\n  },\n  \"decision_date\": {\n    \"value\": \"18 December 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          271,\n          274\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          274,\n          283\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 20,\n        \"text_span\": [\n          283,\n          288\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not state a quantified amount in dispute.\"\n  },\n  \"evidence\": {\n    \"value\": [\n      \"The shared ownership agreement stated that defects could be reported during the defect liability period ending on 15 December 2022, after which the resident was responsible for repairs.\",\n      \"The landlord's records and inspection evidence addressed drainage repairs and whether garden-condition issues had been raised before the defect liability period ended.\",\n      \"The resident's emails and complaint correspondence described the garden as uneven after the drainage repairs and sought re-turfing or compensation.\",\n      \"The landlord's complaint policy set timescales for acknowledging and responding to stage 1 and stage 2 complaints.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 136,\n        \"text_span\": [\n          4993,\n          5299\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 138,\n        \"text_span\": [\n          5600,\n          5813\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 140,\n        \"text_span\": [\n          6012,\n          6351\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 145,\n        \"text_span\": [\n          7455,\n          7913\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 158,\n        \"text_span\": [\n          10684,\n          11031\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": [\n      \"The resident had been a shared owner of the property since March 2022 and told the landlord she was unhappy with the garden's condition following repair works carried out in December 2022.\",\n      \"The complaint concerned the landlord's handling of the resident's concerns about the condition of her garden and the landlord's complaint handling.\",\n      \"Between June and August 2023, the resident contacted the landlord regarding the condition of her garden following repairs carried out by the property developer.\",\n      \"On 6 October 2023, the resident complained to the landlord about the condition of her garden following repair works.\",\n      \"On 31 October 2023, the landlord replied at stage 1 and said the developer had offered to fill the trenched area and level the garden, but the resident had declined because she wanted it re-turfed.\",\n      \"The resident escalated her complaint on 1 December 2023, and the landlord sent its stage 2 response on 29 December 2023, apologising and offering £50 and £15 compensation for communication and acknowledgement issues.\",\n      \"The resident referred her complaint to the Ombudsman because she remained dissatisfied with the landlord's handling of her complaint.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          299,\n          505\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          533,\n          642\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          642,\n          701\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 94,\n        \"text_span\": [\n          3518,\n          3538\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 95,\n        \"text_span\": [\n          3538,\n          3612\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 96,\n        \"text_span\": [\n          3612,\n          3634\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 97,\n        \"text_span\": [\n          3634,\n          3672\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 99,\n        \"text_span\": [\n          3674,\n          3689\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 100,\n        \"text_span\": [\n          3689,\n          3739\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 101,\n        \"text_span\": [\n          3739,\n          3749\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 102,\n        \"text_span\": [\n          3749,\n          3763\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 103,\n        \"text_span\": [\n          3763,\n          3786\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 105,\n        \"text_span\": [\n          3788,\n          3804\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 106,\n        \"text_span\": [\n          3804,\n          3841\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 107,\n        \"text_span\": [\n          3841,\n          3878\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 108,\n        \"text_span\": [\n          3878,\n          4042\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 109,\n        \"text_span\": [\n          4042,\n          4058\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 110,\n        \"text_span\": [\n          4058,\n          4095\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 111,\n        \"text_span\": [\n          4095,\n          4145\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 113,\n        \"text_span\": [\n          4147,\n          4164\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 114,\n        \"text_span\": [\n          4164,\n          4287\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 115,\n        \"text_span\": [\n          4287,\n          4322\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 116,\n        \"text_span\": [\n          4322,\n          4379\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 118,\n        \"text_span\": [\n          4405,\n          4523\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": {\n      \"garden_condition_handling\": \"Reasonable redress\",\n      \"complaint_handling\": \"Service failure\",\n      \"orders\": [\n        \"Written apology to the resident\",\n        \"Payment of £50 to the resident for distress and inconvenience caused by complaint handling failure\"\n      ]\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 28,\n        \"text_span\": [\n          750,\n          868\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 29,\n        \"text_span\": [\n          868,\n          932\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 58,\n        \"text_span\": [\n          2312,\n          2340\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 60,\n        \"text_span\": [\n          2351,\n          2371\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 62,\n        \"text_span\": [\n          2375,\n          2411\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 78,\n        \"text_span\": [\n          2631,\n          2756\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord was not responsible to carry out maintenance or to make good damage caused to the garden. Its offer to arrange for the property developer to level the garden and put things right was reasonable in the circumstances.\",\n      \"The landlord’s offer of £50 compensation for its lack of communication with the resident was also proportionate and consistent with an amount we would expect when considering our remedies guidance where there had been a failing by the landlord which caused inconvenience to the resident.\",\n      \"The landlord made an offer which satisfactorily resolved the failings it was responsible for. This leads to a determination of reasonable redress in its handling of the resident’s concerns about the condition of the garden.\",\n      \"In summary, the evidence shows there were delays in the landlord’s complaint handling process. Although the landlord offered some redress, it did not address the delayed response to the initial complaint.\",\n      \"This failure leads to a determination of service failure in the landlord’s complaint handling. The landlord is ordered to pay £50 compensation to the resident.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 151,\n        \"text_span\": [\n          9879,\n          10108\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 152,\n        \"text_span\": [\n          10108,\n          10396\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 153,\n        \"text_span\": [\n          10396,\n          10620\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 163,\n        \"text_span\": [\n          11832,\n          12037\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 164,\n        \"text_span\": [\n          12037,\n          12370\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman investigation concerning a shared ownership complaint\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          158,\n          172\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 16,\n        \"text_span\": [\n          249,\n          266\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          533,\n          642\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"Sparrow Shared Ownership Limited\",\n      \"resident\": \"the resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          181,\n          214\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          299,\n          311\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not state a geographic region.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No region source is available because the source text does not state a geographic region.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The source text does not cite any statutory basis.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202325309\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 60, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"Sparrow Shared Ownership Limited (202325309)\"}, {\"char_end\": 105, \"char_start\": 60, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"Sparrow Shared Ownership Limited (202325309)\"}, {\"char_end\": 117, \"char_start\": 105, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 126, \"char_start\": 117, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 134, \"char_start\": 126, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 144, \"char_start\": 134, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202325309\"}, {\"char_end\": 158, \"char_start\": 144, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 172, \"char_start\": 158, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 181, \"char_start\": 172, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 214, \"char_start\": 181, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"Sparrow Shared Ownership Limited\"}, {\"char_end\": 228, \"char_start\": 214, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 239, \"char_start\": 228, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"For profit\"}, {\"char_end\": 249, \"char_start\": 239, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 266, \"char_start\": 249, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Shared Ownership\"}, {\"char_end\": 271, \"char_start\": 266, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 274, \"char_start\": 271, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"18\"}, {\"char_end\": 283, \"char_start\": 274, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December\"}, {\"char_end\": 288, \"char_start\": 283, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 299, \"char_start\": 288, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 505, \"char_start\": 299, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident has been a shared owner of the property since March 2022. The resident told the landlord she was not happy with the condition of the garden following repair works carried out in December 2022.\"}, {\"char_end\": 533, \"char_start\": 505, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 642, \"char_start\": 533, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of the resident’s concerns about the condition of her garden.\"}, {\"char_end\": 701, \"char_start\": 642, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"We have also considered the landlord’s complaint handling.\"}, {\"char_end\": 730, \"char_start\": 701, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 750, \"char_start\": 730, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have found that:\"}, {\"char_end\": 868, \"char_start\": 750, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was reasonable redress in the landlord’s handling of the resident’s concerns about the condition of her garden.\"}, {\"char_end\": 932, \"char_start\": 868, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was service failure in the landlord’s complaint handling.\"}, {\"char_end\": 935, \"char_start\": 932, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 940, \"char_start\": 935, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 990, \"char_start\": 940, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 1009, \"char_start\": 990, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1094, \"char_start\": 1009, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s concerns about the condition of her garden\"}, {\"char_end\": 1541, \"char_start\": 1094, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord was not responsible to carry out remedial works in the resident’s garden. Its attempts to arrange for the property developer to repair damage it had caused were reasonable. The landlord apologised and offered £50 compensation for the time it took to provide updates during its complaints process. The redress offered by the landlord was proportionate to the level of failings identified by our investigation to resolve the complaint.\"}, {\"char_end\": 1560, \"char_start\": 1541, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint handling\"}, {\"char_end\": 1824, \"char_start\": 1560, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord did not always follow its policy timescales when it replied to the resident’s complaint. The landlord apologised and offered redress for its delayed response, however, its offer failed to address the distress and inconvenience caused to the resident.\"}, {\"char_end\": 1845, \"char_start\": 1824, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1903, \"char_start\": 1845, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1905, \"char_start\": 1903, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1980, \"char_start\": 1905, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 2071, \"char_start\": 1980, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 2078, \"char_start\": 2071, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 2088, \"char_start\": 2078, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 2093, \"char_start\": 2088, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 2204, \"char_start\": 2093, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2207, \"char_start\": 2204, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2218, \"char_start\": 2207, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2234, \"char_start\": 2218, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2241, \"char_start\": 2234, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2250, \"char_start\": 2241, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2255, \"char_start\": 2250, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2261, \"char_start\": 2255, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2287, \"char_start\": 2261, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2296, \"char_start\": 2287, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2298, \"char_start\": 2296, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2312, \"char_start\": 2298, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2340, \"char_start\": 2312, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2351, \"char_start\": 2340, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2371, \"char_start\": 2351, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"to the resident for\"}, {\"char_end\": 2375, \"char_start\": 2371, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"the\"}, {\"char_end\": 2411, \"char_start\": 2375, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"failures identified in this report.\"}, {\"char_end\": 2424, \"char_start\": 2411, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2437, \"char_start\": 2424, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2441, \"char_start\": 2437, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2449, \"char_start\": 2441, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2452, \"char_start\": 2449, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2461, \"char_start\": 2452, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2505, \"char_start\": 2461, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2534, \"char_start\": 2505, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 2559, \"char_start\": 2534, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 2578, \"char_start\": 2559, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2580, \"char_start\": 2578, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2594, \"char_start\": 2580, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2610, \"char_start\": 2594, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"19 January 2026\"}, {\"char_end\": 2612, \"char_start\": 2610, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2631, \"char_start\": 2612, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2756, \"char_start\": 2631, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £50 to recognise the distress and inconvenience caused by its complaint handling failure.\"}, {\"char_end\": 2903, \"char_start\": 2756, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide us with documentary evidence of the payment by the due date.\"}, {\"char_end\": 3029, \"char_start\": 2903, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure the sum of £15 offered during its internal complaints process, if already paid.\"}, {\"char_end\": 3043, \"char_start\": 3029, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3045, \"char_start\": 3043, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 3047, \"char_start\": 3045, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"9\"}, {\"char_end\": 3060, \"char_start\": 3047, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"January 2026\"}, {\"char_end\": 3075, \"char_start\": 3060, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"Recommendation\"}, {\"char_end\": 3158, \"char_start\": 3075, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"Our recommendations are not binding, and a landlord may decide not to follow them.\"}, {\"char_end\": 3177, \"char_start\": 3158, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"Our recommendation\"}, {\"char_end\": 3191, \"char_start\": 3177, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"If it has not\"}, {\"char_end\": 3457, \"char_start\": 3191, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"already done so, the landlord should re-offer the resident the £50 compensation offered during its complaints process. Our finding of reasonable redress for the landlord’s complaint handling is made on the basis that this compensation is re-offered to the resident.\"}, {\"char_end\": 3475, \"char_start\": 3457, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 3499, \"char_start\": 3475, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 3504, \"char_start\": 3499, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 3518, \"char_start\": 3504, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 3538, \"char_start\": 3518, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"June to August 2023\"}, {\"char_end\": 3612, \"char_start\": 3538, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident contacted the landlord regarding the condition of her garden\"}, {\"char_end\": 3634, \"char_start\": 3612, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"following the repairs\"}, {\"char_end\": 3672, \"char_start\": 3634, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \"carried out by the property developer\"}, {\"char_end\": 3674, \"char_start\": 3672, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 3689, \"char_start\": 3674, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"6 October 2023\"}, {\"char_end\": 3739, \"char_start\": 3689, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained to the landlord about the\"}, {\"char_end\": 3749, \"char_start\": 3739, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"condition\"}, {\"char_end\": 3763, \"char_start\": 3749, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"of her garden\"}, {\"char_end\": 3786, \"char_start\": 3763, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"following repair works\"}, {\"char_end\": 3788, \"char_start\": 3786, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 3804, \"char_start\": 3788, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"pre_decision_record\", \"text\": \"31 October 2023\"}, {\"char_end\": 3841, \"char_start\": 3804, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord replied to the resident\"}, {\"char_end\": 3878, \"char_start\": 3841, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"pre_decision_record\", \"text\": \"at stage 1 of its complaints process\"}, {\"char_end\": 4042, \"char_start\": 3878, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"pre_decision_record\", \"text\": \". It said the developer of the property had offered to fill the trenched area and level the garden, but the resident had declined as she wanted it to be re-turfed.\"}, {\"char_end\": 4058, \"char_start\": 4042, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"pre_decision_record\", \"text\": \"1 December 2023\"}, {\"char_end\": 4095, \"char_start\": 4058, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident escalated her complaint\"}, {\"char_end\": 4145, \"char_start\": 4095, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"pre_decision_record\", \"text\": \"as she was not happy with the landlord’s response\"}, {\"char_end\": 4147, \"char_start\": 4145, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4164, \"char_start\": 4147, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"29 December 2023\"}, {\"char_end\": 4287, \"char_start\": 4164, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 2 complaint response to the resident. The landlord apologised and offered £50 compensation for\"}, {\"char_end\": 4322, \"char_start\": 4287, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"not replying to her correspondence\"}, {\"char_end\": 4379, \"char_start\": 4322, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \", and £15 for not acknowledging her escalated complaint.\"}, {\"char_end\": 4405, \"char_start\": 4379, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 4523, \"char_start\": 4405, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident referred her complaint to us as she remained dissatisfied with the landlord’s handling of her complaint.\"}, {\"char_end\": 4545, \"char_start\": 4523, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 4569, \"char_start\": 4545, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 4572, \"char_start\": 4569, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 4591, \"char_start\": 4572, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 4597, \"char_start\": 4591, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 4631, \"char_start\": 4597, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 4635, \"char_start\": 4631, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 4666, \"char_start\": 4635, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 4732, \"char_start\": 4666, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 4772, \"char_start\": 4732, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 4777, \"char_start\": 4772, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 4809, \"char_start\": 4777, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 4871, \"char_start\": 4809, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 4881, \"char_start\": 4871, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 4966, \"char_start\": 4881, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s concerns about the condition of her garden\"}, {\"char_end\": 4974, \"char_start\": 4966, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 4993, \"char_start\": 4974, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasonable redress\"}, {\"char_end\": 5299, \"char_start\": 4993, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The shared ownership agreement for the property stated the resident could report defects with the property during the defect liability period, which ended on 15 December 2022. The agreement said once the defect liability period ended the resident would be responsible to carry out repairs to the property.\"}, {\"char_end\": 5600, \"char_start\": 5299, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Between March and December 2022, the landlord recorded there were issues with the drains at the property. During that time the landlord arranged for the property developer to carry out repairs to the drains as the developer was still responsible for them under the property’s defect liability period.\"}, {\"char_end\": 5813, \"char_start\": 5600, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord inspected the property on 13 December 2022 and recorded a list of defects reported by the resident. The landlord’s records do not show the resident raised any issues with the condition of the garden.\"}, {\"char_end\": 6012, \"char_start\": 5813, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 15 December 2022 the developer repaired the drainage at the property. During the repairs the developer dug up the garden to access a pipe, then it filled the trench hole once they were completed.\"}, {\"char_end\": 6351, \"char_start\": 6012, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident emailed the landlord on 1 June 2023. She said following the repairs to the drainage pipes the garden was left uneven, with cracks, mud patches and large weeds growing in it. The landlord inspected the garden and told the developer the garden was a trip hazard following the repair works they completed several months earlier.\"}, {\"char_end\": 6786, \"char_start\": 6351, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The developer sent a landscaping contractor to inspect the garden on 12 June 2023. The developer told the landlord on 3 July 2023 the contractor said the resident had not maintained the garden after it had filled the trench following the repairs, and children had been playing on it before it had settled. The landlord disputed that was the reason why the garden was uneven and asked the developer to take action to correct the issue.\"}, {\"char_end\": 6903, \"char_start\": 6786, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident emailed the landlord several times during July and August 2023 asking for updates regarding the garden.\"}, {\"char_end\": 7127, \"char_start\": 6903, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord aims to reply to correspondence within 5 working days. Although it told her during this time it was still discussing the matter with the developer, it did not always reply to the resident within this timescale.\"}, {\"char_end\": 7455, \"char_start\": 7127, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 17 August 2023 the property developer agreed to fill the low areas of the garden with topsoil and grass seeds to level it out. It is not clear from the landlord’s records when the developer tried to arrange these works with the resident, but the evidence shows she declined them as she wanted the garden turf to be replaced.\"}, {\"char_end\": 7913, \"char_start\": 7455, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complained to the landlord on 6 October 2023. She said she had maintained the garden, but it was uneven when she moved in, and it was made worse after the drain repairs. The resident said a family member had been told by the developer’s landscaping contractor when it inspected the garden that it needed to be dug up and re-turfed. The landlord has no record of the developer’s contractor reporting the garden needed to be dug up and re-turfed.\"}, {\"char_end\": 8476, \"char_start\": 7913, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 31 October 2023 the landlord sent its stage 1 complaint response to the resident. The landlord said it asked the developer to fill the trenched area and level the garden. It said when the developer tried to arrange the garden works the resident declined the proposed works as she wanted the garden to be re-turfed. The landlord told the resident to contact it if she changed her mind on the matter. It also referred the resident to the National House Building Council (NHBC) with the view to make a claim against the developer through the property’s warranty.\"}, {\"char_end\": 8827, \"char_start\": 8476, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident escalated her complaint to the landlord on 1 December 2023. She said she was told the garden needed to be re-turfed, so she wanted the landlord to arrange this or give her compensation to allow her to get the works completed herself. The resident added that the landlord did not previously reply to her emails when she asked for updates.\"}, {\"char_end\": 9207, \"char_start\": 8827, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord sent its stage 2 complaint response to the resident on 29 December 2023. The landlord apologised and offered £50 compensation for not always replying to her emails promptly. The landlord reiterated that she could arrange for the developer to do the previously proposed garden works, or she could contact the NHBC about making a claim against the property’s warranty.\"}, {\"char_end\": 9477, \"char_start\": 9207, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"During this investigation the landlord told us no further action was taken regarding the garden as the resident did not accept the proposed works from the developer. The landlord said that due to the time passed, the developer will no longer carry out the garden works.\"}, {\"char_end\": 9879, \"char_start\": 9477, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"When failures are identified, as in this case, our role is to consider whether the redress offered by the landlord put things right and resolved the resident’s complaint satisfactorily. In considering this, we take into account whether the offer of redress was in line with our Dispute Resolution Principles: Be Fair, Put Things Right, and Learn from Outcomes, as well as our own guidance on remedies.\"}, {\"char_end\": 10108, \"char_start\": 9879, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord was not responsible to carry out maintenance or to make good damage caused to the garden. Its offer to arrange for the property developer to level the garden and put things right was reasonable in the circumstances.\"}, {\"char_end\": 10396, \"char_start\": 10108, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s offer of £50 compensation for its lack of communication with the resident was also proportionate and consistent with an amount we would expect when considering our remedies guidance where there had been a failing by the landlord which caused inconvenience to the resident.\"}, {\"char_end\": 10620, \"char_start\": 10396, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord made an offer which satisfactorily resolved the failings it was responsible for. This leads to a determination of reasonable redress in its handling of the resident’s concerns about the condition of the garden.\"}, {\"char_end\": 10630, \"char_start\": 10620, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 10660, \"char_start\": 10630, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 10668, \"char_start\": 10660, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 10684, \"char_start\": 10668, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 11031, \"char_start\": 10684, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord operates a 2 stage complaints process. Its complaints policy states it will acknowledge complaints within 5 working days from when it is raised. It should respond to stage 1 complaints within 10 working days. It should acknowledge stage 2 complaints within 5 working days of the escalation and respond to them within 20 working days.\"}, {\"char_end\": 11133, \"char_start\": 11031, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident complained to the landlord on 6 October 2023. The landlord acknowledged it the same day.\"}, {\"char_end\": 11378, \"char_start\": 11133, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord sent its stage 1 complaint response to the resident on 31 October 2023. This was outside of its policy timescale to reply to the resident’s complaint. The landlord did not offer any redress to the resident for its delayed response.\"}, {\"char_end\": 11546, \"char_start\": 11378, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident escalated her complaint on 1 December 2023. The landlord acknowledged the complaint on 13 December 2023, which was outside of its 5 working day timescale.\"}, {\"char_end\": 11832, \"char_start\": 11546, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 29 December 2023 the landlord sent its stage 2 complaint response to the resident. This was within its policy timescale to reply to an escalated complaint. The landlord apologised and offered £15 compensation for taking too long to acknowledge the request to escalate the complaint.\"}, {\"char_end\": 12037, \"char_start\": 11832, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In summary, the evidence shows there were delays in the landlord’s complaint handling process. Although the landlord offered some redress, it did not address the delayed response to the initial complaint.\"}, {\"char_end\": 12370, \"char_start\": 12037, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This failure leads to a determination of service failure in the landlord’s complaint handling. The landlord is ordered to pay £50 compensation to the resident. This amount has been calculated in accordance with our remedies guidance for situations where there have been failures by the landlord and it did not put the matters right.\"}, {\"char_end\": 12379, \"char_start\": 12370, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 12429, \"char_start\": 12379, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 12542, \"char_start\": 12429, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord demonstrated sufficient record keeping in respect of the matters we have investigated in this case.\"}, {\"char_end\": 12556, \"char_start\": 12542, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Communication\"}, {\"char_end\": 12919, \"char_start\": 12556, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The evidence shows the landlord did not always reply to the resident’s correspondence. This lack of communication contributed to the distress and inconvenience caused to the resident and is reflected in the compensation order above. The landlord should look for opportunities to draw learning from this complaint to inform improved customer service going forward.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "ac7cee4c5c420cf3502d69bdee436bff4448cd431f7340035b82ae078118fd8c",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T16:40:39.051141+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "c346b27feb8cee501d234b8334aa733b234244e7178011f725294670fba1051a"
+}

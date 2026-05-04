@@ -1,0 +1,13 @@
+{
+  "metric": "brier_score",
+  "metric_alias": "brier",
+  "gold_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/gold_standard/housing_repairs_social_v1.jsonl",
+  "predictions_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_20260504/hybrid.jsonl",
+  "point": 0.3451560224,
+  "lower_95": 0.25469753240000004,
+  "upper_95": 0.42904743184,
+  "n": 50,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-04T17:08:30.820966+00:00"
+}

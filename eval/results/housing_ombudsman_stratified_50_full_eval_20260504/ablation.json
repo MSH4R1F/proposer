@@ -1,0 +1,139 @@
+{
+  "n_cases": 50,
+  "seed": 42,
+  "n_resamples": 1000,
+  "modes": [
+    {
+      "mode": "hybrid",
+      "accuracy": {
+        "point": 0.36,
+        "lower_95": 0.22,
+        "upper_95": 0.5,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 1.0,
+        "lower_95": 1.0,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "brier": {
+        "point": 0.3451560224,
+        "lower_95": 0.25469753240000004,
+        "upper_95": 0.42904743184,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.497224,
+        "lower_95": 0.408107,
+        "upper_95": 0.580675,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    },
+    {
+      "mode": "rag_only",
+      "accuracy": {
+        "point": 0.34,
+        "lower_95": 0.22,
+        "upper_95": 0.46,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 1.0,
+        "lower_95": 1.0,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "brier": {
+        "point": 0.28433191680000003,
+        "lower_95": 0.23413581408000003,
+        "upper_95": 0.3357840032,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.47198399999999996,
+        "lower_95": 0.4049876,
+        "upper_95": 0.5361027999999999,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    },
+    {
+      "mode": "kg_only",
+      "accuracy": {
+        "point": 0.38,
+        "lower_95": 0.25950000000000045,
+        "upper_95": 0.52,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 1.0,
+        "lower_95": 1.0,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "brier": {
+        "point": 0.26134400320000006,
+        "lower_95": 0.22507181432000004,
+        "upper_95": 0.29412140608000004,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.48154399999999997,
+        "lower_95": 0.4315252,
+        "upper_95": 0.5257782,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    },
+    {
+      "mode": "llm_only",
+      "accuracy": {
+        "point": 0.34,
+        "lower_95": 0.22,
+        "upper_95": 0.48,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 1.0,
+        "lower_95": 1.0,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "brier": {
+        "point": 0.2542104704,
+        "lower_95": 0.24161273808000003,
+        "upper_95": 0.26641655295999994,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.484368,
+        "lower_95": 0.4403954,
+        "upper_95": 0.5133663999999999,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    }
+  ],
+  "gold_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/gold_standard/housing_repairs_social_v1.jsonl",
+  "predictions_paths": {
+    "hybrid": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_20260504/hybrid.jsonl",
+    "rag_only": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_20260504/rag_only.jsonl",
+    "kg_only": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_20260504/kg_only.jsonl",
+    "llm_only": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_20260504/llm_only.jsonl"
+  },
+  "computed_at": "2026-05-04T17:08:33.282331+00:00"
+}

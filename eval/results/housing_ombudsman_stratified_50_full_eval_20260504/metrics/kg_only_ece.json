@@ -1,0 +1,13 @@
+{
+  "metric": "expected_calibration_error",
+  "metric_alias": "ece",
+  "gold_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/gold_standard/housing_repairs_social_v1.jsonl",
+  "predictions_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_20260504/kg_only.jsonl",
+  "point": 0.48154399999999997,
+  "lower_95": 0.4315252,
+  "upper_95": 0.5257782,
+  "n": 50,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-04T17:08:32.096840+00:00"
+}

@@ -1,0 +1,1198 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202334994",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5454545454545454,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 16 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='27 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Repairs and maintenance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'Resident',...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Tenant handbook stating ...g fences and boundaries', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's void standard...unsafe boundary repairs\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Inspection records from ... 2022 and February 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Repairs...ource': 'landlord_name'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='Service failure by landl...50 compensation ordered', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 9 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='27 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Repairs and maintenance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'applicant': 'Resident',...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Tenant handbook stating ...g fences and boundaries', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's void standard...unsafe boundary repairs\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Inspection records from ... 2022 and February 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='Service failure by landl...50 compensation ordered', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "cited_authorities[0]": "UNGROUNDED",
+      "cited_authorities[1]": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.5333333333333333,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 26 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='27 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\ncase_size\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Landlord response to fence repair', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London Boro...nt': 'Unnamed resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Resident reports of the ... 2022 and February 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Resident complaint dated...ing of the fence repair\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Stage 1 response stating...the resident's handbook\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Tenancy handbook stating...g fences and boundaries', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's void standard on unsafe boundaries\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.5\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's complaint pro...andling Code timescales\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.6\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord records provided for the investigation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Complaint Handling Code (the Code)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Remedies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nclaimed_amounts\n  Field required [type=missing, input_value={'cited_authorities': ['C...n Borough of Redbridge'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'fence_repair': 'Service...dent £50 compensation'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'fence_repair': 'Service...dent £50 compensation'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.fence_repair\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Service failure', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='No maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.remedy\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Landlord ordered to pay ...ident £50 compensation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 19 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='27 November 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Input should be 'london', 'south_east', 'south_west', 'east_of_england', 'east_midlands', 'west_midlands', 'north_west', 'north_east', 'yorkshire_and_humber', 'wales', 'scotland' or 'northern_ireland' [type=enum, input_value='London', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Landlord response to fence repair', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London Boro...nt': 'Unnamed resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Resident reports of the ... 2022 and February 2023', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Resident complaint dated...ing of the fence repair\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Stage 1 response stating...the resident's handbook\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Tenancy handbook stating...g fences and boundaries', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.4\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's void standard on unsafe boundaries\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.5\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value=\"Landlord's complaint pro...andling Code timescales\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.6\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='Landlord records provided for the investigation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Complaint Handling Code (the Code)', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Remedies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'fence_repair': 'Service...dent £50 compensation'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'fence_repair': 'Service...dent £50 compensation'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.fence_repair\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Service failure', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.complaint_handling\n  Extra inputs are not permitted [type=extra_forbidden, input_value='No maladministration', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.remedy\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Landlord ordered to pay ...ident £50 compensation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "cited_authorities[0]": "missing name or cited_date",
+      "cited_authorities[1]": "missing name or cited_date",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              509,
+              577
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              577,
+              651
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              273,
+              291
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              4809,
+              4959
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              4959,
+              5517
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              4440,
+              4809
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              302,
+              481
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              2226,
+              2406
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              2421,
+              2641
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 89,
+            "text_span": [
+              2658,
+              2865
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 103,
+            "text_span": [
+              2882,
+              2919
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 137,
+            "text_span": [
+              3917,
+              4013
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              680,
+              761
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              761,
+              830
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1862,
+              2000
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              951,
+              1227
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              5517,
+              5917
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              5917,
+              6358
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              148,
+              162
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "No specific monetary amounts were claimed by the resident in the complaint.",
+        "disputed_amount_gbp": "No specific disputed monetary amount is mentioned in the case.",
+        "statutory_basis": "No specific statutory provisions or legal basis are cited in the decision."
+      },
+      "claim_types": [
+        "Repairs and maintenance",
+        "Complaint handling"
+      ],
+      "decision_date": "27 November 2025",
+      "evidence": [
+        "Tenant handbook stating residents are responsible for maintaining fences and boundaries",
+        "Landlord's void standard regarding unsafe boundary repairs",
+        "Inspection records from November 2022 and February 2023"
+      ],
+      "facts": "In July 2022 the resident reported a broken fence in her back garden to the landlord. Following her report the landlord attended to inspect, however, it did not complete repairs. The resident reported the need for a repair to the back fence to the landlord between 5 July 2022 and 7 February 2023. The landlord inspected the fence in November 2022 and February 2023. On 21 August 2023 the resident complained about the landlord's handling of the fence repair. She said she chased it for updates about the status of the repair. It informed her in August 2023, that the repair was not its responsibility. On 6 September 2023 the landlord sent the resident its stage 1 response. It said the maintenance and repair of the fence was the resident's responsibility. It stated information to this effect was in the resident's handbook. On 9 September 2023 the resident escalated her complaint. The resident referred the complaint to us and said she wanted the landlord to repair the fence.",
+      "ground_truth_outcome": "Service failure by landlord regarding fence repair response; no maladministration in complaint handling; £50 compensation ordered",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              951,
+              1227
+            ]
+          },
+          "text": "The landlord reasonably set out that the resident was responsible for the repairs. It acknowledged it did not communicate to its expected standard as part of the process. However, despite identifying this was inappropriate, it did not provide any redress to put things right."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              5517,
+              5917
+            ]
+          },
+          "text": "The landlord upheld the complaint because it failed to inform the resident from the outset that the fence repair was her responsibility to undertake. The landlord inspected the fence twice, which created false expectations and led to the resident to chase the repair for a year before the landlord confirmed its position that the resident was responsible for the repair under the tenancy conditions."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              5917,
+              6358
+            ]
+          },
+          "text": "The landlord apologised to the resident for the lack of clarity about the responsibility to repair when she first reported the matter. An apology as a part of putting things right was appropriate but not proportionate on its own given the impact of its failure to clarify the repair responsibility sooner."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation",
+      "parties": {
+        "applicant": "Resident",
+        "respondent": "London Borough of Redbridge"
+      },
+      "region": "London",
+      "region_source": "landlord_name"
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"Repairs and maintenance\", \"Complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [509, 577]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [577, 651]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific monetary amounts were claimed by the resident in the complaint.\"\n  },\n  \"decision_date\": {\n    \"value\": \"27 November 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [273, 291]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific disputed monetary amount is mentioned in the case.\"\n  },\n  \"evidence\": {\n    \"value\": [\"Tenant handbook stating residents are responsible for maintaining fences and boundaries\", \"Landlord's void standard regarding unsafe boundary repairs\", \"Inspection records from November 2022 and February 2023\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 161, \"text_span\": [4809, 4959]},\n      {\"page\": 1, \"paragraph\": 162, \"text_span\": [4959, 5517]},\n      {\"page\": 1, \"paragraph\": 160, \"text_span\": [4440, 4809]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"In July 2022 the resident reported a broken fence in her back garden to the landlord. Following her report the landlord attended to inspect, however, it did not complete repairs. The resident reported the need for a repair to the back fence to the landlord between 5 July 2022 and 7 February 2023. The landlord inspected the fence in November 2022 and February 2023. On 21 August 2023 the resident complained about the landlord's handling of the fence repair. She said she chased it for updates about the status of the repair. It informed her in August 2023, that the repair was not its responsibility. On 6 September 2023 the landlord sent the resident its stage 1 response. It said the maintenance and repair of the fence was the resident's responsibility. It stated information to this effect was in the resident's handbook. On 9 September 2023 the resident escalated her complaint. The resident referred the complaint to us and said she wanted the landlord to repair the fence.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 22, \"text_span\": [302, 481]},\n      {\"page\": 1, \"paragraph\": 65, \"text_span\": [2226, 2406]},\n      {\"page\": 1, \"paragraph\": 73, \"text_span\": [2421, 2641]},\n      {\"page\": 1, \"paragraph\": 89, \"text_span\": [2658, 2865]},\n      {\"page\": 1, \"paragraph\": 103, \"text_span\": [2882, 2919]},\n      {\"page\": 1, \"paragraph\": 137, \"text_span\": [3917, 4013]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"Service failure by landlord regarding fence repair response; no maladministration in complaint handling; £50 compensation ordered\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 27, \"text_span\": [680, 761]},\n      {\"page\": 1, \"paragraph\": 28, \"text_span\": [761, 830]},\n      {\"page\": 1, \"paragraph\": 57, \"text_span\": [1862, 2000]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord reasonably set out that the resident was responsible for the repairs. It acknowledged it did not communicate to its expected standard as part of the process. However, despite identifying this was inappropriate, it did not provide any redress to put things right.\",\n      \"The landlord upheld the complaint because it failed to inform the resident from the outset that the fence repair was her responsibility to undertake. The landlord inspected the fence twice, which created false expectations and led to the resident to chase the repair for a year before the landlord confirmed its position that the resident was responsible for the repair under the tenancy conditions.\",\n      \"The landlord apologised to the resident for the lack of clarity about the responsibility to repair when she first reported the matter. An apology as a part of putting things right was appropriate but not proportionate on its own given the impact of its failure to clarify the repair responsibility sooner.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 34, \"text_span\": [951, 1227]},\n      {\"page\": 1, \"paragraph\": 163, \"text_span\": [5517, 5917]},\n      {\"page\": 1, \"paragraph\": 164, \"text_span\": [5917, 6358]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [148, 162]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"applicant\": \"Resident\",\n      \"respondent\": \"London Borough of Redbridge\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [171, 199]}\n    ]\n  },\n  \"region\": {\n    \"value\": \"London\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [171, 199]}\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"landlord_name\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [171, 199]}\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutory provisions or legal basis are cited in the decision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202334994\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 55, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Redbridge (202334994)\"}, {\"char_end\": 95, \"char_start\": 55, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Redbridge (202334994)\"}, {\"char_end\": 107, \"char_start\": 95, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 116, \"char_start\": 107, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 124, \"char_start\": 116, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 134, \"char_start\": 124, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202334994\"}, {\"char_end\": 148, \"char_start\": 134, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 162, \"char_start\": 148, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 171, \"char_start\": 162, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 199, \"char_start\": 171, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Redbridge\"}, {\"char_end\": 213, \"char_start\": 199, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 243, \"char_start\": 213, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Local Authority / ALMO or TMO\"}, {\"char_end\": 253, \"char_start\": 243, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 268, \"char_start\": 253, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 273, \"char_start\": 268, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 275, \"char_start\": 273, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"2\"}, {\"char_end\": 277, \"char_start\": 275, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"7\"}, {\"char_end\": 291, \"char_start\": 277, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"November 2025\"}, {\"char_end\": 302, \"char_start\": 291, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 481, \"char_start\": 302, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"In July 2022 the resident reported a broken fence in her back garden to the landlord. Following her report the landlord attended to inspect, however, it did not complete repairs.\"}, {\"char_end\": 509, \"char_start\": 481, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 577, \"char_start\": 509, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s response to the fence repair.\"}, {\"char_end\": 651, \"char_start\": 577, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"This investigation has also considered the landlord’s complaint handling.\"}, {\"char_end\": 680, \"char_start\": 651, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 761, \"char_start\": 680, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was a service failure by the landlord in its response to the fence repair.\"}, {\"char_end\": 830, \"char_start\": 761, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was no maladministration in the landlord’s complaint handling.\"}, {\"char_end\": 833, \"char_start\": 830, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 838, \"char_start\": 833, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 888, \"char_start\": 838, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 907, \"char_start\": 888, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 951, \"char_start\": 907, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to the fence repair\"}, {\"char_end\": 1227, \"char_start\": 951, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord reasonably set out that the resident was responsible for the repairs. It acknowledged it did not communicate to its expected standard as part of the process. However, despite identifying this was inappropriate, it did not provide any redress to put things right.\"}, {\"char_end\": 1246, \"char_start\": 1227, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint Handling\"}, {\"char_end\": 1369, \"char_start\": 1246, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord responded to the complaint in line with the timeframes as required by our Complaint Handling Code (the Code).\"}, {\"char_end\": 1390, \"char_start\": 1369, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1448, \"char_start\": 1390, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1450, \"char_start\": 1448, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1525, \"char_start\": 1450, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1616, \"char_start\": 1525, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1623, \"char_start\": 1616, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 1633, \"char_start\": 1623, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 1638, \"char_start\": 1633, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 1749, \"char_start\": 1638, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 1752, \"char_start\": 1749, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 1763, \"char_start\": 1752, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 1779, \"char_start\": 1763, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 1786, \"char_start\": 1779, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 1795, \"char_start\": 1786, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 1800, \"char_start\": 1795, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 1806, \"char_start\": 1800, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 1832, \"char_start\": 1806, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 1841, \"char_start\": 1832, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 1843, \"char_start\": 1841, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 1862, \"char_start\": 1843, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2000, \"char_start\": 1862, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £50 to recognise the distress and inconvenience caused by its failure in response to the fence repair.\"}, {\"char_end\": 2135, \"char_start\": 2000, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 2149, \"char_start\": 2135, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2165, \"char_start\": 2149, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"06 January 2026\"}, {\"char_end\": 2183, \"char_start\": 2165, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 2207, \"char_start\": 2183, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 2212, \"char_start\": 2207, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 2226, \"char_start\": 2212, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 2258, \"char_start\": 2226, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"pre_decision_record\", \"text\": \"5 July 2022 and 7 February 2023\"}, {\"char_end\": 2284, \"char_start\": 2258, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident reported the\"}, {\"char_end\": 2295, \"char_start\": 2284, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"pre_decision_record\", \"text\": \"need for a\"}, {\"char_end\": 2309, \"char_start\": 2295, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"pre_decision_record\", \"text\": \"repair to the\"}, {\"char_end\": 2350, \"char_start\": 2309, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"pre_decision_record\", \"text\": \"back fence to the landlord. The landlord\"}, {\"char_end\": 2360, \"char_start\": 2350, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"pre_decision_record\", \"text\": \"inspected\"}, {\"char_end\": 2406, \"char_start\": 2360, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"pre_decision_record\", \"text\": \"the fence in November 2022 and February 2023.\"}, {\"char_end\": 2421, \"char_start\": 2406, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"pre_decision_record\", \"text\": \"21 August 2023\"}, {\"char_end\": 2451, \"char_start\": 2421, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained about\"}, {\"char_end\": 2505, \"char_start\": 2451, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"pre_decision_record\", \"text\": \"the landlord’s handling of the fence repair. She said\"}, {\"char_end\": 2509, \"char_start\": 2505, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"pre_decision_record\", \"text\": \"she\"}, {\"char_end\": 2516, \"char_start\": 2509, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"pre_decision_record\", \"text\": \"chased\"}, {\"char_end\": 2519, \"char_start\": 2516, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"pre_decision_record\", \"text\": \"it\"}, {\"char_end\": 2531, \"char_start\": 2519, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"pre_decision_record\", \"text\": \"for updates\"}, {\"char_end\": 2551, \"char_start\": 2531, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"pre_decision_record\", \"text\": \"about the status of\"}, {\"char_end\": 2562, \"char_start\": 2551, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"pre_decision_record\", \"text\": \"the repair\"}, {\"char_end\": 2564, \"char_start\": 2562, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 2567, \"char_start\": 2564, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"pre_decision_record\", \"text\": \"It\"}, {\"char_end\": 2580, \"char_start\": 2567, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"pre_decision_record\", \"text\": \"informed her\"}, {\"char_end\": 2596, \"char_start\": 2580, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"pre_decision_record\", \"text\": \"in August 2023,\"}, {\"char_end\": 2600, \"char_start\": 2596, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"pre_decision_record\", \"text\": \"tha\"}, {\"char_end\": 2613, \"char_start\": 2600, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"pre_decision_record\", \"text\": \"t the repair\"}, {\"char_end\": 2641, \"char_start\": 2613, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"pre_decision_record\", \"text\": \"was not its responsibility.\"}, {\"char_end\": 2658, \"char_start\": 2641, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"pre_decision_record\", \"text\": \"6 September 2023\"}, {\"char_end\": 2671, \"char_start\": 2658, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord\"}, {\"char_end\": 2689, \"char_start\": 2671, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"sent the resident\"}, {\"char_end\": 2693, \"char_start\": 2689, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"its\"}, {\"char_end\": 2695, \"char_start\": 2693, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"s\"}, {\"char_end\": 2715, \"char_start\": 2695, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"tage 1 response. It\"}, {\"char_end\": 2724, \"char_start\": 2715, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"said the\"}, {\"char_end\": 2754, \"char_start\": 2724, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"maintenance and repair of the\"}, {\"char_end\": 2794, \"char_start\": 2754, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"fence was the resident’s responsibility\"}, {\"char_end\": 2806, \"char_start\": 2794, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \". It stated\"}, {\"char_end\": 2818, \"char_start\": 2806, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \"information\"}, {\"char_end\": 2833, \"char_start\": 2818, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"to this effect\"}, {\"char_end\": 2837, \"char_start\": 2833, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"was\"}, {\"char_end\": 2865, \"char_start\": 2837, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"in the resident’s handbook.\"}, {\"char_end\": 2882, \"char_start\": 2865, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"9 September 2023\"}, {\"char_end\": 2905, \"char_start\": 2882, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident escalated\"}, {\"char_end\": 2909, \"char_start\": 2905, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"pre_decision_record\", \"text\": \"her\"}, {\"char_end\": 2919, \"char_start\": 2909, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint\"}, {\"char_end\": 2983, \"char_start\": 2919, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"tribunal_reasoning\", \"text\": \"as she remained unhappy with the landlord’s response. She said:\"}, {\"char_end\": 3005, \"char_start\": 2983, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The repair handbook d\"}, {\"char_end\": 3008, \"char_start\": 3005, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"tribunal_reasoning\", \"text\": \"id\"}, {\"char_end\": 3036, \"char_start\": 3008, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not specify it was resident\"}, {\"char_end\": 3038, \"char_start\": 3036, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 3080, \"char_start\": 3038, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"tribunal_reasoning\", \"text\": \"responsibility to repair boundary fences.\"}, {\"char_end\": 3144, \"char_start\": 3080, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was poor communication from the landlord about the issue.\"}, {\"char_end\": 3191, \"char_start\": 3144, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord told her if the property was void\"}, {\"char_end\": 3228, \"char_start\": 3191, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"tribunal_reasoning\", \"text\": \"(empty awaiting a tenant to move in)\"}, {\"char_end\": 3233, \"char_start\": 3228, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"tribunal_reasoning\", \"text\": \", it\"}, {\"char_end\": 3270, \"char_start\": 3233, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"tribunal_reasoning\", \"text\": \"would be responsible for the repair.\"}, {\"char_end\": 3285, \"char_start\": 3270, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"tribunal_reasoning\", \"text\": \"5 October 2023\"}, {\"char_end\": 3298, \"char_start\": 3285, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord\"}, {\"char_end\": 3313, \"char_start\": 3298, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"provided its s\"}, {\"char_end\": 3329, \"char_start\": 3313, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"tage 2 response\"}, {\"char_end\": 3331, \"char_start\": 3329, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \".\"}, {\"char_end\": 3358, \"char_start\": 3331, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It reiterated the resident\"}, {\"char_end\": 3362, \"char_start\": 3358, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"was\"}, {\"char_end\": 3374, \"char_start\": 3362, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"responsible\"}, {\"char_end\": 3403, \"char_start\": 3374, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"for the repair of the fence.\"}, {\"char_end\": 3582, \"char_start\": 3403, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It apologised if the tenant handbook did not make that clear the fence repair was her responsibility and if that information was not made clear when she first reported the issue.\"}, {\"char_end\": 3585, \"char_start\": 3582, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It\"}, {\"char_end\": 3763, \"char_start\": 3585, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"clarified void properties have the same criteria as its tenanted properties and fence repairs were not carried out in either. It apologised that she had been informed otherwise.\"}, {\"char_end\": 3765, \"char_start\": 3763, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"I\"}, {\"char_end\": 3767, \"char_start\": 3765, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"t\"}, {\"char_end\": 3794, \"char_start\": 3767, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"upheld the complaint on th\"}, {\"char_end\": 3796, \"char_start\": 3794, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"e\"}, {\"char_end\": 3802, \"char_start\": 3796, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"basis\"}, {\"char_end\": 3804, \"char_start\": 3802, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"i\"}, {\"char_end\": 3891, \"char_start\": 3804, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"ts communication throughout the process was below the standard it expected to provide.\"}, {\"char_end\": 3917, \"char_start\": 3891, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 3959, \"char_start\": 3917, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident referred the complaint to us\"}, {\"char_end\": 3963, \"char_start\": 3959, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"and\"}, {\"char_end\": 4013, \"char_start\": 3963, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"said she wanted the landlord to repair the fence.\"}, {\"char_end\": 4035, \"char_start\": 4013, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 4059, \"char_start\": 4035, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 4062, \"char_start\": 4059, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 4081, \"char_start\": 4062, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 4087, \"char_start\": 4081, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 4121, \"char_start\": 4087, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 4125, \"char_start\": 4121, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 4156, \"char_start\": 4125, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 4222, \"char_start\": 4156, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 4262, \"char_start\": 4222, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 4267, \"char_start\": 4262, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 4299, \"char_start\": 4267, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 4361, \"char_start\": 4299, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 4371, \"char_start\": 4361, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 4373, \"char_start\": 4371, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"T\"}, {\"char_end\": 4403, \"char_start\": 4373, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"he landlord’s response to the\"}, {\"char_end\": 4409, \"char_start\": 4403, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"fence\"}, {\"char_end\": 4416, \"char_start\": 4409, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"repair\"}, {\"char_end\": 4424, \"char_start\": 4416, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 4440, \"char_start\": 4424, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 4809, \"char_start\": 4440, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Following the resident’s report about the fence in July 2022, the landlord completed 2 inspections in November 2022 and February 2023. The resident said after the inspections, she repeatedly chased the landlord for updates about the repair of the damaged fence. In August 2023, the landlord confirmed to the resident that the fence repairs were not its responsibility.\"}, {\"char_end\": 4959, \"char_start\": 4809, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The tenancy handbook states residents are responsible for maintaining fences and boundaries. The landlord’s complaint response was in line with this.\"}, {\"char_end\": 5517, \"char_start\": 4959, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s void standard states it will repair an unsafe boundary which belongs to it, to ensure a property is secure. The resident said the fence was unstable when she moved in. However, there is no evidence she raised concerns about the fence at the start of the tenancy. The first report about the fence was submitted by the resident 3 months after the tenancy started, after storm damage. On the basis of when the resident reported the damaged fence to the landlord, its decision to refer responsibility for the repairs back her remained reasonable.\"}, {\"char_end\": 5917, \"char_start\": 5517, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord upheld the complaint because it failed to inform the resident from the outset that the fence repair was her responsibility to undertake. The landlord inspected the fence twice, which created false expectations and led to the resident to chase the repair for a year before the landlord confirmed its position that the resident was responsible for the repair under the tenancy conditions.\"}, {\"char_end\": 6358, \"char_start\": 5917, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord apologised to the resident for the lack of clarity about the responsibility to repair when she first reported the matter. An apology as a part of putting things right was appropriate but not proportionate on its own given the impact of its failure to clarify the repair responsibility sooner. The resident spent time and effort pursuing the matter and received misleading information before the landlord confirmed its position.\"}, {\"char_end\": 6782, \"char_start\": 6358, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"To recognise this, we have ordered the landlord to pay £50 compensation to the resident. The compensation ordered is in line with our remedies guidance, which recommends this amount would be suitable where a failure caused inconvenience, but did not change the overall outcome. In this case, the landlord’s delay to clarify responsibility through its poor communication led to unnecessary time and trouble for the resident.\"}, {\"char_end\": 6792, \"char_start\": 6782, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 6822, \"char_start\": 6792, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 6830, \"char_start\": 6822, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 6851, \"char_start\": 6830, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration\"}, {\"char_end\": 7114, \"char_start\": 6851, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord has a 2 stage complaint process with timescales that align with the Code. The Code requires landlord’s to log complaints at both stages within 5 working days and respond to complaints within 10 working days at stage 1 and 20 working days at stage 2.\"}, {\"char_end\": 7306, \"char_start\": 7114, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided its formal response at both stages of the process within the appropriate timescales within the Code. There was no maladministration in the landlord’s complaint handling.\"}, {\"char_end\": 7315, \"char_start\": 7306, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 7754, \"char_start\": 7315, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord acknowledged its failure to provide the resident with the correct information about fence repair responsibility at the earliest opportunity. It confirmed it would remind staff to inform residents at the outset that fence repairs are their responsibility, in line with tenancy conditions. This demonstrates the landlord has gained learning from the complaint and as a result has made a commitment to improve its communication.\"}, {\"char_end\": 7804, \"char_start\": 7754, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 7892, \"char_start\": 7804, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided sufficient records for us to investigate the resident’s complaint.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "cited_authorities": [
+          {
+            "page": 1,
+            "paragraph": 36,
+            "text_span": [
+              1246,
+              1369
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              6358,
+              6782
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 170,
+            "text_span": [
+              6851,
+              7114
+            ]
+          }
+        ],
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              509,
+              577
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              577,
+              651
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              273,
+              275
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              275,
+              277
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              277,
+              291
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              2226,
+              2258
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              2258,
+              2284
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 67,
+            "text_span": [
+              2284,
+              2295
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 68,
+            "text_span": [
+              2295,
+              2309
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 69,
+            "text_span": [
+              2309,
+              2350
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 70,
+            "text_span": [
+              2350,
+              2360
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 71,
+            "text_span": [
+              2360,
+              2406
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              2406,
+              2421
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              2421,
+              2451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 74,
+            "text_span": [
+              2451,
+              2505
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 88,
+            "text_span": [
+              2641,
+              2658
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 89,
+            "text_span": [
+              2658,
+              2671
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 90,
+            "text_span": [
+              2671,
+              2689
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 93,
+            "text_span": [
+              2695,
+              2715
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              2724,
+              2754
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              2754,
+              2794
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              2837,
+              2865
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              4809,
+              4959
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              4959,
+              5517
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 170,
+            "text_span": [
+              6851,
+              7114
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 175,
+            "text_span": [
+              7804,
+              7892
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              253,
+              268
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              302,
+              481
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              509,
+              577
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              577,
+              651
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 65,
+            "text_span": [
+              2226,
+              2258
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 66,
+            "text_span": [
+              2258,
+              2284
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 67,
+            "text_span": [
+              2284,
+              2295
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 68,
+            "text_span": [
+              2295,
+              2309
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 69,
+            "text_span": [
+              2309,
+              2350
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 70,
+            "text_span": [
+              2350,
+              2360
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 71,
+            "text_span": [
+              2360,
+              2406
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              2406,
+              2421
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              2421,
+              2451
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 74,
+            "text_span": [
+              2451,
+              2505
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 75,
+            "text_span": [
+              2505,
+              2509
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 76,
+            "text_span": [
+              2509,
+              2516
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 77,
+            "text_span": [
+              2516,
+              2519
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 78,
+            "text_span": [
+              2519,
+              2531
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 79,
+            "text_span": [
+              2531,
+              2551
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 80,
+            "text_span": [
+              2551,
+              2562
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 82,
+            "text_span": [
+              2564,
+              2567
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 83,
+            "text_span": [
+              2567,
+              2580
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 84,
+            "text_span": [
+              2580,
+              2596
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 86,
+            "text_span": [
+              2600,
+              2613
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 87,
+            "text_span": [
+              2613,
+              2641
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 88,
+            "text_span": [
+              2641,
+              2658
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 89,
+            "text_span": [
+              2658,
+              2671
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 90,
+            "text_span": [
+              2671,
+              2689
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 91,
+            "text_span": [
+              2689,
+              2693
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 93,
+            "text_span": [
+              2695,
+              2715
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 94,
+            "text_span": [
+              2715,
+              2724
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 95,
+            "text_span": [
+              2724,
+              2754
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 96,
+            "text_span": [
+              2754,
+              2794
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              2794,
+              2806
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 98,
+            "text_span": [
+              2806,
+              2818
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 99,
+            "text_span": [
+              2818,
+              2833
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 100,
+            "text_span": [
+              2833,
+              2837
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 101,
+            "text_span": [
+              2837,
+              2865
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              3891,
+              3917
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 137,
+            "text_span": [
+              3917,
+              3959
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 138,
+            "text_span": [
+              3959,
+              3963
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 139,
+            "text_span": [
+              3963,
+              4013
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              680,
+              761
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              761,
+              830
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 57,
+            "text_span": [
+              1862,
+              2000
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              951,
+              1227
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              4809,
+              4959
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              5917,
+              6358
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              6358,
+              6782
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 171,
+            "text_span": [
+              7114,
+              7306
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              148,
+              162
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              253,
+              268
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              509,
+              577
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              577,
+              651
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 136,
+            "text_span": [
+              3891,
+              3917
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              302,
+              481
+            ]
+          }
+        ],
+        "region": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          }
+        ],
+        "region_source": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              171,
+              199
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "claimed_amounts": "The text does not state that the resident claimed any specific monetary amount.",
+        "disputed_amount_gbp": "The decision concerns repair responsibility and complaint handling, and no disputed monetary amount is identified.",
+        "statutory_basis": "The text does not cite any statutory provision as the basis for the decision."
+      },
+      "cited_authorities": [
+        "Complaint Handling Code (the Code)",
+        "Remedies guidance"
+      ],
+      "claim_types": [
+        "Landlord response to fence repair",
+        "Complaint handling"
+      ],
+      "decision_date": "27 November 2025",
+      "evidence": [
+        "Resident reports of the need for repair to the back fence and landlord inspections in November 2022 and February 2023",
+        "Resident complaint dated 21 August 2023 about the landlord's handling of the fence repair",
+        "Stage 1 response stating fence maintenance and repair was the resident's responsibility and that this was in the resident's handbook",
+        "Tenancy handbook stating residents are responsible for maintaining fences and boundaries",
+        "Landlord's void standard on unsafe boundaries",
+        "Landlord's complaint process and Complaint Handling Code timescales",
+        "Landlord records provided for the investigation"
+      ],
+      "facts": "The landlord was London Borough of Redbridge and the occupancy was a secure tenancy. In July 2022 the resident reported a broken fence in her back garden; the landlord attended to inspect but did not complete repairs. The complaint was about the landlord's response to the fence repair and the investigation also considered complaint handling. The resident reported the need for a back-fence repair between 5 July 2022 and 7 February 2023, and the landlord inspected the fence in November 2022 and February 2023. On 21 August 2023 the resident complained about the landlord's handling of the fence repair and said she had chased for updates; she was informed in August 2023 that the repair was not the landlord's responsibility. On 6 September 2023 the landlord sent its stage 1 response stating that maintenance and repair of the fence was the resident's responsibility and that information to this effect was in the resident's handbook. The resident referred the complaint to the Ombudsman and said she wanted the landlord to repair the fence.",
+      "ground_truth_outcome": {
+        "complaint_handling": "No maladministration",
+        "fence_repair": "Service failure",
+        "remedy": "Landlord ordered to pay the resident £50 compensation"
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              951,
+              1227
+            ]
+          },
+          "text": "The landlord reasonably set out that the resident was responsible for the repairs. It acknowledged it did not communicate to its expected standard as part of the process. However, despite identifying this was inappropriate, it did not provide any redress to put things right."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              4809,
+              4959
+            ]
+          },
+          "text": "The tenancy handbook states residents are responsible for maintaining fences and boundaries. The landlord’s complaint response was in line with this."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              5917,
+              6358
+            ]
+          },
+          "text": "An apology as a part of putting things right was appropriate but not proportionate on its own given the impact of its failure to clarify the repair responsibility sooner."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 165,
+            "text_span": [
+              6358,
+              6782
+            ]
+          },
+          "text": "The compensation ordered is in line with our remedies guidance, which recommends this amount would be suitable where a failure caused inconvenience, but did not change the overall outcome."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 171,
+            "text_span": [
+              7114,
+              7306
+            ]
+          },
+          "text": "The landlord provided its formal response at both stages of the process within the appropriate timescales within the Code. There was no maladministration in the landlord’s complaint handling."
+        }
+      ],
+      "matter_type": "Housing Ombudsman investigation concerning a secure tenancy, fence repair, and complaint handling",
+      "parties": {
+        "landlord": "London Borough of Redbridge",
+        "resident": "Unnamed resident"
+      },
+      "region": "London",
+      "region_source": "Derived from the landlord name, London Borough of Redbridge"
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      \"Complaint Handling Code (the Code)\",\n      \"Remedies guidance\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 36,\n        \"text_span\": [\n          1246,\n          1369\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 165,\n        \"text_span\": [\n          6358,\n          6782\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 170,\n        \"text_span\": [\n          6851,\n          7114\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"Landlord response to fence repair\",\n      \"Complaint handling\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          509,\n          577\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          577,\n          651\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not state that the resident claimed any specific monetary amount.\"\n  },\n  \"decision_date\": {\n    \"value\": \"27 November 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          273,\n          275\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          275,\n          277\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 20,\n        \"text_span\": [\n          277,\n          291\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The decision concerns repair responsibility and complaint handling, and no disputed monetary amount is identified.\"\n  },\n  \"evidence\": {\n    \"value\": [\n      \"Resident reports of the need for repair to the back fence and landlord inspections in November 2022 and February 2023\",\n      \"Resident complaint dated 21 August 2023 about the landlord's handling of the fence repair\",\n      \"Stage 1 response stating fence maintenance and repair was the resident's responsibility and that this was in the resident's handbook\",\n      \"Tenancy handbook stating residents are responsible for maintaining fences and boundaries\",\n      \"Landlord's void standard on unsafe boundaries\",\n      \"Landlord's complaint process and Complaint Handling Code timescales\",\n      \"Landlord records provided for the investigation\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 65,\n        \"text_span\": [\n          2226,\n          2258\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 66,\n        \"text_span\": [\n          2258,\n          2284\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 67,\n        \"text_span\": [\n          2284,\n          2295\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 68,\n        \"text_span\": [\n          2295,\n          2309\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 69,\n        \"text_span\": [\n          2309,\n          2350\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 70,\n        \"text_span\": [\n          2350,\n          2360\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 71,\n        \"text_span\": [\n          2360,\n          2406\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 72,\n        \"text_span\": [\n          2406,\n          2421\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 73,\n        \"text_span\": [\n          2421,\n          2451\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 74,\n        \"text_span\": [\n          2451,\n          2505\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 88,\n        \"text_span\": [\n          2641,\n          2658\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 89,\n        \"text_span\": [\n          2658,\n          2671\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 90,\n        \"text_span\": [\n          2671,\n          2689\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 93,\n        \"text_span\": [\n          2695,\n          2715\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 95,\n        \"text_span\": [\n          2724,\n          2754\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 96,\n        \"text_span\": [\n          2754,\n          2794\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 101,\n        \"text_span\": [\n          2837,\n          2865\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 161,\n        \"text_span\": [\n          4809,\n          4959\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 162,\n        \"text_span\": [\n          4959,\n          5517\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 170,\n        \"text_span\": [\n          6851,\n          7114\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 175,\n        \"text_span\": [\n          7804,\n          7892\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": [\n      \"The landlord was London Borough of Redbridge and the occupancy was a secure tenancy.\",\n      \"In July 2022 the resident reported a broken fence in her back garden; the landlord attended to inspect but did not complete repairs.\",\n      \"The complaint was about the landlord's response to the fence repair and the investigation also considered complaint handling.\",\n      \"The resident reported the need for a back-fence repair between 5 July 2022 and 7 February 2023, and the landlord inspected the fence in November 2022 and February 2023.\",\n      \"On 21 August 2023 the resident complained about the landlord's handling of the fence repair and said she had chased for updates; she was informed in August 2023 that the repair was not the landlord's responsibility.\",\n      \"On 6 September 2023 the landlord sent its stage 1 response stating that maintenance and repair of the fence was the resident's responsibility and that information to this effect was in the resident's handbook.\",\n      \"The resident referred the complaint to the Ombudsman and said she wanted the landlord to repair the fence.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          171,\n          199\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 16,\n        \"text_span\": [\n          253,\n          268\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          302,\n          481\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          509,\n          577\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          577,\n          651\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 65,\n        \"text_span\": [\n          2226,\n          2258\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 66,\n        \"text_span\": [\n          2258,\n          2284\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 67,\n        \"text_span\": [\n          2284,\n          2295\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 68,\n        \"text_span\": [\n          2295,\n          2309\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 69,\n        \"text_span\": [\n          2309,\n          2350\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 70,\n        \"text_span\": [\n          2350,\n          2360\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 71,\n        \"text_span\": [\n          2360,\n          2406\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 72,\n        \"text_span\": [\n          2406,\n          2421\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 73,\n        \"text_span\": [\n          2421,\n          2451\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 74,\n        \"text_span\": [\n          2451,\n          2505\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 75,\n        \"text_span\": [\n          2505,\n          2509\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 76,\n        \"text_span\": [\n          2509,\n          2516\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 77,\n        \"text_span\": [\n          2516,\n          2519\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 78,\n        \"text_span\": [\n          2519,\n          2531\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 79,\n        \"text_span\": [\n          2531,\n          2551\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 80,\n        \"text_span\": [\n          2551,\n          2562\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 82,\n        \"text_span\": [\n          2564,\n          2567\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 83,\n        \"text_span\": [\n          2567,\n          2580\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 84,\n        \"text_span\": [\n          2580,\n          2596\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 86,\n        \"text_span\": [\n          2600,\n          2613\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 87,\n        \"text_span\": [\n          2613,\n          2641\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 88,\n        \"text_span\": [\n          2641,\n          2658\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 89,\n        \"text_span\": [\n          2658,\n          2671\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 90,\n        \"text_span\": [\n          2671,\n          2689\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 91,\n        \"text_span\": [\n          2689,\n          2693\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 93,\n        \"text_span\": [\n          2695,\n          2715\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 94,\n        \"text_span\": [\n          2715,\n          2724\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 95,\n        \"text_span\": [\n          2724,\n          2754\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 96,\n        \"text_span\": [\n          2754,\n          2794\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 97,\n        \"text_span\": [\n          2794,\n          2806\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 98,\n        \"text_span\": [\n          2806,\n          2818\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 99,\n        \"text_span\": [\n          2818,\n          2833\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 100,\n        \"text_span\": [\n          2833,\n          2837\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 101,\n        \"text_span\": [\n          2837,\n          2865\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 136,\n        \"text_span\": [\n          3891,\n          3917\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 137,\n        \"text_span\": [\n          3917,\n          3959\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 138,\n        \"text_span\": [\n          3959,\n          3963\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 139,\n        \"text_span\": [\n          3963,\n          4013\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": {\n      \"fence_repair\": \"Service failure\",\n      \"complaint_handling\": \"No maladministration\",\n      \"remedy\": \"Landlord ordered to pay the resident £50 compensation\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          680,\n          761\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 28,\n        \"text_span\": [\n          761,\n          830\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 57,\n        \"text_span\": [\n          1862,\n          2000\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord reasonably set out that the resident was responsible for the repairs. It acknowledged it did not communicate to its expected standard as part of the process. However, despite identifying this was inappropriate, it did not provide any redress to put things right.\",\n      \"The tenancy handbook states residents are responsible for maintaining fences and boundaries. The landlord’s complaint response was in line with this.\",\n      \"An apology as a part of putting things right was appropriate but not proportionate on its own given the impact of its failure to clarify the repair responsibility sooner.\",\n      \"The compensation ordered is in line with our remedies guidance, which recommends this amount would be suitable where a failure caused inconvenience, but did not change the overall outcome.\",\n      \"The landlord provided its formal response at both stages of the process within the appropriate timescales within the Code. There was no maladministration in the landlord’s complaint handling.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 34,\n        \"text_span\": [\n          951,\n          1227\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 161,\n        \"text_span\": [\n          4809,\n          4959\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 164,\n        \"text_span\": [\n          5917,\n          6358\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 165,\n        \"text_span\": [\n          6358,\n          6782\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 171,\n        \"text_span\": [\n          7114,\n          7306\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman investigation concerning a secure tenancy, fence repair, and complaint handling\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          148,\n          162\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 16,\n        \"text_span\": [\n          253,\n          268\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          509,\n          577\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          577,\n          651\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 136,\n        \"text_span\": [\n          3891,\n          3917\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"London Borough of Redbridge\",\n      \"resident\": \"Unnamed resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          171,\n          199\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          302,\n          481\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"London\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          171,\n          199\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Derived from the landlord name, London Borough of Redbridge\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          171,\n          199\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not cite any statutory provision as the basis for the decision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202334994\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 55, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Redbridge (202334994)\"}, {\"char_end\": 95, \"char_start\": 55, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Redbridge (202334994)\"}, {\"char_end\": 107, \"char_start\": 95, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 116, \"char_start\": 107, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 124, \"char_start\": 116, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 134, \"char_start\": 124, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202334994\"}, {\"char_end\": 148, \"char_start\": 134, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 162, \"char_start\": 148, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 171, \"char_start\": 162, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 199, \"char_start\": 171, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London Borough of Redbridge\"}, {\"char_end\": 213, \"char_start\": 199, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 243, \"char_start\": 213, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Local Authority / ALMO or TMO\"}, {\"char_end\": 253, \"char_start\": 243, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 268, \"char_start\": 253, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Secure Tenancy\"}, {\"char_end\": 273, \"char_start\": 268, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 275, \"char_start\": 273, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"2\"}, {\"char_end\": 277, \"char_start\": 275, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"7\"}, {\"char_end\": 291, \"char_start\": 277, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"November 2025\"}, {\"char_end\": 302, \"char_start\": 291, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 481, \"char_start\": 302, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"In July 2022 the resident reported a broken fence in her back garden to the landlord. Following her report the landlord attended to inspect, however, it did not complete repairs.\"}, {\"char_end\": 509, \"char_start\": 481, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 577, \"char_start\": 509, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s response to the fence repair.\"}, {\"char_end\": 651, \"char_start\": 577, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"This investigation has also considered the landlord’s complaint handling.\"}, {\"char_end\": 680, \"char_start\": 651, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 761, \"char_start\": 680, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was a service failure by the landlord in its response to the fence repair.\"}, {\"char_end\": 830, \"char_start\": 761, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was no maladministration in the landlord’s complaint handling.\"}, {\"char_end\": 833, \"char_start\": 830, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 838, \"char_start\": 833, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 888, \"char_start\": 838, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made orders for the landlord to put things right.\"}, {\"char_end\": 907, \"char_start\": 888, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 951, \"char_start\": 907, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s response to the fence repair\"}, {\"char_end\": 1227, \"char_start\": 951, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord reasonably set out that the resident was responsible for the repairs. It acknowledged it did not communicate to its expected standard as part of the process. However, despite identifying this was inappropriate, it did not provide any redress to put things right.\"}, {\"char_end\": 1246, \"char_start\": 1227, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint Handling\"}, {\"char_end\": 1369, \"char_start\": 1246, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord responded to the complaint in line with the timeframes as required by our Complaint Handling Code (the Code).\"}, {\"char_end\": 1390, \"char_start\": 1369, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1448, \"char_start\": 1390, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1450, \"char_start\": 1448, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1525, \"char_start\": 1450, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1616, \"char_start\": 1525, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1623, \"char_start\": 1616, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 1633, \"char_start\": 1623, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 1638, \"char_start\": 1633, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 1749, \"char_start\": 1638, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 1752, \"char_start\": 1749, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 1763, \"char_start\": 1752, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 1779, \"char_start\": 1763, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 1786, \"char_start\": 1779, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 1795, \"char_start\": 1786, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 1800, \"char_start\": 1795, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 1806, \"char_start\": 1800, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 1832, \"char_start\": 1806, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 1841, \"char_start\": 1832, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 1843, \"char_start\": 1841, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 1862, \"char_start\": 1843, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2000, \"char_start\": 1862, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £50 to recognise the distress and inconvenience caused by its failure in response to the fence repair.\"}, {\"char_end\": 2135, \"char_start\": 2000, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 2149, \"char_start\": 2135, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2165, \"char_start\": 2149, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"06 January 2026\"}, {\"char_end\": 2183, \"char_start\": 2165, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 2207, \"char_start\": 2183, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 2212, \"char_start\": 2207, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 2226, \"char_start\": 2212, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 2258, \"char_start\": 2226, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"pre_decision_record\", \"text\": \"5 July 2022 and 7 February 2023\"}, {\"char_end\": 2284, \"char_start\": 2258, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident reported the\"}, {\"char_end\": 2295, \"char_start\": 2284, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"pre_decision_record\", \"text\": \"need for a\"}, {\"char_end\": 2309, \"char_start\": 2295, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"pre_decision_record\", \"text\": \"repair to the\"}, {\"char_end\": 2350, \"char_start\": 2309, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"pre_decision_record\", \"text\": \"back fence to the landlord. The landlord\"}, {\"char_end\": 2360, \"char_start\": 2350, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"pre_decision_record\", \"text\": \"inspected\"}, {\"char_end\": 2406, \"char_start\": 2360, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"pre_decision_record\", \"text\": \"the fence in November 2022 and February 2023.\"}, {\"char_end\": 2421, \"char_start\": 2406, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"pre_decision_record\", \"text\": \"21 August 2023\"}, {\"char_end\": 2451, \"char_start\": 2421, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident complained about\"}, {\"char_end\": 2505, \"char_start\": 2451, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"pre_decision_record\", \"text\": \"the landlord’s handling of the fence repair. She said\"}, {\"char_end\": 2509, \"char_start\": 2505, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"pre_decision_record\", \"text\": \"she\"}, {\"char_end\": 2516, \"char_start\": 2509, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"pre_decision_record\", \"text\": \"chased\"}, {\"char_end\": 2519, \"char_start\": 2516, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"pre_decision_record\", \"text\": \"it\"}, {\"char_end\": 2531, \"char_start\": 2519, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"pre_decision_record\", \"text\": \"for updates\"}, {\"char_end\": 2551, \"char_start\": 2531, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"pre_decision_record\", \"text\": \"about the status of\"}, {\"char_end\": 2562, \"char_start\": 2551, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"pre_decision_record\", \"text\": \"the repair\"}, {\"char_end\": 2564, \"char_start\": 2562, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 2567, \"char_start\": 2564, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"pre_decision_record\", \"text\": \"It\"}, {\"char_end\": 2580, \"char_start\": 2567, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"pre_decision_record\", \"text\": \"informed her\"}, {\"char_end\": 2596, \"char_start\": 2580, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"pre_decision_record\", \"text\": \"in August 2023,\"}, {\"char_end\": 2600, \"char_start\": 2596, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"pre_decision_record\", \"text\": \"tha\"}, {\"char_end\": 2613, \"char_start\": 2600, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"pre_decision_record\", \"text\": \"t the repair\"}, {\"char_end\": 2641, \"char_start\": 2613, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"pre_decision_record\", \"text\": \"was not its responsibility.\"}, {\"char_end\": 2658, \"char_start\": 2641, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"pre_decision_record\", \"text\": \"6 September 2023\"}, {\"char_end\": 2671, \"char_start\": 2658, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord\"}, {\"char_end\": 2689, \"char_start\": 2671, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"pre_decision_record\", \"text\": \"sent the resident\"}, {\"char_end\": 2693, \"char_start\": 2689, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"pre_decision_record\", \"text\": \"its\"}, {\"char_end\": 2695, \"char_start\": 2693, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"pre_decision_record\", \"text\": \"s\"}, {\"char_end\": 2715, \"char_start\": 2695, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"pre_decision_record\", \"text\": \"tage 1 response. It\"}, {\"char_end\": 2724, \"char_start\": 2715, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"pre_decision_record\", \"text\": \"said the\"}, {\"char_end\": 2754, \"char_start\": 2724, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"pre_decision_record\", \"text\": \"maintenance and repair of the\"}, {\"char_end\": 2794, \"char_start\": 2754, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"pre_decision_record\", \"text\": \"fence was the resident’s responsibility\"}, {\"char_end\": 2806, \"char_start\": 2794, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"pre_decision_record\", \"text\": \". It stated\"}, {\"char_end\": 2818, \"char_start\": 2806, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"pre_decision_record\", \"text\": \"information\"}, {\"char_end\": 2833, \"char_start\": 2818, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"pre_decision_record\", \"text\": \"to this effect\"}, {\"char_end\": 2837, \"char_start\": 2833, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"pre_decision_record\", \"text\": \"was\"}, {\"char_end\": 2865, \"char_start\": 2837, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"pre_decision_record\", \"text\": \"in the resident’s handbook.\"}, {\"char_end\": 2882, \"char_start\": 2865, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"pre_decision_record\", \"text\": \"9 September 2023\"}, {\"char_end\": 2905, \"char_start\": 2882, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident escalated\"}, {\"char_end\": 2909, \"char_start\": 2905, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"pre_decision_record\", \"text\": \"her\"}, {\"char_end\": 2919, \"char_start\": 2909, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint\"}, {\"char_end\": 2983, \"char_start\": 2919, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"tribunal_reasoning\", \"text\": \"as she remained unhappy with the landlord’s response. She said:\"}, {\"char_end\": 3005, \"char_start\": 2983, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The repair handbook d\"}, {\"char_end\": 3008, \"char_start\": 3005, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"tribunal_reasoning\", \"text\": \"id\"}, {\"char_end\": 3036, \"char_start\": 3008, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not specify it was resident\"}, {\"char_end\": 3038, \"char_start\": 3036, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s\"}, {\"char_end\": 3080, \"char_start\": 3038, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"tribunal_reasoning\", \"text\": \"responsibility to repair boundary fences.\"}, {\"char_end\": 3144, \"char_start\": 3080, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was poor communication from the landlord about the issue.\"}, {\"char_end\": 3191, \"char_start\": 3144, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord told her if the property was void\"}, {\"char_end\": 3228, \"char_start\": 3191, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"tribunal_reasoning\", \"text\": \"(empty awaiting a tenant to move in)\"}, {\"char_end\": 3233, \"char_start\": 3228, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"tribunal_reasoning\", \"text\": \", it\"}, {\"char_end\": 3270, \"char_start\": 3233, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"tribunal_reasoning\", \"text\": \"would be responsible for the repair.\"}, {\"char_end\": 3285, \"char_start\": 3270, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"tribunal_reasoning\", \"text\": \"5 October 2023\"}, {\"char_end\": 3298, \"char_start\": 3285, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord\"}, {\"char_end\": 3313, \"char_start\": 3298, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"tribunal_reasoning\", \"text\": \"provided its s\"}, {\"char_end\": 3329, \"char_start\": 3313, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"tribunal_reasoning\", \"text\": \"tage 2 response\"}, {\"char_end\": 3331, \"char_start\": 3329, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"tribunal_reasoning\", \"text\": \".\"}, {\"char_end\": 3358, \"char_start\": 3331, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It reiterated the resident\"}, {\"char_end\": 3362, \"char_start\": 3358, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"tribunal_reasoning\", \"text\": \"was\"}, {\"char_end\": 3374, \"char_start\": 3362, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"tribunal_reasoning\", \"text\": \"responsible\"}, {\"char_end\": 3403, \"char_start\": 3374, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"tribunal_reasoning\", \"text\": \"for the repair of the fence.\"}, {\"char_end\": 3582, \"char_start\": 3403, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It apologised if the tenant handbook did not make that clear the fence repair was her responsibility and if that information was not made clear when she first reported the issue.\"}, {\"char_end\": 3585, \"char_start\": 3582, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"tribunal_reasoning\", \"text\": \"It\"}, {\"char_end\": 3763, \"char_start\": 3585, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"tribunal_reasoning\", \"text\": \"clarified void properties have the same criteria as its tenanted properties and fence repairs were not carried out in either. It apologised that she had been informed otherwise.\"}, {\"char_end\": 3765, \"char_start\": 3763, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"tribunal_reasoning\", \"text\": \"I\"}, {\"char_end\": 3767, \"char_start\": 3765, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"tribunal_reasoning\", \"text\": \"t\"}, {\"char_end\": 3794, \"char_start\": 3767, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"tribunal_reasoning\", \"text\": \"upheld the complaint on th\"}, {\"char_end\": 3796, \"char_start\": 3794, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"tribunal_reasoning\", \"text\": \"e\"}, {\"char_end\": 3802, \"char_start\": 3796, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"tribunal_reasoning\", \"text\": \"basis\"}, {\"char_end\": 3804, \"char_start\": 3802, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"tribunal_reasoning\", \"text\": \"i\"}, {\"char_end\": 3891, \"char_start\": 3804, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"tribunal_reasoning\", \"text\": \"ts communication throughout the process was below the standard it expected to provide.\"}, {\"char_end\": 3917, \"char_start\": 3891, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 3959, \"char_start\": 3917, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident referred the complaint to us\"}, {\"char_end\": 3963, \"char_start\": 3959, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"and\"}, {\"char_end\": 4013, \"char_start\": 3963, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"said she wanted the landlord to repair the fence.\"}, {\"char_end\": 4035, \"char_start\": 4013, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 4059, \"char_start\": 4035, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 4062, \"char_start\": 4059, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 4081, \"char_start\": 4062, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 4087, \"char_start\": 4081, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 4121, \"char_start\": 4087, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 4125, \"char_start\": 4121, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 4156, \"char_start\": 4125, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 4222, \"char_start\": 4156, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 4262, \"char_start\": 4222, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 4267, \"char_start\": 4262, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 4299, \"char_start\": 4267, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 4361, \"char_start\": 4299, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 4371, \"char_start\": 4361, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 4373, \"char_start\": 4371, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"tribunal_reasoning\", \"text\": \"T\"}, {\"char_end\": 4403, \"char_start\": 4373, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"tribunal_reasoning\", \"text\": \"he landlord’s response to the\"}, {\"char_end\": 4409, \"char_start\": 4403, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"tribunal_reasoning\", \"text\": \"fence\"}, {\"char_end\": 4416, \"char_start\": 4409, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"tribunal_reasoning\", \"text\": \"repair\"}, {\"char_end\": 4424, \"char_start\": 4416, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 4440, \"char_start\": 4424, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 4809, \"char_start\": 4440, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Following the resident’s report about the fence in July 2022, the landlord completed 2 inspections in November 2022 and February 2023. The resident said after the inspections, she repeatedly chased the landlord for updates about the repair of the damaged fence. In August 2023, the landlord confirmed to the resident that the fence repairs were not its responsibility.\"}, {\"char_end\": 4959, \"char_start\": 4809, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The tenancy handbook states residents are responsible for maintaining fences and boundaries. The landlord’s complaint response was in line with this.\"}, {\"char_end\": 5517, \"char_start\": 4959, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s void standard states it will repair an unsafe boundary which belongs to it, to ensure a property is secure. The resident said the fence was unstable when she moved in. However, there is no evidence she raised concerns about the fence at the start of the tenancy. The first report about the fence was submitted by the resident 3 months after the tenancy started, after storm damage. On the basis of when the resident reported the damaged fence to the landlord, its decision to refer responsibility for the repairs back her remained reasonable.\"}, {\"char_end\": 5917, \"char_start\": 5517, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord upheld the complaint because it failed to inform the resident from the outset that the fence repair was her responsibility to undertake. The landlord inspected the fence twice, which created false expectations and led to the resident to chase the repair for a year before the landlord confirmed its position that the resident was responsible for the repair under the tenancy conditions.\"}, {\"char_end\": 6358, \"char_start\": 5917, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord apologised to the resident for the lack of clarity about the responsibility to repair when she first reported the matter. An apology as a part of putting things right was appropriate but not proportionate on its own given the impact of its failure to clarify the repair responsibility sooner. The resident spent time and effort pursuing the matter and received misleading information before the landlord confirmed its position.\"}, {\"char_end\": 6782, \"char_start\": 6358, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"tribunal_reasoning\", \"text\": \"To recognise this, we have ordered the landlord to pay £50 compensation to the resident. The compensation ordered is in line with our remedies guidance, which recommends this amount would be suitable where a failure caused inconvenience, but did not change the overall outcome. In this case, the landlord’s delay to clarify responsibility through its poor communication led to unnecessary time and trouble for the resident.\"}, {\"char_end\": 6792, \"char_start\": 6782, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 6822, \"char_start\": 6792, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The handling of the complaint\"}, {\"char_end\": 6830, \"char_start\": 6822, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 6851, \"char_start\": 6830, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"tribunal_reasoning\", \"text\": \"No maladministration\"}, {\"char_end\": 7114, \"char_start\": 6851, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord has a 2 stage complaint process with timescales that align with the Code. The Code requires landlord’s to log complaints at both stages within 5 working days and respond to complaints within 10 working days at stage 1 and 20 working days at stage 2.\"}, {\"char_end\": 7306, \"char_start\": 7114, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided its formal response at both stages of the process within the appropriate timescales within the Code. There was no maladministration in the landlord’s complaint handling.\"}, {\"char_end\": 7315, \"char_start\": 7306, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 7754, \"char_start\": 7315, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord acknowledged its failure to provide the resident with the correct information about fence repair responsibility at the earliest opportunity. It confirmed it would remind staff to inform residents at the outset that fence repairs are their responsibility, in line with tenancy conditions. This demonstrates the landlord has gained learning from the complaint and as a result has made a commitment to improve its communication.\"}, {\"char_end\": 7804, \"char_start\": 7754, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Knowledge information management (record keeping)\"}, {\"char_end\": 7892, \"char_start\": 7804, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord provided sufficient records for us to investigate the resident’s complaint.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "c7d70732d2b85104a0fee5c693891e73cc9313ba825997353261a42f757bfa48",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T16:06:26.347213+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "20ce1a35eceb1771d5d39d81f66adee1cead6773e5d3c0f1c3be826d3474280f"
+}

@@ -1,0 +1,1526 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202511313",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "UNGROUNDED",
+      "matter_type": "GROUNDED",
+      "statutory_basis[0]": "UNGROUNDED",
+      "statutory_basis[100]": "UNGROUNDED",
+      "statutory_basis[101]": "UNGROUNDED",
+      "statutory_basis[102]": "UNGROUNDED",
+      "statutory_basis[103]": "UNGROUNDED",
+      "statutory_basis[104]": "UNGROUNDED",
+      "statutory_basis[105]": "UNGROUNDED",
+      "statutory_basis[106]": "UNGROUNDED",
+      "statutory_basis[107]": "UNGROUNDED",
+      "statutory_basis[108]": "UNGROUNDED",
+      "statutory_basis[109]": "UNGROUNDED",
+      "statutory_basis[10]": "UNGROUNDED",
+      "statutory_basis[110]": "UNGROUNDED",
+      "statutory_basis[111]": "UNGROUNDED",
+      "statutory_basis[112]": "UNGROUNDED",
+      "statutory_basis[113]": "UNGROUNDED",
+      "statutory_basis[114]": "UNGROUNDED",
+      "statutory_basis[115]": "UNGROUNDED",
+      "statutory_basis[116]": "UNGROUNDED",
+      "statutory_basis[117]": "UNGROUNDED",
+      "statutory_basis[118]": "UNGROUNDED",
+      "statutory_basis[119]": "UNGROUNDED",
+      "statutory_basis[11]": "UNGROUNDED",
+      "statutory_basis[120]": "UNGROUNDED",
+      "statutory_basis[121]": "UNGROUNDED",
+      "statutory_basis[122]": "UNGROUNDED",
+      "statutory_basis[123]": "UNGROUNDED",
+      "statutory_basis[124]": "UNGROUNDED",
+      "statutory_basis[125]": "UNGROUNDED",
+      "statutory_basis[126]": "UNGROUNDED",
+      "statutory_basis[127]": "UNGROUNDED",
+      "statutory_basis[128]": "UNGROUNDED",
+      "statutory_basis[129]": "UNGROUNDED",
+      "statutory_basis[12]": "UNGROUNDED",
+      "statutory_basis[130]": "UNGROUNDED",
+      "statutory_basis[131]": "UNGROUNDED",
+      "statutory_basis[132]": "UNGROUNDED",
+      "statutory_basis[133]": "UNGROUNDED",
+      "statutory_basis[134]": "UNGROUNDED",
+      "statutory_basis[135]": "UNGROUNDED",
+      "statutory_basis[136]": "UNGROUNDED",
+      "statutory_basis[137]": "UNGROUNDED",
+      "statutory_basis[138]": "UNGROUNDED",
+      "statutory_basis[139]": "UNGROUNDED",
+      "statutory_basis[13]": "UNGROUNDED",
+      "statutory_basis[140]": "UNGROUNDED",
+      "statutory_basis[141]": "UNGROUNDED",
+      "statutory_basis[142]": "UNGROUNDED",
+      "statutory_basis[143]": "UNGROUNDED",
+      "statutory_basis[144]": "UNGROUNDED",
+      "statutory_basis[145]": "UNGROUNDED",
+      "statutory_basis[146]": "UNGROUNDED",
+      "statutory_basis[147]": "UNGROUNDED",
+      "statutory_basis[148]": "UNGROUNDED",
+      "statutory_basis[149]": "UNGROUNDED",
+      "statutory_basis[14]": "UNGROUNDED",
+      "statutory_basis[150]": "UNGROUNDED",
+      "statutory_basis[151]": "UNGROUNDED",
+      "statutory_basis[152]": "UNGROUNDED",
+      "statutory_basis[153]": "UNGROUNDED",
+      "statutory_basis[154]": "UNGROUNDED",
+      "statutory_basis[155]": "UNGROUNDED",
+      "statutory_basis[156]": "UNGROUNDED",
+      "statutory_basis[157]": "UNGROUNDED",
+      "statutory_basis[158]": "UNGROUNDED",
+      "statutory_basis[159]": "UNGROUNDED",
+      "statutory_basis[15]": "UNGROUNDED",
+      "statutory_basis[160]": "UNGROUNDED",
+      "statutory_basis[161]": "UNGROUNDED",
+      "statutory_basis[162]": "UNGROUNDED",
+      "statutory_basis[163]": "UNGROUNDED",
+      "statutory_basis[164]": "UNGROUNDED",
+      "statutory_basis[165]": "UNGROUNDED",
+      "statutory_basis[166]": "UNGROUNDED",
+      "statutory_basis[167]": "UNGROUNDED",
+      "statutory_basis[168]": "UNGROUNDED",
+      "statutory_basis[169]": "UNGROUNDED",
+      "statutory_basis[16]": "UNGROUNDED",
+      "statutory_basis[170]": "UNGROUNDED",
+      "statutory_basis[171]": "UNGROUNDED",
+      "statutory_basis[172]": "UNGROUNDED",
+      "statutory_basis[173]": "UNGROUNDED",
+      "statutory_basis[174]": "UNGROUNDED",
+      "statutory_basis[175]": "UNGROUNDED",
+      "statutory_basis[176]": "UNGROUNDED",
+      "statutory_basis[177]": "UNGROUNDED",
+      "statutory_basis[178]": "UNGROUNDED",
+      "statutory_basis[179]": "UNGROUNDED",
+      "statutory_basis[17]": "UNGROUNDED",
+      "statutory_basis[180]": "UNGROUNDED",
+      "statutory_basis[181]": "UNGROUNDED",
+      "statutory_basis[182]": "UNGROUNDED",
+      "statutory_basis[183]": "UNGROUNDED",
+      "statutory_basis[184]": "UNGROUNDED",
+      "statutory_basis[185]": "UNGROUNDED",
+      "statutory_basis[186]": "UNGROUNDED",
+      "statutory_basis[187]": "UNGROUNDED",
+      "statutory_basis[188]": "UNGROUNDED",
+      "statutory_basis[189]": "UNGROUNDED",
+      "statutory_basis[18]": "UNGROUNDED",
+      "statutory_basis[190]": "UNGROUNDED",
+      "statutory_basis[191]": "UNGROUNDED",
+      "statutory_basis[192]": "UNGROUNDED",
+      "statutory_basis[193]": "UNGROUNDED",
+      "statutory_basis[194]": "UNGROUNDED",
+      "statutory_basis[195]": "UNGROUNDED",
+      "statutory_basis[196]": "UNGROUNDED",
+      "statutory_basis[197]": "UNGROUNDED",
+      "statutory_basis[198]": "UNGROUNDED",
+      "statutory_basis[199]": "UNGROUNDED",
+      "statutory_basis[19]": "UNGROUNDED",
+      "statutory_basis[1]": "UNGROUNDED",
+      "statutory_basis[200]": "UNGROUNDED",
+      "statutory_basis[201]": "UNGROUNDED",
+      "statutory_basis[202]": "UNGROUNDED",
+      "statutory_basis[203]": "UNGROUNDED",
+      "statutory_basis[204]": "UNGROUNDED",
+      "statutory_basis[205]": "UNGROUNDED",
+      "statutory_basis[206]": "UNGROUNDED",
+      "statutory_basis[207]": "UNGROUNDED",
+      "statutory_basis[20]": "UNGROUNDED",
+      "statutory_basis[21]": "UNGROUNDED",
+      "statutory_basis[22]": "UNGROUNDED",
+      "statutory_basis[23]": "UNGROUNDED",
+      "statutory_basis[24]": "UNGROUNDED",
+      "statutory_basis[25]": "UNGROUNDED",
+      "statutory_basis[26]": "UNGROUNDED",
+      "statutory_basis[27]": "UNGROUNDED",
+      "statutory_basis[28]": "UNGROUNDED",
+      "statutory_basis[29]": "UNGROUNDED",
+      "statutory_basis[2]": "UNGROUNDED",
+      "statutory_basis[30]": "UNGROUNDED",
+      "statutory_basis[31]": "UNGROUNDED",
+      "statutory_basis[32]": "UNGROUNDED",
+      "statutory_basis[33]": "UNGROUNDED",
+      "statutory_basis[34]": "UNGROUNDED",
+      "statutory_basis[35]": "UNGROUNDED",
+      "statutory_basis[36]": "UNGROUNDED",
+      "statutory_basis[37]": "UNGROUNDED",
+      "statutory_basis[38]": "UNGROUNDED",
+      "statutory_basis[39]": "UNGROUNDED",
+      "statutory_basis[3]": "UNGROUNDED",
+      "statutory_basis[40]": "UNGROUNDED",
+      "statutory_basis[41]": "UNGROUNDED",
+      "statutory_basis[42]": "UNGROUNDED",
+      "statutory_basis[43]": "UNGROUNDED",
+      "statutory_basis[44]": "UNGROUNDED",
+      "statutory_basis[45]": "UNGROUNDED",
+      "statutory_basis[46]": "UNGROUNDED",
+      "statutory_basis[47]": "UNGROUNDED",
+      "statutory_basis[48]": "UNGROUNDED",
+      "statutory_basis[49]": "UNGROUNDED",
+      "statutory_basis[4]": "UNGROUNDED",
+      "statutory_basis[50]": "UNGROUNDED",
+      "statutory_basis[51]": "UNGROUNDED",
+      "statutory_basis[52]": "UNGROUNDED",
+      "statutory_basis[53]": "UNGROUNDED",
+      "statutory_basis[54]": "UNGROUNDED",
+      "statutory_basis[55]": "UNGROUNDED",
+      "statutory_basis[56]": "UNGROUNDED",
+      "statutory_basis[57]": "UNGROUNDED",
+      "statutory_basis[58]": "UNGROUNDED",
+      "statutory_basis[59]": "UNGROUNDED",
+      "statutory_basis[5]": "UNGROUNDED",
+      "statutory_basis[60]": "UNGROUNDED",
+      "statutory_basis[61]": "UNGROUNDED",
+      "statutory_basis[62]": "UNGROUNDED",
+      "statutory_basis[63]": "UNGROUNDED",
+      "statutory_basis[64]": "UNGROUNDED",
+      "statutory_basis[65]": "UNGROUNDED",
+      "statutory_basis[66]": "UNGROUNDED",
+      "statutory_basis[67]": "UNGROUNDED",
+      "statutory_basis[68]": "UNGROUNDED",
+      "statutory_basis[69]": "UNGROUNDED",
+      "statutory_basis[6]": "UNGROUNDED",
+      "statutory_basis[70]": "UNGROUNDED",
+      "statutory_basis[71]": "UNGROUNDED",
+      "statutory_basis[72]": "UNGROUNDED",
+      "statutory_basis[73]": "UNGROUNDED",
+      "statutory_basis[74]": "UNGROUNDED",
+      "statutory_basis[75]": "UNGROUNDED",
+      "statutory_basis[76]": "UNGROUNDED",
+      "statutory_basis[77]": "UNGROUNDED",
+      "statutory_basis[78]": "UNGROUNDED",
+      "statutory_basis[79]": "UNGROUNDED",
+      "statutory_basis[7]": "UNGROUNDED",
+      "statutory_basis[80]": "UNGROUNDED",
+      "statutory_basis[81]": "UNGROUNDED",
+      "statutory_basis[82]": "UNGROUNDED",
+      "statutory_basis[83]": "UNGROUNDED",
+      "statutory_basis[84]": "UNGROUNDED",
+      "statutory_basis[85]": "UNGROUNDED",
+      "statutory_basis[86]": "UNGROUNDED",
+      "statutory_basis[87]": "UNGROUNDED",
+      "statutory_basis[88]": "UNGROUNDED",
+      "statutory_basis[89]": "UNGROUNDED",
+      "statutory_basis[8]": "UNGROUNDED",
+      "statutory_basis[90]": "UNGROUNDED",
+      "statutory_basis[91]": "UNGROUNDED",
+      "statutory_basis[92]": "UNGROUNDED",
+      "statutory_basis[93]": "UNGROUNDED",
+      "statutory_basis[94]": "UNGROUNDED",
+      "statutory_basis[95]": "UNGROUNDED",
+      "statutory_basis[96]": "UNGROUNDED",
+      "statutory_basis[97]": "UNGROUNDED",
+      "statutory_basis[98]": "UNGROUNDED",
+      "statutory_basis[99]": "UNGROUNDED",
+      "statutory_basis[9]": "UNGROUNDED"
+    },
+    "grounding_pass_rate": 0.0228310502283105,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 14 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='10 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='pest control', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'complainant': 'The resi...Quadrant Housing Trust'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Input should be a valid list [type=list_type, input_value='The resident sent the la...inding new entry holes.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nstatutory_basis\n  Input should be a valid list [type=list_type, input_value=\"The Ombudsman's Complain...ing days, respectively.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['pest co...ng days, respectively.\"}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value=\"Service failure found in...and review of failings.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 7 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='10 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='pest control', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='complaint handling', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'complainant': 'The resi...Quadrant Housing Trust'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Input should be a valid list [type=list_type, input_value='The resident sent the la...inding new entry holes.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nstatutory_basis\n  Input should be a valid list [type=list_type, input_value=\"The Ombudsman's Complain...ing days, respectively.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value=\"Service failure found in...and review of failings.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "quote not found in declared span",
+      "matter_type": "basis span present",
+      "statutory_basis[0]": "missing statute or section",
+      "statutory_basis[100]": "missing statute or section",
+      "statutory_basis[101]": "missing statute or section",
+      "statutory_basis[102]": "missing statute or section",
+      "statutory_basis[103]": "missing statute or section",
+      "statutory_basis[104]": "missing statute or section",
+      "statutory_basis[105]": "missing statute or section",
+      "statutory_basis[106]": "missing statute or section",
+      "statutory_basis[107]": "missing statute or section",
+      "statutory_basis[108]": "missing statute or section",
+      "statutory_basis[109]": "missing statute or section",
+      "statutory_basis[10]": "missing statute or section",
+      "statutory_basis[110]": "missing statute or section",
+      "statutory_basis[111]": "missing statute or section",
+      "statutory_basis[112]": "missing statute or section",
+      "statutory_basis[113]": "missing statute or section",
+      "statutory_basis[114]": "missing statute or section",
+      "statutory_basis[115]": "missing statute or section",
+      "statutory_basis[116]": "missing statute or section",
+      "statutory_basis[117]": "missing statute or section",
+      "statutory_basis[118]": "missing statute or section",
+      "statutory_basis[119]": "missing statute or section",
+      "statutory_basis[11]": "missing statute or section",
+      "statutory_basis[120]": "missing statute or section",
+      "statutory_basis[121]": "missing statute or section",
+      "statutory_basis[122]": "missing statute or section",
+      "statutory_basis[123]": "missing statute or section",
+      "statutory_basis[124]": "missing statute or section",
+      "statutory_basis[125]": "missing statute or section",
+      "statutory_basis[126]": "missing statute or section",
+      "statutory_basis[127]": "missing statute or section",
+      "statutory_basis[128]": "missing statute or section",
+      "statutory_basis[129]": "missing statute or section",
+      "statutory_basis[12]": "missing statute or section",
+      "statutory_basis[130]": "missing statute or section",
+      "statutory_basis[131]": "missing statute or section",
+      "statutory_basis[132]": "missing statute or section",
+      "statutory_basis[133]": "missing statute or section",
+      "statutory_basis[134]": "missing statute or section",
+      "statutory_basis[135]": "missing statute or section",
+      "statutory_basis[136]": "missing statute or section",
+      "statutory_basis[137]": "missing statute or section",
+      "statutory_basis[138]": "missing statute or section",
+      "statutory_basis[139]": "missing statute or section",
+      "statutory_basis[13]": "missing statute or section",
+      "statutory_basis[140]": "missing statute or section",
+      "statutory_basis[141]": "missing statute or section",
+      "statutory_basis[142]": "missing statute or section",
+      "statutory_basis[143]": "missing statute or section",
+      "statutory_basis[144]": "missing statute or section",
+      "statutory_basis[145]": "missing statute or section",
+      "statutory_basis[146]": "missing statute or section",
+      "statutory_basis[147]": "missing statute or section",
+      "statutory_basis[148]": "missing statute or section",
+      "statutory_basis[149]": "missing statute or section",
+      "statutory_basis[14]": "missing statute or section",
+      "statutory_basis[150]": "missing statute or section",
+      "statutory_basis[151]": "missing statute or section",
+      "statutory_basis[152]": "missing statute or section",
+      "statutory_basis[153]": "missing statute or section",
+      "statutory_basis[154]": "missing statute or section",
+      "statutory_basis[155]": "missing statute or section",
+      "statutory_basis[156]": "missing statute or section",
+      "statutory_basis[157]": "missing statute or section",
+      "statutory_basis[158]": "missing statute or section",
+      "statutory_basis[159]": "missing statute or section",
+      "statutory_basis[15]": "missing statute or section",
+      "statutory_basis[160]": "missing statute or section",
+      "statutory_basis[161]": "missing statute or section",
+      "statutory_basis[162]": "missing statute or section",
+      "statutory_basis[163]": "missing statute or section",
+      "statutory_basis[164]": "missing statute or section",
+      "statutory_basis[165]": "missing statute or section",
+      "statutory_basis[166]": "missing statute or section",
+      "statutory_basis[167]": "missing statute or section",
+      "statutory_basis[168]": "missing statute or section",
+      "statutory_basis[169]": "missing statute or section",
+      "statutory_basis[16]": "missing statute or section",
+      "statutory_basis[170]": "missing statute or section",
+      "statutory_basis[171]": "missing statute or section",
+      "statutory_basis[172]": "missing statute or section",
+      "statutory_basis[173]": "missing statute or section",
+      "statutory_basis[174]": "missing statute or section",
+      "statutory_basis[175]": "missing statute or section",
+      "statutory_basis[176]": "missing statute or section",
+      "statutory_basis[177]": "missing statute or section",
+      "statutory_basis[178]": "missing statute or section",
+      "statutory_basis[179]": "missing statute or section",
+      "statutory_basis[17]": "missing statute or section",
+      "statutory_basis[180]": "missing statute or section",
+      "statutory_basis[181]": "missing statute or section",
+      "statutory_basis[182]": "missing statute or section",
+      "statutory_basis[183]": "missing statute or section",
+      "statutory_basis[184]": "missing statute or section",
+      "statutory_basis[185]": "missing statute or section",
+      "statutory_basis[186]": "missing statute or section",
+      "statutory_basis[187]": "missing statute or section",
+      "statutory_basis[188]": "missing statute or section",
+      "statutory_basis[189]": "missing statute or section",
+      "statutory_basis[18]": "missing statute or section",
+      "statutory_basis[190]": "missing statute or section",
+      "statutory_basis[191]": "missing statute or section",
+      "statutory_basis[192]": "missing statute or section",
+      "statutory_basis[193]": "missing statute or section",
+      "statutory_basis[194]": "missing statute or section",
+      "statutory_basis[195]": "missing statute or section",
+      "statutory_basis[196]": "missing statute or section",
+      "statutory_basis[197]": "missing statute or section",
+      "statutory_basis[198]": "missing statute or section",
+      "statutory_basis[199]": "missing statute or section",
+      "statutory_basis[19]": "missing statute or section",
+      "statutory_basis[1]": "missing statute or section",
+      "statutory_basis[200]": "missing statute or section",
+      "statutory_basis[201]": "missing statute or section",
+      "statutory_basis[202]": "missing statute or section",
+      "statutory_basis[203]": "missing statute or section",
+      "statutory_basis[204]": "missing statute or section",
+      "statutory_basis[205]": "missing statute or section",
+      "statutory_basis[206]": "missing statute or section",
+      "statutory_basis[207]": "missing statute or section",
+      "statutory_basis[20]": "missing statute or section",
+      "statutory_basis[21]": "missing statute or section",
+      "statutory_basis[22]": "missing statute or section",
+      "statutory_basis[23]": "missing statute or section",
+      "statutory_basis[24]": "missing statute or section",
+      "statutory_basis[25]": "missing statute or section",
+      "statutory_basis[26]": "missing statute or section",
+      "statutory_basis[27]": "missing statute or section",
+      "statutory_basis[28]": "missing statute or section",
+      "statutory_basis[29]": "missing statute or section",
+      "statutory_basis[2]": "missing statute or section",
+      "statutory_basis[30]": "missing statute or section",
+      "statutory_basis[31]": "missing statute or section",
+      "statutory_basis[32]": "missing statute or section",
+      "statutory_basis[33]": "missing statute or section",
+      "statutory_basis[34]": "missing statute or section",
+      "statutory_basis[35]": "missing statute or section",
+      "statutory_basis[36]": "missing statute or section",
+      "statutory_basis[37]": "missing statute or section",
+      "statutory_basis[38]": "missing statute or section",
+      "statutory_basis[39]": "missing statute or section",
+      "statutory_basis[3]": "missing statute or section",
+      "statutory_basis[40]": "missing statute or section",
+      "statutory_basis[41]": "missing statute or section",
+      "statutory_basis[42]": "missing statute or section",
+      "statutory_basis[43]": "missing statute or section",
+      "statutory_basis[44]": "missing statute or section",
+      "statutory_basis[45]": "missing statute or section",
+      "statutory_basis[46]": "missing statute or section",
+      "statutory_basis[47]": "missing statute or section",
+      "statutory_basis[48]": "missing statute or section",
+      "statutory_basis[49]": "missing statute or section",
+      "statutory_basis[4]": "missing statute or section",
+      "statutory_basis[50]": "missing statute or section",
+      "statutory_basis[51]": "missing statute or section",
+      "statutory_basis[52]": "missing statute or section",
+      "statutory_basis[53]": "missing statute or section",
+      "statutory_basis[54]": "missing statute or section",
+      "statutory_basis[55]": "missing statute or section",
+      "statutory_basis[56]": "missing statute or section",
+      "statutory_basis[57]": "missing statute or section",
+      "statutory_basis[58]": "missing statute or section",
+      "statutory_basis[59]": "missing statute or section",
+      "statutory_basis[5]": "missing statute or section",
+      "statutory_basis[60]": "missing statute or section",
+      "statutory_basis[61]": "missing statute or section",
+      "statutory_basis[62]": "missing statute or section",
+      "statutory_basis[63]": "missing statute or section",
+      "statutory_basis[64]": "missing statute or section",
+      "statutory_basis[65]": "missing statute or section",
+      "statutory_basis[66]": "missing statute or section",
+      "statutory_basis[67]": "missing statute or section",
+      "statutory_basis[68]": "missing statute or section",
+      "statutory_basis[69]": "missing statute or section",
+      "statutory_basis[6]": "missing statute or section",
+      "statutory_basis[70]": "missing statute or section",
+      "statutory_basis[71]": "missing statute or section",
+      "statutory_basis[72]": "missing statute or section",
+      "statutory_basis[73]": "missing statute or section",
+      "statutory_basis[74]": "missing statute or section",
+      "statutory_basis[75]": "missing statute or section",
+      "statutory_basis[76]": "missing statute or section",
+      "statutory_basis[77]": "missing statute or section",
+      "statutory_basis[78]": "missing statute or section",
+      "statutory_basis[79]": "missing statute or section",
+      "statutory_basis[7]": "missing statute or section",
+      "statutory_basis[80]": "missing statute or section",
+      "statutory_basis[81]": "missing statute or section",
+      "statutory_basis[82]": "missing statute or section",
+      "statutory_basis[83]": "missing statute or section",
+      "statutory_basis[84]": "missing statute or section",
+      "statutory_basis[85]": "missing statute or section",
+      "statutory_basis[86]": "missing statute or section",
+      "statutory_basis[87]": "missing statute or section",
+      "statutory_basis[88]": "missing statute or section",
+      "statutory_basis[89]": "missing statute or section",
+      "statutory_basis[8]": "missing statute or section",
+      "statutory_basis[90]": "missing statute or section",
+      "statutory_basis[91]": "missing statute or section",
+      "statutory_basis[92]": "missing statute or section",
+      "statutory_basis[93]": "missing statute or section",
+      "statutory_basis[94]": "missing statute or section",
+      "statutory_basis[95]": "missing statute or section",
+      "statutory_basis[96]": "missing statute or section",
+      "statutory_basis[97]": "missing statute or section",
+      "statutory_basis[98]": "missing statute or section",
+      "statutory_basis[99]": "missing statute or section",
+      "statutory_basis[9]": "missing statute or section"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "cited_authorities[0]": "UNGROUNDED",
+      "cited_authorities[1]": "UNGROUNDED",
+      "cited_authorities[2]": "UNGROUNDED",
+      "cited_authorities[3]": "UNGROUNDED",
+      "cited_authorities[4]": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "key_reasoning_quotes[4]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.4444444444444444,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 22 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='10 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='landlord’s handling of...ngoing mice infestation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='landlord’s handling of the related complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London & Qu...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='landlord repair and pest records', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='resident photos of ongoing mice activity', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='pest control reports', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='records of the joint vis... and subsequent repairs', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='landlord’s repair and pest policies', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Ombudsman’s dispute resolution principles', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.2\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Ombudsman remedies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.3\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Ombudsman’s Complaint ...ling Code, 1 April 2024', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.4\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='apologies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nclaimed_amounts\n  Field required [type=missing, input_value={'cited_authorities': ['l...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='Service failure was foun...he failings identified.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 14 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='10 December 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='landlord’s handling of...ngoing mice infestation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nclaim_types.1\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='landlord’s handling of the related complaint', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London & Qu...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='landlord repair and pest records', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='resident photos of ongoing mice activity', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.2\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='pest control reports', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.3\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='records of the joint vis... and subsequent repairs', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.0\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='landlord’s repair and pest policies', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.1\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Ombudsman’s dispute resolution principles', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.2\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Ombudsman remedies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.3\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='Ombudsman’s Complaint ...ling Code, 1 April 2024', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\ncited_authorities.4\n  Input should be a valid dictionary or instance of Authority [type=model_type, input_value='apologies guidance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='Service failure was foun...he failings identified.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "cited_authorities[0]": "missing name or cited_date",
+      "cited_authorities[1]": "missing name or cited_date",
+      "cited_authorities[2]": "missing name or cited_date",
+      "cited_authorities[3]": "missing name or cited_date",
+      "cited_authorities[4]": "missing name or cited_date",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "key_reasoning_quotes[4]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              815,
+              866
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              866,
+              921
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              921,
+              944
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              280,
+              297
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 235,
+            "text_span": [
+              10248,
+              10880
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              308,
+              787
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 117,
+            "text_span": [
+              3593,
+              3741
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 119,
+            "text_span": [
+              3758,
+              3918
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 121,
+            "text_span": [
+              3934,
+              4038
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4038,
+              4108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 124,
+            "text_span": [
+              4110,
+              4147
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 126,
+            "text_span": [
+              4149,
+              4203
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              973,
+              1017
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              1017,
+              1084
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              1084,
+              1119
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 81,
+            "text_span": [
+              2427,
+              2527
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1275,
+              1443
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1489,
+              1619
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 239,
+            "text_span": [
+              12324,
+              12922
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              160,
+              174
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              183,
+              215
+            ]
+          }
+        ],
+        "statutory_basis": [
+          {
+            "page": 1,
+            "paragraph": 254,
+            "text_span": [
+              15285,
+              15562
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No specific legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "The resident did not claim specific monetary amounts; she wanted the pest issue resolved and later requested re-housing.",
+        "disputed_amount_gbp": "This is not a monetary dispute case; it concerns pest control and complaint handling issues.",
+        "region": "No specific region or jurisdiction is mentioned in the decision text.",
+        "region_source": "No region information is available to source."
+      },
+      "claim_types": [
+        "pest control",
+        "complaint handling"
+      ],
+      "decision_date": "10 December 2025",
+      "evidence": "The resident sent the landlord photos of mice activity as per its request. Pest control reports confirm ongoing activity and recommend further investigation into finding new entry holes.",
+      "facts": "The resident lives with her child in the ground floor flat of a converted 1-story house. The landlord has vulnerabilities recorded for the resident. In her formal complaint, the resident said there was an ongoing mouse infestation within her flat which the landlord had persistently failed to resolve. The resident said she wanted the landlord to address this issue. She later asked to be re-housed by the landlord after repeated attempts to resolve the issue were unsuccessful. The landlord raised a job with is pest contactor in relation to the resident's report of a mice infestation in the kitchen, bathroom, and bedrooms on 18 June 2024. The landlord raised a further job with is pest contactor in relation to another report of a mice infestation in the resident's kitchen, bathroom, and bedrooms on 18 November 2024. The resident raised a formal complaint about the landlord's handling of the mice infestation on 23 January 2025. She said mice had returned despite the visits from the landlord's pest control. This issue had reoccurred since 2009. She wanted the pest issue to be permanently resolved.",
+      "ground_truth_outcome": "Service failure found in both the landlord's handling of the resident's reports of an ongoing mice infestation and handling of the related complaint. Orders made for apology, compensation of £350 (including £190 previously offered), and review of failings.",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1275,
+              1443
+            ]
+          },
+          "text": "The landlord's failure to effectively mouse-proof the property at earliest opportunity alongside treating the pests, delayed a permanent resolution to the infestation."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1489,
+              1619
+            ]
+          },
+          "text": "There was a lengthy and unreasonable delay in providing its final complaint response despite repeated requests from the resident."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 239,
+            "text_span": [
+              12324,
+              12922
+            ]
+          },
+          "text": "The landlord should have taken this action at least 6 months earlier following the resident's 23 January 2025 report. The failure to get structural repairs right at earliest opportunity led to multiple pest control visits which alone, did not adequately address the issue."
+        }
+      ],
+      "matter_type": "Housing Ombudsman Investigation",
+      "parties": {
+        "complainant": "The resident",
+        "respondent": "London & Quadrant Housing Trust"
+      },
+      "statutory_basis": "The Ombudsman's Complaint Handling Code (the Code) 1 April 2024 required landlords to acknowledge a complaint within 5 days and respond to stage 1 and 2 complaints within 10 and 20 working days, respectively."
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"pest control\", \"complaint handling\"],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 23, \"text_span\": [815, 866]},\n      {\"page\": 1, \"paragraph\": 24, \"text_span\": [866, 921]},\n      {\"page\": 1, \"paragraph\": 25, \"text_span\": [921, 944]}\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The resident did not claim specific monetary amounts; she wanted the pest issue resolved and later requested re-housing.\"\n  },\n  \"decision_date\": {\n    \"value\": \"10 December 2025\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 18, \"text_span\": [280, 297]}\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"This is not a monetary dispute case; it concerns pest control and complaint handling issues.\"\n  },\n  \"evidence\": {\n    \"value\": \"The resident sent the landlord photos of mice activity as per its request. Pest control reports confirm ongoing activity and recommend further investigation into finding new entry holes.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 235, \"text_span\": [10248, 10880]}\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident lives with her child in the ground floor flat of a converted 1-story house. The landlord has vulnerabilities recorded for the resident. In her formal complaint, the resident said there was an ongoing mouse infestation within her flat which the landlord had persistently failed to resolve. The resident said she wanted the landlord to address this issue. She later asked to be re-housed by the landlord after repeated attempts to resolve the issue were unsuccessful. The landlord raised a job with is pest contactor in relation to the resident's report of a mice infestation in the kitchen, bathroom, and bedrooms on 18 June 2024. The landlord raised a further job with is pest contactor in relation to another report of a mice infestation in the resident's kitchen, bathroom, and bedrooms on 18 November 2024. The resident raised a formal complaint about the landlord's handling of the mice infestation on 23 January 2025. She said mice had returned despite the visits from the landlord's pest control. This issue had reoccurred since 2009. She wanted the pest issue to be permanently resolved.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 21, \"text_span\": [308, 787]},\n      {\"page\": 1, \"paragraph\": 117, \"text_span\": [3593, 3741]},\n      {\"page\": 1, \"paragraph\": 119, \"text_span\": [3758, 3918]},\n      {\"page\": 1, \"paragraph\": 121, \"text_span\": [3934, 4038]},\n      {\"page\": 1, \"paragraph\": 122, \"text_span\": [4038, 4108]},\n      {\"page\": 1, \"paragraph\": 124, \"text_span\": [4110, 4147]},\n      {\"page\": 1, \"paragraph\": 126, \"text_span\": [4149, 4203]}\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"Service failure found in both the landlord's handling of the resident's reports of an ongoing mice infestation and handling of the related complaint. Orders made for apology, compensation of £350 (including £190 previously offered), and review of failings.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 27, \"text_span\": [973, 1017]},\n      {\"page\": 1, \"paragraph\": 28, \"text_span\": [1017, 1084]},\n      {\"page\": 1, \"paragraph\": 29, \"text_span\": [1084, 1119]},\n      {\"page\": 1, \"paragraph\": 81, \"text_span\": [2427, 2527]}\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord's failure to effectively mouse-proof the property at earliest opportunity alongside treating the pests, delayed a permanent resolution to the infestation.\",\n      \"There was a lengthy and unreasonable delay in providing its final complaint response despite repeated requests from the resident.\",\n      \"The landlord should have taken this action at least 6 months earlier following the resident's 23 January 2025 report. The failure to get structural repairs right at earliest opportunity led to multiple pest control visits which alone, did not adequately address the issue.\"\n    ],\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 35, \"text_span\": [1275, 1443]},\n      {\"page\": 1, \"paragraph\": 38, \"text_span\": [1489, 1619]},\n      {\"page\": 1, \"paragraph\": 239, \"text_span\": [12324, 12922]}\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing Ombudsman Investigation\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 10, \"text_span\": [160, 174]}\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"complainant\": \"The resident\",\n      \"respondent\": \"London & Quadrant Housing Trust\"\n    },\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 12, \"text_span\": [183, 215]}\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific region or jurisdiction is mentioned in the decision text.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No region information is available to source.\"\n  },\n  \"statutory_basis\": {\n    \"value\": \"The Ombudsman's Complaint Handling Code (the Code) 1 April 2024 required landlords to acknowledge a complaint within 5 days and respond to stage 1 and 2 complaints within 10 and 20 working days, respectively.\",\n    \"spans\": [\n      {\"page\": 1, \"paragraph\": 254, \"text_span\": [15285, 15562]}\n    ]\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202511313\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 61, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202511313)\"}, {\"char_end\": 107, \"char_start\": 61, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202511313)\"}, {\"char_end\": 119, \"char_start\": 107, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 128, \"char_start\": 119, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 136, \"char_start\": 128, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 146, \"char_start\": 136, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202511313\"}, {\"char_end\": 160, \"char_start\": 146, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 174, \"char_start\": 160, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 183, \"char_start\": 174, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 215, \"char_start\": 183, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust\"}, {\"char_end\": 229, \"char_start\": 215, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 249, \"char_start\": 229, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 259, \"char_start\": 249, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 275, \"char_start\": 259, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 280, \"char_start\": 275, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 283, \"char_start\": 280, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"10\"}, {\"char_end\": 297, \"char_start\": 283, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2025\"}, {\"char_end\": 308, \"char_start\": 297, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 787, \"char_start\": 308, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives with her child in the ground floor flat of a converted 1-story house. The landlord has vulnerabilities recorded for the resident. In her formal complaint, the resident said there was an ongoing mouse infestation within her flat which the landlord had persistently failed to resolve. The resident said she wanted the landlord to address this issue. She later asked to be re-housed by the landlord after repeated attempts to resolve the issue were unsuccessful.\"}, {\"char_end\": 815, \"char_start\": 787, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 866, \"char_start\": 815, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of:\"}, {\"char_end\": 921, \"char_start\": 866, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident’s reports of an ongoing mice infestation.\"}, {\"char_end\": 944, \"char_start\": 921, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"The related complaint.\"}, {\"char_end\": 973, \"char_start\": 944, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 1017, \"char_start\": 973, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found service failure in the landlord’s:\"}, {\"char_end\": 1084, \"char_start\": 1017, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Handling of the resident’s reports of an ongoing mice infestation.\"}, {\"char_end\": 1119, \"char_start\": 1084, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Handling of the related complaint.\"}, {\"char_end\": 1177, \"char_start\": 1119, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have made orders for the landlord to put things right.\"}, {\"char_end\": 1196, \"char_start\": 1177, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1205, \"char_start\": 1196, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Landlord\"}, {\"char_end\": 1207, \"char_start\": 1205, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"’\"}, {\"char_end\": 1275, \"char_start\": 1207, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s handling of the resident’s reports of an ongoing mice infestation\"}, {\"char_end\": 1443, \"char_start\": 1275, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s failure to effectively mouse-proof the property at earliest opportunity alongside treating the pests, delayed a permanent resolution to the infestation.\"}, {\"char_end\": 1456, \"char_start\": 1443, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Landlord’s h\"}, {\"char_end\": 1489, \"char_start\": 1456, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"andling of the related complaint\"}, {\"char_end\": 1619, \"char_start\": 1489, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was a lengthy and unreasonable delay in providing its final complaint response despite repeated requests from the resident.\"}, {\"char_end\": 1640, \"char_start\": 1619, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1698, \"char_start\": 1640, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1700, \"char_start\": 1698, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1775, \"char_start\": 1700, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1866, \"char_start\": 1775, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1873, \"char_start\": 1866, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 1883, \"char_start\": 1873, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 1888, \"char_start\": 1883, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 1999, \"char_start\": 1888, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2002, \"char_start\": 1999, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2013, \"char_start\": 2002, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2029, \"char_start\": 2013, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2036, \"char_start\": 2029, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2045, \"char_start\": 2036, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2050, \"char_start\": 2045, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2056, \"char_start\": 2050, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2082, \"char_start\": 2056, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2091, \"char_start\": 2082, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2093, \"char_start\": 2091, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2107, \"char_start\": 2093, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2135, \"char_start\": 2107, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2146, \"char_start\": 2135, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2166, \"char_start\": 2146, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"to the resident for\"}, {\"char_end\": 2170, \"char_start\": 2166, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"the\"}, {\"char_end\": 2206, \"char_start\": 2170, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"failures identified in this report.\"}, {\"char_end\": 2219, \"char_start\": 2206, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2232, \"char_start\": 2219, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2236, \"char_start\": 2232, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2244, \"char_start\": 2236, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2247, \"char_start\": 2244, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2256, \"char_start\": 2247, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2300, \"char_start\": 2256, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2329, \"char_start\": 2300, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 2354, \"char_start\": 2329, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 2373, \"char_start\": 2354, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2375, \"char_start\": 2373, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2389, \"char_start\": 2375, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2391, \"char_start\": 2389, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2393, \"char_start\": 2391, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"5\"}, {\"char_end\": 2406, \"char_start\": 2393, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"January 2026\"}, {\"char_end\": 2408, \"char_start\": 2406, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2427, \"char_start\": 2408, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2464, \"char_start\": 2427, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 2527, \"char_start\": 2464, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"350 (including the £190 offered during the complaints process)\"}, {\"char_end\": 2547, \"char_start\": 2527, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"made up as follows:\"}, {\"char_end\": 2549, \"char_start\": 2547, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2553, \"char_start\": 2549, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"250\"}, {\"char_end\": 2557, \"char_start\": 2553, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"for\"}, {\"char_end\": 2680, \"char_start\": 2557, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"the distress, inconvenience, time, and trouble caused by the landlord’s handling of reports of an ongoing mice infestation\"}, {\"char_end\": 2682, \"char_start\": 2680, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2686, \"char_start\": 2682, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"100\"}, {\"char_end\": 2690, \"char_start\": 2686, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"for\"}, {\"char_end\": 2790, \"char_start\": 2690, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"the distress, inconvenience, time, and trouble caused by the landlord’s complaint handling failings\"}, {\"char_end\": 2925, \"char_start\": 2790, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 3005, \"char_start\": 2925, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure any payments it has already paid.\"}, {\"char_end\": 3019, \"char_start\": 3005, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3035, \"char_start\": 3019, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"15 January 2026\"}, {\"char_end\": 3037, \"char_start\": 3035, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"3\"}, {\"char_end\": 3056, \"char_start\": 3037, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"Review of failings\"}, {\"char_end\": 3076, \"char_start\": 3056, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"The landlord must r\"}, {\"char_end\": 3082, \"char_start\": 3076, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"eview\"}, {\"char_end\": 3190, \"char_start\": 3082, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"the failings identified in this report and consider what improvements it can make including in relation to:\"}, {\"char_end\": 3216, \"char_start\": 3190, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"Identifying and providing\"}, {\"char_end\": 3284, \"char_start\": 3216, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"necessary repairs at earliest opportunity alongside pest treatments\"}, {\"char_end\": 3318, \"char_start\": 3284, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"while responding to pest reports.\"}, {\"char_end\": 3359, \"char_start\": 3318, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"Monitoring ongoing pest activity and the\"}, {\"char_end\": 3376, \"char_start\": 3359, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"effectiveness of\"}, {\"char_end\": 3397, \"char_start\": 3376, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"any repairs provided\"}, {\"char_end\": 3399, \"char_start\": 3397, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 3433, \"char_start\": 3399, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"Record keeping and communication.\"}, {\"char_end\": 3489, \"char_start\": 3433, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"order\", \"text\": \"The landlord must provide us with a copy of the review.\"}, {\"char_end\": 3503, \"char_start\": 3489, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3519, \"char_start\": 3503, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"order\", \"text\": \"15 January 2026\"}, {\"char_end\": 3537, \"char_start\": 3519, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 3561, \"char_start\": 3537, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 3566, \"char_start\": 3561, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 3580, \"char_start\": 3566, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 3593, \"char_start\": 3580, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \"18 June 2024\"}, {\"char_end\": 3741, \"char_start\": 3593, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord raised a job with is pest contactor in relation to the resident’s report of a mice infestation in the kitchen, bathroom, and bedrooms.\"}, {\"char_end\": 3758, \"char_start\": 3741, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"18 November 2024\"}, {\"char_end\": 3918, \"char_start\": 3758, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord raised a further job with is pest contactor in relation to another report of a mice infestation in the resident’s kitchen, bathroom, and bedrooms.\"}, {\"char_end\": 3934, \"char_start\": 3918, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"pre_decision_record\", \"text\": \"23 January 2025\"}, {\"char_end\": 4038, \"char_start\": 3934, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised a formal complaint about the landlord’s handling of the mice infestation. She said:\"}, {\"char_end\": 4108, \"char_start\": 4038, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"Mice had returned despite the visits from the landlord’s pest control\"}, {\"char_end\": 4110, \"char_start\": 4108, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4147, \"char_start\": 4110, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"This issue had reoccurred since 2009\"}, {\"char_end\": 4149, \"char_start\": 4147, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4203, \"char_start\": 4149, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"She wanted the pest issue to be permanently resolved.\"}, {\"char_end\": 4219, \"char_start\": 4203, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"24 January 2025\"}, {\"char_end\": 4292, \"char_start\": 4219, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the complaint during a call with the resident.\"}, {\"char_end\": 4308, \"char_start\": 4292, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"27 January 2025\"}, {\"char_end\": 4371, \"char_start\": 4308, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 1 complaint response. This stated:\"}, {\"char_end\": 4437, \"char_start\": 4371, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"Its operative would attend on 27 January 2025 to inspect holes in\"}, {\"char_end\": 4452, \"char_start\": 4437, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"the resident’s\"}, {\"char_end\": 4490, \"char_start\": 4452, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"kitchen and raise any follow-on works\"}, {\"char_end\": 4492, \"char_start\": 4490, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4553, \"char_start\": 4492, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"Once the repairs were completed, it would readdress the pest\"}, {\"char_end\": 4566, \"char_start\": 4553, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"infestation.\"}, {\"char_end\": 4568, \"char_start\": 4566, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"I\"}, {\"char_end\": 4636, \"char_start\": 4568, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"ts customer liaison officer would be her point or contact who would\"}, {\"char_end\": 4667, \"char_start\": 4636, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"continue to monitor the repair\"}, {\"char_end\": 4669, \"char_start\": 4667, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4683, \"char_start\": 4669, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"pre_decision_record\", \"text\": \"16 April 2025\"}, {\"char_end\": 4761, \"char_start\": 4683, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident requested for the landlord to escalate her complaint. She said d\"}, {\"char_end\": 4805, \"char_start\": 4761, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"pre_decision_record\", \"text\": \"espite 3 visits from pest control, the mice\"}, {\"char_end\": 4836, \"char_start\": 4805, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"pre_decision_record\", \"text\": \"infestation had not gone away.\"}, {\"char_end\": 4863, \"char_start\": 4836, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"pre_decision_record\", \"text\": \"12 May 2025 to 9 July 2025\"}, {\"char_end\": 4944, \"char_start\": 4863, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident reiterated her request to escalate the complaint on 12 May 2025 and\"}, {\"char_end\": 4947, \"char_start\": 4944, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 5007, \"char_start\": 4947, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"pre_decision_record\", \"text\": \"16 June 2025 and raised a further complaint on 4 July 2025.\"}, {\"char_end\": 5020, \"char_start\": 5007, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident\"}, {\"char_end\": 5026, \"char_start\": 5020, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"pre_decision_record\", \"text\": \"asked\"}, {\"char_end\": 5063, \"char_start\": 5026, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"pre_decision_record\", \"text\": \"to be ‘urgently re-housed’ on 19, 23\"}, {\"char_end\": 5065, \"char_start\": 5063, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"pre_decision_record\", \"text\": \",\"}, {\"char_end\": 5086, \"char_start\": 5065, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"pre_decision_record\", \"text\": \"and 25 June 2025 and\"}, {\"char_end\": 5089, \"char_start\": 5086, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 5094, \"char_start\": 5089, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"pre_decision_record\", \"text\": \"3, 4\"}, {\"char_end\": 5096, \"char_start\": 5094, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"pre_decision_record\", \"text\": \",\"}, {\"char_end\": 5123, \"char_start\": 5096, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"pre_decision_record\", \"text\": \"and 9 July 2025 due to the\"}, {\"char_end\": 5131, \"char_start\": 5123, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"pre_decision_record\", \"text\": \"ongoing\"}, {\"char_end\": 5161, \"char_start\": 5131, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"pre_decision_record\", \"text\": \"pest issue. She explained the\"}, {\"char_end\": 5188, \"char_start\": 5161, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"pre_decision_record\", \"text\": \"lack of any resolution was\"}, {\"char_end\": 5204, \"char_start\": 5188, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"pre_decision_record\", \"text\": \"severely impact\"}, {\"char_end\": 5208, \"char_start\": 5204, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"pre_decision_record\", \"text\": \"ing\"}, {\"char_end\": 5212, \"char_start\": 5208, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"pre_decision_record\", \"text\": \"her\"}, {\"char_end\": 5230, \"char_start\": 5212, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"pre_decision_record\", \"text\": \"living conditions\"}, {\"char_end\": 5232, \"char_start\": 5230, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 5245, \"char_start\": 5232, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"pre_decision_record\", \"text\": \"11 July 2025\"}, {\"char_end\": 5381, \"char_start\": 5245, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the resident’s stage 2 complaint and said it would provide a final complaint response within 20 working days.\"}, {\"char_end\": 5394, \"char_start\": 5381, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"pre_decision_record\", \"text\": \"16 July 2025\"}, {\"char_end\": 5455, \"char_start\": 5394, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its final complaint response. This stated:\"}, {\"char_end\": 5457, \"char_start\": 5455, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"pre_decision_record\", \"text\": \"O\"}, {\"char_end\": 5575, \"char_start\": 5457, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"pre_decision_record\", \"text\": \"n 19 June 2025, its operative identified that there were additional entry points that had not been previously located\"}, {\"char_end\": 5577, \"char_start\": 5575, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 5663, \"char_start\": 5577, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"pre_decision_record\", \"text\": \"This included a potential entry point via the gas meter at the front of the property.\"}, {\"char_end\": 5689, \"char_start\": 5663, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"pre_decision_record\", \"text\": \"It arranged a joint visit\"}, {\"char_end\": 5692, \"char_start\": 5689, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"pre_decision_record\", \"text\": \"by\"}, {\"char_end\": 5769, \"char_start\": 5692, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"pre_decision_record\", \"text\": \"its complaints officer and pest control contractor to address the situation.\"}, {\"char_end\": 5817, \"char_start\": 5769, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"pre_decision_record\", \"text\": \"An initial appointment was arranged for 15 July\"}, {\"char_end\": 5822, \"char_start\": 5817, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 5909, \"char_start\": 5822, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"pre_decision_record\", \"text\": \"but was rescheduled to suit her availability. The new appointment was for 18 July 2025\"}, {\"char_end\": 5911, \"char_start\": 5909, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 5920, \"char_start\": 5911, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"pre_decision_record\", \"text\": \"Its area\"}, {\"char_end\": 5931, \"char_start\": 5920, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"pre_decision_record\", \"text\": \"supervisor\"}, {\"char_end\": 5937, \"char_start\": 5931, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"pre_decision_record\", \"text\": \"would\"}, {\"char_end\": 5979, \"char_start\": 5937, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"pre_decision_record\", \"text\": \"monitor the progress of work following th\"}, {\"char_end\": 5982, \"char_start\": 5979, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"pre_decision_record\", \"text\": \"is\"}, {\"char_end\": 5988, \"char_start\": 5982, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"pre_decision_record\", \"text\": \"visit\"}, {\"char_end\": 6031, \"char_start\": 5988, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"pre_decision_record\", \"text\": \"and ensure any necessary follow-on actions\"}, {\"char_end\": 6036, \"char_start\": 6031, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"pre_decision_record\", \"text\": \"were\"}, {\"char_end\": 6046, \"char_start\": 6036, \"page\": 1, \"paragraph\": 189, \"section_tag\": \"pre_decision_record\", \"text\": \"completed\"}, {\"char_end\": 6048, \"char_start\": 6046, \"page\": 1, \"paragraph\": 190, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6216, \"char_start\": 6048, \"page\": 1, \"paragraph\": 191, \"section_tag\": \"pre_decision_record\", \"text\": \"Regarding her request to be re-housed, this was outside the remit of the complaint, but the resident could contact her neighbourhood housing lead for more information.\"}, {\"char_end\": 6284, \"char_start\": 6216, \"page\": 1, \"paragraph\": 192, \"section_tag\": \"pre_decision_record\", \"text\": \"It was sorry for the delay in providing a final complaint response.\"}, {\"char_end\": 6295, \"char_start\": 6284, \"page\": 1, \"paragraph\": 193, \"section_tag\": \"pre_decision_record\", \"text\": \"It offered\"}, {\"char_end\": 6308, \"char_start\": 6295, \"page\": 1, \"paragraph\": 194, \"section_tag\": \"pre_decision_record\", \"text\": \"£190 in comp\"}, {\"char_end\": 6329, \"char_start\": 6308, \"page\": 1, \"paragraph\": 195, \"section_tag\": \"pre_decision_record\", \"text\": \"ensation made up of:\"}, {\"char_end\": 6340, \"char_start\": 6329, \"page\": 1, \"paragraph\": 196, \"section_tag\": \"pre_decision_record\", \"text\": \"£100 for d\"}, {\"char_end\": 6357, \"char_start\": 6340, \"page\": 1, \"paragraph\": 197, \"section_tag\": \"pre_decision_record\", \"text\": \"istress for fail\"}, {\"char_end\": 6361, \"char_start\": 6357, \"page\": 1, \"paragraph\": 198, \"section_tag\": \"pre_decision_record\", \"text\": \"ing\"}, {\"char_end\": 6408, \"char_start\": 6361, \"page\": 1, \"paragraph\": 199, \"section_tag\": \"pre_decision_record\", \"text\": \"to recognise the impact due to vulnerabilities\"}, {\"char_end\": 6410, \"char_start\": 6408, \"page\": 1, \"paragraph\": 200, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6420, \"char_start\": 6410, \"page\": 1, \"paragraph\": 201, \"section_tag\": \"pre_decision_record\", \"text\": \"£50 for t\"}, {\"char_end\": 6466, \"char_start\": 6420, \"page\": 1, \"paragraph\": 202, \"section_tag\": \"pre_decision_record\", \"text\": \"ime and effort getting the complaint resolved\"}, {\"char_end\": 6468, \"char_start\": 6466, \"page\": 1, \"paragraph\": 203, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6478, \"char_start\": 6468, \"page\": 1, \"paragraph\": 204, \"section_tag\": \"pre_decision_record\", \"text\": \"£40 for p\"}, {\"char_end\": 6501, \"char_start\": 6478, \"page\": 1, \"paragraph\": 205, \"section_tag\": \"pre_decision_record\", \"text\": \"oor complaint handling\"}, {\"char_end\": 6503, \"char_start\": 6501, \"page\": 1, \"paragraph\": 206, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6529, \"char_start\": 6503, \"page\": 1, \"paragraph\": 207, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 6581, \"char_start\": 6529, \"page\": 1, \"paragraph\": 208, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked us to investigate her complaint.\"}, {\"char_end\": 6738, \"char_start\": 6581, \"page\": 1, \"paragraph\": 209, \"section_tag\": \"pre_decision_record\", \"text\": \"She said she and her family had been severely impacted by the unfit living conditions due to the landlord’s ongoing failure to resolve the mice infestation.\"}, {\"char_end\": 6760, \"char_start\": 6738, \"page\": 1, \"paragraph\": 210, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 6784, \"char_start\": 6760, \"page\": 1, \"paragraph\": 211, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 6787, \"char_start\": 6784, \"page\": 1, \"paragraph\": 212, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 6806, \"char_start\": 6787, \"page\": 1, \"paragraph\": 213, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 6812, \"char_start\": 6806, \"page\": 1, \"paragraph\": 214, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 6846, \"char_start\": 6812, \"page\": 1, \"paragraph\": 215, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 6850, \"char_start\": 6846, \"page\": 1, \"paragraph\": 216, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 6881, \"char_start\": 6850, \"page\": 1, \"paragraph\": 217, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 6947, \"char_start\": 6881, \"page\": 1, \"paragraph\": 218, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 6987, \"char_start\": 6947, \"page\": 1, \"paragraph\": 219, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 6992, \"char_start\": 6987, \"page\": 1, \"paragraph\": 220, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 7024, \"char_start\": 6992, \"page\": 1, \"paragraph\": 221, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 7086, \"char_start\": 7024, \"page\": 1, \"paragraph\": 222, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 7096, \"char_start\": 7086, \"page\": 1, \"paragraph\": 223, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 7177, \"char_start\": 7096, \"page\": 1, \"paragraph\": 224, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s reports of an ongoing mice infestation\"}, {\"char_end\": 7185, \"char_start\": 7177, \"page\": 1, \"paragraph\": 225, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 7201, \"char_start\": 7185, \"page\": 1, \"paragraph\": 226, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 7229, \"char_start\": 7201, \"page\": 1, \"paragraph\": 227, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we did not investigate\"}, {\"char_end\": 7603, \"char_start\": 7229, \"page\": 1, \"paragraph\": 228, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident told us the mice infestation had reoccurred for the past 15 years. However, the focus of our investigation will be from June 2024 when the resident made a pest report with the landlord. She had not raised a pest report with it for nearly 12 months prior to this. This is within a reasonable timeframe of the resident’s formal complaint made on 23 January 2025.\"}, {\"char_end\": 7627, \"char_start\": 7603, \"page\": 1, \"paragraph\": 229, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we did investigate\"}, {\"char_end\": 7911, \"char_start\": 7627, \"page\": 1, \"paragraph\": 230, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 1 complaint response the landlord said it had arranged for an operative to attend on 27 January 2025 to inspect holes in the kitchen, which the resident reported were linked to a mice infestation. The landlord said it would then raise repairs and address the pest issue.\"}, {\"char_end\": 8489, \"char_start\": 7911, \"page\": 1, \"paragraph\": 231, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records confirm it raised a job with its repair team within a day of receiving the resident’s 23 January 2025 report. This was to inspect and fill in any holes found in the kitchen and bathroom. This action was in line with its repair and pest policies which state the landlord is responsible for structural defects and for dealing with pest infestations respectively. This included where there are vulnerabilities, as in this case. Its records show the inspection took place on 27 January 2025 demonstrating the landlord took prompt and appropriate action here.\"}, {\"char_end\": 8737, \"char_start\": 8489, \"page\": 1, \"paragraph\": 232, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, it is evident that the resident had reported a mice infestation within her flat on 2 occasions during the previous 7 months. It is clear the landlord treated the infestation following these reports, the last visit being on 2 January 2025.\"}, {\"char_end\": 9195, \"char_start\": 8737, \"page\": 1, \"paragraph\": 233, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Although its records indicate it previously filled holes in the kitchen, the resident’s report of an ongoing mice infestation on 23 January 2025 shows this action had not effectively resolved the pest problem. As such it was important that following the resident’s latest report, the landlord carry out a thorough inspection to ensure all holes or gaps in the structure were identified and rectified in a timely manner to stop mice re-entering the property.\"}, {\"char_end\": 9755, \"char_start\": 9195, \"page\": 1, \"paragraph\": 234, \"section_tag\": \"tribunal_reasoning\", \"text\": \"As previously noted, the landlord inspected promptly following the resident’s 23 January 2025 report and also arranged for 3 pest treatments. However, it is not clear from its records, what if any repairs were provided at this time. Proper record keeping is a core element of effective housing management. When repair records are missing or incomplete, it is difficult to establish exactly what works were provided by the landlord. As such the lack of detail of completed repairs is evidence of poor knowledge and information management (KIM) by the landlord.\"}, {\"char_end\": 10248, \"char_start\": 9755, \"page\": 1, \"paragraph\": 235, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident continued to report ongoing mice activity after the pest visits were completed on 28 February 2025. She sent the landlord photos of this activity as per its request and the landlord arranged for further pest treatments on 3, 14, and 28 April 2025. The pest control reports confirm ongoing activity and recommend further investigation into finding new entry holes. This shows any attempt by the landlord to repair holes following her 23 January 2025 report, had been unsuccessful.\"}, {\"char_end\": 10880, \"char_start\": 10248, \"page\": 1, \"paragraph\": 236, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There is no evidence of the landlord raising a further job in relation to locating new entry holes at this time. Its failure to follow pest control recommendations or monitor the situation, was inappropriate. As the resident’s reports of mice activity were ongoing, the landlord raised a job for an additional 3 pest treatments. This was appropriate; however, the pest report dated 12 May 2025 again confirmed ongoing activity. It recommended the upstairs’ neighbour’s property was examined in case mice were coming from here. Again, there is no evidence of the landlord acting on this recommendation within a reasonable timeframe.\"}, {\"char_end\": 11299, \"char_start\": 10880, \"page\": 1, \"paragraph\": 237, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repeated failure to follow up on recommendations made by pest control to address the issue, was inappropriate. This was despite regular contact from the resident during this timeframe urging it to act. She made clear throughout the severe impact of the mice infestation on her and her child. This is evidence of the landlord not taking the resident’s reports or related complaint sufficiently seriously.\"}, {\"char_end\": 11876, \"char_start\": 11299, \"page\": 1, \"paragraph\": 238, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 19 June 2025 the landlord attended the property itself to inspect for further entry holes. On this occasion, further holes were found and repairs in the kitchen, bathroom and hallway were identified. Following this the landlord arranged to visit again with its pest contractor to ensure the repairs outlined would fully resolve the infestation. In its final response dated 16 July 2025 the landlord confirmed this visit had been scheduled for 18 July 2025. It also told the resident it would monitor the progress of the work which would be undertaken by its surveying team.\"}, {\"char_end\": 12324, \"char_start\": 11876, \"page\": 1, \"paragraph\": 239, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The action proposed in order to provide a permanent solution to the pest issue was appropriate. However, the landlord should have taken this action at least 6 months earlier following the resident’s 23 January 2025 report. The failure to get structural repairs right at earliest opportunity led to multiple pest control visits which alone, did not adequately address the issue. This shows a lack of oversight by the landlord in managing the issue.\"}, {\"char_end\": 12922, \"char_start\": 12324, \"page\": 1, \"paragraph\": 240, \"section_tag\": \"tribunal_reasoning\", \"text\": \"As a result of the unresolved mice infestation, on 19 June 2025 the resident requested the landlord to re-house her. The landlord responded more than 2 weeks later on 7 July 2025 and only after 4 follow up requests by the resident (on 23 and 25 June 2025 and twice on 4 July 2025). While we have not seen any evidence to show re-housing was required, the landlord should have been prompt in providing its position. Its response was also dismissive in tone. Its officer told the resident her request was outside of their remit and advised the resident to contact its call centre for further advice.\"}, {\"char_end\": 13224, \"char_start\": 12922, \"page\": 1, \"paragraph\": 241, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response issued approximately 2 weeks later, the landlord reiterated that the resident’s re-housing request was outside the remit of the complaint. Rehousing matters are not listed as an exception in the landlord’s complaint policy, so the basis of the landlord’s comment here is unclear.\"}, {\"char_end\": 13696, \"char_start\": 13224, \"page\": 1, \"paragraph\": 242, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response the landlord said that a mutual exchange was often a quicker process for finding a suitable home. However, in the circumstances, the landlord should have outlined all rehousing options and provided signposting or contact details of appropriate officers to enable the resident to pursue these avenues. Although the landlord’s officer later discussed rehousing options with the resident, it should have included this information in its final response.\"}, {\"char_end\": 14063, \"char_start\": 13696, \"page\": 1, \"paragraph\": 243, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We also expect the landlord to demonstrate it followed through with actions agreed in its final response. Its records show the joint visit took place as agreed. Further that the landlord’s subsequent repairs, including sealing entry points in the gas meter at the front of the property and additional pest treatments, resolved the mice infestation. This is welcomed.\"}, {\"char_end\": 14297, \"char_start\": 14063, \"page\": 1, \"paragraph\": 244, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Therefore, although the landlord made several attempts to address the resident’s reports, its failure to carry out effective structural repairs alongside pest treatments caused an unreasonable delay in resolving the mice infestation.\"}, {\"char_end\": 14777, \"char_start\": 14297, \"page\": 1, \"paragraph\": 245, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response the landlord recognised some failings and offered £150 in compensation. This is in accordance with our dispute resolution principles to be fair, treat people fairly and follow fair processes, put things rights and learn from outcomes. However, given the lengthy delay (of at least 7 months) in completing all necessary structural repairs, the redress offered is not sufficient to resolve the complaint. This amounts to an overall finding of service failure.\"}, {\"char_end\": 14933, \"char_start\": 14777, \"page\": 1, \"paragraph\": 246, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In the circumstances, the landlord shall pay the resident total compensation of £300 (including the £150 offered during the complaints process) made up of:\"}, {\"char_end\": 14970, \"char_start\": 14933, \"page\": 1, \"paragraph\": 247, \"section_tag\": \"tribunal_reasoning\", \"text\": \"£200 for distress and inconvenience.\"}, {\"char_end\": 14997, \"char_start\": 14970, \"page\": 1, \"paragraph\": 248, \"section_tag\": \"tribunal_reasoning\", \"text\": \"£100 for time and trouble.\"}, {\"char_end\": 15206, \"char_start\": 14997, \"page\": 1, \"paragraph\": 249, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This amount is in line with the level recommended in our remedies guidance where failings have adversely affected the resident. This amount also takes into account the resident’s vulnerabilities in this case.\"}, {\"char_end\": 15216, \"char_start\": 15206, \"page\": 1, \"paragraph\": 250, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 15261, \"char_start\": 15216, \"page\": 1, \"paragraph\": 251, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Landlord’s handling of the related complaint\"}, {\"char_end\": 15269, \"char_start\": 15261, \"page\": 1, \"paragraph\": 252, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 15285, \"char_start\": 15269, \"page\": 1, \"paragraph\": 253, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 15562, \"char_start\": 15285, \"page\": 1, \"paragraph\": 254, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The Ombudsman’s Complaint Handling Code (the Code) 1 April 2024 required landlords to acknowledge a complaint within 5 days and respond to stage 1 and 2 complaints within 10 and 20 working days, respectively. These timescales are echoed in the landlord’s own complaint policy.\"}, {\"char_end\": 15802, \"char_start\": 15562, \"page\": 1, \"paragraph\": 255, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord acknowledged the resident’s complaint dated 23 January 2025 within 1 working day and sent its stage 1 response 3 working days later on 27 January 2025. This was within its timescales therefore the landlord acted appropriately.\"}, {\"char_end\": 16216, \"char_start\": 15802, \"page\": 1, \"paragraph\": 256, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident requested to escalate her complaint on 16 April 2025. The landlord failed to acknowledge her request until 59 working days later on 11 July 2025. This was only after 3 further escalation requests and a further complaint made by the resident. This was outside of its 5 working day deadline and was inappropriate. The landlord provided its final complaint response 5 working days later on 16 July 2025.\"}, {\"char_end\": 16612, \"char_start\": 16216, \"page\": 1, \"paragraph\": 257, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response, the landlord acknowledged poor complaint handling and offered £40 in recognition of this. This went some way to putting right this failing. However, given the prolonged delay in providing its final response and the resident’s repeated follow-up requests, the redress offered was insufficient to resolve the complaint. This amounts to an overall finding of service failure.\"}, {\"char_end\": 16621, \"char_start\": 16612, \"page\": 1, \"paragraph\": 258, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 16784, \"char_start\": 16621, \"page\": 1, \"paragraph\": 259, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We identified an issue with the landlord’s repair records where jobs raised did not include any comments or details of the repairs or works subsequently provided.\"}, {\"char_end\": 16907, \"char_start\": 16784, \"page\": 1, \"paragraph\": 260, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We also identified instances of the landlord not communicating delays or providing updates to the resident when requested.\"}, {\"char_end\": 17103, \"char_start\": 16907, \"page\": 1, \"paragraph\": 261, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord should consider what lessons it can learn from this case and how it will improve its record keeping and communication while handling repairs in relation to pest reports going forward.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "cited_authorities": [
+          {
+            "page": 1,
+            "paragraph": 231,
+            "text_span": [
+              7911,
+              8489
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 245,
+            "text_span": [
+              14297,
+              14777
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 249,
+            "text_span": [
+              14997,
+              15206
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 254,
+            "text_span": [
+              15285,
+              15562
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 72,
+            "text_span": [
+              2329,
+              2354
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 73,
+            "text_span": [
+              2354,
+              2373
+            ]
+          }
+        ],
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              815,
+              866
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              866,
+              921
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              921,
+              944
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              280,
+              283
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              283,
+              297
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 231,
+            "text_span": [
+              7911,
+              8489
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 234,
+            "text_span": [
+              9195,
+              9755
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 235,
+            "text_span": [
+              9755,
+              10248
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 243,
+            "text_span": [
+              13696,
+              14063
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              308,
+              787
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              815,
+              866
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              866,
+              921
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              921,
+              944
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 116,
+            "text_span": [
+              3580,
+              3593
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 117,
+            "text_span": [
+              3593,
+              3741
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 118,
+            "text_span": [
+              3741,
+              3758
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 119,
+            "text_span": [
+              3758,
+              3918
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 120,
+            "text_span": [
+              3918,
+              3934
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 121,
+            "text_span": [
+              3934,
+              4038
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 122,
+            "text_span": [
+              4038,
+              4108
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 124,
+            "text_span": [
+              4110,
+              4147
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 126,
+            "text_span": [
+              4149,
+              4203
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 142,
+            "text_span": [
+              4683,
+              4761
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 143,
+            "text_span": [
+              4761,
+              4805
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 144,
+            "text_span": [
+              4805,
+              4836
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 146,
+            "text_span": [
+              4863,
+              4944
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 148,
+            "text_span": [
+              4947,
+              5007
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 149,
+            "text_span": [
+              5007,
+              5020
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 150,
+            "text_span": [
+              5020,
+              5026
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 151,
+            "text_span": [
+              5026,
+              5063
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 157,
+            "text_span": [
+              5096,
+              5123
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 159,
+            "text_span": [
+              5131,
+              5161
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 160,
+            "text_span": [
+              5161,
+              5188
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 161,
+            "text_span": [
+              5188,
+              5204
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 162,
+            "text_span": [
+              5204,
+              5208
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 163,
+            "text_span": [
+              5208,
+              5212
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 164,
+            "text_span": [
+              5212,
+              5230
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 169,
+            "text_span": [
+              5394,
+              5455
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 171,
+            "text_span": [
+              5457,
+              5575
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 173,
+            "text_span": [
+              5577,
+              5663
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 193,
+            "text_span": [
+              6284,
+              6295
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 194,
+            "text_span": [
+              6295,
+              6308
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 195,
+            "text_span": [
+              6308,
+              6329
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              973,
+              1017
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              1017,
+              1084
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              1084,
+              1119
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 30,
+            "text_span": [
+              1119,
+              1177
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 59,
+            "text_span": [
+              2107,
+              2135
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 80,
+            "text_span": [
+              2408,
+              2427
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 81,
+            "text_span": [
+              2427,
+              2464
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 82,
+            "text_span": [
+              2464,
+              2527
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 97,
+            "text_span": [
+              3037,
+              3056
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 98,
+            "text_span": [
+              3056,
+              3076
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 99,
+            "text_span": [
+              3076,
+              3082
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 100,
+            "text_span": [
+              3082,
+              3190
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1275,
+              1443
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1489,
+              1619
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 236,
+            "text_span": [
+              10248,
+              10880
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 239,
+            "text_span": [
+              11876,
+              12324
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 245,
+            "text_span": [
+              14297,
+              14777
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 257,
+            "text_span": [
+              16216,
+              16612
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              146,
+              160
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              160,
+              174
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 13,
+            "text_span": [
+              215,
+              229
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              229,
+              249
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              249,
+              259
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              259,
+              275
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              815,
+              866
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              866,
+              921
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              921,
+              944
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              174,
+              183
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              183,
+              215
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              308,
+              787
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "claimed_amounts": "The resident requested resolution of the pest issue and rehousing, but no monetary amount claimed by the resident is stated.",
+        "disputed_amount_gbp": "The text does not identify a specific disputed sum.",
+        "region": "No geographical region or property location is stated in the text.",
+        "region_source": "No source text identifies a geographical region for the case.",
+        "statutory_basis": "The decision does not cite any statute or statutory provision."
+      },
+      "cited_authorities": [
+        "landlord’s repair and pest policies",
+        "Ombudsman’s dispute resolution principles",
+        "Ombudsman remedies guidance",
+        "Ombudsman’s Complaint Handling Code, 1 April 2024",
+        "apologies guidance"
+      ],
+      "claim_types": [
+        "landlord’s handling of the resident’s reports of an ongoing mice infestation",
+        "landlord’s handling of the related complaint"
+      ],
+      "decision_date": "10 December 2025",
+      "evidence": [
+        "landlord repair and pest records",
+        "resident photos of ongoing mice activity",
+        "pest control reports",
+        "records of the joint visit and subsequent repairs"
+      ],
+      "facts": "The resident lives with her child in a ground-floor flat of a converted one-storey house, and the landlord had vulnerabilities recorded for her. She complained of an ongoing mouse infestation which she said the landlord had persistently failed to resolve, wanted the issue addressed, and later asked to be rehoused. The complaint concerned the landlord’s handling of reports of an ongoing mice infestation and the related complaint. The landlord raised pest-contractor jobs in June and November 2024. On 23 January 2025 the resident made a formal complaint, saying mice had returned despite pest-control visits, the issue had recurred since 2009, and she wanted a permanent resolution. She later escalated the complaint, repeated requests to escalate it, and asked to be urgently rehoused due to the ongoing pest issue. The landlord’s final complaint response stated that additional entry points had been identified and offered £190 compensation.",
+      "ground_truth_outcome": "Service failure was found in the landlord’s handling of both the ongoing mice infestation reports and the related complaint. The landlord was ordered to apologise, pay the resident £350 compensation including the £190 offered during the complaints process, and review the failings identified.",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              1275,
+              1443
+            ]
+          },
+          "text": "The landlord’s failure to effectively mouse-proof the property at earliest opportunity alongside treating the pests, delayed a permanent resolution to the infestation."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              1489,
+              1619
+            ]
+          },
+          "text": "There was a lengthy and unreasonable delay in providing its final complaint response despite repeated requests from the resident."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 236,
+            "text_span": [
+              10248,
+              10880
+            ]
+          },
+          "text": "Its failure to follow pest control recommendations or monitor the situation, was inappropriate."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 239,
+            "text_span": [
+              11876,
+              12324
+            ]
+          },
+          "text": "The failure to get structural repairs right at earliest opportunity led to multiple pest control visits which alone, did not adequately address the issue."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 245,
+            "text_span": [
+              14297,
+              14777
+            ]
+          },
+          "text": "This amounts to an overall finding of service failure."
+        }
+      ],
+      "matter_type": "Housing association assured-tenancy complaint investigation concerning pest infestation and complaint handling.",
+      "parties": {
+        "landlord": "London & Quadrant Housing Trust",
+        "resident": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      \"landlord’s repair and pest policies\",\n      \"Ombudsman’s dispute resolution principles\",\n      \"Ombudsman remedies guidance\",\n      \"Ombudsman’s Complaint Handling Code, 1 April 2024\",\n      \"apologies guidance\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 231,\n        \"text_span\": [\n          7911,\n          8489\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 245,\n        \"text_span\": [\n          14297,\n          14777\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 249,\n        \"text_span\": [\n          14997,\n          15206\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 254,\n        \"text_span\": [\n          15285,\n          15562\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 72,\n        \"text_span\": [\n          2329,\n          2354\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 73,\n        \"text_span\": [\n          2354,\n          2373\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"landlord’s handling of the resident’s reports of an ongoing mice infestation\",\n      \"landlord’s handling of the related complaint\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          815,\n          866\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          866,\n          921\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          921,\n          944\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The resident requested resolution of the pest issue and rehousing, but no monetary amount claimed by the resident is stated.\"\n  },\n  \"decision_date\": {\n    \"value\": \"10 December 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          280,\n          283\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          283,\n          297\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text does not identify a specific disputed sum.\"\n  },\n  \"evidence\": {\n    \"value\": [\n      \"landlord repair and pest records\",\n      \"resident photos of ongoing mice activity\",\n      \"pest control reports\",\n      \"records of the joint visit and subsequent repairs\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 231,\n        \"text_span\": [\n          7911,\n          8489\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 234,\n        \"text_span\": [\n          9195,\n          9755\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 235,\n        \"text_span\": [\n          9755,\n          10248\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 243,\n        \"text_span\": [\n          13696,\n          14063\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The resident lives with her child in a ground-floor flat of a converted one-storey house, and the landlord had vulnerabilities recorded for her. She complained of an ongoing mouse infestation which she said the landlord had persistently failed to resolve, wanted the issue addressed, and later asked to be rehoused. The complaint concerned the landlord’s handling of reports of an ongoing mice infestation and the related complaint. The landlord raised pest-contractor jobs in June and November 2024. On 23 January 2025 the resident made a formal complaint, saying mice had returned despite pest-control visits, the issue had recurred since 2009, and she wanted a permanent resolution. She later escalated the complaint, repeated requests to escalate it, and asked to be urgently rehoused due to the ongoing pest issue. The landlord’s final complaint response stated that additional entry points had been identified and offered £190 compensation.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          308,\n          787\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          815,\n          866\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          866,\n          921\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          921,\n          944\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 116,\n        \"text_span\": [\n          3580,\n          3593\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 117,\n        \"text_span\": [\n          3593,\n          3741\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 118,\n        \"text_span\": [\n          3741,\n          3758\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 119,\n        \"text_span\": [\n          3758,\n          3918\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 120,\n        \"text_span\": [\n          3918,\n          3934\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 121,\n        \"text_span\": [\n          3934,\n          4038\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 122,\n        \"text_span\": [\n          4038,\n          4108\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 124,\n        \"text_span\": [\n          4110,\n          4147\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 126,\n        \"text_span\": [\n          4149,\n          4203\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 142,\n        \"text_span\": [\n          4683,\n          4761\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 143,\n        \"text_span\": [\n          4761,\n          4805\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 144,\n        \"text_span\": [\n          4805,\n          4836\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 146,\n        \"text_span\": [\n          4863,\n          4944\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 148,\n        \"text_span\": [\n          4947,\n          5007\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 149,\n        \"text_span\": [\n          5007,\n          5020\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 150,\n        \"text_span\": [\n          5020,\n          5026\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 151,\n        \"text_span\": [\n          5026,\n          5063\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 157,\n        \"text_span\": [\n          5096,\n          5123\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 159,\n        \"text_span\": [\n          5131,\n          5161\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 160,\n        \"text_span\": [\n          5161,\n          5188\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 161,\n        \"text_span\": [\n          5188,\n          5204\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 162,\n        \"text_span\": [\n          5204,\n          5208\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 163,\n        \"text_span\": [\n          5208,\n          5212\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 164,\n        \"text_span\": [\n          5212,\n          5230\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 169,\n        \"text_span\": [\n          5394,\n          5455\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 171,\n        \"text_span\": [\n          5457,\n          5575\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 173,\n        \"text_span\": [\n          5577,\n          5663\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 193,\n        \"text_span\": [\n          6284,\n          6295\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 194,\n        \"text_span\": [\n          6295,\n          6308\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 195,\n        \"text_span\": [\n          6308,\n          6329\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"Service failure was found in the landlord’s handling of both the ongoing mice infestation reports and the related complaint. The landlord was ordered to apologise, pay the resident £350 compensation including the £190 offered during the complaints process, and review the failings identified.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 27,\n        \"text_span\": [\n          973,\n          1017\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 28,\n        \"text_span\": [\n          1017,\n          1084\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 29,\n        \"text_span\": [\n          1084,\n          1119\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 30,\n        \"text_span\": [\n          1119,\n          1177\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 59,\n        \"text_span\": [\n          2107,\n          2135\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 80,\n        \"text_span\": [\n          2408,\n          2427\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 81,\n        \"text_span\": [\n          2427,\n          2464\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 82,\n        \"text_span\": [\n          2464,\n          2527\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 97,\n        \"text_span\": [\n          3037,\n          3056\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 98,\n        \"text_span\": [\n          3056,\n          3076\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 99,\n        \"text_span\": [\n          3076,\n          3082\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 100,\n        \"text_span\": [\n          3082,\n          3190\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord’s failure to effectively mouse-proof the property at earliest opportunity alongside treating the pests, delayed a permanent resolution to the infestation.\",\n      \"There was a lengthy and unreasonable delay in providing its final complaint response despite repeated requests from the resident.\",\n      \"Its failure to follow pest control recommendations or monitor the situation, was inappropriate.\",\n      \"The failure to get structural repairs right at earliest opportunity led to multiple pest control visits which alone, did not adequately address the issue.\",\n      \"This amounts to an overall finding of service failure.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 35,\n        \"text_span\": [\n          1275,\n          1443\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 38,\n        \"text_span\": [\n          1489,\n          1619\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 236,\n        \"text_span\": [\n          10248,\n          10880\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 239,\n        \"text_span\": [\n          11876,\n          12324\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 245,\n        \"text_span\": [\n          14297,\n          14777\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 257,\n        \"text_span\": [\n          16216,\n          16612\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Housing association assured-tenancy complaint investigation concerning pest infestation and complaint handling.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 9,\n        \"text_span\": [\n          146,\n          160\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          160,\n          174\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 13,\n        \"text_span\": [\n          215,\n          229\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 14,\n        \"text_span\": [\n          229,\n          249\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 15,\n        \"text_span\": [\n          249,\n          259\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 16,\n        \"text_span\": [\n          259,\n          275\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          815,\n          866\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          866,\n          921\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          921,\n          944\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"London & Quadrant Housing Trust\",\n      \"resident\": \"the resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 11,\n        \"text_span\": [\n          174,\n          183\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          183,\n          215\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          308,\n          787\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No geographical region or property location is stated in the text.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No source text identifies a geographical region for the case.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The decision does not cite any statute or statutory provision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202511313\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 61, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202511313)\"}, {\"char_end\": 107, \"char_start\": 61, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202511313)\"}, {\"char_end\": 119, \"char_start\": 107, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 128, \"char_start\": 119, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 136, \"char_start\": 128, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 146, \"char_start\": 136, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202511313\"}, {\"char_end\": 160, \"char_start\": 146, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 174, \"char_start\": 160, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 183, \"char_start\": 174, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 215, \"char_start\": 183, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust\"}, {\"char_end\": 229, \"char_start\": 215, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 249, \"char_start\": 229, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 259, \"char_start\": 249, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 275, \"char_start\": 259, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 280, \"char_start\": 275, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 283, \"char_start\": 280, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"10\"}, {\"char_end\": 297, \"char_start\": 283, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"December 2025\"}, {\"char_end\": 308, \"char_start\": 297, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 787, \"char_start\": 308, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident lives with her child in the ground floor flat of a converted 1-story house. The landlord has vulnerabilities recorded for the resident. In her formal complaint, the resident said there was an ongoing mouse infestation within her flat which the landlord had persistently failed to resolve. The resident said she wanted the landlord to address this issue. She later asked to be re-housed by the landlord after repeated attempts to resolve the issue were unsuccessful.\"}, {\"char_end\": 815, \"char_start\": 787, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 866, \"char_start\": 815, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of:\"}, {\"char_end\": 921, \"char_start\": 866, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident’s reports of an ongoing mice infestation.\"}, {\"char_end\": 944, \"char_start\": 921, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"pre_decision_record\", \"text\": \"The related complaint.\"}, {\"char_end\": 973, \"char_start\": 944, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 1017, \"char_start\": 973, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We found service failure in the landlord’s:\"}, {\"char_end\": 1084, \"char_start\": 1017, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Handling of the resident’s reports of an ongoing mice infestation.\"}, {\"char_end\": 1119, \"char_start\": 1084, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Handling of the related complaint.\"}, {\"char_end\": 1177, \"char_start\": 1119, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We have made orders for the landlord to put things right.\"}, {\"char_end\": 1196, \"char_start\": 1177, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1205, \"char_start\": 1196, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Landlord\"}, {\"char_end\": 1207, \"char_start\": 1205, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"’\"}, {\"char_end\": 1275, \"char_start\": 1207, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"s handling of the resident’s reports of an ongoing mice infestation\"}, {\"char_end\": 1443, \"char_start\": 1275, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s failure to effectively mouse-proof the property at earliest opportunity alongside treating the pests, delayed a permanent resolution to the infestation.\"}, {\"char_end\": 1456, \"char_start\": 1443, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Landlord’s h\"}, {\"char_end\": 1489, \"char_start\": 1456, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"tribunal_reasoning\", \"text\": \"andling of the related complaint\"}, {\"char_end\": 1619, \"char_start\": 1489, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There was a lengthy and unreasonable delay in providing its final complaint response despite repeated requests from the resident.\"}, {\"char_end\": 1640, \"char_start\": 1619, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 1698, \"char_start\": 1640, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"Where we find service failure, maladministration or sever\"}, {\"char_end\": 1700, \"char_start\": 1698, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"e\"}, {\"char_end\": 1775, \"char_start\": 1700, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"maladministration we can make orders for the landlord to put things right.\"}, {\"char_end\": 1866, \"char_start\": 1775, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"We have the discretion to make recommendations in all other cases within our jurisdiction.\"}, {\"char_end\": 1873, \"char_start\": 1866, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"Orders\"}, {\"char_end\": 1883, \"char_start\": 1873, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"Landlords\"}, {\"char_end\": 1888, \"char_start\": 1883, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"must\"}, {\"char_end\": 1999, \"char_start\": 1888, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"comply with our orders in the manner and timescales we specify. The landlord must provide documentary evidence\"}, {\"char_end\": 2002, \"char_start\": 1999, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"of\"}, {\"char_end\": 2013, \"char_start\": 2002, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"compliance\"}, {\"char_end\": 2029, \"char_start\": 2013, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"with our orders\"}, {\"char_end\": 2036, \"char_start\": 2029, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"by the\"}, {\"char_end\": 2045, \"char_start\": 2036, \"page\": 1, \"paragraph\": 52, \"section_tag\": \"order\", \"text\": \"due date\"}, {\"char_end\": 2050, \"char_start\": 2045, \"page\": 1, \"paragraph\": 53, \"section_tag\": \"order\", \"text\": \"set.\"}, {\"char_end\": 2056, \"char_start\": 2050, \"page\": 1, \"paragraph\": 54, \"section_tag\": \"order\", \"text\": \"Order\"}, {\"char_end\": 2082, \"char_start\": 2056, \"page\": 1, \"paragraph\": 55, \"section_tag\": \"order\", \"text\": \"What the landlord must do\"}, {\"char_end\": 2091, \"char_start\": 2082, \"page\": 1, \"paragraph\": 56, \"section_tag\": \"order\", \"text\": \"Due date\"}, {\"char_end\": 2093, \"char_start\": 2091, \"page\": 1, \"paragraph\": 57, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2107, \"char_start\": 2093, \"page\": 1, \"paragraph\": 58, \"section_tag\": \"order\", \"text\": \"Apology order\"}, {\"char_end\": 2135, \"char_start\": 2107, \"page\": 1, \"paragraph\": 59, \"section_tag\": \"order\", \"text\": \"The landlord must apologise\"}, {\"char_end\": 2146, \"char_start\": 2135, \"page\": 1, \"paragraph\": 60, \"section_tag\": \"order\", \"text\": \"in writing\"}, {\"char_end\": 2166, \"char_start\": 2146, \"page\": 1, \"paragraph\": 61, \"section_tag\": \"order\", \"text\": \"to the resident for\"}, {\"char_end\": 2170, \"char_start\": 2166, \"page\": 1, \"paragraph\": 62, \"section_tag\": \"order\", \"text\": \"the\"}, {\"char_end\": 2206, \"char_start\": 2170, \"page\": 1, \"paragraph\": 63, \"section_tag\": \"order\", \"text\": \"failures identified in this report.\"}, {\"char_end\": 2219, \"char_start\": 2206, \"page\": 1, \"paragraph\": 64, \"section_tag\": \"order\", \"text\": \"The landlord\"}, {\"char_end\": 2232, \"char_start\": 2219, \"page\": 1, \"paragraph\": 65, \"section_tag\": \"order\", \"text\": \"must ensure:\"}, {\"char_end\": 2236, \"char_start\": 2232, \"page\": 1, \"paragraph\": 66, \"section_tag\": \"order\", \"text\": \"The\"}, {\"char_end\": 2244, \"char_start\": 2236, \"page\": 1, \"paragraph\": 67, \"section_tag\": \"order\", \"text\": \"apology\"}, {\"char_end\": 2247, \"char_start\": 2244, \"page\": 1, \"paragraph\": 68, \"section_tag\": \"order\", \"text\": \"is\"}, {\"char_end\": 2256, \"char_start\": 2247, \"page\": 1, \"paragraph\": 69, \"section_tag\": \"order\", \"text\": \"specific\"}, {\"char_end\": 2300, \"char_start\": 2256, \"page\": 1, \"paragraph\": 70, \"section_tag\": \"order\", \"text\": \"to the failures identified in this decision\"}, {\"char_end\": 2329, \"char_start\": 2300, \"page\": 1, \"paragraph\": 71, \"section_tag\": \"order\", \"text\": \", meaningful and empathetic.\"}, {\"char_end\": 2354, \"char_start\": 2329, \"page\": 1, \"paragraph\": 72, \"section_tag\": \"order\", \"text\": \"It has due regard to our\"}, {\"char_end\": 2373, \"char_start\": 2354, \"page\": 1, \"paragraph\": 73, \"section_tag\": \"order\", \"text\": \"apologies guidance\"}, {\"char_end\": 2375, \"char_start\": 2373, \"page\": 1, \"paragraph\": 74, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 2389, \"char_start\": 2375, \"page\": 1, \"paragraph\": 75, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 2391, \"char_start\": 2389, \"page\": 1, \"paragraph\": 76, \"section_tag\": \"order\", \"text\": \"1\"}, {\"char_end\": 2393, \"char_start\": 2391, \"page\": 1, \"paragraph\": 77, \"section_tag\": \"order\", \"text\": \"5\"}, {\"char_end\": 2406, \"char_start\": 2393, \"page\": 1, \"paragraph\": 78, \"section_tag\": \"order\", \"text\": \"January 2026\"}, {\"char_end\": 2408, \"char_start\": 2406, \"page\": 1, \"paragraph\": 79, \"section_tag\": \"order\", \"text\": \"2\"}, {\"char_end\": 2427, \"char_start\": 2408, \"page\": 1, \"paragraph\": 80, \"section_tag\": \"order\", \"text\": \"Compensation order\"}, {\"char_end\": 2464, \"char_start\": 2427, \"page\": 1, \"paragraph\": 81, \"section_tag\": \"order\", \"text\": \"The landlord must pay the resident £\"}, {\"char_end\": 2527, \"char_start\": 2464, \"page\": 1, \"paragraph\": 82, \"section_tag\": \"order\", \"text\": \"350 (including the £190 offered during the complaints process)\"}, {\"char_end\": 2547, \"char_start\": 2527, \"page\": 1, \"paragraph\": 83, \"section_tag\": \"order\", \"text\": \"made up as follows:\"}, {\"char_end\": 2549, \"char_start\": 2547, \"page\": 1, \"paragraph\": 84, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2553, \"char_start\": 2549, \"page\": 1, \"paragraph\": 85, \"section_tag\": \"order\", \"text\": \"250\"}, {\"char_end\": 2557, \"char_start\": 2553, \"page\": 1, \"paragraph\": 86, \"section_tag\": \"order\", \"text\": \"for\"}, {\"char_end\": 2680, \"char_start\": 2557, \"page\": 1, \"paragraph\": 87, \"section_tag\": \"order\", \"text\": \"the distress, inconvenience, time, and trouble caused by the landlord’s handling of reports of an ongoing mice infestation\"}, {\"char_end\": 2682, \"char_start\": 2680, \"page\": 1, \"paragraph\": 88, \"section_tag\": \"order\", \"text\": \"£\"}, {\"char_end\": 2686, \"char_start\": 2682, \"page\": 1, \"paragraph\": 89, \"section_tag\": \"order\", \"text\": \"100\"}, {\"char_end\": 2690, \"char_start\": 2686, \"page\": 1, \"paragraph\": 90, \"section_tag\": \"order\", \"text\": \"for\"}, {\"char_end\": 2790, \"char_start\": 2690, \"page\": 1, \"paragraph\": 91, \"section_tag\": \"order\", \"text\": \"the distress, inconvenience, time, and trouble caused by the landlord’s complaint handling failings\"}, {\"char_end\": 2925, \"char_start\": 2790, \"page\": 1, \"paragraph\": 92, \"section_tag\": \"order\", \"text\": \"This must be paid directly to the resident by the due date. The landlord must provide documentary evidence of payment by the due date.\"}, {\"char_end\": 3005, \"char_start\": 2925, \"page\": 1, \"paragraph\": 93, \"section_tag\": \"order\", \"text\": \"The landlord may deduct from the total figure any payments it has already paid.\"}, {\"char_end\": 3019, \"char_start\": 3005, \"page\": 1, \"paragraph\": 94, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3035, \"char_start\": 3019, \"page\": 1, \"paragraph\": 95, \"section_tag\": \"order\", \"text\": \"15 January 2026\"}, {\"char_end\": 3037, \"char_start\": 3035, \"page\": 1, \"paragraph\": 96, \"section_tag\": \"order\", \"text\": \"3\"}, {\"char_end\": 3056, \"char_start\": 3037, \"page\": 1, \"paragraph\": 97, \"section_tag\": \"order\", \"text\": \"Review of failings\"}, {\"char_end\": 3076, \"char_start\": 3056, \"page\": 1, \"paragraph\": 98, \"section_tag\": \"order\", \"text\": \"The landlord must r\"}, {\"char_end\": 3082, \"char_start\": 3076, \"page\": 1, \"paragraph\": 99, \"section_tag\": \"order\", \"text\": \"eview\"}, {\"char_end\": 3190, \"char_start\": 3082, \"page\": 1, \"paragraph\": 100, \"section_tag\": \"order\", \"text\": \"the failings identified in this report and consider what improvements it can make including in relation to:\"}, {\"char_end\": 3216, \"char_start\": 3190, \"page\": 1, \"paragraph\": 101, \"section_tag\": \"order\", \"text\": \"Identifying and providing\"}, {\"char_end\": 3284, \"char_start\": 3216, \"page\": 1, \"paragraph\": 102, \"section_tag\": \"order\", \"text\": \"necessary repairs at earliest opportunity alongside pest treatments\"}, {\"char_end\": 3318, \"char_start\": 3284, \"page\": 1, \"paragraph\": 103, \"section_tag\": \"order\", \"text\": \"while responding to pest reports.\"}, {\"char_end\": 3359, \"char_start\": 3318, \"page\": 1, \"paragraph\": 104, \"section_tag\": \"order\", \"text\": \"Monitoring ongoing pest activity and the\"}, {\"char_end\": 3376, \"char_start\": 3359, \"page\": 1, \"paragraph\": 105, \"section_tag\": \"order\", \"text\": \"effectiveness of\"}, {\"char_end\": 3397, \"char_start\": 3376, \"page\": 1, \"paragraph\": 106, \"section_tag\": \"order\", \"text\": \"any repairs provided\"}, {\"char_end\": 3399, \"char_start\": 3397, \"page\": 1, \"paragraph\": 107, \"section_tag\": \"order\", \"text\": \".\"}, {\"char_end\": 3433, \"char_start\": 3399, \"page\": 1, \"paragraph\": 108, \"section_tag\": \"order\", \"text\": \"Record keeping and communication.\"}, {\"char_end\": 3489, \"char_start\": 3433, \"page\": 1, \"paragraph\": 109, \"section_tag\": \"order\", \"text\": \"The landlord must provide us with a copy of the review.\"}, {\"char_end\": 3503, \"char_start\": 3489, \"page\": 1, \"paragraph\": 110, \"section_tag\": \"order\", \"text\": \"No later than\"}, {\"char_end\": 3519, \"char_start\": 3503, \"page\": 1, \"paragraph\": 111, \"section_tag\": \"order\", \"text\": \"15 January 2026\"}, {\"char_end\": 3537, \"char_start\": 3519, \"page\": 1, \"paragraph\": 112, \"section_tag\": \"pre_decision_record\", \"text\": \"Our investigation\"}, {\"char_end\": 3561, \"char_start\": 3537, \"page\": 1, \"paragraph\": 113, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint procedure\"}, {\"char_end\": 3566, \"char_start\": 3561, \"page\": 1, \"paragraph\": 114, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 3580, \"char_start\": 3566, \"page\": 1, \"paragraph\": 115, \"section_tag\": \"pre_decision_record\", \"text\": \"What happened\"}, {\"char_end\": 3593, \"char_start\": 3580, \"page\": 1, \"paragraph\": 116, \"section_tag\": \"pre_decision_record\", \"text\": \"18 June 2024\"}, {\"char_end\": 3741, \"char_start\": 3593, \"page\": 1, \"paragraph\": 117, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord raised a job with is pest contactor in relation to the resident’s report of a mice infestation in the kitchen, bathroom, and bedrooms.\"}, {\"char_end\": 3758, \"char_start\": 3741, \"page\": 1, \"paragraph\": 118, \"section_tag\": \"pre_decision_record\", \"text\": \"18 November 2024\"}, {\"char_end\": 3918, \"char_start\": 3758, \"page\": 1, \"paragraph\": 119, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord raised a further job with is pest contactor in relation to another report of a mice infestation in the resident’s kitchen, bathroom, and bedrooms.\"}, {\"char_end\": 3934, \"char_start\": 3918, \"page\": 1, \"paragraph\": 120, \"section_tag\": \"pre_decision_record\", \"text\": \"23 January 2025\"}, {\"char_end\": 4038, \"char_start\": 3934, \"page\": 1, \"paragraph\": 121, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident raised a formal complaint about the landlord’s handling of the mice infestation. She said:\"}, {\"char_end\": 4108, \"char_start\": 4038, \"page\": 1, \"paragraph\": 122, \"section_tag\": \"pre_decision_record\", \"text\": \"Mice had returned despite the visits from the landlord’s pest control\"}, {\"char_end\": 4110, \"char_start\": 4108, \"page\": 1, \"paragraph\": 123, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4147, \"char_start\": 4110, \"page\": 1, \"paragraph\": 124, \"section_tag\": \"pre_decision_record\", \"text\": \"This issue had reoccurred since 2009\"}, {\"char_end\": 4149, \"char_start\": 4147, \"page\": 1, \"paragraph\": 125, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4203, \"char_start\": 4149, \"page\": 1, \"paragraph\": 126, \"section_tag\": \"pre_decision_record\", \"text\": \"She wanted the pest issue to be permanently resolved.\"}, {\"char_end\": 4219, \"char_start\": 4203, \"page\": 1, \"paragraph\": 127, \"section_tag\": \"pre_decision_record\", \"text\": \"24 January 2025\"}, {\"char_end\": 4292, \"char_start\": 4219, \"page\": 1, \"paragraph\": 128, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the complaint during a call with the resident.\"}, {\"char_end\": 4308, \"char_start\": 4292, \"page\": 1, \"paragraph\": 129, \"section_tag\": \"pre_decision_record\", \"text\": \"27 January 2025\"}, {\"char_end\": 4371, \"char_start\": 4308, \"page\": 1, \"paragraph\": 130, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its stage 1 complaint response. This stated:\"}, {\"char_end\": 4437, \"char_start\": 4371, \"page\": 1, \"paragraph\": 131, \"section_tag\": \"pre_decision_record\", \"text\": \"Its operative would attend on 27 January 2025 to inspect holes in\"}, {\"char_end\": 4452, \"char_start\": 4437, \"page\": 1, \"paragraph\": 132, \"section_tag\": \"pre_decision_record\", \"text\": \"the resident’s\"}, {\"char_end\": 4490, \"char_start\": 4452, \"page\": 1, \"paragraph\": 133, \"section_tag\": \"pre_decision_record\", \"text\": \"kitchen and raise any follow-on works\"}, {\"char_end\": 4492, \"char_start\": 4490, \"page\": 1, \"paragraph\": 134, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4553, \"char_start\": 4492, \"page\": 1, \"paragraph\": 135, \"section_tag\": \"pre_decision_record\", \"text\": \"Once the repairs were completed, it would readdress the pest\"}, {\"char_end\": 4566, \"char_start\": 4553, \"page\": 1, \"paragraph\": 136, \"section_tag\": \"pre_decision_record\", \"text\": \"infestation.\"}, {\"char_end\": 4568, \"char_start\": 4566, \"page\": 1, \"paragraph\": 137, \"section_tag\": \"pre_decision_record\", \"text\": \"I\"}, {\"char_end\": 4636, \"char_start\": 4568, \"page\": 1, \"paragraph\": 138, \"section_tag\": \"pre_decision_record\", \"text\": \"ts customer liaison officer would be her point or contact who would\"}, {\"char_end\": 4667, \"char_start\": 4636, \"page\": 1, \"paragraph\": 139, \"section_tag\": \"pre_decision_record\", \"text\": \"continue to monitor the repair\"}, {\"char_end\": 4669, \"char_start\": 4667, \"page\": 1, \"paragraph\": 140, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 4683, \"char_start\": 4669, \"page\": 1, \"paragraph\": 141, \"section_tag\": \"pre_decision_record\", \"text\": \"16 April 2025\"}, {\"char_end\": 4761, \"char_start\": 4683, \"page\": 1, \"paragraph\": 142, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident requested for the landlord to escalate her complaint. She said d\"}, {\"char_end\": 4805, \"char_start\": 4761, \"page\": 1, \"paragraph\": 143, \"section_tag\": \"pre_decision_record\", \"text\": \"espite 3 visits from pest control, the mice\"}, {\"char_end\": 4836, \"char_start\": 4805, \"page\": 1, \"paragraph\": 144, \"section_tag\": \"pre_decision_record\", \"text\": \"infestation had not gone away.\"}, {\"char_end\": 4863, \"char_start\": 4836, \"page\": 1, \"paragraph\": 145, \"section_tag\": \"pre_decision_record\", \"text\": \"12 May 2025 to 9 July 2025\"}, {\"char_end\": 4944, \"char_start\": 4863, \"page\": 1, \"paragraph\": 146, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident reiterated her request to escalate the complaint on 12 May 2025 and\"}, {\"char_end\": 4947, \"char_start\": 4944, \"page\": 1, \"paragraph\": 147, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 5007, \"char_start\": 4947, \"page\": 1, \"paragraph\": 148, \"section_tag\": \"pre_decision_record\", \"text\": \"16 June 2025 and raised a further complaint on 4 July 2025.\"}, {\"char_end\": 5020, \"char_start\": 5007, \"page\": 1, \"paragraph\": 149, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident\"}, {\"char_end\": 5026, \"char_start\": 5020, \"page\": 1, \"paragraph\": 150, \"section_tag\": \"pre_decision_record\", \"text\": \"asked\"}, {\"char_end\": 5063, \"char_start\": 5026, \"page\": 1, \"paragraph\": 151, \"section_tag\": \"pre_decision_record\", \"text\": \"to be ‘urgently re-housed’ on 19, 23\"}, {\"char_end\": 5065, \"char_start\": 5063, \"page\": 1, \"paragraph\": 152, \"section_tag\": \"pre_decision_record\", \"text\": \",\"}, {\"char_end\": 5086, \"char_start\": 5065, \"page\": 1, \"paragraph\": 153, \"section_tag\": \"pre_decision_record\", \"text\": \"and 25 June 2025 and\"}, {\"char_end\": 5089, \"char_start\": 5086, \"page\": 1, \"paragraph\": 154, \"section_tag\": \"pre_decision_record\", \"text\": \"on\"}, {\"char_end\": 5094, \"char_start\": 5089, \"page\": 1, \"paragraph\": 155, \"section_tag\": \"pre_decision_record\", \"text\": \"3, 4\"}, {\"char_end\": 5096, \"char_start\": 5094, \"page\": 1, \"paragraph\": 156, \"section_tag\": \"pre_decision_record\", \"text\": \",\"}, {\"char_end\": 5123, \"char_start\": 5096, \"page\": 1, \"paragraph\": 157, \"section_tag\": \"pre_decision_record\", \"text\": \"and 9 July 2025 due to the\"}, {\"char_end\": 5131, \"char_start\": 5123, \"page\": 1, \"paragraph\": 158, \"section_tag\": \"pre_decision_record\", \"text\": \"ongoing\"}, {\"char_end\": 5161, \"char_start\": 5131, \"page\": 1, \"paragraph\": 159, \"section_tag\": \"pre_decision_record\", \"text\": \"pest issue. She explained the\"}, {\"char_end\": 5188, \"char_start\": 5161, \"page\": 1, \"paragraph\": 160, \"section_tag\": \"pre_decision_record\", \"text\": \"lack of any resolution was\"}, {\"char_end\": 5204, \"char_start\": 5188, \"page\": 1, \"paragraph\": 161, \"section_tag\": \"pre_decision_record\", \"text\": \"severely impact\"}, {\"char_end\": 5208, \"char_start\": 5204, \"page\": 1, \"paragraph\": 162, \"section_tag\": \"pre_decision_record\", \"text\": \"ing\"}, {\"char_end\": 5212, \"char_start\": 5208, \"page\": 1, \"paragraph\": 163, \"section_tag\": \"pre_decision_record\", \"text\": \"her\"}, {\"char_end\": 5230, \"char_start\": 5212, \"page\": 1, \"paragraph\": 164, \"section_tag\": \"pre_decision_record\", \"text\": \"living conditions\"}, {\"char_end\": 5232, \"char_start\": 5230, \"page\": 1, \"paragraph\": 165, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 5245, \"char_start\": 5232, \"page\": 1, \"paragraph\": 166, \"section_tag\": \"pre_decision_record\", \"text\": \"11 July 2025\"}, {\"char_end\": 5381, \"char_start\": 5245, \"page\": 1, \"paragraph\": 167, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord acknowledged the resident’s stage 2 complaint and said it would provide a final complaint response within 20 working days.\"}, {\"char_end\": 5394, \"char_start\": 5381, \"page\": 1, \"paragraph\": 168, \"section_tag\": \"pre_decision_record\", \"text\": \"16 July 2025\"}, {\"char_end\": 5455, \"char_start\": 5394, \"page\": 1, \"paragraph\": 169, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord sent its final complaint response. This stated:\"}, {\"char_end\": 5457, \"char_start\": 5455, \"page\": 1, \"paragraph\": 170, \"section_tag\": \"pre_decision_record\", \"text\": \"O\"}, {\"char_end\": 5575, \"char_start\": 5457, \"page\": 1, \"paragraph\": 171, \"section_tag\": \"pre_decision_record\", \"text\": \"n 19 June 2025, its operative identified that there were additional entry points that had not been previously located\"}, {\"char_end\": 5577, \"char_start\": 5575, \"page\": 1, \"paragraph\": 172, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 5663, \"char_start\": 5577, \"page\": 1, \"paragraph\": 173, \"section_tag\": \"pre_decision_record\", \"text\": \"This included a potential entry point via the gas meter at the front of the property.\"}, {\"char_end\": 5689, \"char_start\": 5663, \"page\": 1, \"paragraph\": 174, \"section_tag\": \"pre_decision_record\", \"text\": \"It arranged a joint visit\"}, {\"char_end\": 5692, \"char_start\": 5689, \"page\": 1, \"paragraph\": 175, \"section_tag\": \"pre_decision_record\", \"text\": \"by\"}, {\"char_end\": 5769, \"char_start\": 5692, \"page\": 1, \"paragraph\": 176, \"section_tag\": \"pre_decision_record\", \"text\": \"its complaints officer and pest control contractor to address the situation.\"}, {\"char_end\": 5817, \"char_start\": 5769, \"page\": 1, \"paragraph\": 177, \"section_tag\": \"pre_decision_record\", \"text\": \"An initial appointment was arranged for 15 July\"}, {\"char_end\": 5822, \"char_start\": 5817, \"page\": 1, \"paragraph\": 178, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 5909, \"char_start\": 5822, \"page\": 1, \"paragraph\": 179, \"section_tag\": \"pre_decision_record\", \"text\": \"but was rescheduled to suit her availability. The new appointment was for 18 July 2025\"}, {\"char_end\": 5911, \"char_start\": 5909, \"page\": 1, \"paragraph\": 180, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 5920, \"char_start\": 5911, \"page\": 1, \"paragraph\": 181, \"section_tag\": \"pre_decision_record\", \"text\": \"Its area\"}, {\"char_end\": 5931, \"char_start\": 5920, \"page\": 1, \"paragraph\": 182, \"section_tag\": \"pre_decision_record\", \"text\": \"supervisor\"}, {\"char_end\": 5937, \"char_start\": 5931, \"page\": 1, \"paragraph\": 183, \"section_tag\": \"pre_decision_record\", \"text\": \"would\"}, {\"char_end\": 5979, \"char_start\": 5937, \"page\": 1, \"paragraph\": 184, \"section_tag\": \"pre_decision_record\", \"text\": \"monitor the progress of work following th\"}, {\"char_end\": 5982, \"char_start\": 5979, \"page\": 1, \"paragraph\": 185, \"section_tag\": \"pre_decision_record\", \"text\": \"is\"}, {\"char_end\": 5988, \"char_start\": 5982, \"page\": 1, \"paragraph\": 186, \"section_tag\": \"pre_decision_record\", \"text\": \"visit\"}, {\"char_end\": 6031, \"char_start\": 5988, \"page\": 1, \"paragraph\": 187, \"section_tag\": \"pre_decision_record\", \"text\": \"and ensure any necessary follow-on actions\"}, {\"char_end\": 6036, \"char_start\": 6031, \"page\": 1, \"paragraph\": 188, \"section_tag\": \"pre_decision_record\", \"text\": \"were\"}, {\"char_end\": 6046, \"char_start\": 6036, \"page\": 1, \"paragraph\": 189, \"section_tag\": \"pre_decision_record\", \"text\": \"completed\"}, {\"char_end\": 6048, \"char_start\": 6046, \"page\": 1, \"paragraph\": 190, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6216, \"char_start\": 6048, \"page\": 1, \"paragraph\": 191, \"section_tag\": \"pre_decision_record\", \"text\": \"Regarding her request to be re-housed, this was outside the remit of the complaint, but the resident could contact her neighbourhood housing lead for more information.\"}, {\"char_end\": 6284, \"char_start\": 6216, \"page\": 1, \"paragraph\": 192, \"section_tag\": \"pre_decision_record\", \"text\": \"It was sorry for the delay in providing a final complaint response.\"}, {\"char_end\": 6295, \"char_start\": 6284, \"page\": 1, \"paragraph\": 193, \"section_tag\": \"pre_decision_record\", \"text\": \"It offered\"}, {\"char_end\": 6308, \"char_start\": 6295, \"page\": 1, \"paragraph\": 194, \"section_tag\": \"pre_decision_record\", \"text\": \"£190 in comp\"}, {\"char_end\": 6329, \"char_start\": 6308, \"page\": 1, \"paragraph\": 195, \"section_tag\": \"pre_decision_record\", \"text\": \"ensation made up of:\"}, {\"char_end\": 6340, \"char_start\": 6329, \"page\": 1, \"paragraph\": 196, \"section_tag\": \"pre_decision_record\", \"text\": \"£100 for d\"}, {\"char_end\": 6357, \"char_start\": 6340, \"page\": 1, \"paragraph\": 197, \"section_tag\": \"pre_decision_record\", \"text\": \"istress for fail\"}, {\"char_end\": 6361, \"char_start\": 6357, \"page\": 1, \"paragraph\": 198, \"section_tag\": \"pre_decision_record\", \"text\": \"ing\"}, {\"char_end\": 6408, \"char_start\": 6361, \"page\": 1, \"paragraph\": 199, \"section_tag\": \"pre_decision_record\", \"text\": \"to recognise the impact due to vulnerabilities\"}, {\"char_end\": 6410, \"char_start\": 6408, \"page\": 1, \"paragraph\": 200, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6420, \"char_start\": 6410, \"page\": 1, \"paragraph\": 201, \"section_tag\": \"pre_decision_record\", \"text\": \"£50 for t\"}, {\"char_end\": 6466, \"char_start\": 6420, \"page\": 1, \"paragraph\": 202, \"section_tag\": \"pre_decision_record\", \"text\": \"ime and effort getting the complaint resolved\"}, {\"char_end\": 6468, \"char_start\": 6466, \"page\": 1, \"paragraph\": 203, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6478, \"char_start\": 6468, \"page\": 1, \"paragraph\": 204, \"section_tag\": \"pre_decision_record\", \"text\": \"£40 for p\"}, {\"char_end\": 6501, \"char_start\": 6478, \"page\": 1, \"paragraph\": 205, \"section_tag\": \"pre_decision_record\", \"text\": \"oor complaint handling\"}, {\"char_end\": 6503, \"char_start\": 6501, \"page\": 1, \"paragraph\": 206, \"section_tag\": \"pre_decision_record\", \"text\": \".\"}, {\"char_end\": 6529, \"char_start\": 6503, \"page\": 1, \"paragraph\": 207, \"section_tag\": \"pre_decision_record\", \"text\": \"Referral to the Ombudsman\"}, {\"char_end\": 6581, \"char_start\": 6529, \"page\": 1, \"paragraph\": 208, \"section_tag\": \"pre_decision_record\", \"text\": \"The resident asked us to investigate her complaint.\"}, {\"char_end\": 6738, \"char_start\": 6581, \"page\": 1, \"paragraph\": 209, \"section_tag\": \"pre_decision_record\", \"text\": \"She said she and her family had been severely impacted by the unfit living conditions due to the landlord’s ongoing failure to resolve the mice infestation.\"}, {\"char_end\": 6760, \"char_start\": 6738, \"page\": 1, \"paragraph\": 210, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we found and why\"}, {\"char_end\": 6784, \"char_start\": 6760, \"page\": 1, \"paragraph\": 211, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The circumstances of th\"}, {\"char_end\": 6787, \"char_start\": 6784, \"page\": 1, \"paragraph\": 212, \"section_tag\": \"tribunal_reasoning\", \"text\": \"is\"}, {\"char_end\": 6806, \"char_start\": 6787, \"page\": 1, \"paragraph\": 213, \"section_tag\": \"tribunal_reasoning\", \"text\": \"complaint are well\"}, {\"char_end\": 6812, \"char_start\": 6806, \"page\": 1, \"paragraph\": 214, \"section_tag\": \"tribunal_reasoning\", \"text\": \"known\"}, {\"char_end\": 6846, \"char_start\": 6812, \"page\": 1, \"paragraph\": 215, \"section_tag\": \"tribunal_reasoning\", \"text\": \"by the parties involved, so it is\"}, {\"char_end\": 6850, \"char_start\": 6846, \"page\": 1, \"paragraph\": 216, \"section_tag\": \"tribunal_reasoning\", \"text\": \"not\"}, {\"char_end\": 6881, \"char_start\": 6850, \"page\": 1, \"paragraph\": 217, \"section_tag\": \"tribunal_reasoning\", \"text\": \"necessary to detail everything\"}, {\"char_end\": 6947, \"char_start\": 6881, \"page\": 1, \"paragraph\": 218, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that’s happened or comment on all the information we’ve reviewed.\"}, {\"char_end\": 6987, \"char_start\": 6947, \"page\": 1, \"paragraph\": 219, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We’ve only included the key information\"}, {\"char_end\": 6992, \"char_start\": 6987, \"page\": 1, \"paragraph\": 220, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that\"}, {\"char_end\": 7024, \"char_start\": 6992, \"page\": 1, \"paragraph\": 221, \"section_tag\": \"tribunal_reasoning\", \"text\": \"forms the basis of our decision\"}, {\"char_end\": 7086, \"char_start\": 7024, \"page\": 1, \"paragraph\": 222, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of whether the landlord is responsible for maladministration.\"}, {\"char_end\": 7096, \"char_start\": 7086, \"page\": 1, \"paragraph\": 223, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 7177, \"char_start\": 7096, \"page\": 1, \"paragraph\": 224, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s handling of the resident’s reports of an ongoing mice infestation\"}, {\"char_end\": 7185, \"char_start\": 7177, \"page\": 1, \"paragraph\": 225, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 7201, \"char_start\": 7185, \"page\": 1, \"paragraph\": 226, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 7229, \"char_start\": 7201, \"page\": 1, \"paragraph\": 227, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we did not investigate\"}, {\"char_end\": 7603, \"char_start\": 7229, \"page\": 1, \"paragraph\": 228, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident told us the mice infestation had reoccurred for the past 15 years. However, the focus of our investigation will be from June 2024 when the resident made a pest report with the landlord. She had not raised a pest report with it for nearly 12 months prior to this. This is within a reasonable timeframe of the resident’s formal complaint made on 23 January 2025.\"}, {\"char_end\": 7627, \"char_start\": 7603, \"page\": 1, \"paragraph\": 229, \"section_tag\": \"tribunal_reasoning\", \"text\": \"What we did investigate\"}, {\"char_end\": 7911, \"char_start\": 7627, \"page\": 1, \"paragraph\": 230, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its stage 1 complaint response the landlord said it had arranged for an operative to attend on 27 January 2025 to inspect holes in the kitchen, which the resident reported were linked to a mice infestation. The landlord said it would then raise repairs and address the pest issue.\"}, {\"char_end\": 8489, \"char_start\": 7911, \"page\": 1, \"paragraph\": 231, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records confirm it raised a job with its repair team within a day of receiving the resident’s 23 January 2025 report. This was to inspect and fill in any holes found in the kitchen and bathroom. This action was in line with its repair and pest policies which state the landlord is responsible for structural defects and for dealing with pest infestations respectively. This included where there are vulnerabilities, as in this case. Its records show the inspection took place on 27 January 2025 demonstrating the landlord took prompt and appropriate action here.\"}, {\"char_end\": 8737, \"char_start\": 8489, \"page\": 1, \"paragraph\": 232, \"section_tag\": \"tribunal_reasoning\", \"text\": \"However, it is evident that the resident had reported a mice infestation within her flat on 2 occasions during the previous 7 months. It is clear the landlord treated the infestation following these reports, the last visit being on 2 January 2025.\"}, {\"char_end\": 9195, \"char_start\": 8737, \"page\": 1, \"paragraph\": 233, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Although its records indicate it previously filled holes in the kitchen, the resident’s report of an ongoing mice infestation on 23 January 2025 shows this action had not effectively resolved the pest problem. As such it was important that following the resident’s latest report, the landlord carry out a thorough inspection to ensure all holes or gaps in the structure were identified and rectified in a timely manner to stop mice re-entering the property.\"}, {\"char_end\": 9755, \"char_start\": 9195, \"page\": 1, \"paragraph\": 234, \"section_tag\": \"tribunal_reasoning\", \"text\": \"As previously noted, the landlord inspected promptly following the resident’s 23 January 2025 report and also arranged for 3 pest treatments. However, it is not clear from its records, what if any repairs were provided at this time. Proper record keeping is a core element of effective housing management. When repair records are missing or incomplete, it is difficult to establish exactly what works were provided by the landlord. As such the lack of detail of completed repairs is evidence of poor knowledge and information management (KIM) by the landlord.\"}, {\"char_end\": 10248, \"char_start\": 9755, \"page\": 1, \"paragraph\": 235, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident continued to report ongoing mice activity after the pest visits were completed on 28 February 2025. She sent the landlord photos of this activity as per its request and the landlord arranged for further pest treatments on 3, 14, and 28 April 2025. The pest control reports confirm ongoing activity and recommend further investigation into finding new entry holes. This shows any attempt by the landlord to repair holes following her 23 January 2025 report, had been unsuccessful.\"}, {\"char_end\": 10880, \"char_start\": 10248, \"page\": 1, \"paragraph\": 236, \"section_tag\": \"tribunal_reasoning\", \"text\": \"There is no evidence of the landlord raising a further job in relation to locating new entry holes at this time. Its failure to follow pest control recommendations or monitor the situation, was inappropriate. As the resident’s reports of mice activity were ongoing, the landlord raised a job for an additional 3 pest treatments. This was appropriate; however, the pest report dated 12 May 2025 again confirmed ongoing activity. It recommended the upstairs’ neighbour’s property was examined in case mice were coming from here. Again, there is no evidence of the landlord acting on this recommendation within a reasonable timeframe.\"}, {\"char_end\": 11299, \"char_start\": 10880, \"page\": 1, \"paragraph\": 237, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s repeated failure to follow up on recommendations made by pest control to address the issue, was inappropriate. This was despite regular contact from the resident during this timeframe urging it to act. She made clear throughout the severe impact of the mice infestation on her and her child. This is evidence of the landlord not taking the resident’s reports or related complaint sufficiently seriously.\"}, {\"char_end\": 11876, \"char_start\": 11299, \"page\": 1, \"paragraph\": 238, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 19 June 2025 the landlord attended the property itself to inspect for further entry holes. On this occasion, further holes were found and repairs in the kitchen, bathroom and hallway were identified. Following this the landlord arranged to visit again with its pest contractor to ensure the repairs outlined would fully resolve the infestation. In its final response dated 16 July 2025 the landlord confirmed this visit had been scheduled for 18 July 2025. It also told the resident it would monitor the progress of the work which would be undertaken by its surveying team.\"}, {\"char_end\": 12324, \"char_start\": 11876, \"page\": 1, \"paragraph\": 239, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The action proposed in order to provide a permanent solution to the pest issue was appropriate. However, the landlord should have taken this action at least 6 months earlier following the resident’s 23 January 2025 report. The failure to get structural repairs right at earliest opportunity led to multiple pest control visits which alone, did not adequately address the issue. This shows a lack of oversight by the landlord in managing the issue.\"}, {\"char_end\": 12922, \"char_start\": 12324, \"page\": 1, \"paragraph\": 240, \"section_tag\": \"tribunal_reasoning\", \"text\": \"As a result of the unresolved mice infestation, on 19 June 2025 the resident requested the landlord to re-house her. The landlord responded more than 2 weeks later on 7 July 2025 and only after 4 follow up requests by the resident (on 23 and 25 June 2025 and twice on 4 July 2025). While we have not seen any evidence to show re-housing was required, the landlord should have been prompt in providing its position. Its response was also dismissive in tone. Its officer told the resident her request was outside of their remit and advised the resident to contact its call centre for further advice.\"}, {\"char_end\": 13224, \"char_start\": 12922, \"page\": 1, \"paragraph\": 241, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response issued approximately 2 weeks later, the landlord reiterated that the resident’s re-housing request was outside the remit of the complaint. Rehousing matters are not listed as an exception in the landlord’s complaint policy, so the basis of the landlord’s comment here is unclear.\"}, {\"char_end\": 13696, \"char_start\": 13224, \"page\": 1, \"paragraph\": 242, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response the landlord said that a mutual exchange was often a quicker process for finding a suitable home. However, in the circumstances, the landlord should have outlined all rehousing options and provided signposting or contact details of appropriate officers to enable the resident to pursue these avenues. Although the landlord’s officer later discussed rehousing options with the resident, it should have included this information in its final response.\"}, {\"char_end\": 14063, \"char_start\": 13696, \"page\": 1, \"paragraph\": 243, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We also expect the landlord to demonstrate it followed through with actions agreed in its final response. Its records show the joint visit took place as agreed. Further that the landlord’s subsequent repairs, including sealing entry points in the gas meter at the front of the property and additional pest treatments, resolved the mice infestation. This is welcomed.\"}, {\"char_end\": 14297, \"char_start\": 14063, \"page\": 1, \"paragraph\": 244, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Therefore, although the landlord made several attempts to address the resident’s reports, its failure to carry out effective structural repairs alongside pest treatments caused an unreasonable delay in resolving the mice infestation.\"}, {\"char_end\": 14777, \"char_start\": 14297, \"page\": 1, \"paragraph\": 245, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response the landlord recognised some failings and offered £150 in compensation. This is in accordance with our dispute resolution principles to be fair, treat people fairly and follow fair processes, put things rights and learn from outcomes. However, given the lengthy delay (of at least 7 months) in completing all necessary structural repairs, the redress offered is not sufficient to resolve the complaint. This amounts to an overall finding of service failure.\"}, {\"char_end\": 14933, \"char_start\": 14777, \"page\": 1, \"paragraph\": 246, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In the circumstances, the landlord shall pay the resident total compensation of £300 (including the £150 offered during the complaints process) made up of:\"}, {\"char_end\": 14970, \"char_start\": 14933, \"page\": 1, \"paragraph\": 247, \"section_tag\": \"tribunal_reasoning\", \"text\": \"£200 for distress and inconvenience.\"}, {\"char_end\": 14997, \"char_start\": 14970, \"page\": 1, \"paragraph\": 248, \"section_tag\": \"tribunal_reasoning\", \"text\": \"£100 for time and trouble.\"}, {\"char_end\": 15206, \"char_start\": 14997, \"page\": 1, \"paragraph\": 249, \"section_tag\": \"tribunal_reasoning\", \"text\": \"This amount is in line with the level recommended in our remedies guidance where failings have adversely affected the resident. This amount also takes into account the resident’s vulnerabilities in this case.\"}, {\"char_end\": 15216, \"char_start\": 15206, \"page\": 1, \"paragraph\": 250, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Complaint\"}, {\"char_end\": 15261, \"char_start\": 15216, \"page\": 1, \"paragraph\": 251, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Landlord’s handling of the related complaint\"}, {\"char_end\": 15269, \"char_start\": 15261, \"page\": 1, \"paragraph\": 252, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Finding\"}, {\"char_end\": 15285, \"char_start\": 15269, \"page\": 1, \"paragraph\": 253, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Service failure\"}, {\"char_end\": 15562, \"char_start\": 15285, \"page\": 1, \"paragraph\": 254, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The Ombudsman’s Complaint Handling Code (the Code) 1 April 2024 required landlords to acknowledge a complaint within 5 days and respond to stage 1 and 2 complaints within 10 and 20 working days, respectively. These timescales are echoed in the landlord’s own complaint policy.\"}, {\"char_end\": 15802, \"char_start\": 15562, \"page\": 1, \"paragraph\": 255, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord acknowledged the resident’s complaint dated 23 January 2025 within 1 working day and sent its stage 1 response 3 working days later on 27 January 2025. This was within its timescales therefore the landlord acted appropriately.\"}, {\"char_end\": 16216, \"char_start\": 15802, \"page\": 1, \"paragraph\": 256, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The resident requested to escalate her complaint on 16 April 2025. The landlord failed to acknowledge her request until 59 working days later on 11 July 2025. This was only after 3 further escalation requests and a further complaint made by the resident. This was outside of its 5 working day deadline and was inappropriate. The landlord provided its final complaint response 5 working days later on 16 July 2025.\"}, {\"char_end\": 16612, \"char_start\": 16216, \"page\": 1, \"paragraph\": 257, \"section_tag\": \"tribunal_reasoning\", \"text\": \"In its final response, the landlord acknowledged poor complaint handling and offered £40 in recognition of this. This went some way to putting right this failing. However, given the prolonged delay in providing its final response and the resident’s repeated follow-up requests, the redress offered was insufficient to resolve the complaint. This amounts to an overall finding of service failure.\"}, {\"char_end\": 16621, \"char_start\": 16612, \"page\": 1, \"paragraph\": 258, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Learning\"}, {\"char_end\": 16784, \"char_start\": 16621, \"page\": 1, \"paragraph\": 259, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We identified an issue with the landlord’s repair records where jobs raised did not include any comments or details of the repairs or works subsequently provided.\"}, {\"char_end\": 16907, \"char_start\": 16784, \"page\": 1, \"paragraph\": 260, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We also identified instances of the landlord not communicating delays or providing updates to the resident when requested.\"}, {\"char_end\": 17103, \"char_start\": 16907, \"page\": 1, \"paragraph\": 261, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord should consider what lessons it can learn from this case and how it will improve its record keeping and communication while handling repairs in relation to pest reports going forward.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "aa7cf9a8cc23fd964cfa125abd5d71a31aa6a9c036ccb28f1b2ae18cc46cbf63",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T16:39:24.077032+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "666135247a6fb26a2235ef6a4bd055d4e0c1abb9dda96397ef94e51911459c6f"
+}

@@ -87,6 +87,14 @@ class SourceMetadata(BaseModel):
             "represents (for point-in-time retrieval)."
         ),
     )
+    outcome_raw: Optional[str] = Field(
+        None,
+        description="Publisher-supplied outcome label, if the source has one.",
+    )
+    outcome_normalized: Optional[str] = Field(
+        None,
+        description="Stable normalized outcome label used for eval stratification.",
+    )
 
     # URLs / licensing ---------------------------------------------------
     source_url: Optional[str] = Field(
@@ -205,6 +213,12 @@ class SourceMetadata(BaseModel):
             out["decision_date"] = self.decision_date.isoformat()
         if self.law_effective_date is not None:
             out["law_effective_date"] = self.law_effective_date.isoformat()
+        outcome_raw = getattr(self, "outcome_raw", None)
+        outcome_normalized = getattr(self, "outcome_normalized", None)
+        if outcome_raw:
+            out["outcome_raw"] = outcome_raw
+        if outcome_normalized:
+            out["outcome_normalized"] = outcome_normalized
         if self.source_url:
             out["source_url"] = self.source_url
         if self.canonical_url:
@@ -261,6 +275,8 @@ class SourceMetadata(BaseModel):
             matter_types=matter_types,
             decision_date=_date("decision_date"),
             law_effective_date=_date("law_effective_date"),
+            outcome_raw=meta.get("outcome_raw"),
+            outcome_normalized=meta.get("outcome_normalized"),
             source_url=meta.get("source_url"),
             source_license=meta.get("source_license"),
             canonical_url=meta.get("canonical_url"),

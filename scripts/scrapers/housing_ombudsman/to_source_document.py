@@ -8,7 +8,7 @@ SHA-125 plan §5: ``domain_id="housing.repairs_social.v1"``,
 ``source_kind=SourceKind.OMBUDSMAN_DETERMINATION``.
 
 Publisher-specific fields (orders, recommendations, complaint
-categories, outcome label, parser diagnostics) ride on
+categories, parser diagnostics) ride on
 ``SourceDocument.extra`` so they survive into the manifest without
 polluting the cross-domain :class:`SourceMetadata`.
 """
@@ -56,6 +56,8 @@ def ombudsman_to_source_document(
         source_kind=SourceKind.OMBUDSMAN_DETERMINATION,
         matter_types=list(kept_matter_types or []),
         decision_date=meta.decision_date,
+        outcome_raw=meta.outcome_raw,
+        outcome_normalized=meta.outcome_normalized,
         source_url=meta.source_url,
         source_license=config.source_license,
         corpus_version=config.corpus_version,

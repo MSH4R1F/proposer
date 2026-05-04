@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test RAG retrieval quality with hybrid vs semantic-only comparison.
+Test deposit/RRO RAG retrieval quality with hybrid vs semantic-only comparison.
 
 This script tests retrieval on a set of sample queries and compares
 hybrid search (semantic + BM25) against semantic-only search.
@@ -63,7 +63,7 @@ def check_relevance(result, expected_topics):
 
 async def main():
     print("=" * 70)
-    print("RAG RETRIEVAL QUALITY TEST")
+    print("DEPOSIT/RRO RAG RETRIEVAL QUALITY TEST")
     print("=" * 70)
     
     # Initialize pipeline with default config

@@ -26,6 +26,9 @@ This index maps every doc in `docs/eval/` to its audience and purpose.
 | [`reviewer-guide.md`](reviewer-guide.md) | Adjudicator onboarding for the LLM-assisted labeling pipeline (rewritten 2026-05-03 — see decision log D-021). The three queues — MandatoryReviewSet, DisagreementSet, 10% audit overlay — plus the human-only anchor flow and `LabelingProvenance` recording. |
 | [`reviewer-log.md`](reviewer-log.md) | Adjudication log. One row per adjudicated `(case, field_path)` cell, with rationale. Written automatically by `scripts/eval/adjudicate.py append`. |
 | [`ablation.md`](ablation.md) | The RQ1 ablation runner. CLI, methodology, dominance check via non-overlapping CIs, worked example. |
+| [`housing-ombudsman-stratified-50.md`](housing-ombudsman-stratified-50.md) | The 2026-05-04 Housing Ombudsman repairs/social 50-case stratified eval manifest: selection method, distribution, rebuild note, and promotion path into reviewed gold. |
+| [`housing-ombudsman-pilot-full-eval.md`](housing-ombudsman-pilot-full-eval.md) | The 2026-05-04 10-case Housing Ombudsman pilot run for accuracy, Brier, ECE, and four-mode ablation, with limitations. |
+| [`housing-ombudsman-stratified-50-full-eval.md`](housing-ombudsman-stratified-50-full-eval.md) | The 2026-05-04 reviewed 50-case Housing Ombudsman full metric + ablation run. Records baseline results and the live-run caveats. |
 
 ## For someone reproducing the work
 
@@ -55,6 +58,47 @@ PYTHONPATH=packages python -m eval.ablate \
   --predictions llm_only=eval/predictions/llm_only.jsonl \
   --seed 42 \
   --out eval/results/ablation_$(date +%F).json
+
+# 5. Rebuild the Housing Ombudsman stratified-50 eval manifest
+python scripts/eval/build_housing_ombudsman_stratified_eval.py --data-dir "$DATA_DIR"
+
+# 6. Prepare the stratified 50 for reviewed gold promotion
+venv/bin/python scripts/eval/prepare_housing_ombudsman_gold_review.py \
+  --manifest data/eval/housing_ombudsman_stratified_50.jsonl \
+  --run-id housing-ombudsman-stratified-50-review-20260504 \
+  --force
+
+# 7. Run the Housing Ombudsman pilot full metric + ablation bundle
+venv/bin/python scripts/eval/run_full_eval.py \
+  --gold data/gold_standard/housing_repairs_social_v1.jsonl \
+  --predictions-dir eval/predictions/housing_ombudsman_gold_pilot_20260504 \
+  --out-dir eval/results/housing_ombudsman_full_eval_20260504 \
+  --domain housing.repairs_social.v1 \
+  --seed 42 \
+  --n-resamples 1000 \
+  --min-case-count 10
+
+# 8. Promote the reviewed Housing Ombudsman stratified 50 into canonical gold
+PYTHONPATH=packages venv/bin/python scripts/eval/promote_housing_ombudsman_reviewed_gold.py \
+  --promote-canonical \
+  --force
+
+# 9. Generate and score the stratified-50 baseline prediction files
+PYTHONPATH=packages venv/bin/python scripts/eval/predict_all.py \
+  --gold data/gold_standard/housing_repairs_social_v1.jsonl \
+  --out-dir eval/predictions/housing_ombudsman_stratified_50_20260504 \
+  --engine stub \
+  --modes hybrid,rag_only,kg_only,llm_only \
+  --run-id housing-ombudsman-stratified-50-stub-20260504
+
+PYTHONPATH=packages venv/bin/python scripts/eval/run_full_eval.py \
+  --gold data/gold_standard/housing_repairs_social_v1.jsonl \
+  --predictions-dir eval/predictions/housing_ombudsman_stratified_50_20260504 \
+  --out-dir eval/results/housing_ombudsman_stratified_50_full_eval_20260504 \
+  --domain housing.repairs_social.v1 \
+  --seed 42 \
+  --n-resamples 1000 \
+  --min-case-count 50
 ```
 
 Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (per-phase coverage, audit JSON) lives at `.sisyphus/evidence/eval/`.
@@ -71,7 +115,8 @@ Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (p
 | 5 — Ablation comparison machinery | **Done** ([PR #10](https://github.com/MSH4R1F/proposer/pull/10)) | SHA-32 | `eval.adapter`, `eval.compare`, `python -m eval.ablate`, synthetic per-mode fixtures, `docs/eval/ablation.md` |
 | 5b — Live runner + GoldCase→CaseFile + alignment | **Done (this PR)** | SHA-32 | `eval.issue_alignment`, `eval.case_file_adapter`, `eval._stub_prediction`, `scripts/eval/predict_all.py`, end-to-end test |
 | 5c — Real LLM client wiring | Deferred | follow-up | Concrete `BaseLLMClient` + key handling; project-level decision (Anthropic/OpenAI) |
-| 6 — Push to 50 cases + Cohen's κ | Pending | SHA-28 DoD | Depends on reviewer assignment (SHA-96) |
+| 6 — Push to 50 cases + Cohen's κ | Partially done | SHA-28 DoD | 50 Ombudsman rows promoted through the reviewed-gold append gate; Cohen's κ/human-only anchor reporting still pending |
+| 6b — Housing Ombudsman stratified-50 manifest | **Promoted to reviewed gold** | SHA-127 | `data/gold_standard/housing_repairs_social_v1.jsonl`; baseline full eval documented in `docs/eval/housing-ombudsman-stratified-50-full-eval.md` |
 
 ## Source of truth pointers
 
@@ -82,14 +127,19 @@ Determinism: every CI is reproducible with `--seed`. Reproducibility evidence (p
 - **Adapter (orchestrator → eval):** `packages/eval/adapter.py`
 - **Comparison report:** `packages/eval/compare.py`
 - **Ablation CLI (multi-mode):** `packages/eval/ablate.py`
+- **Full eval orchestrator:** `scripts/eval/run_full_eval.py`
 - **Issue vocab alignment (eval ↔ orchestrator):** `packages/eval/issue_alignment.py`
 - **GoldCase → CaseFile reconstructor:** `packages/eval/case_file_adapter.py`
 - **Stub PredictionResult builder:** `packages/eval/_stub_prediction.py`
 - **Live runner CLI:** `scripts/eval/predict_all.py`
+- **Ombudsman gold-review prep:** `scripts/eval/prepare_housing_ombudsman_gold_review.py`
+- **Ombudsman reviewed-gold promotion:** `scripts/eval/promote_housing_ombudsman_reviewed_gold.py`
 - **Annotation CLI:** `scripts/eval/annotate.py`
 - **Tests:** `packages/eval/tests/`
 - **Synthetic fixtures:** `packages/eval/tests/fixtures/`
 - **Production gold set:** `data/gold_standard/housing_v1.jsonl` (lands when Phase 6 annotation completes)
+- **Housing Ombudsman reviewed gold set:** `data/gold_standard/housing_repairs_social_v1.jsonl` (50-case reviewed repairs/social corpus as of 2026-05-04; previous 10-case pilot backed up in `data/eval_artifacts/gold_build/`)
+- **Housing Ombudsman eval manifest:** `data/eval/housing_ombudsman_stratified_50.jsonl` (selection manifest, not adjudicated gold)
 - **Strategic track plan:** `.sisyphus/plans/track-a-plan.md`
 - **TDD plans (per phase):** `docs/superpowers/plans/2026-04-{27,28,29}-gold-set-*.md`
 - **Codex sparring record:** `.sisyphus/codex/sha-28-schema-2026-04-27.md`

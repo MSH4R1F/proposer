@@ -201,6 +201,12 @@ def _norm_token(text: str, *, max_len: int | None = None) -> str:
     return out
 
 
+def _field(obj: Any, name: str, default: Any = None) -> Any:
+    if isinstance(obj, dict):
+        return obj.get(name, default)
+    return getattr(obj, name, default)
+
+
 def field_path_for_evidence(idx: int, ev: Evidence) -> str:
     """Stable ``evidence[...]`` path for an Evidence row.
 
@@ -210,40 +216,48 @@ def field_path_for_evidence(idx: int, ev: Evidence) -> str:
     the first 32 chars of the canonicalised ``description``.
     """
     del idx  # unused; identity must not depend on position
-    kind_tokens = _norm_token(ev.kind).split()
+    if isinstance(ev, str):
+        kind = ""
+        description = ev
+    else:
+        kind = _field(ev, "kind", "")
+        description = _field(ev, "description", "")
+    kind_tokens = _norm_token(kind).split()
     kind_head = kind_tokens[0] if kind_tokens else ""
-    desc_head = _norm_token(ev.description, max_len=32)
+    desc_head = _norm_token(description, max_len=32)
     return f"evidence[{desc_head}|kind={kind_head}]"
 
 
 def field_path_for_claimed_amount(idx: int, ca: ClaimedAmount) -> str:
     """Stable ``claimed_amounts[issue=...|by_party=...]`` path."""
     del idx
-    issue = _norm_token(ca.issue)
-    party = ca.by_party.value if hasattr(ca.by_party, "value") else str(ca.by_party)
+    issue = _norm_token(_field(ca, "issue", ""))
+    by_party = _field(ca, "by_party", "")
+    party = by_party.value if hasattr(by_party, "value") else str(by_party)
     return f"claimed_amounts[issue={issue}|by_party={party}]"
 
 
 def field_path_for_per_issue(idx: int, io: IssueOutcome) -> str:
     """Stable ``ground_truth_outcome.per_issue[issue=...]`` path."""
     del idx
-    issue = _norm_token(io.issue)
+    issue = _norm_token(_field(io, "issue", ""))
     return f"ground_truth_outcome.per_issue[issue={issue}]"
 
 
 def field_path_for_authority(idx: int, auth: Authority) -> str:
     """Stable ``cited_authorities[name=...|cited_date=...]`` path."""
     del idx
-    name = _norm_token(auth.name)
-    cited = auth.cited_date.isoformat() if auth.cited_date is not None else ""
+    name = _norm_token(_field(auth, "name", ""))
+    cited_date = _field(auth, "cited_date")
+    cited = cited_date.isoformat() if hasattr(cited_date, "isoformat") else str(cited_date or "")
     return f"cited_authorities[name={name}|cited_date={cited}]"
 
 
 def field_path_for_statutory_basis(idx: int, ref: StatutoryReference) -> str:
     """Stable ``statutory_basis[statute=...|section=...]`` path."""
     del idx
-    statute = _norm_token(ref.statute)
-    section = _norm_token(ref.section)
+    statute = _norm_token(_field(ref, "statute", ""))
+    section = _norm_token(_field(ref, "section", ""))
     return f"statutory_basis[statute={statute}|section={section}]"
 
 
@@ -434,8 +448,8 @@ def _compare_list_field(
         # Both sides have the element by key — compare subfields
         for sub in subfields:
             sub_path = f"{key}.{sub}"
-            a_sv = getattr(a_el, sub, None)
-            b_sv = getattr(b_el, sub, None)
+            a_sv = _field(a_el, sub)
+            b_sv = _field(b_el, sub)
             _compare_scalar(rows, sub_path, a_sv, b_sv, grounding_a, grounding_b)
 
 

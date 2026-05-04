@@ -61,7 +61,7 @@ python scripts/rebuild_bm25.py --lite-mode
 
 **Results**:
 ```
-- Created scripts/test_rag_quality.py for automated evaluation
+- Created scripts/test_deposit_rag_quality.py for automated evaluation
 - 5 test queries run successfully
 - 75.3% average confidence score
 - 100% topic precision (top 5 results)
@@ -326,7 +326,7 @@ npm run dev
 - [x] Test RAG retrieval quality (75.3% avg confidence, 100% topic precision)
 - [x] Create comprehensive test suite (141 tests)
 - [x] Create BM25 rebuild script (`scripts/rebuild_bm25.py`)
-- [x] Create RAG quality test script (`scripts/test_rag_quality.py`)
+- [x] Create RAG quality test script (`scripts/test_deposit_rag_quality.py`)
 - [x] Create test runner script (`scripts/run_tests.py`)
 - [x] Write User Guide (`docs/USER_GUIDE.md`)
 - [x] Write API Documentation (`docs/API_DOCUMENTATION.md`)
@@ -347,4 +347,3 @@ npm run dev
 ---
 
 *Last Updated: 2026-01-08*
-

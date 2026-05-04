@@ -1,0 +1,513 @@
+{
+  "canonicalizer_version": "1.0.0",
+  "case_id": "housing-ombudsman-202334890",
+  "corpus_manifest_hash": "67990fe4c2494566ab02686d2b22eb0d15d931afe83ac28c4b6268ade886673a",
+  "domain_id": "housing.repairs_social.v1",
+  "gold_schema_hash": "9c984b9a9289f6c23c3d183447593e5b552969de940528ab3db1f522a38d53f3",
+  "grounder_version": "1.0.0",
+  "grounding_a": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "GROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "GROUNDED",
+      "key_reasoning_quotes[1]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.6,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 12 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nregion\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repairs and maintenance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London & Qu...', 'tenant': 'resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['repairs..., 'tenant': 'resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='resolved with intervention', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "__invariants__": "invariant violated: ValidationError: 3 validation errors for GoldCase\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='repairs and maintenance', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London & Qu...', 'tenant': 'resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nground_truth_outcome\n  Input should be a valid dictionary or instance of GroundTruthOutcome [type=model_type, input_value='resolved with intervention', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date present",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "canonical_exact",
+      "key_reasoning_quotes[1]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "grounding_b": {
+    "field_path": {
+      "__append_gate__": "UNGROUNDED",
+      "__invariants__": "UNGROUNDED",
+      "claim_types": "GROUNDED",
+      "decision_date": "UNGROUNDED",
+      "facts": "GROUNDED",
+      "ground_truth_outcome.overall_winner": "UNGROUNDED",
+      "ground_truth_outcome.total_awarded_gbp": "UNGROUNDED",
+      "key_reasoning_quotes[0]": "UNGROUNDED",
+      "key_reasoning_quotes[1]": "UNGROUNDED",
+      "key_reasoning_quotes[2]": "GROUNDED",
+      "key_reasoning_quotes[3]": "GROUNDED",
+      "matter_type": "GROUNDED"
+    },
+    "grounding_pass_rate": 0.4166666666666667,
+    "match_strategy": {},
+    "reasons": {
+      "__append_gate__": "append gate refused: GoldCase did not validate: 17 validation errors for GoldCase\nschema_version\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_id\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='29 October 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nregion\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ncase_size\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\ndisputed_amount_gbp\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint about the land... of a damp bedroom wall', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nsource_pdf_sha256\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London & Qu...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='The landlord’s records... the damp bedroom wall.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='The landlord’s complai...d offered compensation.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nstatutory_basis\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nclaimed_amounts\n  Field required [type=missing, input_value={'claim_types': ['Complai...ident': 'the resident'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'result': 'resolved with...chedule repair works.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'result': 'resolved with...chedule repair works.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.result\n  Extra inputs are not permitted [type=extra_forbidden, input_value='resolved with intervention', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendations\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['The landlord should apo...schedule repair works.'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "__invariants__": "invariant violated: ValidationError: 9 validation errors for GoldCase\ndecision_date\n  Input should be a valid date or datetime, invalid character in year [type=date_from_datetime_parsing, input_value='29 October 2025', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/date_from_datetime_parsing\nclaim_types.0\n  Input should be 'cleaning', 'damages', 'deposit_non_protection', 'disrepair' or 'end_of_tenancy' [type=enum, input_value='Complaint about the land... of a damp bedroom wall', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\nparties\n  Input should be a valid list [type=list_type, input_value={'landlord': 'London & Qu...sident': 'the resident'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/list_type\nevidence.0\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='The landlord’s records... the damp bedroom wall.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nevidence.1\n  Input should be a valid dictionary or instance of Evidence [type=model_type, input_value='The landlord’s complai...d offered compensation.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/model_type\nground_truth_outcome.overall_winner\n  Field required [type=missing, input_value={'result': 'resolved with...chedule repair works.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.total_awarded_gbp\n  Field required [type=missing, input_value={'result': 'resolved with...chedule repair works.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing\nground_truth_outcome.result\n  Extra inputs are not permitted [type=extra_forbidden, input_value='resolved with intervention', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\nground_truth_outcome.recommendations\n  Extra inputs are not permitted [type=extra_forbidden, input_value=['The landlord should apo...schedule repair works.'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden",
+      "claim_types": "basis span present",
+      "decision_date": "decision_date is required",
+      "facts": "no leakage detected",
+      "ground_truth_outcome.overall_winner": "missing basis span",
+      "ground_truth_outcome.total_awarded_gbp": "missing basis span",
+      "key_reasoning_quotes[0]": "quote not found in declared span",
+      "key_reasoning_quotes[1]": "quote not found in declared span",
+      "key_reasoning_quotes[2]": "canonical_exact",
+      "key_reasoning_quotes[3]": "canonical_exact",
+      "matter_type": "basis span present"
+    }
+  },
+  "labeler_a": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              594,
+              691
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              280,
+              291
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              291,
+              296
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              307,
+              566
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              720,
+              775
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1522,
+              1928
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              2093,
+              2256
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              160,
+              174
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              183,
+              215
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No legal authorities, statutes, or case law are cited in the decision text.",
+        "claimed_amounts": "No specific amounts claimed by the resident are mentioned in the pre-decision record sections.",
+        "disputed_amount_gbp": "No disputed monetary amount is specified in the case materials.",
+        "evidence": "No specific evidence items are detailed in the pre-decision record sections.",
+        "region": "No specific geographic region or jurisdiction is mentioned in the case materials.",
+        "region_source": "No region information is available to source.",
+        "statutory_basis": "No specific statutes or legal provisions are referenced in the decision."
+      },
+      "claim_types": [
+        "repairs and maintenance"
+      ],
+      "decision_date": "2025-10-29",
+      "facts": "The landlord was aware of a damp bedroom wall at the resident's property since November 2022. It inspected the wall and carried out some works over the next year. The resident complained to the landlord on 6 December 2023 as she said the wall was still damp.",
+      "ground_truth_outcome": "resolved with intervention",
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1522,
+              1928
+            ]
+          },
+          "text": "Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom. The landlord agreed to apologise to the resident, increase the overall compensation payment to £2,137 (including the revised figure of £1,228 for loss of use of the bedroom) and £150 additional compensation for its calculation error."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              2093,
+              2256
+            ]
+          },
+          "text": "We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy matters which resolve the complaint satisfactorily."
+        }
+      ],
+      "matter_type": "housing ombudsman investigation",
+      "parties": {
+        "landlord": "London & Quadrant Housing Trust",
+        "tenant": "resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No legal authorities, statutes, or case law are cited in the decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\"repairs and maintenance\"],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [594, 691]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific amounts claimed by the resident are mentioned in the pre-decision record sections.\"\n  },\n  \"decision_date\": {\n    \"value\": \"2025-10-29\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [280, 291]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [291, 296]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No disputed monetary amount is specified in the case materials.\"\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific evidence items are detailed in the pre-decision record sections.\"\n  },\n  \"facts\": {\n    \"value\": \"The landlord was aware of a damp bedroom wall at the resident's property since November 2022. It inspected the wall and carried out some works over the next year. The resident complained to the landlord on 6 December 2023 as she said the wall was still damp.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [307, 566]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": \"resolved with intervention\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [720, 775]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom. The landlord agreed to apologise to the resident, increase the overall compensation payment to £2,137 (including the revised figure of £1,228 for loss of use of the bedroom) and £150 additional compensation for its calculation error.\",\n      \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy matters which resolve the complaint satisfactorily.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 34,\n        \"text_span\": [1522, 1928]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 35,\n        \"text_span\": [2093, 2256]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"housing ombudsman investigation\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [160, 174]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"London & Quadrant Housing Trust\",\n      \"tenant\": \"resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [183, 215]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific geographic region or jurisdiction is mentioned in the case materials.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No region information is available to source.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No specific statutes or legal provisions are referenced in the decision.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202334890\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 61, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202334890)\"}, {\"char_end\": 107, \"char_start\": 61, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202334890)\"}, {\"char_end\": 119, \"char_start\": 107, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 128, \"char_start\": 119, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 136, \"char_start\": 128, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 146, \"char_start\": 136, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202334890\"}, {\"char_end\": 160, \"char_start\": 146, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 174, \"char_start\": 160, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 183, \"char_start\": 174, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 215, \"char_start\": 183, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust\"}, {\"char_end\": 229, \"char_start\": 215, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 249, \"char_start\": 229, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 259, \"char_start\": 249, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 275, \"char_start\": 259, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 280, \"char_start\": 275, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 291, \"char_start\": 280, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"29 October\"}, {\"char_end\": 296, \"char_start\": 291, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 307, \"char_start\": 296, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 566, \"char_start\": 307, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord was aware of a damp bedroom wall at the resident’s property since November 2022. It inspected the wall and carried out some works over the next year. The resident complained to the landlord on 6 December 2023 as she said the wall was still damp.\"}, {\"char_end\": 594, \"char_start\": 566, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 691, \"char_start\": 594, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of the resident’s reports of a damp bedroom wall.\"}, {\"char_end\": 720, \"char_start\": 691, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 775, \"char_start\": 720, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The complaint has been resolved with our intervention.\"}, {\"char_end\": 778, \"char_start\": 775, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 783, \"char_start\": 778, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 788, \"char_start\": 783, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made\"}, {\"char_end\": 804, \"char_start\": 788, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"order\", \"text\": \"recommendations\"}, {\"char_end\": 842, \"char_start\": 804, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"order\", \"text\": \"for the landlord to put things right.\"}, {\"char_end\": 861, \"char_start\": 842, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1275, \"char_start\": 861, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it. The landlord apologised for the delays in taking action in its complaint responses and offered £980.57 compensation, which included £221.57 for the loss of use of the bedroom. The resident remained dissatisfied and asked us to investigate its handling of her complaint.\"}, {\"char_end\": 1522, \"char_start\": 1275, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We contacted the landlord on 27 October 2025 and provided it with a summary of our understanding of events. This included some comments on areas that the landlord could have handled better and what it could do to resolve the resident’s complaint.\"}, {\"char_end\": 2093, \"char_start\": 1522, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom. The landlord agreed to apologise to the resident, increase the overall compensation payment to £2,137 (including the revised figure of £1,228 for loss of use of the bedroom) and £150 additional compensation for its calculation error. The landlord also agreed to inspect the resident’s bedroom wall again to check if rendering and drainage is required. Both parties agreed to this as a resolution of the complaint.\"}, {\"char_end\": 2256, \"char_start\": 2093, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy matters which resolve the complaint satisfactorily.\"}, {\"char_end\": 2277, \"char_start\": 2256, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2293, \"char_start\": 2277, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 2398, \"char_start\": 2293, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"The complaint has been resolved with intervention on the basis the landlord follows our recommendations.\"}, {\"char_end\": 2418, \"char_start\": 2398, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 2472, \"char_start\": 2418, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"The landlord should apologise and make a payment of £\"}, {\"char_end\": 2478, \"char_start\": 2472, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"2,137\"}, {\"char_end\": 2495, \"char_start\": 2478, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"to the resident.\"}, {\"char_end\": 2541, \"char_start\": 2495, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"The landlord may deduct the amount of £980.57\"}, {\"char_end\": 2558, \"char_start\": 2541, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"if already paid.\"}, {\"char_end\": 2646, \"char_start\": 2558, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"The landlord should arrange to inspect the damp wall at the resident’s property, and if\"}, {\"char_end\": 2657, \"char_start\": 2646, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"necessary,\"}, {\"char_end\": 2715, \"char_start\": 2657, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"schedule works to carry out repairs to address the issue.\"}, {\"char_end\": 2792, \"char_start\": 2715, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"This must be conducted within a reasonable time, and no later than 4 weeks f\"}, {\"char_end\": 2795, \"char_start\": 2792, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"ro\"}, {\"char_end\": 2822, \"char_start\": 2795, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"m the date of this report.\"}, {\"char_end\": 2927, \"char_start\": 2822, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"The landlord should provide us with documentary evidence that it has completed the above recommendations.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "labeler_b": {
+    "partial_case": {
+      "_field_provenance": {
+        "claim_types": [
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              594,
+              691
+            ]
+          }
+        ],
+        "decision_date": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              280,
+              291
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              291,
+              296
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              861,
+              1275
+            ]
+          }
+        ],
+        "facts": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              307,
+              566
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              594,
+              691
+            ]
+          }
+        ],
+        "ground_truth_outcome": [
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              2293,
+              2398
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 40,
+            "text_span": [
+              2418,
+              2472
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 41,
+            "text_span": [
+              2472,
+              2478
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 42,
+            "text_span": [
+              2478,
+              2495
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 43,
+            "text_span": [
+              2495,
+              2541
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 44,
+            "text_span": [
+              2541,
+              2558
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 45,
+            "text_span": [
+              2558,
+              2646
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 46,
+            "text_span": [
+              2646,
+              2657
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 47,
+            "text_span": [
+              2657,
+              2715
+            ]
+          }
+        ],
+        "key_reasoning_quotes": [
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              861,
+              1000
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1522,
+              1664
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              2029,
+              2093
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              2093,
+              2256
+            ]
+          }
+        ],
+        "matter_type": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              160,
+              174
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              594,
+              691
+            ]
+          }
+        ],
+        "parties": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              183,
+              215
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              594,
+              691
+            ]
+          }
+        ]
+      },
+      "_unavailable_reasons": {
+        "cited_authorities": "No cited cases or legal authorities are mentioned in the provided decision text.",
+        "claimed_amounts": "The text records compensation offered and recommended, but does not state any amount claimed by the resident.",
+        "disputed_amount_gbp": "The decision does not identify a specific disputed sum claimed by the resident.",
+        "region": "The decision text does not state a geographic region for the property or dispute.",
+        "region_source": "No source text identifies a geographic region.",
+        "statutory_basis": "No statute or statutory provision is cited in the provided decision text."
+      },
+      "claim_types": [
+        "Complaint about the landlord’s handling of the resident’s reports of a damp bedroom wall"
+      ],
+      "decision_date": "29 October 2025",
+      "evidence": [
+        "The landlord’s records showed it inspected the property and carried out some repairs after the resident reported the damp bedroom wall.",
+        "The landlord’s complaint responses apologised for delays and offered compensation."
+      ],
+      "facts": "The landlord was aware of a damp bedroom wall at the resident’s property since November 2022. The landlord inspected the wall and carried out some works over the next year. The resident complained to the landlord on 6 December 2023 because she said the wall was still damp. The complaint concerned the landlord’s handling of the resident’s reports of a damp bedroom wall.",
+      "ground_truth_outcome": {
+        "recommendations": [
+          "The landlord should apologise and make a payment of £2,137 to the resident.",
+          "The landlord may deduct £980.57 if already paid.",
+          "The landlord should arrange to inspect the damp wall and, if necessary, schedule repair works."
+        ],
+        "result": "resolved with intervention"
+      },
+      "key_reasoning_quotes": [
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              861,
+              1000
+            ]
+          },
+          "text": "The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              1522,
+              1664
+            ]
+          },
+          "text": "Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              2029,
+              2093
+            ]
+          },
+          "text": "Both parties agreed to this as a resolution of the complaint."
+        },
+        {
+          "provenance": {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              2093,
+              2256
+            ]
+          },
+          "text": "We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy matters which resolve the complaint satisfactorily."
+        }
+      ],
+      "matter_type": "Investigation into a complaint about the landlord’s handling of reports of a damp bedroom wall",
+      "parties": {
+        "landlord": "London & Quadrant Housing Trust",
+        "resident": "the resident"
+      }
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No cited cases or legal authorities are mentioned in the provided decision text.\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"Complaint about the landlord’s handling of the resident’s reports of a damp bedroom wall\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          594,\n          691\n        ]\n      }\n    ]\n  },\n  \"claimed_amounts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The text records compensation offered and recommended, but does not state any amount claimed by the resident.\"\n  },\n  \"decision_date\": {\n    \"value\": \"29 October 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 18,\n        \"text_span\": [\n          280,\n          291\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          291,\n          296\n        ]\n      }\n    ]\n  },\n  \"disputed_amount_gbp\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The decision does not identify a specific disputed sum claimed by the resident.\"\n  },\n  \"evidence\": {\n    \"value\": [\n      \"The landlord’s records showed it inspected the property and carried out some repairs after the resident reported the damp bedroom wall.\",\n      \"The landlord’s complaint responses apologised for delays and offered compensation.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 32,\n        \"text_span\": [\n          861,\n          1275\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": [\n      \"The landlord was aware of a damp bedroom wall at the resident’s property since November 2022.\",\n      \"The landlord inspected the wall and carried out some works over the next year.\",\n      \"The resident complained to the landlord on 6 December 2023 because she said the wall was still damp.\",\n      \"The complaint concerned the landlord’s handling of the resident’s reports of a damp bedroom wall.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          307,\n          566\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          594,\n          691\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"value\": {\n      \"result\": \"resolved with intervention\",\n      \"recommendations\": [\n        \"The landlord should apologise and make a payment of £2,137 to the resident.\",\n        \"The landlord may deduct £980.57 if already paid.\",\n        \"The landlord should arrange to inspect the damp wall and, if necessary, schedule repair works.\"\n      ]\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 38,\n        \"text_span\": [\n          2293,\n          2398\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 40,\n        \"text_span\": [\n          2418,\n          2472\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 41,\n        \"text_span\": [\n          2472,\n          2478\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 42,\n        \"text_span\": [\n          2478,\n          2495\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 43,\n        \"text_span\": [\n          2495,\n          2541\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 44,\n        \"text_span\": [\n          2541,\n          2558\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 45,\n        \"text_span\": [\n          2558,\n          2646\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 46,\n        \"text_span\": [\n          2646,\n          2657\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 47,\n        \"text_span\": [\n          2657,\n          2715\n        ]\n      }\n    ]\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it.\",\n      \"Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom.\",\n      \"Both parties agreed to this as a resolution of the complaint.\",\n      \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy matters which resolve the complaint satisfactorily.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 32,\n        \"text_span\": [\n          861,\n          1000\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 34,\n        \"text_span\": [\n          1522,\n          1664\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 34,\n        \"text_span\": [\n          2029,\n          2093\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 35,\n        \"text_span\": [\n          2093,\n          2256\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"Investigation into a complaint about the landlord’s handling of reports of a damp bedroom wall\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 10,\n        \"text_span\": [\n          160,\n          174\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          594,\n          691\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": {\n      \"landlord\": \"London & Quadrant Housing Trust\",\n      \"resident\": \"the resident\"\n    },\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          183,\n          215\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          594,\n          691\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"The decision text does not state a geographic region for the property or dispute.\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No source text identifies a geographic region.\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No statute or statutory provision is cited in the provided decision text.\"\n  }\n}",
+    "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"claimed_amounts\", \"decision_date\", \"disputed_amount_gbp\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"housing-ombudsman-202334890\", \"prompt_pack_version\": \"1.0.0\", \"source_text\": [{\"char_end\": 5, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"pre_decision_record\", \"text\": \"Home\"}, {\"char_end\": 15, \"char_start\": 5, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"pre_decision_record\", \"text\": \"Decisions\"}, {\"char_end\": 61, \"char_start\": 15, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202334890)\"}, {\"char_end\": 107, \"char_start\": 61, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust   (202334890)\"}, {\"char_end\": 119, \"char_start\": 107, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"pre_decision_record\", \"text\": \"Back to Top\"}, {\"char_end\": 128, \"char_start\": 119, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision\"}, {\"char_end\": 136, \"char_start\": 128, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"pre_decision_record\", \"text\": \"Case ID\"}, {\"char_end\": 146, \"char_start\": 136, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"pre_decision_record\", \"text\": \"202334890\"}, {\"char_end\": 160, \"char_start\": 146, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"pre_decision_record\", \"text\": \"Decision type\"}, {\"char_end\": 174, \"char_start\": 160, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"pre_decision_record\", \"text\": \"Investigation\"}, {\"char_end\": 183, \"char_start\": 174, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord\"}, {\"char_end\": 215, \"char_start\": 183, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"pre_decision_record\", \"text\": \"London & Quadrant Housing Trust\"}, {\"char_end\": 229, \"char_start\": 215, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"pre_decision_record\", \"text\": \"Landlord type\"}, {\"char_end\": 249, \"char_start\": 229, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"pre_decision_record\", \"text\": \"Housing Association\"}, {\"char_end\": 259, \"char_start\": 249, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"pre_decision_record\", \"text\": \"Occupancy\"}, {\"char_end\": 275, \"char_start\": 259, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"pre_decision_record\", \"text\": \"Assured Tenancy\"}, {\"char_end\": 280, \"char_start\": 275, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"pre_decision_record\", \"text\": \"Date\"}, {\"char_end\": 291, \"char_start\": 280, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"pre_decision_record\", \"text\": \"29 October\"}, {\"char_end\": 296, \"char_start\": 291, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"pre_decision_record\", \"text\": \"2025\"}, {\"char_end\": 307, \"char_start\": 296, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"pre_decision_record\", \"text\": \"Background\"}, {\"char_end\": 566, \"char_start\": 307, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"pre_decision_record\", \"text\": \"The landlord was aware of a damp bedroom wall at the resident’s property since November 2022. It inspected the wall and carried out some works over the next year. The resident complained to the landlord on 6 December 2023 as she said the wall was still damp.\"}, {\"char_end\": 594, \"char_start\": 566, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"pre_decision_record\", \"text\": \"What the complaint is about\"}, {\"char_end\": 691, \"char_start\": 594, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"pre_decision_record\", \"text\": \"The complaint is about the landlord’s handling of the resident’s reports of a damp bedroom wall.\"}, {\"char_end\": 720, \"char_start\": 691, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Our decision (determination)\"}, {\"char_end\": 775, \"char_start\": 720, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The complaint has been resolved with our intervention.\"}, {\"char_end\": 778, \"char_start\": 775, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We\"}, {\"char_end\": 783, \"char_start\": 778, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"tribunal_reasoning\", \"text\": \"have\"}, {\"char_end\": 788, \"char_start\": 783, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"tribunal_reasoning\", \"text\": \"made\"}, {\"char_end\": 804, \"char_start\": 788, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"order\", \"text\": \"recommendations\"}, {\"char_end\": 842, \"char_start\": 804, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"order\", \"text\": \"for the landlord to put things right.\"}, {\"char_end\": 861, \"char_start\": 842, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Summary of reasons\"}, {\"char_end\": 1275, \"char_start\": 861, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it. The landlord apologised for the delays in taking action in its complaint responses and offered £980.57 compensation, which included £221.57 for the loss of use of the bedroom. The resident remained dissatisfied and asked us to investigate its handling of her complaint.\"}, {\"char_end\": 1522, \"char_start\": 1275, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We contacted the landlord on 27 October 2025 and provided it with a summary of our understanding of events. This included some comments on areas that the landlord could have handled better and what it could do to resolve the resident’s complaint.\"}, {\"char_end\": 2093, \"char_start\": 1522, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Following our intervention the landlord accepted that it had incorrectly calculated the compensation due to the resident for the loss of use of the bedroom. The landlord agreed to apologise to the resident, increase the overall compensation payment to £2,137 (including the revised figure of £1,228 for loss of use of the bedroom) and £150 additional compensation for its calculation error. The landlord also agreed to inspect the resident’s bedroom wall again to check if rendering and drainage is required. Both parties agreed to this as a resolution of the complaint.\"}, {\"char_end\": 2256, \"char_start\": 2093, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"tribunal_reasoning\", \"text\": \"We are therefore satisfied that, following our intervention, the landlord has agreed to take actions to remedy matters which resolve the complaint satisfactorily.\"}, {\"char_end\": 2277, \"char_start\": 2256, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"order\", \"text\": \"Putting things right\"}, {\"char_end\": 2293, \"char_start\": 2277, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"order\", \"text\": \"Recommendations\"}, {\"char_end\": 2398, \"char_start\": 2293, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"order\", \"text\": \"The complaint has been resolved with intervention on the basis the landlord follows our recommendations.\"}, {\"char_end\": 2418, \"char_start\": 2398, \"page\": 1, \"paragraph\": 39, \"section_tag\": \"order\", \"text\": \"Our recommendations\"}, {\"char_end\": 2472, \"char_start\": 2418, \"page\": 1, \"paragraph\": 40, \"section_tag\": \"order\", \"text\": \"The landlord should apologise and make a payment of £\"}, {\"char_end\": 2478, \"char_start\": 2472, \"page\": 1, \"paragraph\": 41, \"section_tag\": \"order\", \"text\": \"2,137\"}, {\"char_end\": 2495, \"char_start\": 2478, \"page\": 1, \"paragraph\": 42, \"section_tag\": \"order\", \"text\": \"to the resident.\"}, {\"char_end\": 2541, \"char_start\": 2495, \"page\": 1, \"paragraph\": 43, \"section_tag\": \"order\", \"text\": \"The landlord may deduct the amount of £980.57\"}, {\"char_end\": 2558, \"char_start\": 2541, \"page\": 1, \"paragraph\": 44, \"section_tag\": \"order\", \"text\": \"if already paid.\"}, {\"char_end\": 2646, \"char_start\": 2558, \"page\": 1, \"paragraph\": 45, \"section_tag\": \"order\", \"text\": \"The landlord should arrange to inspect the damp wall at the resident’s property, and if\"}, {\"char_end\": 2657, \"char_start\": 2646, \"page\": 1, \"paragraph\": 46, \"section_tag\": \"order\", \"text\": \"necessary,\"}, {\"char_end\": 2715, \"char_start\": 2657, \"page\": 1, \"paragraph\": 47, \"section_tag\": \"order\", \"text\": \"schedule works to carry out repairs to address the issue.\"}, {\"char_end\": 2792, \"char_start\": 2715, \"page\": 1, \"paragraph\": 48, \"section_tag\": \"order\", \"text\": \"This must be conducted within a reasonable time, and no later than 4 weeks f\"}, {\"char_end\": 2795, \"char_start\": 2792, \"page\": 1, \"paragraph\": 49, \"section_tag\": \"order\", \"text\": \"ro\"}, {\"char_end\": 2822, \"char_start\": 2795, \"page\": 1, \"paragraph\": 50, \"section_tag\": \"order\", \"text\": \"m the date of this report.\"}, {\"char_end\": 2927, \"char_start\": 2822, \"page\": 1, \"paragraph\": 51, \"section_tag\": \"order\", \"text\": \"The landlord should provide us with documentary evidence that it has completed the above recommendations.\"}]}",
+    "spec": {
+      "api_version": null,
+      "model": "gpt-5.5",
+      "provider": "openai",
+      "reasoning_effort": null,
+      "store": false,
+      "text_verbosity": null
+    }
+  },
+  "ocr_text_sha256": "263a99254e1dbea77a3a136f435723a8081b8683271e2ebd16427f610585286c",
+  "prompt_pack_version": "1.0.0",
+  "prompt_template_hash": "2be9b6e3fbc8c40846080ef98643a1c20b6867c320efef99a290bf91ec7730d6",
+  "ran_at": "2026-05-04T16:30:27.822110+00:00",
+  "run_id": "housing-ombudsman-stratified-50-review-20260504",
+  "runner_version": "1.0.0",
+  "source_pdf_sha256": "0d24bc6ef7ea004f0bbafec2413b9c75aa01d11db95f66d018b3e62cc22e7a83"
+}

@@ -379,6 +379,132 @@ The Phase 4a scope (no heavy ML deps) is fully usable on its own — accuracy an
 
 ---
 
+## D-022 — Treat the Housing Ombudsman stratified-50 as a selection manifest, not gold
+
+**Linear:** SHA-127
+**Decision:** The 50-case Housing Ombudsman repairs/social set created on
+2026-05-04 is stored under `data/eval/housing_ombudsman_stratified_50.jsonl`
+as a source-grounded selection manifest, not under `data/gold_standard/` as
+adjudicated gold.
+
+**Why:**
+1. **Outcome labels are parser-derived, not human-adjudicated.** The scraper now
+   extracts `outcome_raw` and `outcome_normalized`, but those labels are only
+   strata for sampling. They are not enough to score prediction quality.
+2. **Ombudsman determinations use different remedies.** Housing Ombudsman
+   complaint outcomes, orders, recommendations, and compensation are not the
+   same as deposit adjudication winners/awards. Forcing them into `GoldCase`
+   without a review pass would blur forum-specific remedies.
+3. **Leakage controls need source IDs before labels.** The manifest records
+   `target_source_id`, source paths, hashes, corpus version, and
+   `annotation_status="needs_gold_labeling"` so the eventual gold-building
+   path can exclude the target source during retrieval and keep every row
+   reproducible.
+4. **Representativeness matters.** The sample uses minimum-one-per-outcome plus
+   largest-remainder proportional allocation, then matter-type round-robin
+   inside each outcome bucket. That gives rare outcomes a foothold without
+   throwing away the real corpus distribution.
+
+**Rejected alternatives:**
+- **Write directly to `data/gold_standard/housing_repairs_social_v1.jsonl`.**
+  Rejected because that would imply reviewed `GoldCase` quality before
+  compensation/order spans and human review exist.
+- **Sample purely at random.** Rejected because `maladministration` dominates
+  the 1,000-case corpus; rare outcomes such as `outside-jurisdiction` and
+  `resolved-with-intervention` would likely disappear from a 50-case sample.
+- **Only sample known outcomes.** Rejected because `unknown` is a real parser
+  and data-quality category that needs one representative row for review.
+
+**Trigger to revisit:** once SHA-127 promotes the manifest into adjudicated
+`GoldCase` rows with `LabelingProvenance`, move the reviewed corpus into
+`data/gold_standard/housing_repairs_social_v1.jsonl` and update
+`eval.dataset.load(...)` guidance accordingly.
+
+---
+
+## D-023 — Treat the 2026-05-04 Housing Ombudsman full eval as a pilot harness run
+
+**Linear:** SHA-127 / SHA-68
+**Decision:** The full metric bundle run on 2026-05-04 is recorded as a
+10-case Housing Ombudsman pilot run, not as a final thesis ablation result.
+The artifacts live under
+`eval/results/housing_ombudsman_full_eval_20260504/` and are documented in
+`docs/eval/housing-ombudsman-pilot-full-eval.md`.
+
+**Why:**
+1. **Only 10 reviewed rows are scoreable.** The stratified 50 exists, but it is
+   still a selection manifest. Accuracy, Brier, and ECE require adjudicated
+   `GoldCase` rows.
+2. **Prediction artifacts are pilot-grade.** The existing per-mode prediction
+   JSONLs exercise the metric and ablation harness but are not yet independent
+   live production RAG/LLM outputs.
+3. **The dataset audit is non-strict.** The pilot corpus fails legacy deposit
+   claim-type stratification floors, though it has no leakage violations. That
+   is acceptable for a smoke-quality Ombudsman pilot, not for thesis reporting.
+4. **Confidence intervals are too wide.** With `n=10`, overlapping CIs cannot
+   support a hybrid superiority claim even where point estimates look useful.
+
+**Rejected alternatives:**
+- **Report the pilot as final RQ1 evidence.** Rejected because it would
+  overstate what a 10-case, pilot-artifact run can prove.
+- **Block all metric runs until the stratified 50 is adjudicated.** Rejected
+  because the 10-case pilot still validates the metric plumbing, artifact
+  layout, and ablation command before the expensive labeling pass.
+
+**Trigger to revisit:** once the stratified 50 is promoted into reviewed
+`GoldCase` rows and fresh independent predictions are generated for all four
+modes, rerun `scripts/eval/run_full_eval.py` with `--min-case-count 50` and
+promote the resulting report into SHA-68 thesis evidence.
+
+---
+
+## D-024 — Promote the reviewed Housing Ombudsman stratified-50, but report the first run as a stub baseline
+
+**Linear:** SHA-127 / SHA-68
+**Decision:** On 2026-05-04, after Mohamed confirmed all 50 Housing Ombudsman
+review packets were reviewed and acceptable, promote the draft decisions into
+`data/gold_standard/housing_repairs_social_v1.jsonl` through the real-gold
+append gate. Record the resulting 50-case accuracy/Brier/ECE/ablation run as a
+baseline harness result, not a live product-accuracy claim. Artifacts live under
+`data/eval_artifacts/gold_build/housing-ombudsman-stratified-50-review-20260504-reviewed/`,
+`eval/predictions/housing_ombudsman_stratified_50_20260504/`, and
+`eval/results/housing_ombudsman_stratified_50_full_eval_20260504/`; the report is
+`docs/eval/housing-ombudsman-stratified-50-full-eval.md`.
+
+**Why:**
+1. **The gold side is now scoreable.** All 50 rows carry
+   `LabelingProvenance`, target-source IDs, mandatory human-review provenance,
+   source/OCR/prompt/schema/corpus hashes, and passed
+   `assert_real_gold_appendable(...)`.
+2. **The prediction side is still not thesis-grade.** `predict_all.py` was run
+   with `--engine stub`. The current live path does not yet wire the Ombudsman
+   Chroma/BM25 retrieval namespace with target-source exclusion, so reporting
+   the stub numbers as hybrid RAG/KG performance would overclaim.
+3. **The issue vocabulary is not aligned.** The runner warned that Ombudsman
+   `disrepair` is unmappable into the older deposit `DisputeIssue` enum. That
+   makes per-issue metrics non-meaningful until the Ombudsman issue taxonomy is
+   connected.
+4. **The generic audit is deposit-biased.** `eval.dataset audit` reports
+   `is_clean=false` because it checks deposit claim-type floors. It also reports
+   zero leakage violations, which is the relevant gate for this baseline.
+
+**Rejected alternatives:**
+- **Keep the reviewed 50 outside `data/gold_standard/`.** Rejected because the
+  append gate passed and the eval harness expects canonical `GoldCase` JSONL
+  input for accuracy/Brier/ECE.
+- **Report the stub 50-case run as final RQ1 evidence.** Rejected because the
+  predictor is deterministic harness plumbing, not live retrieval + reasoning.
+- **Block documentation until live prediction wiring exists.** Rejected because
+  the baseline result is useful evidence that the gold-promotion and metric
+  plumbing works end to end, provided the caveats are explicit.
+
+**Trigger to revisit:** implement live Ombudsman retrieval/exclusion in
+`predict_all.py`, add a domain issue mapping for `disrepair`, regenerate
+independent predictions for all four modes, and rerun the same full-eval
+command. Only that successor run can be considered for SHA-68 thesis evidence.
+
+---
+
 ## How this log relates to the Codex sparring record
 
 `.sisyphus/codex/sha-28-schema-2026-04-27.md` records Codex's findings and our triage. This log records the *implemented* decisions. Some decisions don't appear in Codex (e.g. D-001 Pydantic vs JSON Schema, D-009 pair-vs-issue bootstrap) — those are pure design choices with no Codex input. Conversely, every Codex HIGH that we accepted produced a decision entry here (D-005 through D-008, D-011, D-014, D-015, D-021).
