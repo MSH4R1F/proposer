@@ -16,6 +16,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -85,6 +86,10 @@ class TestStubModeWritesPerModeJsonl:
                 assert "overall_win_probability" in row
                 assert "total_predicted_gbp" in row
                 assert "per_issue" in row
+                # Diagnostic-only fields keep raw orchestrator abstentions
+                # visible even though eval.run scores the three Winner labels.
+                assert "raw_overall_outcome" in row
+                assert "abstained" in row
 
     def test_modes_filter_writes_only_requested(self, tmp_path):
         mod = _import_script_module()
@@ -232,6 +237,82 @@ class TestRunContextHashInputs:
         assert ctx["ontology_id"] == "housing.deposit.v1"
         assert ctx["ontology_hash"]
         assert len(ctx["ontology_hash"]) == 64
+
+
+class TestLiveEvalRetrievalFilters:
+    def test_source_id_variants_cover_numeric_case_id_and_url_slug(self):
+        mod = _import_script_module()
+        variants = mod._source_id_variants(
+            "2022225 48",
+            "housing-ombudsman-202451564",
+            "https://www.housing-ombudsman.org.uk/decisions/southern-housing-202222548/",
+        )
+        assert "202222548" in variants
+        assert "202451564" in variants
+        assert "southern-housing-202222548" in variants
+
+    def test_gold_row_filter_excludes_target_and_sets_domain_filters(self):
+        mod = _import_script_module()
+        gold = SimpleNamespace(
+            case_id="housing-ombudsman-202451564",
+            target_source_id="202451564",
+            excluded_source_ids=[],
+            source_url=(
+                "https://www.housing-ombudsman.org.uk/decisions/"
+                "the-guinness-partnership-limited-202451564/"
+            ),
+            decision_date=date(2025, 10, 23),
+            forum="housing_ombudsman",
+            source_kind="ombudsman_determination",
+            source_publisher="housing_ombudsman",
+            matter_type="repairs_damp_mould",
+        )
+
+        filters = mod._build_eval_retrieval_filter(gold, include_temporal=True)
+
+        assert "202451564" in filters.excluded_source_ids
+        assert "the-guinness-partnership-limited-202451564" in filters.excluded_source_ids
+        assert filters.max_decision_date == date(2025, 10, 23)
+        assert filters.forum.value == "housing_ombudsman"
+        assert filters.source_kind.value == "ombudsman_determination"
+        assert filters.source_publisher.value == "housing_ombudsman"
+        assert filters.matter_type == "repairs_damp_mould"
+        assert filters.eval_only is True
+
+    def test_filtered_rag_pipeline_injects_envelope(self):
+        import asyncio
+
+        mod = _import_script_module()
+        base_filters = mod._build_eval_retrieval_filter(
+            SimpleNamespace(
+                case_id="housing-ombudsman-202451564",
+                target_source_id="202451564",
+                excluded_source_ids=[],
+                source_url=None,
+                decision_date=date(2025, 10, 23),
+                forum="housing_ombudsman",
+                source_kind="ombudsman_determination",
+                source_publisher="housing_ombudsman",
+                matter_type="repairs_disrepair",
+            ),
+            include_temporal=False,
+        )
+        calls = []
+
+        class FakeRAG:
+            async def retrieve(self, **kwargs):
+                calls.append(kwargs)
+                return SimpleNamespace(results=[], confidence=0.0)
+
+        wrapped = mod._EvalFilteredRAGPipeline(
+            FakeRAG(), base_filters, requesting_namespace="ns"
+        )
+        asyncio.run(wrapped.retrieve(query="damp mould", top_k=5))
+
+        assert "202451564" in calls[0]["filters"].excluded_source_ids
+        assert "housing-ombudsman-202451564" in calls[0]["filters"].excluded_source_ids
+        assert calls[0]["filters"].matter_type == "repairs_disrepair"
+        assert calls[0]["requesting_namespace"] == "ns"
 
 
 # ---------- Subprocess (real entry point) ----------

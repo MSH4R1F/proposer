@@ -1,0 +1,114 @@
+{
+  "ablation": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/ablation.json",
+  "audit": {
+    "case_size_distribution": {
+      "large": 4,
+      "small": 46
+    },
+    "is_clean": false,
+    "leakage_violations": [],
+    "n_cases": 50,
+    "region_distribution": {
+      "london": 48,
+      "west_midlands": 2
+    },
+    "test_count": 50,
+    "train_count": 0,
+    "understratified_types": {
+      "cleaning": 0,
+      "damages": 0,
+      "deposit_non_protection": 0,
+      "end_of_tenancy": 0
+    }
+  },
+  "computed_at": "2026-05-04T19:46:00.437949+00:00",
+  "gold": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/gold_standard/housing_repairs_social_v1.jsonl",
+  "metric_outputs": {
+    "hybrid": {
+      "accuracy": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/hybrid_accuracy.json",
+      "brier": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/hybrid_brier.json",
+      "ece": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/hybrid_ece.json"
+    },
+    "kg_only": {
+      "accuracy": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/kg_only_accuracy.json",
+      "brier": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/kg_only_brier.json",
+      "ece": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/kg_only_ece.json"
+    },
+    "llm_only": {
+      "accuracy": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/llm_only_accuracy.json",
+      "brier": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/llm_only_brier.json",
+      "ece": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/llm_only_ece.json"
+    },
+    "rag_only": {
+      "accuracy": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/rag_only_accuracy.json",
+      "brier": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/rag_only_brier.json",
+      "ece": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/metrics/rag_only_ece.json"
+    }
+  },
+  "modes": {
+    "hybrid": {
+      "accuracy": 0.42,
+      "accuracy_ci": [
+        0.3,
+        0.56
+      ],
+      "amount_threshold": 0.5,
+      "brier": 0.23843799999999998,
+      "brier_ci": [
+        0.2221839,
+        0.25619814999999996
+      ],
+      "ece": 0.4638,
+      "n": 50
+    },
+    "kg_only": {
+      "accuracy": 0.68,
+      "accuracy_ci": [
+        0.54,
+        0.8
+      ],
+      "amount_threshold": 0.64,
+      "brier": 0.32299999999999995,
+      "brier_ci": [
+        0.30619999999999997,
+        0.33799999999999997
+      ],
+      "ece": 0.5500000000000004,
+      "n": 50
+    },
+    "llm_only": {
+      "accuracy": 0.68,
+      "accuracy_ci": [
+        0.54,
+        0.8
+      ],
+      "amount_threshold": 0.6,
+      "brier": 0.32299999999999995,
+      "brier_ci": [
+        0.3072,
+        0.33799999999999997
+      ],
+      "ece": 0.5500000000000004,
+      "n": 50
+    },
+    "rag_only": {
+      "accuracy": 0.54,
+      "accuracy_ci": [
+        0.4,
+        0.68
+      ],
+      "amount_threshold": 0.56,
+      "brier": 0.22899800000000003,
+      "brier_ci": [
+        0.21122455,
+        0.24610409999999996
+      ],
+      "ece": 0.4558,
+      "n": 50
+    }
+  },
+  "n_resamples": 1000,
+  "out_dir": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval",
+  "predictions_dir": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered",
+  "seed": 42
+}

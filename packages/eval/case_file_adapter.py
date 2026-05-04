@@ -24,7 +24,8 @@ Other reconstruction is lossy in benign ways:
 - Party names: gold doesn't carry them (privacy). Placeholder strings are
   used so downstream code that assumes non-null still works.
 - `claim_types` mapping into `DisputeIssue`: see `eval.issue_alignment`.
-  Unmappable types (`disrepair`, `end_of_tenancy`) fall back to
+  Unmappable types (`end_of_tenancy`, and `disrepair` outside a repairs
+  matter type) fall back to
   `DisputeIssue.OTHER` and are recorded on the returned
   `LossyReconstruction.unmapped_claim_types` set so the runner can
   emit an alignment report.
@@ -76,6 +77,12 @@ _EVIDENCE_KIND_MAP = {
     "witness_statement": "witness_statement",
 }
 
+_OMBUDSMAN_COMPENSATION_LABELS = {
+    "ombudsman_compensation",
+    "compensation",
+    "ombudsman_remedy",
+}
+
 
 def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
     """Build a pre-decision `CaseFile` from `GoldCase`. See module docstring."""
@@ -109,11 +116,17 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
         try:
             issue_enum = eval_to_orchestrator(ca.issue, matter_type=mt)
         except UnmappableIssue:
-            issue_enum = DisputeIssue.OTHER
+            issue_enum = _fallback_claim_issue_for_amount(
+                ca.issue,
+                domain_id=gold.domain_id,
+                matter_type=mt,
+                mapped_case_issues=issues,
+                default=DisputeIssue.OTHER,
+            )
         claim = ClaimedAmount(
             issue=issue_enum,
             amount=float(ca.amount_gbp),
-            description=f"Claimed by {ca.by_party.value}",
+            description=_claim_description(gold, ca),
         )
         if ca.by_party == EvalPartyRole.TENANT:
             tenant_claims.append(claim)
@@ -156,6 +169,16 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
         metadata={
             "source": "gold_reconstruction",
             "schema_version": gold.schema_version.value,
+            "domain_id": gold.domain_id,
+            "forum": gold.forum,
+            "source_publisher": gold.source_publisher,
+            "source_kind": gold.source_kind,
+            "retrieval_namespace_id": gold.retrieval_namespace_id,
+            "corpus_version": gold.corpus_version,
+            "matter_type": gold.matter_type,
+            "target_source_id": gold.target_source_id,
+            "target_source_url": gold.source_url,
+            "excluded_source_ids": list(gold.excluded_source_ids),
             "source_pdf_sha256": gold.source_pdf_sha256,
             "ocr_confidence": gold.ocr_confidence,
             "unmapped_claim_types": sorted(unmapped),
@@ -187,6 +210,50 @@ def _gold_issue_label_map(gold: GoldCase) -> dict[str, str]:
     if len(labels) != len(claim_types):
         return {}
     return dict(zip(claim_types, labels))
+
+
+def _fallback_claim_issue_for_amount(
+    issue_label: str,
+    *,
+    domain_id: str | None,
+    matter_type: str | None,
+    mapped_case_issues,
+    default,
+):
+    """Map forum-specific free-text claimed amount labels to CaseFile issues."""
+    if (
+        domain_id == "housing.repairs_social.v1"
+        and str(issue_label).strip().lower() in _OMBUDSMAN_COMPENSATION_LABELS
+    ):
+        repairs_issues = [
+            issue
+            for issue in mapped_case_issues
+            if issue.value
+            in {
+                "repairs_disrepair",
+                "repairs_damp_mould",
+                "complaint_handling_failure",
+            }
+        ]
+        if len(repairs_issues) == 1:
+            return repairs_issues[0]
+        if matter_type:
+            try:
+                return eval_to_orchestrator("disrepair", matter_type=matter_type)
+            except UnmappableIssue:
+                pass
+    return default
+
+
+def _claim_description(gold: GoldCase, claimed_amount) -> str:
+    facts = (gold.facts or "").strip()
+    prefix = (
+        f"{claimed_amount.issue} claimed by {claimed_amount.by_party.value} "
+        f"for £{claimed_amount.amount_gbp}."
+    )
+    if not facts:
+        return prefix
+    return f"{prefix} Pre-decision complaint facts: {facts[:1200]}"
 
 
 def _unique_preserving_order(values) -> list[str]:

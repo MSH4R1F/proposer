@@ -1,14 +1,16 @@
 """Bridge between `ClaimType` (eval) and `DisputeIssue` (orchestrator).
 
 The two enums diverged: eval is annotator-facing categories of *claims*
-made in tribunal decisions; `DisputeIssue` is intake/UI categories of
-*issues* the user reports during a chat session. They overlap heavily
-but not perfectly:
+made in tribunal / Ombudsman decisions; `DisputeIssue` is intake/UI
+categories of *issues* the user reports during a chat session. They
+overlap heavily but not perfectly:
 
 - `damages` (eval) ↔ `damage` (orch) — spelling
 - `deposit_non_protection` (eval) ↔ `deposit_protection` (orch) —
   eval names the breach, orchestrator names the issue area; same dispute
-- `disrepair`, `end_of_tenancy` (eval) — no clean orch equivalent
+- `disrepair` (eval) maps to repairs-domain issues only when the
+  gold row's ``matter_type`` is a Housing Ombudsman repairs matter
+- `end_of_tenancy` (eval) — no clean orch equivalent
 - `garden`, `redecoration`, `keys`, `inventory`, `fair_wear_and_tear`,
   `missing_items`, `utilities`, `rent_arrears`, `other` (orch) — no
   eval equivalent (eval doesn't track these as distinct claim types)
@@ -56,12 +58,26 @@ _EVAL_TO_ORCH = {
     ClaimType.CLEANING: "cleaning",
     ClaimType.DAMAGES: "damage",
     ClaimType.DEPOSIT_NON_PROTECTION: "deposit_protection",
-    # disrepair, end_of_tenancy: no orch equivalent → unmappable
+    # disrepair is matter-type-sensitive; see eval_to_orchestrator.
+    # end_of_tenancy: no orch equivalent → unmappable
 }
 
 # Inverse map: derived from the forward map plus explicit gaps for
 # orchestrator-only values.
 _ORCH_TO_EVAL = {orch_value: ct for ct, orch_value in _EVAL_TO_ORCH.items()}
+_ORCH_TO_EVAL.update(
+    {
+        "repairs_disrepair": ClaimType.DISREPAIR,
+        "repairs_damp_mould": ClaimType.DISREPAIR,
+        "complaint_handling_failure": ClaimType.DISREPAIR,
+    }
+)
+
+_REPAIRS_MATTER_TO_ORCH = {
+    "repairs_disrepair": "repairs_disrepair",
+    "repairs_damp_mould": "repairs_damp_mould",
+    "complaint_handling_failure": "complaint_handling_failure",
+}
 
 
 def eval_to_orchestrator(
@@ -108,6 +124,15 @@ def eval_to_orchestrator(
             f"eval_to_orchestrator: matter_type {matter_type!r} not "
             "recognised for DEPOSIT_NON_PROTECTION (expected "
             "'deposit_non_protection' or 'deposit_deduction')"
+        )
+    if claim_type is ClaimType.DISREPAIR:
+        orch_value = _REPAIRS_MATTER_TO_ORCH.get(matter_type or "")
+        if orch_value is not None:
+            return DisputeIssue(orch_value)
+        raise UnmappableIssue(
+            f"eval_to_orchestrator: ClaimType {claim_type.value!r} requires "
+            "a Housing Ombudsman repairs matter_type "
+            f"({sorted(_REPAIRS_MATTER_TO_ORCH)}); got {matter_type!r}"
         )
     orch_value = _EVAL_TO_ORCH.get(claim_type)
     if orch_value is None:

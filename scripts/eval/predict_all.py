@@ -30,13 +30,17 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import inspect
 import json
+import os
+import re
 import sys
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence
+from urllib.parse import urlparse
 
 # Allow running the script directly: prepend packages/ to sys.path.
 _HERE = Path(__file__).resolve()
@@ -56,11 +60,283 @@ class LiveClientNotConfigured(RuntimeError):
     """Raised when `--engine live` is requested without an explicit client."""
 
 
-def _stub_predict_fn(case_file, mode):
+def _stub_predict_fn(case_file, mode, *, gold_case=None):
+    del gold_case
     return make_stub_prediction(case_file, mode)
 
 
-def _live_predict_fn_factory(client_name: str) -> Callable:
+def _source_id_variants(*values: Any) -> list[str]:
+    """Return exact source-id variants used across gold rows and indexes.
+
+    Older Ombudsman pilots used URL slugs as ``source_id`` while the full
+    1,000-case scrape uses the numeric Ombudsman case number. Eval exclusion
+    must cover both or it can retrieve the answer document.
+    """
+    variants: set[str] = set()
+
+    def add(value: Any) -> None:
+        if value is None:
+            return
+        raw = str(value).strip()
+        if not raw:
+            return
+        raw = raw.rstrip("/")
+        variants.add(raw)
+        compact = re.sub(r"\s+", "", raw)
+        if compact:
+            variants.add(compact)
+
+        parsed = urlparse(raw)
+        if parsed.scheme and parsed.netloc:
+            path_parts = [p for p in parsed.path.split("/") if p]
+            if path_parts:
+                add(path_parts[-1])
+            return
+
+        if raw.startswith("housing-ombudsman-"):
+            add(raw.removeprefix("housing-ombudsman-"))
+
+        tail_digits = re.search(r"(\d{6,})$", compact)
+        if tail_digits:
+            variants.add(tail_digits.group(1))
+
+    for value in values:
+        if isinstance(value, (list, tuple, set)):
+            for item in value:
+                add(item)
+        else:
+            add(value)
+    return sorted(variants)
+
+
+def _enum_or_none(enum_cls, value: Any):
+    if value is None:
+        return None
+    if hasattr(value, "value"):
+        value = value.value
+    if not value:
+        return None
+    return enum_cls(str(value))
+
+
+def _build_eval_retrieval_filter(
+    gold_case: Any,
+    *,
+    include_temporal: bool,
+):
+    """Build the eval-only filter envelope for one gold row."""
+    from domain_core.spec import Forum, SourceKind, SourcePublisher
+    from rag_engine.config import RetrievalFilterEnvelope
+
+    excluded_source_ids = _source_id_variants(
+        getattr(gold_case, "target_source_id", None),
+        getattr(gold_case, "excluded_source_ids", []),
+        getattr(gold_case, "case_id", None),
+        getattr(gold_case, "source_url", None),
+    )
+
+    max_decision_date = None
+    if include_temporal:
+        candidate = getattr(gold_case, "decision_date", None)
+        if isinstance(candidate, date):
+            max_decision_date = candidate
+
+    return RetrievalFilterEnvelope(
+        excluded_source_ids=excluded_source_ids,
+        max_decision_date=max_decision_date,
+        forum=_enum_or_none(Forum, getattr(gold_case, "forum", None)),
+        source_kind=_enum_or_none(SourceKind, getattr(gold_case, "source_kind", None)),
+        source_publisher=_enum_or_none(
+            SourcePublisher, getattr(gold_case, "source_publisher", None)
+        ),
+        matter_type=getattr(gold_case, "matter_type", None),
+        eval_only=True,
+    )
+
+
+def _merge_filter_envelopes(base, extra):
+    if extra is None:
+        return base
+    from rag_engine.config import RetrievalFilterEnvelope
+
+    data = base.model_dump()
+    data["excluded_source_ids"] = sorted(
+        set(data.get("excluded_source_ids") or [])
+        | set(extra.excluded_source_ids or [])
+    )
+    data["legacy_where"] = {
+        **(data.get("legacy_where") or {}),
+        **(extra.legacy_where or {}),
+    }
+    data["cross_domain_allowed"] = bool(
+        data.get("cross_domain_allowed") or extra.cross_domain_allowed
+    )
+    data["eval_only"] = bool(data.get("eval_only") or extra.eval_only)
+
+    for key in (
+        "max_decision_date",
+        "as_of_date",
+        "forum",
+        "source_kind",
+        "source_publisher",
+        "matter_type",
+    ):
+        value = getattr(extra, key)
+        if value is None:
+            continue
+        current = data.get(key)
+        if current is not None and current != value:
+            raise ValueError(
+                f"Conflicting retrieval filter for {key}: {current!r} vs {value!r}"
+            )
+        data[key] = value
+    return RetrievalFilterEnvelope(**data)
+
+
+class _EvalFilteredRAGPipeline:
+    """Inject eval leakage filters into an existing RAG pipeline."""
+
+    def __init__(self, base: Any, filters: Any, requesting_namespace: Any = None):
+        self._base = base
+        self._filters = filters
+        self._requesting_namespace = requesting_namespace
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._base, name)
+
+    async def retrieve(self, *args, **kwargs):
+        kwargs["filters"] = _merge_filter_envelopes(
+            self._filters, kwargs.get("filters")
+        )
+        if kwargs.get("requesting_namespace") is None:
+            kwargs["requesting_namespace"] = self._requesting_namespace
+        return await self._base.retrieve(*args, **kwargs)
+
+
+def _namespace_index_paths(root: Path, namespace: Any) -> tuple[Path, Path]:
+    """Resolve an optional --rag-index-root.
+
+    Accepts either:
+      * ``indices`` / ``data/indices``; or
+      * a concrete ``.../{namespace_id}/{corpus_version}`` directory.
+    """
+    root = Path(root)
+    if (root / "bm25.pkl").exists() or (root / "chroma").exists():
+        return root / "bm25.pkl", root / "chroma"
+    cv = namespace.corpus_version or "unversioned"
+    version_dir = root / namespace.namespace_id / cv
+    return version_dir / "bm25.pkl", version_dir / "chroma"
+
+
+def _rag_config_for_namespace(namespace: Any, rag_index_root: Optional[Path]):
+    from rag_engine.config import RAGConfig
+
+    base_cfg = RAGConfig.from_env()
+    cfg = RAGConfig.from_namespace(namespace, base=base_cfg, project_root=_REPO_ROOT)
+    if rag_index_root is not None:
+        bm25_path, chroma_dir = _namespace_index_paths(rag_index_root, namespace)
+        cfg = cfg.model_copy(
+            update={
+                "bm25_index_path": bm25_path,
+                "chroma_persist_dir": chroma_dir,
+            }
+        )
+    return cfg
+
+
+def _ensure_rag_index_exists(cfg: Any, namespace: Any) -> None:
+    missing = []
+    if not cfg.bm25_index_path.exists():
+        missing.append(str(cfg.bm25_index_path))
+    if not cfg.chroma_persist_dir.exists():
+        missing.append(str(cfg.chroma_persist_dir))
+    if missing:
+        raise FileNotFoundError(
+            "RAG index missing for namespace "
+            f"{namespace.namespace_id!r}. Missing: {', '.join(missing)}. "
+            "Run the Ombudsman ingest first or pass --rag-index-root "
+            "to the directory containing {namespace_id}/{corpus_version}/."
+        )
+
+
+def _select_namespace(domain_id: str, namespace_id: Optional[str]):
+    from domain_core.registry import get_domain_spec
+
+    spec = get_domain_spec(domain_id)
+    if not spec.retrieval_namespaces:
+        raise ValueError(f"Domain {domain_id!r} has no retrieval namespace")
+    if namespace_id:
+        for namespace in spec.retrieval_namespaces:
+            if namespace.namespace_id == namespace_id:
+                return namespace
+        raise ValueError(
+            f"Domain {domain_id!r} does not declare namespace {namespace_id!r}; "
+            f"available={[ns.namespace_id for ns in spec.retrieval_namespaces]}"
+        )
+    if len(spec.retrieval_namespaces) > 1:
+        raise ValueError(
+            f"Domain {domain_id!r} declares multiple namespaces; gold row must "
+            "set retrieval_namespace_id"
+        )
+    return spec.retrieval_namespaces[0]
+
+
+def _decision_date_coverage(rag_pipeline: Any) -> float:
+    chunks = []
+    try:
+        chunks = rag_pipeline.bm25_index.get_all_chunks()
+    except Exception:
+        return 0.0
+    if not chunks:
+        return 0.0
+    with_dates = 0
+    for chunk in chunks:
+        metadata = getattr(chunk, "source_metadata", None)
+        if metadata is not None and getattr(metadata, "decision_date", None):
+            with_dates += 1
+            continue
+        try:
+            if chunk.to_chroma_metadata().get("decision_date"):
+                with_dates += 1
+        except Exception:
+            continue
+    return with_dates / len(chunks)
+
+
+def _predict_fn_accepts_gold_case(predict_fn: Callable) -> bool:
+    try:
+        signature = inspect.signature(predict_fn)
+    except (TypeError, ValueError):
+        return False
+    return (
+        "gold_case" in signature.parameters
+        or any(
+            p.kind == inspect.Parameter.VAR_KEYWORD
+            for p in signature.parameters.values()
+        )
+    )
+
+
+def _call_predict_fn(
+    predict_fn: Callable,
+    case_file: Any,
+    mode: Any,
+    *,
+    gold_case: Any,
+    accepts_gold_case: bool,
+):
+    if accepts_gold_case:
+        return predict_fn(case_file, mode, gold_case=gold_case)
+    return predict_fn(case_file, mode)
+
+
+def _live_predict_fn_factory(
+    client_name: str,
+    *,
+    rag_index_root: Optional[Path] = None,
+    temporal_filters: bool = True,
+    top_k: int = 10,
+) -> Callable:
     """Return a callable matching ``predict_fn(case_file, mode) -> PredictionResult``
     for the chosen LLM client. ``--client stub`` returns a deterministic
     placeholder; ``claude``/``openai`` build a real client.
@@ -79,6 +355,7 @@ def _live_predict_fn_factory(client_name: str) -> Callable:
     import asyncio
 
     from llm_orchestrator import PredictionEngineV2
+    from llm_orchestrator.models.prediction_v2 import PredictionMode
     from llm_orchestrator.prompts.packs import get_prompt_pack
 
     # Route through the SHA-114 provider factory so every direct client
@@ -88,36 +365,106 @@ def _live_predict_fn_factory(client_name: str) -> Callable:
     from llm_orchestrator.config import LLMRole
 
     if client_name == "claude":
-        llm = get_llm_client(LLMRole.PREDICT)
+        llm = get_llm_client(LLMRole.PREDICTION)
     else:  # openai
         # Force the OpenAI path. The factory returns whichever provider the
         # role config selects; for live eval we want explicit selection so
         # tests are reproducible. Override via env var if the default role
         # is currently configured for Anthropic.
-        from llm_orchestrator.clients.openai import OpenAIClient
+        from llm_orchestrator.clients.openai_client import OpenAIClient
 
-        llm = OpenAIClient()
+        api_key = os.getenv("OPENAI_API_KEY", "")
+        if not api_key:
+            raise LiveClientNotConfigured(
+                "--engine live --client openai requires OPENAI_API_KEY"
+            )
+        llm = OpenAIClient(
+            api_key=api_key,
+            model=os.getenv("LLM_PREDICTION_PRIMARY_MODEL", "gpt-5.5"),
+            fallback_model=os.getenv("LLM_PREDICTION_FALLBACK_MODEL", "gpt-5.4"),
+            reasoning_effort=os.getenv("LLM_PREDICTION_REASONING_EFFORT", "high"),
+            text_verbosity=os.getenv("LLM_PREDICTION_TEXT_VERBOSITY", "medium"),
+            max_retries=3,
+        )
 
-    def _live_call(case_file, mode):
+    pipeline_cache: dict[tuple[str, str, Optional[str]], tuple[Any, Any, bool]] = {}
+    rag_index_root = rag_index_root or (
+        Path(os.environ["RAG_INDEX_ROOT"]) if os.environ.get("RAG_INDEX_ROOT") else None
+    )
+
+    def _pipeline_for(gold_case: Any):
+        domain_id = str(getattr(gold_case, "domain_id", "") or "")
+        namespace_id = getattr(gold_case, "retrieval_namespace_id", None)
+        if not domain_id:
+            raise ValueError("Live eval requires gold rows with domain_id")
+        namespace = _select_namespace(domain_id, namespace_id)
+        cache_key = (
+            domain_id,
+            namespace.namespace_id,
+            str(rag_index_root) if rag_index_root is not None else None,
+        )
+        cached = pipeline_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        from rag_engine.pipeline import RAGPipeline
+
+        cfg = _rag_config_for_namespace(namespace, rag_index_root)
+        _ensure_rag_index_exists(cfg, namespace)
+        rag = RAGPipeline(config=cfg, namespace=namespace)
+        has_temporal_dates = _decision_date_coverage(rag) >= 0.90
+        pipeline_cache[cache_key] = (rag, namespace, has_temporal_dates)
+        return pipeline_cache[cache_key]
+
+    def _live_call(case_file, mode, *, gold_case=None):
+        if gold_case is None:
+            raise ValueError("Live eval prediction requires gold_case context")
         # Resolve a prompt pack from the case_file's domain metadata when
         # available; fall back to None (legacy IRAC prompts).
-        domain_id = (case_file.metadata or {}).get("domain_id")
+        domain_id = (
+            getattr(gold_case, "domain_id", None)
+            or (case_file.metadata or {}).get("domain_id")
+        )
         prompt_pack = None
         if domain_id:
             try:
                 prompt_pack = get_prompt_pack(domain_id)
             except KeyError:
                 prompt_pack = None
+        rag_pipeline = None
+        if mode in (PredictionMode.HYBRID, PredictionMode.RAG_ONLY):
+            rag, namespace, has_temporal_dates = _pipeline_for(gold_case)
+            filters = _build_eval_retrieval_filter(
+                gold_case,
+                include_temporal=bool(temporal_filters and has_temporal_dates),
+            )
+            rag_pipeline = _EvalFilteredRAGPipeline(
+                rag, filters, requesting_namespace=namespace
+            )
         engine = PredictionEngineV2(
-            llm_client=llm, rag_pipeline=None, prompt_pack=prompt_pack
+            llm_client=llm, rag_pipeline=rag_pipeline, prompt_pack=prompt_pack
         )
         # Run the async predict in an event loop.
-        return asyncio.run(engine.predict(case_file, mode=mode))
+        return asyncio.run(
+            engine.predict(
+                case_file,
+                top_k=top_k,
+                mode=mode,
+                matter_type=getattr(gold_case, "matter_type", None),
+            )
+        )
 
     return _live_call
 
 
-def _resolve_predict_fn(engine: str, client: Optional[str]) -> Callable:
+def _resolve_predict_fn(
+    engine: str,
+    client: Optional[str],
+    *,
+    rag_index_root: Optional[Path] = None,
+    temporal_filters: bool = True,
+    top_k: int = 10,
+) -> Callable:
     if engine == "stub":
         return _stub_predict_fn
     if engine == "live":
@@ -127,14 +474,19 @@ def _resolve_predict_fn(engine: str, client: Optional[str]) -> Callable:
                 "refusing to silently substitute the stub. The Phase 5b stub "
                 "exists for CI; for thesis numbers wire a real client."
             )
-        return _live_predict_fn_factory(client)
+        return _live_predict_fn_factory(
+            client,
+            rag_index_root=rag_index_root,
+            temporal_filters=temporal_filters,
+            top_k=top_k,
+        )
     raise ValueError(f"Unknown --engine {engine!r}; expected 'stub' or 'live'")
 
 
-def _serialise_prediction(pred) -> dict:
+def _serialise_prediction(pred, raw_result: Any = None) -> dict:
     """Convert eval.metrics.Prediction → JSON-friendly dict (matches the
     shape eval.run._load_predictions consumes)."""
-    return {
+    out = {
         "case_id": pred.case_id,
         "overall_winner": pred.overall_winner.value,
         "overall_win_probability": float(pred.overall_win_probability),
@@ -149,6 +501,19 @@ def _serialise_prediction(pred) -> dict:
             for ip in pred.per_issue
         ],
     }
+    if raw_result is not None:
+        raw_outcome = getattr(getattr(raw_result, "overall_outcome", None), "value", None)
+        out["raw_overall_outcome"] = raw_outcome
+        out["raw_overall_confidence"] = float(
+            getattr(raw_result, "overall_confidence", 0.0) or 0.0
+        )
+        out["abstained"] = raw_outcome == "uncertain"
+        raw_issues = list(getattr(raw_result, "issue_predictions", []) or [])
+        for row, raw_issue in zip(out["per_issue"], raw_issues):
+            issue_outcome = getattr(getattr(raw_issue, "outcome", None), "value", None)
+            row["raw_outcome"] = issue_outcome
+            row["abstained"] = issue_outcome == "uncertain"
+    return out
 
 
 def _resolve_mode_enum(mode_value: str):
@@ -173,7 +538,13 @@ def _compute_result_hash(parts: Dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-def _resolve_run_context(g, *, engine: str, client: Optional[str]) -> Dict[str, Any]:
+def _resolve_run_context(
+    g,
+    *,
+    engine: str,
+    client: Optional[str],
+    retrieval_top_k: int = 10,
+) -> Dict[str, Any]:
     """Best-effort lookup of the per-case context that feeds the result hash.
 
     Returns a dict; missing components fall through as ``None`` so the
@@ -188,7 +559,7 @@ def _resolve_run_context(g, *, engine: str, client: Optional[str]) -> Dict[str, 
         "ontology_hash": None,
         "domain_spec_hash": None,
         "verifier_hash": None,
-        "retrieval_budget": {"top_k": 10},
+        "retrieval_budget": {"top_k": retrieval_top_k},
         "engine": engine,
         "client": client,
         "gate_evaluation_seed": None,
@@ -246,6 +617,7 @@ def _run(
     out_dir: Path,
     engine: str,
     client: Optional[str],
+    retrieval_top_k: int = 10,
     run_id: Optional[str] = None,
 ) -> Dict[str, int]:
     """Run the (gold × mode) loop. Returns counters used by the summary."""
@@ -257,6 +629,7 @@ def _run(
         Path("data/eval_artifacts/runs") / run_id
     )
     run_artifact_dir.mkdir(parents=True, exist_ok=True)
+    accepts_gold_case = _predict_fn_accepts_gold_case(predict_fn)
 
     for mode_str in modes:
         mode_enum = _resolve_mode_enum(mode_str)
@@ -266,16 +639,28 @@ def _run(
                 recon = gold_case_to_case_file(g)
                 for ct in recon.unmapped_claim_types:
                     unmapped_total[ct] += 1
-                pred_result = predict_fn(recon.case_file, mode_enum)
+                pred_result = _call_predict_fn(
+                    predict_fn,
+                    recon.case_file,
+                    mode_enum,
+                    gold_case=g,
+                    accepts_gold_case=accepts_gold_case,
+                )
                 eval_pred = from_prediction_result(pred_result)
                 _apply_gold_issue_label_alignment(
                     eval_pred, recon.gold_issue_labels_by_claim_type
                 )
-                f.write(json.dumps(_serialise_prediction(eval_pred)) + "\n")
+                serialised = _serialise_prediction(eval_pred, pred_result)
+                f.write(json.dumps(serialised) + "\n")
 
                 # Per-case artifact (live runner only — keep stub light).
                 if engine == "live":
-                    ctx = _resolve_run_context(g, engine=engine, client=client)
+                    ctx = _resolve_run_context(
+                        g,
+                        engine=engine,
+                        client=client,
+                        retrieval_top_k=retrieval_top_k,
+                    )
                     payload = {
                         "run_id": run_id,
                         "case_id": g.case_id,
@@ -284,7 +669,7 @@ def _run(
                         "result_hash": _compute_result_hash(
                             {**ctx, "case_id": g.case_id, "mode": mode_str}
                         ),
-                        "prediction": _serialise_prediction(eval_pred),
+                        "prediction": serialised,
                     }
                     artifact_path = run_artifact_dir / f"{g.case_id}__{mode_str}.json"
                     artifact_path.write_text(json.dumps(payload, indent=2))
@@ -345,6 +730,24 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         ),
     )
     parser.add_argument(
+        "--rag-index-root",
+        type=Path,
+        default=None,
+        help=(
+            "Optional root containing namespace/corpus-version RAG indexes "
+            "(for example: indices or data/indices). Live RAG modes use "
+            "domain defaults when omitted. Can also be set with RAG_INDEX_ROOT."
+        ),
+    )
+    parser.add_argument(
+        "--no-temporal-filter",
+        action="store_true",
+        help=(
+            "Disable decision-date max filtering in live RAG modes. Target-source "
+            "exclusion and domain metadata filters still apply."
+        ),
+    )
+    parser.add_argument(
         "--modes",
         default=",".join(_VALID_MODES),
         help=(
@@ -358,6 +761,15 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         default=None,
         help="Cap on the number of gold cases to predict (default: all).",
     )
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=10,
+        help=(
+            "Retrieval budget passed into live RAG modes. Default keeps the "
+            "legacy runner behavior at 10."
+        ),
+    )
     args = parser.parse_args(argv)
 
     modes = [m.strip() for m in args.modes.split(",") if m.strip()]
@@ -367,7 +779,13 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         return 2
 
     try:
-        predict_fn = _resolve_predict_fn(args.engine, args.client)
+        predict_fn = _resolve_predict_fn(
+            args.engine,
+            args.client,
+            rag_index_root=args.rag_index_root,
+            temporal_filters=not args.no_temporal_filter,
+            top_k=args.top_k,
+        )
     except LiveClientNotConfigured as e:
         print(str(e), file=sys.stderr)
         return 2
@@ -388,6 +806,7 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         out_dir=args.out_dir,
         engine=args.engine,
         client=args.client,
+        retrieval_top_k=args.top_k,
         run_id=args.run_id,
     )
 

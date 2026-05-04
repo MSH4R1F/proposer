@@ -36,13 +36,16 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import re
 from typing import Any, Dict, List, Optional, Type, TypeVar
 
 import structlog
 from openai import (
+    APIConnectionError,
     APIError,
     APIStatusError,
+    APITimeoutError,
     AsyncOpenAI,
     RateLimitError,
 )
@@ -108,6 +111,9 @@ class OpenAIClient(BaseLLMClient):
             carries, but passing ``True`` is a privacy-invariant violation
             and will raise :class:`ValueError`. Task 5's factory will pass
             ``False`` always.
+        timeout_seconds: SDK request timeout. Defaults to
+            ``OPENAI_TIMEOUT_SECONDS`` or 300 seconds, which avoids treating
+            long legal reasoning responses as failed rows during eval runs.
         client: Optional pre-built ``AsyncOpenAI`` for tests. When provided,
             ``api_key`` is unused for SDK construction.
         retry_base_delay: Base delay (seconds) for the exponential backoff
@@ -127,6 +133,7 @@ class OpenAIClient(BaseLLMClient):
         *,
         client: Optional[AsyncOpenAI] = None,
         retry_base_delay: float = 0.1,
+        timeout_seconds: Optional[float] = None,
     ) -> None:
         # We construct AsyncOpenAI with the supplied key only when no client is
         # injected; tests that mock ``responses.create`` typically pass their
@@ -142,7 +149,16 @@ class OpenAIClient(BaseLLMClient):
         # closes connections we created (an injected mock/AsyncOpenAI is the
         # caller's responsibility).
         self._owns_client = client is None
-        self.client = client if client is not None else AsyncOpenAI(api_key=api_key)
+        timeout = (
+            float(timeout_seconds)
+            if timeout_seconds is not None
+            else float(os.getenv("OPENAI_TIMEOUT_SECONDS", "300"))
+        )
+        self.client = (
+            client
+            if client is not None
+            else AsyncOpenAI(api_key=api_key, timeout=timeout)
+        )
         self.model = model
         self.fallback_model = fallback_model
         self.max_retries = max(1, int(max_retries))
@@ -693,6 +709,8 @@ class OpenAIClient(BaseLLMClient):
           fallback, raise :class:`LLMRateLimitError`.
         - :class:`openai.APIStatusError` with 5xx status → retry up to
           ``max_retries`` total attempts with exponential backoff.
+        - :class:`openai.APITimeoutError` / connection errors → retry up to
+          ``max_retries`` total attempts with exponential backoff.
         - :class:`openai.APIError` (no status) at the last attempt → raise
           :class:`LLMAPIError`.
 
@@ -755,6 +773,27 @@ class OpenAIClient(BaseLLMClient):
                     raise LLMAPIError(str(e)) from e
                 # Non-5xx status (4xx other than 429) — not retryable.
                 self._stats["errors"] += 1
+                raise LLMAPIError(str(e)) from e
+
+            except (APITimeoutError, APIConnectionError) as e:
+                attempt += 1
+                if attempt < self.max_retries:
+                    delay = self._retry_base_delay * (2 ** (attempt - 1))
+                    logger.warning(
+                        "openai_connection_retry",
+                        error_type=type(e).__name__,
+                        attempt=attempt,
+                        delay=delay,
+                    )
+                    if delay > 0:
+                        await asyncio.sleep(delay)
+                    continue
+                self._stats["errors"] += 1
+                logger.error(
+                    "openai_connection_exhausted",
+                    error_type=type(e).__name__,
+                    attempts=attempt,
+                )
                 raise LLMAPIError(str(e)) from e
 
             except APIError as e:

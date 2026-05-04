@@ -28,7 +28,7 @@ from eval.case_file_adapter import (
     gold_case_to_case_file,
 )
 from eval.dataset import load
-from eval.schema import GoldCase
+from eval.schema import ClaimedAmount, GoldCase, PartyRole
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -93,6 +93,24 @@ class TestIssueMapping:
         # The reconstruction tracks unmappable claim types so the runner
         # can write an alignment report.
         assert "disrepair" in out.unmapped_claim_types
+
+    def test_ombudsman_disrepair_maps_to_repairs_issue(self, synthetic_gold_cases):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR"))
+        case = case.model_copy(
+            update={
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+            }
+        )
+        out = gold_case_to_case_file(case)
+        issue_values = [i.value for i in out.case_file.issues]
+        assert "repairs_damp_mould" in issue_values
+        assert "disrepair" not in out.unmapped_claim_types
 
     def test_end_of_tenancy_also_falls_back(self, synthetic_gold_cases):
         case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-EOT"))
@@ -175,6 +193,35 @@ class TestClaimedAmountsSplitByParty:
         for c in cf.landlord_claims:
             cf_total += Decimal(str(c.amount))
         assert cf_total == gold_total
+
+    def test_ombudsman_compensation_claim_attaches_to_repairs_issue(
+        self, synthetic_gold_cases
+    ):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR"))
+        case = case.model_copy(
+            update={
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+                "claimed_amounts": [
+                    ClaimedAmount(
+                        issue="ombudsman_compensation",
+                        amount_gbp=Decimal("575.00"),
+                        by_party=PartyRole.TENANT,
+                    )
+                ],
+            }
+        )
+
+        out = gold_case_to_case_file(case)
+
+        assert out.case_file.tenant_claims[0].issue.value == "repairs_damp_mould"
+        assert "Pre-decision complaint facts" in out.case_file.tenant_claims[0].description
+        assert case.facts[:80] in out.case_file.tenant_claims[0].description
 
 
 class TestRoundTripAllSyntheticCases:

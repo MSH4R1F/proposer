@@ -350,6 +350,16 @@ class IssueRetriever:
         )
 
     def _build_issue_query(self, issue: IssueContext, case_file: CaseFile) -> str:
+        metadata = getattr(case_file, "metadata", None)
+        if isinstance(metadata, dict):
+            domain_id = metadata.get("domain_id")
+            if domain_id == "housing.repairs_social.v1" or issue.issue_type.value in {
+                "repairs_disrepair",
+                "repairs_damp_mould",
+                "complaint_handling_failure",
+            }:
+                return self._build_repairs_issue_query(issue, case_file, metadata)
+
         parts = [
             f"Tenancy deposit dispute: {issue.issue_type.value}",
             f"Deposit amount: \u00a3{case_file.tenancy.deposit_amount or 'unknown'}",
@@ -380,6 +390,46 @@ class IssueRetriever:
             parts.append(f"Tenant claims: {issue.tenant_claim.description}")
         if issue.landlord_claim:
             parts.append(f"Landlord claims: {issue.landlord_claim.description}")
+
+        return " | ".join(parts)
+
+    def _build_repairs_issue_query(
+        self,
+        issue: IssueContext,
+        case_file: CaseFile,
+        metadata: Dict[str, Any],
+    ) -> str:
+        parts = [
+            "Housing Ombudsman social housing repairs complaint",
+            f"Issue: {issue.issue_type.value}",
+        ]
+        matter_type = metadata.get("matter_type")
+        if matter_type:
+            parts.append(f"Matter type: {matter_type}")
+        if case_file.dispute_amount:
+            parts.append(f"Compensation in dispute: \u00a3{case_file.dispute_amount:.2f}")
+
+        narrative = (case_file.tenant_narrative or "").strip()
+        if narrative:
+            parts.append(f"Resident account: {narrative[:700]}")
+
+        if issue.supporting_evidence:
+            ev_types = set()
+            for evidence in issue.supporting_evidence:
+                evidence_type = getattr(evidence, "type", None)
+                if evidence_type is not None and hasattr(evidence_type, "value"):
+                    ev_types.add(str(evidence_type.value))
+                elif evidence_type is not None:
+                    ev_types.add(str(evidence_type))
+            if ev_types:
+                parts.append(f"Evidence available: {', '.join(sorted(ev_types))}")
+
+        if issue.kg_constraints:
+            parts.append(f"Key facts: {'; '.join(issue.kg_constraints)}")
+        if issue.tenant_claim:
+            parts.append(f"Resident claims: {issue.tenant_claim.description}")
+        if issue.landlord_claim:
+            parts.append(f"Landlord response: {issue.landlord_claim.description}")
 
         return " | ".join(parts)
 

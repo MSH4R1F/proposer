@@ -1,4 +1,7 @@
 import json
+from types import SimpleNamespace
+
+import pytest
 
 from ..clients.base import BaseLLMClient
 from ..models.prediction_v2 import IssueContext, IssueOutcome, IssueType
@@ -23,6 +26,26 @@ class _DummyLLM(BaseLLMClient):
 
     def reset_stats(self):
         return None
+
+
+class _CaptureLLM(_DummyLLM):
+    def __init__(self):
+        self.calls = []
+
+    async def generate(self, messages, system_prompt, max_tokens=4096, temperature=0.7):
+        self.calls.append(
+            {
+                "messages": messages,
+                "system_prompt": system_prompt,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+            }
+        )
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,'
+            '"reasoning":"Likely maladministration on similar Ombudsman facts.",'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
 
 
 def test_parse_prediction_response_recovers_json_in_wrapped_text() -> None:
@@ -95,3 +118,98 @@ def test_format_party_position_combines_claim_and_narrative() -> None:
     assert "Amount claimed: £250.00" in text
     assert "Narrative:" in text
     assert "professionally cleaned" in text
+
+
+@pytest.mark.asyncio
+async def test_repairs_no_rag_prompt_uses_ombudsman_framing() -> None:
+    from llm_orchestrator.prompts.packs import get_prompt_pack
+
+    llm = _CaptureLLM()
+    case_file = SimpleNamespace(
+        metadata={
+            "domain_id": "housing.repairs_social.v1",
+            "matter_type": "repairs_damp_mould",
+        },
+        tenancy=SimpleNamespace(
+            deposit_amount=None,
+            start_date=None,
+            end_date=None,
+            tenancy_type=None,
+        ),
+        property=SimpleNamespace(region="london", postcode=None),
+        tenant_narrative="Resident reported damp and mould for months.",
+        landlord_narrative=None,
+    )
+    predictor = IssuePredictor(
+        llm,
+        case_file=case_file,
+        prompt_pack=get_prompt_pack("housing.repairs_social.v1"),
+    )
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        data_completeness=0.8,
+    )
+
+    await predictor.predict_no_rag([issue], prompt_mode="llm_only")
+
+    prompt = llm.calls[0]["messages"][0]["content"]
+    system_prompt = llm.calls[0]["system_prompt"]
+    assert "Housing Ombudsman Service" in prompt
+    assert "Deposit Amount" not in prompt
+    assert "repairs_damp_mould" in prompt
+    assert "Leave supporting_cases empty" in prompt
+    assert "do not abstain solely because citations are unavailable" in prompt
+    assert "IRAC_JSON_SCHEMA" not in system_prompt
+    assert "Output your prediction as a single JSON object" in system_prompt
+    assert "Do NOT invent Ombudsman determination citations" in system_prompt
+    assert "tenant_wins" in system_prompt
+    assert "supporting_cases MUST be an empty list" in system_prompt
+    assert "Include at least 1 supporting case citation" not in system_prompt
+
+
+def test_parse_prediction_response_maps_ombudsman_outcome_language() -> None:
+    predictor = IssuePredictor(_DummyLLM())
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        data_completeness=0.8,
+    )
+
+    service_failure = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "service failure",
+                "raw_confidence": 0.68,
+                "reasoning": "Likely service failure.",
+                "evidence_strength": "moderate",
+            }
+        ),
+        issue,
+    )
+    no_maladministration = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "no maladministration",
+                "raw_confidence": 0.61,
+                "reasoning": "Likely no maladministration.",
+                "evidence_strength": "moderate",
+            }
+        ),
+        issue,
+    )
+    partial = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "partial maladministration",
+                "raw_confidence": 0.58,
+                "reasoning": "Mixed findings.",
+                "evidence_strength": "moderate",
+            }
+        ),
+        issue,
+    )
+
+    assert service_failure.outcome == IssueOutcome.TENANT_WINS
+    assert no_maladministration.outcome == IssueOutcome.LANDLORD_WINS
+    assert partial.outcome == IssueOutcome.SPLIT

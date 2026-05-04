@@ -1,0 +1,13 @@
+{
+  "metric": "issue_winner_accuracy",
+  "metric_alias": "accuracy",
+  "gold_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/gold_standard/housing_repairs_social_v1.jsonl",
+  "predictions_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered/llm_only.jsonl",
+  "point": 0.68,
+  "lower_95": 0.54,
+  "upper_95": 0.8,
+  "n": 50,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-04T19:45:59.464271+00:00"
+}

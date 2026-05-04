@@ -2,6 +2,7 @@ import asyncio
 import importlib
 import json
 import math
+import re
 import structlog
 from datetime import date as _date_type
 from typing import Any, Dict, List, Optional
@@ -35,6 +36,40 @@ except ImportError:
 
 logger = structlog.get_logger()
 
+_REPAIRS_ISSUE_VALUES = {
+    "repairs_disrepair",
+    "repairs_damp_mould",
+    "complaint_handling_failure",
+}
+
+
+_REPAIRS_NO_RAG_SYSTEM_PROMPT = """You analyse social-housing complaints heard by the Housing Ombudsman.
+
+This is an ablation baseline with NO retrieved Ombudsman determinations. Predict from the resident/landlord facts, evidence summary, timeline, and any structured fact card only.
+
+Critical constraints:
+1. Do NOT invent Ombudsman determination citations. Leave supporting_cases as an empty list.
+2. Do NOT mark the outcome uncertain solely because retrieved determinations are absent.
+3. Use Housing Ombudsman concepts in the reasoning: no maladministration, service failure, maladministration, severe maladministration, reasonable redress, apology, repair action, compensation, case review, or policy review.
+4. The JSON outcome field must still use the shared eval labels:
+   - "tenant_wins" when the resident complaint is likely upheld or the landlord likely faces a service-failure/maladministration finding or remedy.
+   - "landlord_wins" when no maladministration/no service failure is likely.
+   - "split" when findings are mixed, partial, or reasonable redress likely resolves only part of the complaint.
+   - "uncertain" only when the facts are too sparse or internally inconsistent to choose one of the above.
+
+Safety: legal information, not legal advice. Hedge and explain uncertainty.
+"""
+
+_NO_RAG_JSON_SCHEMA = (
+    IRAC_JSON_SCHEMA.replace(
+        "- Include at least 1 supporting case citation",
+        "- In no-RAG ablation modes, supporting_cases MUST be an empty list",
+    ).replace(
+        "- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation",
+        "- No retrieved cases are available in no-RAG ablation modes, so do not include proposition_id values",
+    )
+)
+
 
 class IssuePredictor:
     def __init__(
@@ -58,8 +93,11 @@ class IssuePredictor:
         if self._prompt_pack is not None and getattr(
             self._prompt_pack, "prediction_system", None
         ):
-            return self._prompt_pack.prediction_system
+            return f"{self._prompt_pack.prediction_system}\n\n{IRAC_JSON_SCHEMA}"
         return f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+
+    def _repairs_no_rag_system_prompt(self) -> str:
+        return f"{_REPAIRS_NO_RAG_SYSTEM_PROMPT}\n\n{_NO_RAG_JSON_SCHEMA}"
 
     async def predict_no_rag(
         self,
@@ -134,7 +172,34 @@ class IssuePredictor:
             issue.landlord_claim.description if issue.landlord_claim else "Not provided"
         )
 
-        if prompt_mode == "llm_only":
+        if self._is_repairs_case(cf, issue):
+            kg_fact_card = (
+                self._format_kg_fact_card(self._kg_facts_by_issue.get(issue.issue_type))
+                if prompt_mode == "kg_only"
+                else ""
+            )
+            user_prompt = self._format_repairs_user_prompt(
+                issue=issue,
+                case_file=cf,
+                claimed_amount=claimed_amount,
+                tenant_claim_text=tenant_claim_text,
+                landlord_claim_text=landlord_claim_text,
+                evidence_summary=self._format_evidence_summary(issue),
+                evidence_conflicts=self._format_evidence_conflicts(issue),
+                timeline_summary=self._format_timeline(issue),
+                kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
+                if issue.kg_constraints
+                else "None identified",
+                kg_fact_card=kg_fact_card,
+                retrieved_cases=(
+                    f"No retrieved cases in {prompt_mode} mode. Leave "
+                    "supporting_cases empty and do not abstain solely because "
+                    "citations are unavailable."
+                ),
+                num_retrieved_cases=0,
+            )
+            system_prompt = self._repairs_no_rag_system_prompt()
+        elif prompt_mode == "llm_only":
             user_prompt = LLM_ONLY_USER_PROMPT.format(
                 issue_type=issue.issue_type.value,
                 issue_description=issue.issue_description,
@@ -185,7 +250,7 @@ class IssuePredictor:
             response = await self.llm.generate(
                 messages=[{"role": "user", "content": user_prompt}],
                 system_prompt=system_prompt,
-                max_tokens=2000,
+                max_tokens=8192,
                 temperature=0.2,
             )
             prediction = self._parse_prediction_response(response, issue)
@@ -419,6 +484,21 @@ class IssuePredictor:
                 f"Timeline:\n{timeline_summary}\n\n"
                 f"Retrieved Cases ({len(retrieval.results)}):\n{retrieved_cases_str}\n"
             )
+        if self._is_repairs_case(cf, issue):
+            user_prompt = self._format_repairs_user_prompt(
+                issue=issue,
+                case_file=cf,
+                claimed_amount=claimed_amount,
+                tenant_claim_text=tenant_claim_text,
+                landlord_claim_text=landlord_claim_text,
+                evidence_summary=evidence_summary,
+                evidence_conflicts=evidence_conflicts,
+                timeline_summary=timeline_summary,
+                kg_constraints=prompt_kwargs["kg_constraints"],
+                kg_fact_card=kg_fact_card,
+                retrieved_cases=retrieved_cases_str,
+                num_retrieved_cases=len(retrieval.results),
+            )
 
         system_prompt = self._prediction_system_prompt
 
@@ -429,7 +509,7 @@ class IssuePredictor:
                 response = await self.llm.generate(
                     messages=[{"role": "user", "content": user_prompt}],
                     system_prompt=system_prompt,
-                    max_tokens=2000,
+                    max_tokens=8192,
                     temperature=0.2,
                 )
                 last_response = response
@@ -496,18 +576,8 @@ class IssuePredictor:
                     data = wrapped
                     break
 
-            outcome_raw = str(
-                data.get("outcome", data.get("predicted_outcome", "uncertain"))
-            ).lower()
-            outcome_map = {
-                "tenant_win": "tenant_wins",
-                "landlord_win": "landlord_wins",
-            }
-            outcome_normalized = outcome_map.get(outcome_raw, outcome_raw)
-            try:
-                outcome = IssueOutcome(outcome_normalized)
-            except ValueError:
-                outcome = IssueOutcome.UNCERTAIN
+            outcome_raw = data.get("outcome", data.get("predicted_outcome", "uncertain"))
+            outcome = self._normalise_issue_outcome(outcome_raw)
 
             strength_raw = str(
                 data.get(
@@ -627,6 +697,72 @@ class IssuePredictor:
 
         return None
 
+    @staticmethod
+    def _normalise_issue_outcome(value: Any) -> IssueOutcome:
+        """Normalise model/forum outcome wording into shared eval labels."""
+        raw = str(value or "uncertain").strip().lower()
+        key = re.sub(r"[^a-z0-9]+", "_", raw).strip("_")
+        exact = {
+            "tenant_win": IssueOutcome.TENANT_WINS,
+            "tenant_wins": IssueOutcome.TENANT_WINS,
+            "resident_win": IssueOutcome.TENANT_WINS,
+            "resident_wins": IssueOutcome.TENANT_WINS,
+            "complaint_upheld": IssueOutcome.TENANT_WINS,
+            "upheld": IssueOutcome.TENANT_WINS,
+            "upheld_in_full": IssueOutcome.TENANT_WINS,
+            "service_failure": IssueOutcome.TENANT_WINS,
+            "maladministration": IssueOutcome.TENANT_WINS,
+            "severe_maladministration": IssueOutcome.TENANT_WINS,
+            "maladministration_found": IssueOutcome.TENANT_WINS,
+            "finding_of_maladministration": IssueOutcome.TENANT_WINS,
+            "landlord_win": IssueOutcome.LANDLORD_WINS,
+            "landlord_wins": IssueOutcome.LANDLORD_WINS,
+            "no_maladministration": IssueOutcome.LANDLORD_WINS,
+            "no_service_failure": IssueOutcome.LANDLORD_WINS,
+            "no_failure": IssueOutcome.LANDLORD_WINS,
+            "complaint_not_upheld": IssueOutcome.LANDLORD_WINS,
+            "not_upheld": IssueOutcome.LANDLORD_WINS,
+            "split": IssueOutcome.SPLIT,
+            "mixed": IssueOutcome.SPLIT,
+            "mixed_findings": IssueOutcome.SPLIT,
+            "partial": IssueOutcome.SPLIT,
+            "partial_upheld": IssueOutcome.SPLIT,
+            "partially_upheld": IssueOutcome.SPLIT,
+            "partly_upheld": IssueOutcome.SPLIT,
+            "partial_maladministration": IssueOutcome.SPLIT,
+            "reasonable_redress": IssueOutcome.SPLIT,
+            "uncertain": IssueOutcome.UNCERTAIN,
+            "unknown": IssueOutcome.UNCERTAIN,
+            "insufficient_evidence": IssueOutcome.UNCERTAIN,
+        }
+        if key in exact:
+            return exact[key]
+        if (
+            "no_maladministration" in key
+            or "no_service_failure" in key
+            or "not_upheld" in key
+            or "not_sustained" in key
+        ):
+            return IssueOutcome.LANDLORD_WINS
+        if (
+            "partial" in key
+            or "partly" in key
+            or "mixed" in key
+            or "reasonable_redress" in key
+        ):
+            return IssueOutcome.SPLIT
+        if (
+            "service_failure" in key
+            or "severe_maladministration" in key
+            or "maladministration" in key
+            or "upheld" in key
+        ):
+            return IssueOutcome.TENANT_WINS
+        try:
+            return IssueOutcome(key)
+        except ValueError:
+            return IssueOutcome.UNCERTAIN
+
     def _assess_evidence_strength(self, issue: IssueContext) -> EvidenceStrength:
         if issue.data_completeness >= 0.8:
             return EvidenceStrength.STRONG
@@ -681,6 +817,75 @@ class IssuePredictor:
             rows.append(f"{idx}. [{ev_type}] {str(description)[:300]}{conf_text}")
 
         return "\n".join(rows)
+
+    def _is_repairs_case(self, case_file: Any, issue: IssueContext) -> bool:
+        if issue.issue_type.value in _REPAIRS_ISSUE_VALUES:
+            return True
+        if self._prompt_pack is not None and getattr(self._prompt_pack, "id", None) == (
+            "housing.repairs_social.v1"
+        ):
+            return True
+        metadata = getattr(case_file, "metadata", None) if case_file is not None else None
+        return isinstance(metadata, dict) and (
+            metadata.get("domain_id") == "housing.repairs_social.v1"
+            or metadata.get("matter_type") in _REPAIRS_ISSUE_VALUES
+        )
+
+    def _format_repairs_user_prompt(
+        self,
+        *,
+        issue: IssueContext,
+        case_file: Any,
+        claimed_amount: Optional[float],
+        tenant_claim_text: str,
+        landlord_claim_text: str,
+        evidence_summary: str,
+        evidence_conflicts: str,
+        timeline_summary: str,
+        kg_constraints: str,
+        kg_fact_card: str,
+        retrieved_cases: str,
+        num_retrieved_cases: int,
+    ) -> str:
+        metadata = getattr(case_file, "metadata", None) if case_file is not None else None
+        metadata = metadata if isinstance(metadata, dict) else {}
+        region = "unknown"
+        prop = getattr(case_file, "property", None) if case_file is not None else None
+        if prop is not None and getattr(prop, "region", None):
+            region = prop.region
+        matter_type = metadata.get("matter_type") or issue.issue_type.value
+        amount = f"£{claimed_amount:.2f}" if claimed_amount is not None else "unknown"
+
+        kg_section = kg_fact_card or "No structured KG fact card available."
+        return (
+            "Forum: Housing Ombudsman Service\n"
+            "Task: Predict the likely Ombudsman complaint outcome from the "
+            "pre-decision resident/landlord facts and similar determinations.\n\n"
+            f"Issue type: {issue.issue_type.value}\n"
+            f"Matter type: {matter_type}\n"
+            f"Issue description: {issue.issue_description}\n"
+            f"Compensation/remedy amount in dispute: {amount}\n"
+            f"Region: {region}\n"
+            f"Data completeness: {issue.data_completeness:.0%}\n\n"
+            f"Resident position:\n{tenant_claim_text}\n\n"
+            f"Landlord position:\n{landlord_claim_text}\n\n"
+            f"Evidence summary:\n{evidence_summary}\n\n"
+            f"Evidence conflicts:\n{evidence_conflicts}\n\n"
+            f"Timeline:\n{timeline_summary}\n\n"
+            f"Structured fact card:\n{kg_section}\n\n"
+            f"KG constraints:\n{kg_constraints}\n\n"
+            f"Retrieved Ombudsman determinations ({num_retrieved_cases}):\n"
+            f"{retrieved_cases}\n\n"
+            "Return only JSON matching the required prediction schema. In the "
+            "reasoning, use Housing Ombudsman outcome language: no "
+            "maladministration, service failure, maladministration, severe "
+            "maladministration, and remedies such as apology, repair action, "
+            "compensation, case review, or policy review. In the JSON outcome "
+            "field, use tenant_wins for a likely resident-upheld/service-failure "
+            "finding, landlord_wins for likely no maladministration, split for "
+            "mixed or partial findings, and uncertain only when the facts are "
+            "too sparse or inconsistent."
+        )
 
     @staticmethod
     def _format_party_position(

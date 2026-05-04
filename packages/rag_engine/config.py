@@ -522,8 +522,10 @@ class RetrievalFilterEnvelope(BaseModel):
     def to_chroma_where(self) -> Optional[Dict[str, Any]]:
         """Translate to a ChromaDB ``where`` clause (or ``None``).
 
-        Date comparisons fall back to ISO-string ``$lte`` clauses since
-        Chroma stores dates as strings.
+        Date comparisons are intentionally not pushed into Chroma. The
+        Chroma version used by this project rejects string operands for
+        range operators such as ``$lte``; date limits are still enforced by
+        the shared Python post-filter in ``matches_metadata``.
         """
         clauses: List[Dict[str, Any]] = []
         if self.excluded_source_ids:
@@ -533,13 +535,9 @@ class RetrievalFilterEnvelope(BaseModel):
             # exclusion for both backends after retrieval.
             pass
         if self.max_decision_date is not None:
-            clauses.append(
-                {"decision_date": {"$lte": self.max_decision_date.isoformat()}}
-            )
+            pass
         if self.as_of_date is not None:
-            clauses.append(
-                {"law_effective_date": {"$lte": self.as_of_date.isoformat()}}
-            )
+            pass
         if self.forum is not None:
             clauses.append({"forum": {"$eq": self.forum.value}})
         if self.source_kind is not None:
