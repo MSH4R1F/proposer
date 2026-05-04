@@ -52,9 +52,9 @@ Critical constraints:
 2. Do NOT mark the outcome uncertain solely because retrieved determinations are absent.
 3. Use Housing Ombudsman concepts in the reasoning: no maladministration, service failure, maladministration, severe maladministration, reasonable redress, apology, repair action, compensation, case review, or policy review.
 4. The JSON outcome field must still use the shared eval labels:
-   - "tenant_wins" when the resident complaint is likely upheld or the landlord likely faces a service-failure/maladministration finding or remedy.
+   - "tenant_wins" when the resident complaint is likely upheld on any substantive repairs/complaint-handling issue, or the landlord likely faces a service-failure/maladministration finding or additional remedy. Use this even if some complaint heads are not upheld.
    - "landlord_wins" when no maladministration/no service failure is likely.
-   - "split" when findings are mixed, partial, or reasonable redress likely resolves only part of the complaint.
+   - "split" only when the likely result is genuinely balanced after remedies, with material findings for both sides and no clear resident-upheld remedy dominance.
    - "uncertain" only when the facts are too sparse or internally inconsistent to choose one of the above.
 
 Safety: legal information, not legal advice. Hedge and explain uncertainty.
@@ -726,10 +726,10 @@ class IssuePredictor:
             "mixed": IssueOutcome.SPLIT,
             "mixed_findings": IssueOutcome.SPLIT,
             "partial": IssueOutcome.SPLIT,
-            "partial_upheld": IssueOutcome.SPLIT,
-            "partially_upheld": IssueOutcome.SPLIT,
-            "partly_upheld": IssueOutcome.SPLIT,
-            "partial_maladministration": IssueOutcome.SPLIT,
+            "partial_upheld": IssueOutcome.TENANT_WINS,
+            "partially_upheld": IssueOutcome.TENANT_WINS,
+            "partly_upheld": IssueOutcome.TENANT_WINS,
+            "partial_maladministration": IssueOutcome.TENANT_WINS,
             "reasonable_redress": IssueOutcome.SPLIT,
             "uncertain": IssueOutcome.UNCERTAIN,
             "unknown": IssueOutcome.UNCERTAIN,
@@ -747,9 +747,12 @@ class IssuePredictor:
         if (
             "partial" in key
             or "partly" in key
-            or "mixed" in key
             or "reasonable_redress" in key
         ):
+            if "upheld" in key or "maladministration" in key:
+                return IssueOutcome.TENANT_WINS
+            return IssueOutcome.SPLIT
+        if "mixed" in key:
             return IssueOutcome.SPLIT
         if (
             "service_failure" in key
@@ -881,10 +884,14 @@ class IssuePredictor:
             "maladministration, service failure, maladministration, severe "
             "maladministration, and remedies such as apology, repair action, "
             "compensation, case review, or policy review. In the JSON outcome "
-            "field, use tenant_wins for a likely resident-upheld/service-failure "
-            "finding, landlord_wins for likely no maladministration, split for "
-            "mixed or partial findings, and uncertain only when the facts are "
-            "too sparse or inconsistent."
+            "field, use tenant_wins when any substantive repairs or complaint-"
+            "handling issue is likely upheld or an additional resident remedy "
+            "is likely, even if some complaint heads are not upheld. Use "
+            "landlord_wins for likely no maladministration/no service failure. "
+            "Use split only when the likely result is genuinely balanced after "
+            "remedies, with material findings for both sides and no clear "
+            "resident-upheld remedy dominance. Use uncertain only when the "
+            "facts are too sparse or inconsistent."
         )
 
     @staticmethod

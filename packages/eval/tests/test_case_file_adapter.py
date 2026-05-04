@@ -112,6 +112,28 @@ class TestIssueMapping:
         assert "repairs_damp_mould" in issue_values
         assert "disrepair" not in out.unmapped_claim_types
 
+    def test_ombudsman_domain_fields_are_top_level_on_case_file(
+        self, synthetic_gold_cases
+    ):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR"))
+        case = case.model_copy(
+            update={
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+            }
+        )
+
+        out = gold_case_to_case_file(case)
+
+        assert out.case_file.domain_id == "housing.repairs_social.v1"
+        assert out.case_file.matter_types == ["repairs_damp_mould"]
+        assert out.case_file.routing_confidence == 1.0
+
     def test_end_of_tenancy_also_falls_back(self, synthetic_gold_cases):
         case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-EOT"))
         out = gold_case_to_case_file(case)

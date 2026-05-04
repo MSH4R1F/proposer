@@ -150,9 +150,21 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
             )
         )
 
+    domain_id = gold.domain_id or "housing.deposit.v1"
+    matter_types = [gold.matter_type] if gold.matter_type else []
     case_file = CaseFile(
         case_id=gold.case_id,
         user_role=PartyRole.TENANT,  # default — see module docstring
+        domain_id=domain_id,
+        domain_version=gold.schema_version.value,
+        matter_types=matter_types,
+        routing_confidence=1.0,
+        routing_metadata={
+            "source": "gold_reconstruction",
+            "forum": gold.forum,
+            "source_kind": gold.source_kind,
+            "source_publisher": gold.source_publisher,
+        },
         tenant_name="Tenant",
         landlord_name="Landlord",
         property=PropertyDetails(region=gold.region.value.upper()[:3]),

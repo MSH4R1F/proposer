@@ -337,6 +337,20 @@ class TestRerankerIssueDetection:
         reranked = reranker.rerank(results, "fair wear and tear damage", top_k=1)
         assert len(reranked) == 1
 
+    def test_detect_repairs_damp_mould_issue(self, reranker):
+        """Housing Ombudsman damp/mould terms should be first-class issues."""
+        detected = reranker._detect_issues(
+            "Housing Ombudsman repairs_damp_mould complaint about damp and mould"
+        )
+        assert "repairs_damp_mould" in detected
+
+    def test_detect_repairs_disrepair_issue(self, reranker):
+        """Housing Ombudsman disrepair terms should be first-class issues."""
+        detected = reranker._detect_issues(
+            "The resident reported disrepair, roof leaks, and delayed repairs"
+        )
+        assert "repairs_disrepair" in detected
+
 
 class TestRerankerEdgeCases:
     """Tests for edge cases in reranking."""

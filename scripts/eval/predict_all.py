@@ -330,6 +330,20 @@ def _call_predict_fn(
     return predict_fn(case_file, mode)
 
 
+def _build_eval_knowledge_graph(case_file: Any, domain_id: str | None) -> Any:
+    """Build the same structured KG used by the product prediction service.
+
+    Live eval should not call a mode "hybrid" while passing ``None`` for the
+    knowledge graph. Building the graph here keeps the eval runner aligned
+    with ``PredictionService`` and makes KG construction failures visible
+    instead of silently degrading the ablation.
+    """
+    from kg_builder.builders.graph_builder import GraphBuilder
+
+    builder = GraphBuilder(validate=False, domain_id=domain_id)
+    return builder.build(case_file)
+
+
 def _live_predict_fn_factory(
     client_name: str,
     *,
@@ -441,6 +455,9 @@ def _live_predict_fn_factory(
             rag_pipeline = _EvalFilteredRAGPipeline(
                 rag, filters, requesting_namespace=namespace
             )
+        knowledge_graph = None
+        if mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY):
+            knowledge_graph = _build_eval_knowledge_graph(case_file, domain_id)
         engine = PredictionEngineV2(
             llm_client=llm, rag_pipeline=rag_pipeline, prompt_pack=prompt_pack
         )
@@ -448,6 +465,7 @@ def _live_predict_fn_factory(
         return asyncio.run(
             engine.predict(
                 case_file,
+                knowledge_graph=knowledge_graph,
                 top_k=top_k,
                 mode=mode,
                 matter_type=getattr(gold_case, "matter_type", None),

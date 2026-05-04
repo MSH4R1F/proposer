@@ -198,12 +198,23 @@ def test_parse_prediction_response_maps_ombudsman_outcome_language() -> None:
         ),
         issue,
     )
-    partial = predictor._parse_prediction_response(
+    partial_maladministration = predictor._parse_prediction_response(
         json.dumps(
             {
                 "outcome": "partial maladministration",
                 "raw_confidence": 0.58,
-                "reasoning": "Mixed findings.",
+                "reasoning": "Resident likely succeeds on at least one complaint head.",
+                "evidence_strength": "moderate",
+            }
+        ),
+        issue,
+    )
+    mixed = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "mixed findings",
+                "raw_confidence": 0.58,
+                "reasoning": "Balanced findings.",
                 "evidence_strength": "moderate",
             }
         ),
@@ -212,4 +223,5 @@ def test_parse_prediction_response_maps_ombudsman_outcome_language() -> None:
 
     assert service_failure.outcome == IssueOutcome.TENANT_WINS
     assert no_maladministration.outcome == IssueOutcome.LANDLORD_WINS
-    assert partial.outcome == IssueOutcome.SPLIT
+    assert partial_maladministration.outcome == IssueOutcome.TENANT_WINS
+    assert mixed.outcome == IssueOutcome.SPLIT

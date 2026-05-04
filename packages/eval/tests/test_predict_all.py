@@ -314,6 +314,39 @@ class TestLiveEvalRetrievalFilters:
         assert calls[0]["filters"].matter_type == "repairs_disrepair"
         assert calls[0]["requesting_namespace"] == "ns"
 
+    def test_eval_knowledge_graph_builder_tags_domain(self):
+        mod = _import_script_module()
+        from llm_orchestrator.models.case_file import (
+            CaseFile,
+            ClaimedAmount,
+            DisputeIssue,
+            PartyRole,
+        )
+
+        case_file = CaseFile(
+            case_id="housing-ombudsman-test",
+            user_role=PartyRole.TENANT,
+            tenant_name="Tenant",
+            landlord_name="Landlord",
+            issues=[DisputeIssue.REPAIRS_DAMP_MOULD],
+            tenant_claims=[
+                ClaimedAmount(
+                    issue=DisputeIssue.REPAIRS_DAMP_MOULD,
+                    amount=400,
+                    description="Resident reported damp and mould.",
+                )
+            ],
+        )
+
+        kg = mod._build_eval_knowledge_graph(
+            case_file,
+            "housing.repairs_social.v1",
+        )
+
+        assert kg.primary_domain_id == "housing.repairs_social.v1"
+        assert len(kg.nodes) >= 3
+        assert all(node.domain_id == "housing.repairs_social.v1" for node in kg.nodes)
+
 
 # ---------- Subprocess (real entry point) ----------
 
