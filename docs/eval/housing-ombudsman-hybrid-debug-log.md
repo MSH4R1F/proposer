@@ -5,8 +5,8 @@ Status: diagnostic log for the 50-case Housing Ombudsman live eval follow-up.
 
 This log records why the retrieval-backed `hybrid` mode underperformed on the
 first fixed 50-case live eval, what was changed, and what evidence exists after
-the patch. The full 50-case live eval has not yet been rerun after these fixes,
-so the smoke result below is only a wiring and direction-of-travel check.
+the patch. The full 50-case live eval was rerun on 2026-05-05; those results
+are now the current post-fix diagnostic baseline.
 
 ## Trigger
 
@@ -173,18 +173,70 @@ with verified citations. Two of the five smoke rows still had citation
 verification failures and confidence caps, so citation metadata remains a real
 follow-up item.
 
+## Full Post-Fix Rerun
+
+Artifacts:
+
+- `eval/predictions/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix/`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/audit.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/ablation.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/summary.json`
+
+Run method:
+
+- `kg_only` and `llm_only` were run as one live 50-case process each.
+- `hybrid` and `rag_only` were run as five 10-case retrieval shards against
+  the local 1,000-case Housing Ombudsman index with
+  `--rag-index-root indices --top-k 5`.
+- Retrieval shards were merged back into gold order before scoring.
+- Scoring used `seed=42`, `n_resamples=1000`, `min_case_count=50`, and
+  `domain=housing.repairs_social.v1`.
+
+Results, n=50:
+
+| Mode | Accuracy | Accuracy 95% CI | Brier | Brier 95% CI | ECE | Amount@20% |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `hybrid` | 0.800 | [0.680, 0.900] | 0.228 | [0.205, 0.252] | 0.449 | 0.480 |
+| `rag_only` | 0.780 | [0.680, 0.900] | 0.205 | [0.182, 0.228] | 0.423 | 0.500 |
+| `kg_only` | 1.000 | [1.000, 1.000] | 0.360 | [0.360, 0.360] | 0.600 | 0.560 |
+| `llm_only` | 0.980 | [0.920, 1.000] | 0.356 | [0.344, 0.360] | 0.580 | 0.700 |
+
+Prediction distribution:
+
+| Mode | Tenant | Landlord | Split | Raw abstentions |
+| --- | ---: | ---: | ---: | ---: |
+| `hybrid` | 40 | 1 | 9 | 9 |
+| `rag_only` | 39 | 1 | 10 | 10 |
+| `kg_only` | 49 | 1 | 0 | 0 |
+| `llm_only` | 48 | 2 | 0 | 0 |
+
+Confusion summary:
+
+- Gold distribution remains heavily skewed: `tenant=49`, `landlord=1`.
+- `hybrid` gets `40/50` right: 40 tenant wins. Its misses are 8 tenant rows
+  collapsed from raw `uncertain` to eval `split`, 1 tenant row predicted
+  `landlord`, and the single landlord row collapsed to `split`.
+- `rag_only` gets `39/50` right: 39 tenant wins. Its misses are 9 tenant rows
+  collapsed from raw `uncertain` to `split`, 1 tenant row predicted
+  `landlord`, and the single landlord row collapsed to `split`.
+- `kg_only` gets `50/50` right and `llm_only` gets `49/50` right, but this is
+  not strong evidence that no-RAG is product-superior because the pilot gold set
+  is almost all tenant-favorable.
+
 ## Current Interpretation
 
-The old `hybrid=0.420` number should now be treated as a deprecated diagnostic
-baseline. It measured a retrieval-backed path with broken KG wiring,
-deposit-shaped retrieval expansion, and overly conservative Ombudsman outcome
-mapping.
+The old `hybrid=0.420` number is deprecated. It measured a retrieval-backed
+path with broken KG wiring, deposit-shaped retrieval expansion, and overly
+conservative Ombudsman outcome mapping. After the fixes, `hybrid` improved from
+`21/50` to `40/50`, and `rag_only` improved from `27/50` to `39/50`.
 
-The smoke result suggests the root-cause fixes are pointing in the right
-direction, but it is not enough to claim a new headline accuracy. The next valid
-product-evidence number must come from a full 50-case rerun.
+The fix is real, but the result is still diagnostic rather than final thesis
+evidence. The no-RAG modes score extremely high because the set is
+tenant-heavy, while the retrieval-backed modes still abstain on hard cases
+after citation verification. Calibration also remains weak: all ECE values are
+high, and only `rag_only` is close to the target Brier threshold of `<0.20`.
 
-## Next Run
+## Reproduction Command
 
 Use the local 1,000-case Housing Ombudsman index and keep the explicit
 `--rag-index-root indices` flag so the eval does not accidentally hit the small
@@ -193,13 +245,13 @@ or stale `data/indices` pilot path:
 ```bash
 PYTHONPATH=packages venv/bin/python scripts/eval/predict_all.py \
   --gold data/gold_standard/housing_repairs_social_v1.jsonl \
-  --out-dir eval/predictions/housing_ombudsman_stratified_50_live_$(date +%Y%m%d)_hybrid_fix \
+  --out-dir eval/predictions/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix \
   --engine live \
   --client openai \
   --modes hybrid,rag_only,kg_only,llm_only \
   --rag-index-root indices \
   --top-k 5 \
-  --run-id housing-ombudsman-stratified-50-live-$(date +%Y%m%d)-hybrid-fix
+  --run-id housing-ombudsman-stratified-50-live-20260505-005603-hybrid-fix
 ```
 
 Then score it:
@@ -207,8 +259,8 @@ Then score it:
 ```bash
 PYTHONPATH=packages venv/bin/python scripts/eval/run_full_eval.py \
   --gold data/gold_standard/housing_repairs_social_v1.jsonl \
-  --predictions-dir eval/predictions/housing_ombudsman_stratified_50_live_$(date +%Y%m%d)_hybrid_fix \
-  --out-dir eval/results/housing_ombudsman_stratified_50_live_$(date +%Y%m%d)_hybrid_fix_full_eval \
+  --predictions-dir eval/predictions/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix \
+  --out-dir eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval \
   --domain housing.repairs_social.v1 \
   --seed 42 \
   --n-resamples 1000 \
@@ -217,7 +269,8 @@ PYTHONPATH=packages venv/bin/python scripts/eval/run_full_eval.py \
 
 ## Remaining Work
 
-- Rerun the full 50-case live eval before updating SHA-68 or thesis claims.
+- Do not treat the 50-case pilot as final thesis evidence until the eval set is
+  less tenant-skewed.
 - Add confusion matrices and macro-F1 to the standard eval report.
 - Keep `uncertain` as a first-class abstention diagnostic instead of only
   collapsing it into the three-class winner enum.

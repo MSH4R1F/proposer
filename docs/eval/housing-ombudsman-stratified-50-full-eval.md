@@ -221,5 +221,44 @@ Follow-up debug log:
 - `docs/eval/housing-ombudsman-hybrid-debug-log.md` records the 2026-05-05
   root-cause analysis for the low `hybrid` score, the fixes applied to KG
   wiring and repairs retrieval, and the first 5-case live smoke result after
-  the patch. The full 50-case live eval still needs to be rerun before updating
-  headline product-evidence numbers.
+  the patch. The full 50-case live eval was rerun later on 2026-05-05 and is
+  recorded below.
+
+Post-hybrid-fix full live rerun, 2026-05-05:
+
+Artifacts:
+
+- `eval/predictions/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix/`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/audit.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/ablation.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/summary.json`
+
+Results, n=50:
+
+| Mode | Accuracy | Accuracy 95% CI | Brier | Brier 95% CI | ECE | Amount@20% |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| hybrid | 0.800 | [0.680, 0.900] | 0.228 | [0.205, 0.252] | 0.449 | 0.480 |
+| rag_only | 0.780 | [0.680, 0.900] | 0.205 | [0.182, 0.228] | 0.423 | 0.500 |
+| kg_only | 1.000 | [1.000, 1.000] | 0.360 | [0.360, 0.360] | 0.600 | 0.560 |
+| llm_only | 0.980 | [0.920, 1.000] | 0.356 | [0.344, 0.360] | 0.580 | 0.700 |
+
+Prediction distribution:
+
+| Mode | Tenant | Landlord | Split | Raw abstentions |
+| --- | ---: | ---: | ---: | ---: |
+| hybrid | 40 | 1 | 9 | 9 |
+| rag_only | 39 | 1 | 10 | 10 |
+| kg_only | 49 | 1 | 0 | 0 |
+| llm_only | 48 | 2 | 0 | 0 |
+
+Interpretation:
+
+- The hybrid wiring/retrieval fix materially improved the retrieval-backed
+  modes: `hybrid` moved from `21/50` to `40/50`, and `rag_only` moved from
+  `27/50` to `39/50`.
+- `kg_only=1.000` and `llm_only=0.980` should not be overclaimed. The gold set
+  is `49/50` tenant-favorable, so a tenant-heavy no-RAG prediction pattern can
+  score extremely well on plain accuracy.
+- Retrieval-backed modes still abstain on hard rows after citation
+  verification. That keeps accuracy below no-RAG on this skewed set, but gives
+  better Brier point estimates than no-RAG.
