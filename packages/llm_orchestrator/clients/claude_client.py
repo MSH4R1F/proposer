@@ -361,11 +361,12 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
     async def run_agent_turn(
         self,
         *,
-        system_prompt: str,
+        system_prompt: Any,
         messages: List[Dict[str, Any]],
         tool_schemas: List[Dict[str, Any]],
         model: Optional[str] = None,
         max_tokens: int = 1024,
+        tool_choice: Optional[Dict[str, Any]] = None,
     ) -> AgentTurnResponse:
         """
         Run a single turn of the AgentLoop against the Anthropic API.
@@ -380,11 +381,25 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
         :class:`AgentTurnResponse` shared with the agent loop.
 
         Args:
-            system_prompt: System prompt to guide the model.
+            system_prompt: System prompt to guide the model. Accepts the
+                Anthropic ``str`` shape (legacy mediator usage) OR the
+                list-of-text-blocks shape ``[{"type": "text", "text": ...,
+                "cache_control": {"type": "ephemeral"}}]`` used by the
+                retrieval agent for prompt-cache breakpoints.
             messages: Conversation history (may contain ``tool_result`` blocks).
             tool_schemas: Anthropic-format tool schemas to expose this turn.
+                Tool entries may carry ``cache_control`` for prompt
+                caching; the SDK passes them through unchanged.
             model: Optional per-call model override (falls back to ``self.model``).
             max_tokens: Maximum tokens in response.
+            tool_choice: Optional Anthropic ``tool_choice`` dict. When
+                set, forwarded to ``messages.create`` to control whether
+                a tool MUST be called this turn (``{"type": "any"}``)
+                or a SPECIFIC tool must be called
+                (``{"type": "tool", "name": "finalize"}``). Used by the
+                retrieval agent's forced-finalize at iter N-1
+                (cookbook §2.6). When ``None``, behaviour is the SDK
+                default (``auto``), preserving existing call sites.
 
         Returns:
             An :class:`AgentTurnResponse` with the ordered content blocks,
@@ -392,6 +407,14 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
         """
         self._stats["calls"] += 1
         current_model = model or self.model
+
+        # Build kwargs once so the optional tool_choice does not appear
+        # in the request body when caller passed None — keeps the wire
+        # format identical to legacy callers and avoids tripping
+        # request-shape regression tests.
+        extra_kwargs: Dict[str, Any] = {}
+        if tool_choice is not None:
+            extra_kwargs["tool_choice"] = tool_choice
 
         for attempt in range(self.max_retries):
             try:
@@ -401,6 +424,7 @@ Output ONLY the JSON object, no additional text or markdown formatting."""
                     system=system_prompt,
                     messages=messages,
                     tools=tool_schemas,
+                    **extra_kwargs,
                 )
 
                 self._stats["tokens_in"] += response.usage.input_tokens
