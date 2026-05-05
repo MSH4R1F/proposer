@@ -508,13 +508,15 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
         "case_id": pred.case_id,
         "overall_winner": pred.overall_winner.value,
         "overall_win_probability": float(pred.overall_win_probability),
-        "total_predicted_gbp": str(pred.total_predicted_gbp),
+        "total_predicted_gbp": _serialise_amount(pred.total_predicted_gbp),
         "per_issue": [
             {
                 "issue": ip.issue,
                 "predicted_winner": ip.predicted_winner.value,
                 "win_probability": float(ip.win_probability),
-                "predicted_amount_gbp": str(ip.predicted_amount_gbp),
+                "predicted_amount_gbp": _serialise_amount(
+                    ip.predicted_amount_gbp
+                ),
             }
             for ip in pred.per_issue
         ],
@@ -532,6 +534,10 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
             row["raw_outcome"] = issue_outcome
             row["abstained"] = issue_outcome == "uncertain"
     return out
+
+
+def _serialise_amount(amount) -> str | None:
+    return None if amount is None else str(amount)
 
 
 def _resolve_mode_enum(mode_value: str):

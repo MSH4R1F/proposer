@@ -242,8 +242,62 @@ class TestClaimedAmountsSplitByParty:
         out = gold_case_to_case_file(case)
 
         assert out.case_file.tenant_claims[0].issue.value == "repairs_damp_mould"
-        assert "Pre-decision complaint facts" in out.case_file.tenant_claims[0].description
+        assert (
+            "Pre-decision complaint facts"
+            in out.case_file.tenant_claims[0].description
+        )
         assert case.facts[:80] in out.case_file.tenant_claims[0].description
+
+    def test_ombudsman_generated_final_award_amounts_are_omitted(
+        self, synthetic_gold_cases
+    ):
+        case = next(
+            g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR")
+        )
+        payload = case.model_dump(mode="json")
+        payload.update(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+                "case_size": "small",
+                "disputed_amount_gbp": "575.00",
+                "claimed_amounts": [
+                    {
+                        "issue": "ombudsman_compensation",
+                        "amount_gbp": "575.00",
+                        "by_party": "tenant",
+                    }
+                ],
+                "ground_truth_outcome": {
+                    "overall_winner": "tenant",
+                    "total_awarded_gbp": "575.00",
+                    "per_issue": [],
+                    "unapportioned_reason": (
+                        "Housing Ombudsman determination made a global "
+                        "compensation order without apportioning the final "
+                        "total across housing_v1 issue categories."
+                    ),
+                },
+            }
+        )
+        generated_ombudsman_gold = GoldCase.model_validate(payload)
+
+        out = gold_case_to_case_file(generated_ombudsman_gold)
+
+        assert out.case_file.dispute_amount is None
+        assert out.case_file.tenant_claims == []
+        assert out.case_file.landlord_claims == []
+        assert "575" not in out.case_file.model_dump_json()
+        assert out.gold_issue_labels_by_claim_type == {}
+        assert out.case_file.metadata["omitted_outcome_derived_amount_fields"] == [
+            "claimed_amounts[issue=ombudsman_compensation|by_party=tenant].amount_gbp",
+            "disputed_amount_gbp",
+        ]
 
 
 class TestRoundTripAllSyntheticCases:

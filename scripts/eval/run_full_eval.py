@@ -65,6 +65,55 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
+def _metric_point(metric: dict[str, Any] | None) -> float | None:
+    if not isinstance(metric, dict):
+        return None
+    point = metric.get("point")
+    return float(point) if point is not None else None
+
+
+def _metric_ci(metric: dict[str, Any] | None) -> list[float | None]:
+    if not isinstance(metric, dict):
+        return [None, None]
+    return [metric.get("lower_95"), metric.get("upper_95")]
+
+
+def _summarise_eval_row(row: dict[str, Any]) -> dict[str, Any]:
+    amount = row.get("amount", {})
+    amount_threshold = row.get("amount_threshold")
+    within_20pct = amount.get("within_20pct") if isinstance(amount, dict) else None
+    within_gbp100 = amount.get("within_gbp100") if isinstance(amount, dict) else None
+    mae = amount.get("mae_gbp") if isinstance(amount, dict) else None
+    median_ae = (
+        amount.get("median_absolute_error_gbp") if isinstance(amount, dict) else None
+    )
+    bias = amount.get("mean_signed_error_gbp") if isinstance(amount, dict) else None
+
+    return {
+        "accuracy": _metric_point(row.get("accuracy")),
+        "accuracy_ci": _metric_ci(row.get("accuracy")),
+        "brier": _metric_point(row.get("brier")),
+        "brier_ci": _metric_ci(row.get("brier")),
+        "ece": _metric_point(row.get("ece")),
+        # Legacy flat key retained for callers reading amount@20%.
+        "amount_threshold": _metric_point(amount_threshold),
+        "amount_threshold_ci": _metric_ci(amount_threshold),
+        "amount_within_20pct": _metric_point(within_20pct),
+        "amount_within_gbp100": _metric_point(within_gbp100),
+        "amount_mae_gbp": _metric_point(mae),
+        "amount_median_absolute_error_gbp": _metric_point(median_ae),
+        "amount_mean_signed_error_gbp": _metric_point(bias),
+        "amount": amount,
+        "n": row["accuracy"]["n"],
+    }
+
+
+def _format_optional(value: float | None, *, precision: int = 3) -> str:
+    if value is None:
+        return "n/a"
+    return f"{value:.{precision}f}"
+
+
 def _default_out_dir(gold: Path) -> Path:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return REPO_ROOT / "eval" / "results" / f"{gold.stem}_full_eval_{timestamp}"
@@ -87,10 +136,7 @@ def run(args: argparse.Namespace) -> None:
     modes = [m.strip() for m in args.modes.split(",") if m.strip()]
     metrics = [m.strip() for m in args.metrics.split(",") if m.strip()]
 
-    prediction_paths = {
-        mode: predictions_dir / f"{mode}.jsonl"
-        for mode in modes
-    }
+    prediction_paths = {mode: predictions_dir / f"{mode}.jsonl" for mode in modes}
     missing = [str(path) for path in prediction_paths.values() if not path.exists()]
     if missing:
         raise SystemExit("missing prediction file(s): " + ", ".join(missing))
@@ -170,18 +216,14 @@ def run(args: argparse.Namespace) -> None:
 
     ablation = _read_json(ablation_path)
     audit = _read_json(audit_path)
-    by_mode = {
-        row["mode"]: {
-            "accuracy": row["accuracy"]["point"],
-            "accuracy_ci": [row["accuracy"]["lower_95"], row["accuracy"]["upper_95"]],
-            "brier": row["brier"]["point"],
-            "brier_ci": [row["brier"]["lower_95"], row["brier"]["upper_95"]],
-            "ece": row["ece"]["point"],
-            "amount_threshold": row["amount_threshold"]["point"],
-            "n": row["accuracy"]["n"],
-        }
-        for row in ablation["modes"]
-    }
+    by_mode = {row["mode"]: _summarise_eval_row(row) for row in ablation["modes"]}
+    by_baseline = {}
+    for row in ablation.get("baselines", []):
+        summary_row = _summarise_eval_row(row)
+        summary_row["description"] = row.get("description")
+        summary_row["supported"] = row.get("supported", {})
+        by_baseline[row["baseline"]] = summary_row
+
     summary = {
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "gold": str(gold),
@@ -189,6 +231,7 @@ def run(args: argparse.Namespace) -> None:
         "out_dir": str(out_dir),
         "audit": audit,
         "modes": by_mode,
+        "baselines": by_baseline,
         "metric_outputs": metric_outputs,
         "ablation": str(ablation_path),
         "seed": args.seed,
@@ -204,14 +247,37 @@ def run(args: argparse.Namespace) -> None:
     print(f"summary: {summary_path}")
     print("\nPoint estimates:")
     for mode, row in by_mode.items():
+        custom_amount = ""
+        if abs(args.amount_threshold_pct - 0.20) > 1e-9:
+            custom_amount = (
+                f"amount@{args.amount_threshold_pct:.0%}="
+                f"{_format_optional(row['amount_threshold'])}, "
+            )
         print(
             f"  {mode}: "
-            f"accuracy={row['accuracy']:.3f}, "
-            f"brier={row['brier']:.3f}, "
-            f"ece={row['ece']:.3f}, "
-            f"amount@20%={row['amount_threshold']:.3f}, "
+            f"accuracy={_format_optional(row['accuracy'])}, "
+            f"brier={_format_optional(row['brier'])}, "
+            f"ece={_format_optional(row['ece'])}, "
+            f"{custom_amount}"
+            f"amount@20%={_format_optional(row['amount_within_20pct'])}, "
+            f"amount@GBP100={_format_optional(row['amount_within_gbp100'])}, "
+            f"mae_gbp={_format_optional(row['amount_mae_gbp'])}, "
+            f"bias_gbp={_format_optional(row['amount_mean_signed_error_gbp'])}, "
+            f"amount_n={row.get('amount', {}).get('coverage', {}).get('n_evaluable', 0)}, "
             f"n={row['n']}"
         )
+    if by_baseline:
+        print("\nDeterministic baselines:")
+        for baseline, row in by_baseline.items():
+            print(
+                f"  {baseline}: "
+                f"accuracy={_format_optional(row['accuracy'])}, "
+                f"brier={_format_optional(row['brier'])}, "
+                f"amount@GBP100={_format_optional(row['amount_within_gbp100'])}, "
+                f"mae_gbp={_format_optional(row['amount_mae_gbp'])}, "
+                f"amount_n={row.get('amount', {}).get('coverage', {}).get('n_evaluable', 0)}, "
+                f"n={row['n']}"
+            )
 
 
 def _parser() -> argparse.ArgumentParser:

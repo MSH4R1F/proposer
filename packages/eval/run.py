@@ -62,17 +62,25 @@ def _dict_to_prediction(d: dict) -> Prediction:
         case_id=d["case_id"],
         overall_winner=Winner(d["overall_winner"]),
         overall_win_probability=float(d["overall_win_probability"]),
-        total_predicted_gbp=Decimal(str(d["total_predicted_gbp"])),
+        total_predicted_gbp=_optional_decimal(d.get("total_predicted_gbp")),
         per_issue=[
             IssuePrediction(
                 issue=ip["issue"],
                 predicted_winner=Winner(ip["predicted_winner"]),
                 win_probability=float(ip["win_probability"]),
-                predicted_amount_gbp=Decimal(str(ip["predicted_amount_gbp"])),
+                predicted_amount_gbp=_optional_decimal(
+                    ip.get("predicted_amount_gbp")
+                ),
             )
             for ip in d.get("per_issue", [])
         ],
     )
+
+
+def _optional_decimal(value) -> Decimal | None:
+    if value is None:
+        return None
+    return Decimal(str(value))
 
 
 def _check_alignment(gold: list, predictions: list) -> None:

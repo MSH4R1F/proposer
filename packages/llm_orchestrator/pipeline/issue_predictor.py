@@ -624,12 +624,7 @@ class IssuePredictor:
                 else []
             )
 
-            predicted_amount = data.get("predicted_amount")
-            amount_value = (
-                self._to_float(predicted_amount)
-                if predicted_amount is not None
-                else issue.claimed_amount
-            )
+            amount_value = self._to_optional_float(data.get("predicted_amount"))
 
             return IssuePrediction(
                 issue_type=issue.issue_type,
@@ -929,6 +924,18 @@ class IssuePredictor:
             return numeric
         except (TypeError, ValueError):
             return 0.0
+
+    @staticmethod
+    def _to_optional_float(value: Any) -> Optional[float]:
+        if value is None:
+            return None
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return None
+        if not math.isfinite(numeric):
+            return None
+        return numeric
 
     @staticmethod
     def _to_int(value: Any, default: Optional[int] = None) -> Optional[int]:

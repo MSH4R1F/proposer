@@ -233,6 +233,64 @@ Artifacts:
 - `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/ablation.json`
 - `eval/results/housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix_full_eval/summary.json`
 
+Post-result leakage audit and eval hardening, 2026-05-05:
+
+Finding:
+
+- `kg_only=1.000` is real under the old metric but not meaningful KG evidence.
+  The gold distribution is `tenant=49`, `landlord=1`, `split=0`, so an
+  always-tenant baseline scores `0.980`.
+- The promoted Ombudsman gold rows also copied the final compensation/order
+  amount into `disputed_amount_gbp` and `claimed_amounts`. That made
+  `claim_amount_copy` score `amount@GBP100=1.000` in the smoke report, proving
+  amount leakage in the old gold/input path.
+- No mode-wiring bug was found: `kg_only` was not secretly retrieving RAG
+  cases or reading `ground_truth_outcome`. The problem was dataset skew plus
+  outcome-derived amount fields being reconstructed as intake facts.
+
+Fixes applied:
+
+- `prepare_housing_ombudsman_gold_review.py` now keeps final compensation only
+  in `ground_truth_outcome.total_awarded_gbp`; draft `disputed_amount_gbp` is
+  `null`, `case_size` is `unknown`, and `claimed_amounts` is empty unless a
+  clean pre-decision claim amount exists.
+- `GoldCase` now permits `case_size="unknown"`, `disputed_amount_gbp=null`,
+  and empty `claimed_amounts` for `housing.repairs_social.v1`.
+- `gold_case_to_case_file()` suppresses already-promoted legacy Ombudsman
+  outcome-derived amount fields, so current rows no longer leak final awards
+  into prediction CaseFiles.
+- `IssuePredictor` no longer falls back from missing `predicted_amount` to
+  `issue.claimed_amount`; missing model amounts stay unknown.
+- Eval amount metrics now include amount@20%, amount@GBP100, MAE, median
+  absolute error, signed bias, and coverage counters.
+- `eval.ablate` now reports deterministic baselines:
+  `always_tenant`, `always_landlord`, `claim_positive_winner`, and
+  `claim_amount_copy`.
+- The deterministic claim-copy baselines now reuse the same legacy Ombudsman
+  amount suppression as `gold_case_to_case_file()`, so outcome-derived
+  compensation copied into old pre-decision fields is not counted as a real
+  claimant demand.
+- `build_housing_ombudsman_stratified_eval.py` has
+  `--allocation balanced_outcome` for the next 50-case set. A smoke run over
+  the 1,000-case corpus produced: `maladministration=8`,
+  `outside-jurisdiction=6`, `reasonable-redress=8`,
+  `resolved-with-intervention=7`, `service-failure=7`,
+  `severe-maladministration=7`, `unknown=7`.
+
+Verification:
+
+- Full eval test suite: `566 passed`.
+- LLM orchestrator focused tests: `20 passed`.
+- Compile smoke: `compileall` over `packages/eval`, `issue_predictor.py`, and
+  `scripts/eval` passed.
+- Current 50-row adapter leak smoke: `rows_checked=50`, `leak_count=0`.
+- Full-eval smoke over the existing prediction artifacts completed and emitted
+  the new amount metrics plus baselines. Post-baseline-fix, `claim_amount_copy`
+  is no longer supported on legacy Ombudsman amount fields
+  (`amount_n=0`, `amount@GBP100=0.000`). The old prediction artifacts still
+  reflect the old run; regenerate live predictions after these changes before
+  making product or thesis claims.
+
 Results, n=50:
 
 | Mode | Accuracy | Accuracy 95% CI | Brier | Brier 95% CI | ECE | Amount@20% |

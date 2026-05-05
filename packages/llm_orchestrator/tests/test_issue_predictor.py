@@ -74,6 +74,55 @@ def test_parse_prediction_response_recovers_json_in_wrapped_text() -> None:
     assert parsed.evidence_strength.value == "strong"
 
 
+def test_parse_prediction_response_keeps_missing_amount_unknown() -> None:
+    predictor = IssuePredictor(_DummyLLM())
+    issue = IssueContext(
+        issue_type=IssueType.CLEANING,
+        issue_description="cleaning deduction",
+        claimed_amount=999.0,
+        data_completeness=0.8,
+    )
+
+    parsed = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "tenant_wins",
+                "raw_confidence": 0.78,
+                "reasoning": "Tenant likely succeeds, but amount is not estimated.",
+                "evidence_strength": "strong",
+            }
+        ),
+        issue,
+    )
+
+    assert parsed.predicted_amount is None
+
+
+def test_parse_prediction_response_preserves_explicit_numeric_amounts() -> None:
+    predictor = IssuePredictor(_DummyLLM())
+    issue = IssueContext(
+        issue_type=IssueType.CLEANING,
+        issue_description="cleaning deduction",
+        claimed_amount=999.0,
+        data_completeness=0.8,
+    )
+
+    parsed = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "tenant_wins",
+                "raw_confidence": 0.78,
+                "predicted_amount": 0,
+                "reasoning": "Tenant succeeds, with no monetary recovery.",
+                "evidence_strength": "strong",
+            }
+        ),
+        issue,
+    )
+
+    assert parsed.predicted_amount == 0.0
+
+
 def test_parse_prediction_response_falls_back_to_uncertain_on_invalid_payload() -> None:
     predictor = IssuePredictor(_DummyLLM())
     issue = IssueContext(

@@ -8,6 +8,11 @@
 |---|---|---|---|
 | Issue-level winner accuracy | `issue_winner_accuracy()` | `eval.metrics.accuracy` | SHA-30 (partial) |
 | £-amount within threshold | `amount_within_threshold()` | `eval.metrics.accuracy` | SHA-30 (partial) |
+| £-amount within absolute band | `amount_within_absolute_threshold()` | `eval.metrics.accuracy` | SHA-30 (partial) |
+| £-amount mean absolute error | `amount_mae_gbp()` | `eval.metrics.accuracy` | SHA-30 (partial) |
+| £-amount median absolute error | `amount_median_absolute_error_gbp()` | `eval.metrics.accuracy` | SHA-30 (partial) |
+| £-amount signed bias | `amount_mean_signed_error_gbp()` | `eval.metrics.accuracy` | SHA-30 (partial) |
+| £-amount coverage counters | `amount_coverage()` | `eval.metrics.accuracy` | SHA-30 (partial) |
 | Brier score | `brier_score()` | `eval.metrics.calibration` | SHA-30 |
 | Expected Calibration Error (ECE) | `expected_calibration_error()` | `eval.metrics.calibration` | SHA-30 |
 | Reliability diagram (PNG) | `reliability_diagram()` | `eval.metrics.calibration` | SHA-30 |
@@ -29,6 +34,43 @@ Both lists must be the **same length** and **aligned by case_id in order**. The 
 Apportioned cases (gold `per_issue` non-empty) are scored **per issue**. Unapportioned cases (per_issue empty + `unapportioned_reason` set) collapse to **one comparison per case** using `overall_winner` and `overall_win_probability`.
 
 Missing per-issue predictions (predicted `per_issue` lacks an issue label that gold has) count as **wrong** for accuracy and contribute `(P=0.5, actual)` to calibration metrics — i.e. silence is treated as maximum uncertainty, not as a free pass.
+
+## Amount Metrics
+
+Amount scoring is case-level and uses `ground_truth_outcome.total_awarded_gbp`
+as the gold amount. Prediction amounts may be `null`. A `null` prediction is
+not silently coerced to £0: threshold metrics count it as a miss, and
+`amount_coverage()` reports it under `missing_predicted_amount`.
+
+The full ablation report now emits:
+
+- `amount.within_20pct` — predicted total within ±20% of the actual award.
+- `amount.within_gbp100` — predicted total within ±£100 of the actual award.
+- `amount.mae_gbp` — mean absolute error over evaluable amount pairs.
+- `amount.median_absolute_error_gbp` — median absolute error over evaluable amount pairs.
+- `amount.mean_signed_error_gbp` — positive means over-prediction; negative means under-prediction.
+- `amount.coverage` — case counts for available gold amounts, available predicted amounts, and evaluable pairs.
+
+Always read error metrics together with coverage. If `n_evaluable=0`, the
+error point estimate is not product evidence even though it renders as `0.0`
+for JSON compatibility.
+
+## Deterministic Baselines
+
+`eval.ablate` also reports non-LLM baselines beside model modes:
+
+- `always_tenant`
+- `always_landlord`
+- `claim_positive_winner`
+- `claim_amount_copy`
+
+These baselines are deliberate tripwires. If a model only beats weak baselines
+because the gold set is skewed, or if `claim_amount_copy` scores perfectly,
+the eval is telling us the dataset/prediction inputs are too easy or leaky.
+For legacy Housing Ombudsman rows, `claim_amount_copy` suppresses
+outcome-derived compensation amounts copied into pre-decision fields, so those
+old artifact leaks show up as unsupported amount baselines instead of perfect
+amount scores.
 
 ## Bootstrap confidence intervals (SHA-97)
 

@@ -1,13 +1,19 @@
-"""Issue-level winner classification accuracy + £-amount within-threshold.
+"""Issue-level winner classification accuracy + amount metrics.
 
-Both metrics return scalars in [0, 1]. Wrap in `bootstrap_ci()` for the CI
-band per SHA-97. Apportioned cases are scored per-issue; unapportioned
-cases (per_issue empty in the gold case) collapse to one comparison via
-overall_winner — see `_iter_pairs` for the rule.
+Classification and threshold metrics return scalars in [0, 1]. Amount error
+metrics return GBP-denominated floats. Wrap scalar metrics in `bootstrap_ci()`
+for the CI band per SHA-97. Apportioned cases are scored per-issue;
+unapportioned cases (per_issue empty in the gold case) collapse to one
+comparison via overall_winner — see `_iter_pairs` for the rule.
 """
 from __future__ import annotations
 
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
+from statistics import median
+from typing import Any
+
+
+_ZERO = Decimal("0")
 
 
 def _validate_pairing(gold: list, predictions: list) -> None:
@@ -61,6 +67,73 @@ def issue_winner_accuracy(gold: list, predictions: list) -> float:
     return correct / total
 
 
+def _coerce_optional_amount(value: Any) -> Decimal | None:
+    """Return a finite non-negative Decimal amount, or None when unavailable."""
+    if value is None:
+        return None
+    try:
+        amount = Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        return None
+    if not amount.is_finite() or amount < _ZERO:
+        return None
+    return amount
+
+
+def _amount_pairs_and_coverage(
+    gold: list, predictions: list
+) -> tuple[list[tuple[Decimal, Decimal]], dict[str, int]]:
+    """Return evaluable `(actual, predicted)` amount pairs plus coverage.
+
+    Missing gold amounts make a case unsupported for amount scoring. Missing
+    predicted amounts are reported explicitly; threshold metrics count them as
+    misses, while error metrics compute over pairs where both values exist.
+    """
+    _validate_pairing(gold, predictions)
+    pairs: list[tuple[Decimal, Decimal]] = []
+    missing_gold = 0
+    missing_predicted = 0
+    gold_available = 0
+    predicted_available = 0
+
+    for g, p in zip(gold, predictions):
+        gt = getattr(g, "ground_truth_outcome", None)
+        actual = _coerce_optional_amount(getattr(gt, "total_awarded_gbp", None))
+        predicted = _coerce_optional_amount(getattr(p, "total_predicted_gbp", None))
+
+        if actual is None:
+            missing_gold += 1
+        else:
+            gold_available += 1
+
+        if predicted is None:
+            missing_predicted += 1
+        else:
+            predicted_available += 1
+
+        if actual is not None and predicted is not None:
+            pairs.append((actual, predicted))
+
+    return pairs, {
+        "n_cases": len(gold),
+        "n_gold_amount_available": gold_available,
+        "n_predicted_amount_available": predicted_available,
+        "n_evaluable": len(pairs),
+        "missing_gold_amount": missing_gold,
+        "missing_predicted_amount": missing_predicted,
+    }
+
+
+def amount_coverage(gold: list, predictions: list) -> dict[str, int]:
+    """Coverage counters for amount metrics.
+
+    Use this beside scalar amount metrics so a clean-looking score cannot hide
+    missing predicted or gold amounts.
+    """
+    _, coverage = _amount_pairs_and_coverage(gold, predictions)
+    return coverage
+
+
 def amount_within_threshold(
     gold: list, predictions: list, threshold_pct: float = 0.20
 ) -> float:
@@ -70,21 +143,98 @@ def amount_within_threshold(
     Threshold is fractional (0.20 = 20%). When the actual is 0, predicted
     must equal 0 to count. When the actual is non-zero, the relative
     error `|predicted - actual| / actual` must be <= threshold_pct.
+
+    Denominator is cases with an available gold amount. Missing predictions
+    count as not-within-threshold so amount silence remains visible.
     """
+    if threshold_pct < 0:
+        raise ValueError("threshold_pct must be >= 0")
     _validate_pairing(gold, predictions)
     if not gold:
         return 0.0
-    if threshold_pct < 0:
-        raise ValueError("threshold_pct must be >= 0")
+
+    denominator = 0
     within = 0
     for g, p in zip(gold, predictions):
-        actual = g.ground_truth_outcome.total_awarded_gbp
-        predicted = p.total_predicted_gbp
-        if actual == Decimal("0"):
-            if predicted == Decimal("0"):
+        gt = getattr(g, "ground_truth_outcome", None)
+        actual = _coerce_optional_amount(getattr(gt, "total_awarded_gbp", None))
+        predicted = _coerce_optional_amount(getattr(p, "total_predicted_gbp", None))
+        if actual is None:
+            continue
+        denominator += 1
+        if predicted is None:
+            continue
+        if actual == _ZERO:
+            if predicted == _ZERO:
                 within += 1
             continue
         relative_error = abs(predicted - actual) / actual
         if float(relative_error) <= threshold_pct:
             within += 1
-    return within / len(gold)
+    if denominator == 0:
+        return 0.0
+    return within / denominator
+
+
+def amount_within_absolute_threshold(
+    gold: list,
+    predictions: list,
+    threshold_gbp: Decimal | int | float | str = Decimal("100"),
+) -> float:
+    """Fraction of cases where predicted total is within an absolute GBP band.
+
+    `threshold_gbp=100` is the thesis-friendly "amount@GBP100" metric.
+    Denominator and missing-prediction handling match `amount_within_threshold`.
+    """
+    threshold = Decimal(str(threshold_gbp))
+    if not threshold.is_finite() or threshold < _ZERO:
+        raise ValueError("threshold_gbp must be finite and >= 0")
+    _validate_pairing(gold, predictions)
+    if not gold:
+        return 0.0
+
+    denominator = 0
+    within = 0
+    for g, p in zip(gold, predictions):
+        gt = getattr(g, "ground_truth_outcome", None)
+        actual = _coerce_optional_amount(getattr(gt, "total_awarded_gbp", None))
+        predicted = _coerce_optional_amount(getattr(p, "total_predicted_gbp", None))
+        if actual is None:
+            continue
+        denominator += 1
+        if predicted is None:
+            continue
+        if abs(predicted - actual) <= threshold:
+            within += 1
+    if denominator == 0:
+        return 0.0
+    return within / denominator
+
+
+def amount_mae_gbp(gold: list, predictions: list) -> float:
+    """Mean absolute error in GBP over evaluable amount pairs."""
+    pairs, _ = _amount_pairs_and_coverage(gold, predictions)
+    if not pairs:
+        return 0.0
+    return float(
+        sum((abs(predicted - actual) for actual, predicted in pairs), _ZERO)
+        / len(pairs)
+    )
+
+
+def amount_median_absolute_error_gbp(gold: list, predictions: list) -> float:
+    """Median absolute error in GBP over evaluable amount pairs."""
+    pairs, _ = _amount_pairs_and_coverage(gold, predictions)
+    if not pairs:
+        return 0.0
+    return float(median([abs(predicted - actual) for actual, predicted in pairs]))
+
+
+def amount_mean_signed_error_gbp(gold: list, predictions: list) -> float:
+    """Mean signed error in GBP: positive means over-prediction."""
+    pairs, _ = _amount_pairs_and_coverage(gold, predictions)
+    if not pairs:
+        return 0.0
+    return float(
+        sum((predicted - actual for actual, predicted in pairs), _ZERO) / len(pairs)
+    )

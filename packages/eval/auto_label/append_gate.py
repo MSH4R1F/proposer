@@ -56,7 +56,6 @@ class AppendGateRule(str, Enum):
 MANDATORY_REVIEW_FIELDS: frozenset[str] = frozenset(
     {
         "facts",
-        "disputed_amount_gbp",
         "claim_types",
         "matter_type",
         "ground_truth_outcome.overall_winner",
@@ -117,6 +116,8 @@ def _expected_mandatory_paths(gc: GoldCase) -> set[str]:
     forbids both being non-empty at once.
     """
     paths: set[str] = set(MANDATORY_REVIEW_FIELDS)
+    if gc.disputed_amount_gbp is not None:
+        paths.add("disputed_amount_gbp")
     gto = gc.ground_truth_outcome
     if gto.unapportioned_reason is not None:
         paths.add("ground_truth_outcome.unapportioned_reason")

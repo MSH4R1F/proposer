@@ -67,6 +67,8 @@ def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
 
 def _mandatory_paths_from_case(case_payload: Mapping[str, Any]) -> set[str]:
     paths = set(MANDATORY_REVIEW_FIELDS)
+    if case_payload.get("disputed_amount_gbp") is not None:
+        paths.add("disputed_amount_gbp")
     outcome = case_payload.get("ground_truth_outcome") or {}
     if not isinstance(outcome, Mapping):
         return paths

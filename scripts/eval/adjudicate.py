@@ -142,6 +142,11 @@ def derive_queues(
         | _expected_outcome_review_paths(a)
         | _expected_outcome_review_paths(b)
     )
+    if (
+        a.get("disputed_amount_gbp") is not None
+        or b.get("disputed_amount_gbp") is not None
+    ):
+        mandatory.add("disputed_amount_gbp")
 
     # Audit overlay: cells that are GROUNDED on both sides AND not
     # already in the disagreement set. We sample by sorted path so the

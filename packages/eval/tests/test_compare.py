@@ -16,6 +16,7 @@ from eval.compare import (
     ComparisonReport,
     ModeMetrics,
     build_comparison_report,
+    report_to_dict,
     summarise_dominance,
 )
 from eval.metrics import IssuePrediction, Prediction
@@ -23,6 +24,7 @@ from eval.schema import Winner
 
 
 # ---------- Fixtures ----------
+
 
 def _build_gold_corpus():
     """Re-use the existing 10-case synthetic corpus that ships with eval.tests."""
@@ -73,7 +75,11 @@ def _perfect_predictions(gold: list) -> list:
 def _flipped_predictions(gold: list) -> list:
     """Predictions that flip the winner on every case (accuracy ≈ 0)."""
     out = []
-    flip = {Winner.TENANT: Winner.LANDLORD, Winner.LANDLORD: Winner.TENANT, Winner.SPLIT: Winner.SPLIT}
+    flip = {
+        Winner.TENANT: Winner.LANDLORD,
+        Winner.LANDLORD: Winner.TENANT,
+        Winner.SPLIT: Winner.SPLIT,
+    }
     for g in gold:
         gt = g.ground_truth_outcome
         new_overall = flip[gt.overall_winner]
@@ -139,6 +145,80 @@ def _coinflip_predictions(gold: list) -> list:
     return out
 
 
+def _ombudsman_legacy_outcome_amount_gold():
+    """Gold row shaped like the first reviewed Ombudsman artifact.
+
+    The final global compensation order appears in legacy pre-decision amount
+    fields, which comparison baselines must not treat as claimant demands.
+    """
+    from eval.schema import GoldCase
+
+    return GoldCase.model_validate(
+        {
+            "schema_version": "v1",
+            "case_id": "housing-ombudsman-legacy-amount",
+            "decision_date": "2025-10-23",
+            "region": "london",
+            "region_source": "London",
+            "case_size": "small",
+            "disputed_amount_gbp": "575.00",
+            "claim_types": ["disrepair"],
+            "source_pdf_sha256": "a" * 64,
+            "ocr_confidence": None,
+            "parties": [
+                {"role": "tenant", "represented": False},
+                {"role": "landlord", "represented": False},
+            ],
+            "facts": (
+                "Resident complained about repeated repair delays, damp and "
+                "mould, and poor complaint handling before the Ombudsman "
+                "issued a global compensation order."
+            ),
+            "evidence": [
+                {
+                    "kind": "ombudsman_record",
+                    "description": "Housing Ombudsman determination record.",
+                    "provenance": {"page": 1, "paragraph": 22},
+                }
+            ],
+            "statutory_basis": [],
+            "statutory_basis_unavailable_reason": (
+                "Housing Ombudsman determination; statutory basis not extracted."
+            ),
+            "claimed_amounts": [
+                {
+                    "issue": "ombudsman_compensation",
+                    "amount_gbp": "575.00",
+                    "by_party": "tenant",
+                }
+            ],
+            "ground_truth_outcome": {
+                "overall_winner": "tenant",
+                "total_awarded_gbp": "575.00",
+                "per_issue": [],
+                "unapportioned_reason": (
+                    "Housing Ombudsman determination made a global compensation "
+                    "order without apportioning the final total."
+                ),
+            },
+            "key_reasoning_quotes": [
+                {
+                    "text": "The landlord must pay the resident £575.",
+                    "provenance": {"page": 1, "paragraph": 78},
+                }
+            ],
+            "domain_id": "housing.repairs_social.v1",
+            "forum": "housing_ombudsman",
+            "source_kind": "ombudsman_determination",
+            "source_publisher": "housing_ombudsman",
+            "retrieval_namespace_id": "housing_repairs_social_v1",
+            "target_source_id": "legacy-amount",
+            "corpus_version": "research_seed_2026_05",
+            "matter_type": "repairs_damp_mould",
+        }
+    )
+
+
 # ---------- Tests ----------
 
 
@@ -171,8 +251,64 @@ class TestStructure:
         m = report.modes[0]
         assert m.accuracy is not None
         assert m.amount_threshold is not None
+        assert m.amount_within_20pct is not None
+        assert m.amount_within_gbp100 is not None
+        assert m.amount_mae_gbp is not None
+        assert m.amount_median_absolute_error_gbp is not None
+        assert m.amount_mean_signed_error_gbp is not None
+        assert m.amount_coverage["n_evaluable"] == len(gold)
         assert m.brier is not None
         assert m.ece is not None
+
+    def test_report_dict_keeps_legacy_amount_key_and_adds_amount_object(self):
+        gold = _build_gold_corpus()
+        report = build_comparison_report(
+            gold, {"hybrid": _perfect_predictions(gold)}, n_resamples=0
+        )
+        row = report_to_dict(report)["modes"][0]
+        assert row["amount_threshold"]["point"] == pytest.approx(1.0)
+        assert row["amount"]["within_20pct"]["point"] == pytest.approx(1.0)
+        assert row["amount"]["within_gbp100"]["point"] == pytest.approx(1.0)
+        assert row["amount"]["mae_gbp"]["point"] == pytest.approx(0.0)
+        assert row["amount"]["coverage"]["n_evaluable"] == len(gold)
+
+    def test_deterministic_baselines_are_reported_separately(self):
+        gold = _build_gold_corpus()
+        report = build_comparison_report(
+            gold, {"hybrid": _perfect_predictions(gold)}, n_resamples=0
+        )
+        payload = report_to_dict(report)
+        baselines = {row["baseline"]: row for row in payload["baselines"]}
+        assert set(baselines) == {
+            "always_tenant",
+            "always_landlord",
+            "claim_positive_winner",
+            "claim_amount_copy",
+        }
+        assert baselines["always_tenant"]["supported"]["winner"] is True
+        assert baselines["always_tenant"]["supported"]["amount"] is False
+        assert baselines["always_tenant"]["amount"]["coverage"][
+            "missing_predicted_amount"
+        ] == len(gold)
+        assert baselines["claim_amount_copy"]["supported"]["amount"] is True
+        assert baselines["claim_amount_copy"]["amount"]["coverage"][
+            "n_evaluable"
+        ] == len(gold)
+
+    def test_ombudsman_outcome_amounts_do_not_feed_claim_copy_baseline(self):
+        gold = [_ombudsman_legacy_outcome_amount_gold()]
+        report = build_comparison_report(
+            gold, {"hybrid": _perfect_predictions(gold)}, n_resamples=0
+        )
+
+        baselines = {
+            row["baseline"]: row for row in report_to_dict(report)["baselines"]
+        }
+        claim_copy = baselines["claim_amount_copy"]
+        assert claim_copy["supported"]["winner"] is False
+        assert claim_copy["supported"]["amount"] is False
+        assert claim_copy["amount"]["coverage"]["n_evaluable"] == 0
+        assert claim_copy["amount"]["coverage"]["missing_predicted_amount"] == 1
 
     def test_n_cases_recorded(self):
         gold = _build_gold_corpus()

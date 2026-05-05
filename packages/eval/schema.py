@@ -40,6 +40,7 @@ class ClaimType(str, Enum):
 class CaseSize(str, Enum):
     SMALL = "small"
     LARGE = "large"
+    UNKNOWN = "unknown"
 
 
 class PartyRole(str, Enum):
@@ -311,7 +312,7 @@ class GoldCase(StrictBaseModel):
     region: RegionUK
     region_source: str = Field(default="", description="Verbatim region string from the source PDF; provenance only.")
     case_size: CaseSize
-    disputed_amount_gbp: Decimal = Field(ge=0)
+    disputed_amount_gbp: Optional[Decimal] = Field(default=None, ge=0)
     claim_types: list[ClaimType] = Field(min_length=1)
     source_pdf_sha256: str
     ocr_confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
@@ -322,7 +323,7 @@ class GoldCase(StrictBaseModel):
     statutory_basis: list[StatutoryReference]
     statutory_basis_unavailable_reason: Optional[str] = None
     cited_authorities: list[Authority] = Field(default_factory=list)
-    claimed_amounts: list[ClaimedAmount] = Field(min_length=1)
+    claimed_amounts: list[ClaimedAmount] = Field(default_factory=list)
     ground_truth_outcome: GroundTruthOutcome
     key_reasoning_quotes: list[ReasoningQuote] = Field(min_length=1)
 
@@ -517,6 +518,21 @@ class GoldCase(StrictBaseModel):
                 "statutory_basis_unavailable_reason given; annotators must "
                 "record why statutes were not captured"
             )
+        # Repairs-social Ombudsman rows can have a final compensation order
+        # without a clean pre-decision monetary claim in the source. Legacy
+        # deposit/RRO style rows still require claimed/disputed amounts.
+        if self.domain_id != "housing.repairs_social.v1":
+            if self.disputed_amount_gbp is None:
+                raise ValueError(
+                    "disputed_amount_gbp is required unless domain_id is "
+                    "'housing.repairs_social.v1'"
+                )
+            if not self.claimed_amounts:
+                raise ValueError(
+                    "claimed_amounts must contain at least one row unless "
+                    "domain_id is 'housing.repairs_social.v1'"
+                )
+
         # INV-5: every per_issue.issue must appear in claimed_amounts
         # (vacuously satisfied when per_issue is empty under an unapportioned outcome)
         claimed_issues = {ca.issue for ca in self.claimed_amounts}
@@ -543,6 +559,14 @@ class GoldCase(StrictBaseModel):
                 )
         # INV-7: case_size consistent with the canonical disputed amount
         # (independent of mirrored claim/counterclaim entries in claimed_amounts)
+        if self.disputed_amount_gbp is None:
+            if self.case_size != CaseSize.UNKNOWN:
+                raise ValueError(
+                    f"case_size {self.case_size.value!r} inconsistent with "
+                    "unknown disputed_amount_gbp (expected 'unknown')"
+                )
+            return self
+
         expected_size = (
             CaseSize.SMALL
             if self.disputed_amount_gbp <= _SMALL_CASE_THRESHOLD_GBP

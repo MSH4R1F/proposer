@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from types import SimpleNamespace
 
 import pytest
 
@@ -223,3 +224,68 @@ class TestAmountWithinThreshold:
     def test_empty_input_returns_zero(self):
         from eval.metrics import amount_within_threshold
         assert amount_within_threshold([], []) == 0.0
+
+
+class TestRicherAmountMetrics:
+    def test_amount_error_metrics_expose_scale_and_bias(self):
+        from eval.metrics import (
+            amount_mae_gbp,
+            amount_mean_signed_error_gbp,
+            amount_median_absolute_error_gbp,
+            amount_within_absolute_threshold,
+            amount_within_threshold,
+        )
+
+        gold = [
+            _gold_with_outcome("A", per_issue=[
+                {"issue": "x", "winner": "tenant", "awarded_gbp": "100.00"},
+            ], total="100.00"),
+            _gold_with_outcome("B", per_issue=[
+                {"issue": "y", "winner": "tenant", "awarded_gbp": "200.00"},
+            ], total="200.00"),
+            _gold_with_outcome("C", per_issue=[
+                {"issue": "z", "winner": "tenant", "awarded_gbp": "0.00"},
+            ], total="0.00"),
+        ]
+        preds = [
+            _pred("A", per_issue=[{"issue": "x", "winner": "tenant"}], total="110.00"),
+            _pred("B", per_issue=[{"issue": "y", "winner": "tenant"}], total="150.00"),
+            _pred("C", per_issue=[{"issue": "z", "winner": "tenant"}], total="0.00"),
+        ]
+
+        assert amount_mae_gbp(gold, preds) == pytest.approx(20.0)
+        assert amount_median_absolute_error_gbp(gold, preds) == pytest.approx(10.0)
+        assert amount_mean_signed_error_gbp(gold, preds) == pytest.approx(-40 / 3)
+        assert amount_within_absolute_threshold(gold, preds, threshold_gbp=100) == 1.0
+        assert amount_within_threshold(gold, preds, threshold_pct=0.20) == pytest.approx(2 / 3)
+
+    def test_missing_predicted_amount_is_explicitly_counted(self):
+        from eval.metrics import (
+            amount_coverage,
+            amount_mae_gbp,
+            amount_within_absolute_threshold,
+        )
+
+        gold = [
+            _gold_with_outcome("A", per_issue=[
+                {"issue": "x", "winner": "tenant", "awarded_gbp": "100.00"},
+            ], total="100.00"),
+            _gold_with_outcome("B", per_issue=[
+                {"issue": "y", "winner": "tenant", "awarded_gbp": "200.00"},
+            ], total="200.00"),
+        ]
+        preds = [
+            SimpleNamespace(case_id="A", total_predicted_gbp=None),
+            SimpleNamespace(case_id="B", total_predicted_gbp=Decimal("220.00")),
+        ]
+
+        assert amount_coverage(gold, preds) == {
+            "n_cases": 2,
+            "n_gold_amount_available": 2,
+            "n_predicted_amount_available": 1,
+            "n_evaluable": 1,
+            "missing_gold_amount": 0,
+            "missing_predicted_amount": 1,
+        }
+        assert amount_mae_gbp(gold, preds) == pytest.approx(20.0)
+        assert amount_within_absolute_threshold(gold, preds, threshold_gbp=100) == 0.5

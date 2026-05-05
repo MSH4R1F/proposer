@@ -38,6 +38,7 @@ issue labels back to the gold case's pre-decision claimed-amount labels.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Set
 
 from eval.issue_alignment import UnmappableIssue, eval_to_orchestrator
@@ -83,6 +84,15 @@ _OMBUDSMAN_COMPENSATION_LABELS = {
     "ombudsman_remedy",
 }
 
+_PRE_DECISION_CLAIM_PROVENANCE_MARKERS = {
+    "pre-decision claim",
+    "pre decision claim",
+    "predecision claim",
+    "pre_decision_claim",
+    "resident claimed",
+    "tenant claimed",
+}
+
 
 def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
     """Build a pre-decision `CaseFile` from `GoldCase`. See module docstring."""
@@ -111,7 +121,11 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
 
     tenant_claims = []
     landlord_claims = []
-    for ca in gold.claimed_amounts:
+    omitted_outcome_amount_paths: list[str] = []
+    for ca in gold.claimed_amounts or []:
+        if is_outcome_derived_ombudsman_claimed_amount(gold, ca):
+            omitted_outcome_amount_paths.append(_claimed_amount_path(ca))
+            continue
         # ca.issue is a string in eval-vocabulary; try to remap to orch.
         try:
             issue_enum = eval_to_orchestrator(ca.issue, matter_type=mt)
@@ -132,6 +146,10 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
             tenant_claims.append(claim)
         else:
             landlord_claims.append(claim)
+
+    dispute_amount = _case_file_dispute_amount(gold)
+    if dispute_amount is None and is_outcome_derived_ombudsman_disputed_amount(gold):
+        omitted_outcome_amount_paths.append("disputed_amount_gbp")
 
     evidence_items = []
     dropped_count = 0
@@ -170,7 +188,7 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
         property=PropertyDetails(region=gold.region.value.upper()[:3]),
         tenancy=TenancyDetails(),
         issues=issues,
-        dispute_amount=float(gold.disputed_amount_gbp),
+        dispute_amount=dispute_amount,
         tenant_claims=tenant_claims,
         landlord_claims=landlord_claims,
         evidence=evidence_items,
@@ -194,6 +212,9 @@ def gold_case_to_case_file(gold: GoldCase) -> LossyReconstruction:
             "source_pdf_sha256": gold.source_pdf_sha256,
             "ocr_confidence": gold.ocr_confidence,
             "unmapped_claim_types": sorted(unmapped),
+            "omitted_outcome_derived_amount_fields": sorted(
+                set(omitted_outcome_amount_paths)
+            ),
         },
     )
 
@@ -217,7 +238,11 @@ def _gold_issue_label_map(gold: GoldCase) -> dict[str, str]:
     `carpet_cleaning` without reading the tribunal outcome. Ambiguous cases are
     left unmapped so metrics surface them as missing rather than guessing.
     """
-    labels = _unique_preserving_order(ca.issue for ca in gold.claimed_amounts)
+    labels = _unique_preserving_order(
+        ca.issue
+        for ca in gold.claimed_amounts or []
+        if not is_outcome_derived_ombudsman_claimed_amount(gold, ca)
+    )
     claim_types = [ct.value for ct in gold.claim_types]
     if len(labels) != len(claim_types):
         return {}
@@ -266,6 +291,113 @@ def _claim_description(gold: GoldCase, claimed_amount) -> str:
     if not facts:
         return prefix
     return f"{prefix} Pre-decision complaint facts: {facts[:1200]}"
+
+
+def _case_file_dispute_amount(gold: GoldCase) -> float | None:
+    if is_outcome_derived_ombudsman_disputed_amount(gold):
+        return None
+    amount = _decimal_or_none(getattr(gold, "disputed_amount_gbp", None))
+    return float(amount) if amount is not None else None
+
+
+def is_outcome_derived_ombudsman_disputed_amount(gold: GoldCase) -> bool:
+    """Return True when a legacy Ombudsman disputed amount is the final award.
+
+    Early Housing Ombudsman gold drafts promoted the global compensation order
+    into pre-decision amount fields. Eval consumers can use this predicate to
+    suppress those fields without rewriting the reviewed outcome labels.
+    """
+    if not _is_generated_ombudsman_global_compensation_outcome(gold):
+        return False
+    if not _amount_matches_outcome_total(
+        gold, getattr(gold, "disputed_amount_gbp", None)
+    ):
+        return False
+    if _has_pre_decision_claim_amount_provenance(gold, "disputed_amount_gbp"):
+        return False
+    return True
+
+
+def is_outcome_derived_ombudsman_claimed_amount(
+    gold: GoldCase, claimed_amount
+) -> bool:
+    """Return True when a legacy Ombudsman claimed amount is the final award."""
+    issue = str(getattr(claimed_amount, "issue", "") or "").strip().lower()
+    if issue not in _OMBUDSMAN_COMPENSATION_LABELS:
+        return False
+    if not _is_generated_ombudsman_global_compensation_outcome(gold):
+        return False
+    if not _amount_matches_outcome_total(
+        gold, getattr(claimed_amount, "amount_gbp", None)
+    ):
+        return False
+    if _has_pre_decision_claim_amount_provenance(
+        gold, _claimed_amount_path(claimed_amount)
+    ):
+        return False
+    return True
+
+
+def _is_generated_ombudsman_global_compensation_outcome(gold: GoldCase) -> bool:
+    if not (
+        gold.domain_id == "housing.repairs_social.v1"
+        or gold.forum == "housing_ombudsman"
+        or gold.source_kind == "ombudsman_determination"
+    ):
+        return False
+    outcome = getattr(gold, "ground_truth_outcome", None)
+    reason = str(getattr(outcome, "unapportioned_reason", "") or "").lower()
+    return "global compensation order" in reason
+
+
+def _amount_matches_outcome_total(gold: GoldCase, amount) -> bool:
+    outcome = getattr(gold, "ground_truth_outcome", None)
+    outcome_total = _decimal_or_none(getattr(outcome, "total_awarded_gbp", None))
+    amount_decimal = _decimal_or_none(amount)
+    return outcome_total is not None and amount_decimal == outcome_total
+
+
+def _decimal_or_none(value) -> Decimal | None:
+    if value is None:
+        return None
+    if isinstance(value, Decimal):
+        return value
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError):
+        return None
+
+
+def _claimed_amount_path(claimed_amount) -> str:
+    by_party = getattr(claimed_amount, "by_party", "")
+    by_party_value = getattr(by_party, "value", by_party)
+    return (
+        f"claimed_amounts[issue={getattr(claimed_amount, 'issue', '?')}"
+        f"|by_party={by_party_value}].amount_gbp"
+    )
+
+
+def _has_pre_decision_claim_amount_provenance(gold: GoldCase, path: str) -> bool:
+    provenance_text = _field_provenance_text(gold, path)
+    return any(
+        marker in provenance_text
+        for marker in _PRE_DECISION_CLAIM_PROVENANCE_MARKERS
+    )
+
+
+def _field_provenance_text(gold: GoldCase, path: str) -> str:
+    labeling = getattr(gold, "labeling_provenance", None)
+    if labeling is None:
+        return ""
+    chunks: list[str] = []
+    for row in getattr(labeling, "field_provenance", []) or []:
+        if getattr(row, "field_path", None) != path:
+            continue
+        for attr in ("source", "match_strategy", "reviewer_rationale"):
+            value = getattr(row, attr, None)
+            if value is not None:
+                chunks.append(str(getattr(value, "value", value)))
+    return " ".join(chunks).lower()
 
 
 def _unique_preserving_order(values) -> list[str]:

@@ -279,3 +279,44 @@ PYTHONPATH=packages venv/bin/python scripts/eval/run_full_eval.py \
   outstanding works, complaint-stage delays, and prior offers.
 - Add more no-maladministration, reasonable-redress, and landlord-favorable
   cases to reduce pilot-set skew.
+
+## 2026-05-05 KG-Only / Amount Leakage Audit
+
+Follow-up audit after `kg_only=1.000` found that the no-RAG modes were not
+secretly using RAG or reading `ground_truth_outcome`. The number was inflated
+by two eval-design problems:
+
+- The 50-case gold set is `49` tenant wins and `1` landlord win, so an
+  always-tenant baseline scores `0.980`.
+- The legacy Ombudsman gold promotion path copied final compensation/order
+  values into prediction-input fields: `disputed_amount_gbp` and
+  `claimed_amounts`. A claim-copy deterministic baseline therefore scored
+  perfect amount accuracy on the old artifacts.
+
+Patch summary:
+
+- Suppressed legacy outcome-derived Ombudsman amounts in
+  `gold_case_to_case_file()`.
+- Updated Ombudsman review prep so final compensation stays only in
+  `ground_truth_outcome`.
+- Allowed unknown pre-decision amount fields for `housing.repairs_social.v1`.
+- Stopped the issue predictor from filling missing `predicted_amount` with
+  `issue.claimed_amount`.
+- Added deterministic baselines and richer amount metrics to full eval.
+- Made claim-copy baselines ignore the same legacy outcome-derived Ombudsman
+  amount fields that the prediction CaseFile adapter suppresses.
+- Added a balanced outcome sampler for the next 50-case Ombudsman eval set.
+
+Verification:
+
+- `566` eval tests passed.
+- `20` focused LLM orchestrator tests passed.
+- Current promoted 50-row adapter smoke found `0` leaked award amounts.
+- Full-eval smoke emitted baselines showing the outcome skew clearly:
+  `always_tenant accuracy=0.980`. The old claim-copy amount leak is now
+  suppressed in the baseline report:
+  `claim_amount_copy amount@GBP100=0.000`, `amount_n=0`.
+
+Do not report the old `kg_only=1.000` or amount metrics as product evidence.
+Regenerate a balanced, reviewed gold set and rerun live predictions through the
+patched adapter before using the numbers in SHA-68 or thesis material.

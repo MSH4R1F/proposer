@@ -75,6 +75,8 @@ def _full_field_provenance_for(gc_dict: dict) -> list[FieldLabelProvenance]:
     """Build a FieldLabelProvenance covering every MandatoryReviewSet path
     derived from the gold-case dict's actual outcome shape."""
     paths = set(MANDATORY_REVIEW_FIELDS)
+    if gc_dict.get("disputed_amount_gbp") is not None:
+        paths.add("disputed_amount_gbp")
     gto = gc_dict["ground_truth_outcome"]
     if gto.get("unapportioned_reason") is not None:
         paths.add("ground_truth_outcome.unapportioned_reason")

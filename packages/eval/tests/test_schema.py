@@ -33,7 +33,7 @@ class TestEnums:
 
     def test_case_size_values(self):
         from eval.schema import CaseSize
-        assert {c.value for c in CaseSize} == {"small", "large"}
+        assert {c.value for c in CaseSize} == {"small", "large", "unknown"}
 
     def test_party_role_values(self):
         from eval.schema import PartyRole
@@ -277,6 +277,59 @@ class TestDisputedAmount:
         case["case_size"] = "small"
         gc = GoldCase.model_validate(case)
         assert gc.case_size.value == "small"
+
+    def test_repairs_social_allows_unknown_pre_decision_amounts(self):
+        from eval.schema import GoldCase
+        case = self._base()
+        case.update(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "forum": "housing_ombudsman",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "matter_type": "repairs_disrepair",
+                "case_size": "unknown",
+                "disputed_amount_gbp": None,
+                "claimed_amounts": [],
+                "ground_truth_outcome": {
+                    "overall_winner": "tenant",
+                    "total_awarded_gbp": "575.00",
+                    "per_issue": [],
+                    "unapportioned_reason": (
+                        "Housing Ombudsman determination records a global "
+                        "compensation order without a per-issue award split."
+                    ),
+                },
+            }
+        )
+
+        gc = GoldCase.model_validate(case)
+
+        assert gc.disputed_amount_gbp is None
+        assert gc.claimed_amounts == []
+        assert gc.case_size.value == "unknown"
+
+    def test_unknown_amount_requires_unknown_case_size(self):
+        from eval.schema import GoldCase
+        case = self._base()
+        case.update(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "case_size": "small",
+                "disputed_amount_gbp": None,
+                "claimed_amounts": [],
+                "ground_truth_outcome": {
+                    "overall_winner": "tenant",
+                    "total_awarded_gbp": "575.00",
+                    "per_issue": [],
+                    "unapportioned_reason": "Global compensation order.",
+                },
+            }
+        )
+
+        with pytest.raises(ValidationError, match="unknown disputed_amount_gbp"):
+            GoldCase.model_validate(case)
 
 
 class TestUnapportionedOutcome:
