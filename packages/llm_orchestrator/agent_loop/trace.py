@@ -15,6 +15,16 @@ class TraceTerminationReason(str, Enum):
     END_TURN = "end_turn"
     MAX_TURNS = "max_turns"
     MODEL_ERROR = "model_error"
+    # Retrieval-agent-specific terminators (see
+    # ``docs/research/hybrid-rag-agentic-retrieval-plan-2026-05-05.md`` §3.4
+    # and ``agentic-retrieval-architecture-research-2026-05-05.md`` §3.3).
+    JUDGE_OK = "judge_ok"  # judge called finalize() with confidence >= tau
+    JUDGE_ABSTAIN = "judge_abstain"  # judge declared no liability span exists
+    JUDGE_INVALID = "judge_invalid"  # 2 consecutive invalid tool calls
+    DUP_QUERY = "dup_query"  # cycle guard: same (purpose, query) twice
+    TOKEN_CAP = "token_cap"  # cumulative tool-trace tokens exceeded
+    CHUNKS_CAP = "chunks_cap"  # cumulative deduped chunks exceeded
+    MAX_ITER = "max_iter"  # hard iteration cap reached
 
 
 class TraceStep(BaseModel):
