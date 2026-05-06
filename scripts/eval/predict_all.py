@@ -513,6 +513,11 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
         "overall_winner": pred.overall_winner.value,
         "overall_win_probability": float(pred.overall_win_probability),
         "total_predicted_gbp": _serialise_amount(pred.total_predicted_gbp),
+        "predicted_determination": (
+            pred.predicted_determination.value
+            if getattr(pred, "predicted_determination", None) is not None
+            else None
+        ),
         "per_issue": [
             {
                 "issue": ip.issue,
@@ -521,6 +526,7 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
                 "predicted_amount_gbp": _serialise_amount(
                     ip.predicted_amount_gbp
                 ),
+                "amount_construct": getattr(ip, "amount_construct", None),
             }
             for ip in pred.per_issue
         ],
