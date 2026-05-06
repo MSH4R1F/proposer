@@ -1,5 +1,6 @@
 """Tests for KG-aware retrieval filter / re-rank (SHA-33)."""
 
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -9,7 +10,7 @@ from llm_orchestrator.models.prediction_v2 import (
     IssueType,
     PredictionMode,
 )
-from llm_orchestrator.pipeline.issue_retrieval import IssueRetriever
+from llm_orchestrator.pipeline.issue_retrieval import IssueRetriever, RagQuerySpec
 from llm_orchestrator.pipeline.kg_facts import KGFacts
 
 
@@ -265,9 +266,12 @@ async def test_repairs_rerank_promotes_issue_and_outcome_chunks():
     assert refs[0] == "OUTCOME"
     assert result.results[0]["repairs_issue_match_score"] > 0
     assert result.results[0]["ombudsman_outcome_signal_score"] == 1.0
-    assert rag.retrieve.await_count == 2
-    assert [call.kwargs["top_k"] for call in rag.retrieve.await_args_list] == [12, 7]
-    assert "REMEDY PASS:" in result.query_used
+    assert rag.retrieve.await_count >= 7
+    assert all(call.kwargs["top_k"] >= 8 for call in rag.retrieve.await_args_list)
+    assert "liability:" in result.query_used
+    assert "award_amount:" in result.query_used
+    assert "counterexample:" in result.query_used
+    assert "retrieval_purposes" in result.results[0]
 
 
 @pytest.mark.asyncio
@@ -311,7 +315,7 @@ async def test_repairs_retrieval_runs_remedy_pass_and_keeps_order_chunk():
         _stub_case_file(),
         top_k=2,
         kg_facts=KGFacts(),
-        mode=PredictionMode.HYBRID,
+        mode=PredictionMode.RAG_ONLY,
     )
 
     refs = [r["case_reference"] for r in result.results]
@@ -349,3 +353,106 @@ async def test_deposit_retrieval_does_not_run_remedy_pass():
     )
 
     rag.retrieve.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_repairs_hybrid_passes_target_exclusion_filters():
+    calls = []
+
+    async def fake_retrieve(**kwargs):
+        calls.append(kwargs)
+        return {
+            "results": _make_results(
+                (
+                    "CASE_A",
+                    0.8,
+                    "Damp and mould service failure. The landlord must pay "
+                    "£400 compensation.",
+                ),
+            ),
+            "confidence": 0.8,
+        }
+
+    rag = AsyncMock()
+    rag.retrieve = fake_retrieve
+    retriever = IssueRetriever(rag, min_cases_required=1)
+    case_file = SimpleNamespace(
+        case_id="housing-ombudsman-202515515",
+        property=SimpleNamespace(region="London"),
+        metadata={
+            "domain_id": "housing.repairs_social.v1",
+            "matter_type": "repairs_damp_mould",
+            "target_source_id": "202515515",
+        },
+        tenant_narrative="Resident reported damp and mould.",
+        landlord_narrative=None,
+        dispute_amount=None,
+    )
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        kg_constraints=[],
+        data_completeness=0.8,
+    )
+
+    await retriever._retrieve_for_issue(
+        issue,
+        case_file,
+        top_k=1,
+        kg_facts=KGFacts(),
+        mode=PredictionMode.HYBRID,
+    )
+
+    assert len(calls) >= 8
+    first_filter = calls[0]["filters"]
+    assert first_filter.matter_type == "repairs_damp_mould"
+    assert "202515515" in first_filter.excluded_source_ids
+    assert "housing-ombudsman-202515515" in first_filter.excluded_source_ids
+
+
+@pytest.mark.asyncio
+async def test_purposeful_query_annotates_pydantic_retrieval_result_cards():
+    from rag_engine.config import RetrievalResult
+
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": [
+                RetrievalResult(
+                    chunk_id="chunk-1",
+                    case_reference="HOS-1",
+                    chunk_text=(
+                        "The damp and mould complaint led to a service failure. "
+                        "The landlord must pay £400 compensation."
+                    ),
+                    section_type="decision",
+                    semantic_score=0.8,
+                    semantic_rank=1,
+                    bm25_score=1.0,
+                    bm25_rank=1,
+                    combined_score=0.9,
+                    year=2025,
+                    region="London",
+                    case_type=None,
+                )
+            ],
+            "confidence": 0.8,
+        }
+    )
+    retriever = IssueRetriever(rag, min_cases_required=1)
+    spec = RagQuerySpec(
+        purpose="award_amount",
+        query="damp mould compensation award",
+        top_k=8,
+        require_amount=True,
+    )
+
+    response = await retriever._retrieve_rag_query_spec(spec, _stub_case_file())
+
+    card = response["results"][0]
+    assert isinstance(card, dict)
+    assert card["case_reference"] == "HOS-1"
+    assert card["retrieval_purpose"] == "award_amount"
+    assert card["retrieval_purposes"] == ["award_amount"]
+    assert card["has_award_amount"] is True
+    assert card["ombudsman_finding_signal"] == "service_failure"

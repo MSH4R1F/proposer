@@ -207,13 +207,31 @@ class PredictionEngineV2:
             )
             metadata.steps_executed.append("agentic_retrieval")
         else:
+            repairs_hybrid = self._uses_purposeful_repairs_retrieval(
+                case_file,
+                issues,
+                mode,
+                strategy,
+            )
+            if repairs_hybrid:
+                metadata.steps_executed.append("retrieval_planning")
             retrieval_results = await self.issue_retriever.retrieve_all(
                 issues, case_file, top_k,
                 kg_facts_by_issue=kg_facts_by_issue,
                 mode=mode,
                 retrieval_strategy=strategy,
             )
-            metadata.steps_executed.append("per_issue_retrieval")
+            if repairs_hybrid:
+                metadata.steps_executed.extend(
+                    [
+                        "liability_retrieval",
+                        "remedy_retrieval",
+                        "counterexample_retrieval",
+                        "award_amount_retrieval",
+                    ]
+                )
+            else:
+                metadata.steps_executed.append("per_issue_retrieval")
 
         sufficient_count = sum(1 for r in retrieval_results.values() if r.is_sufficient)
         metadata.issues_with_sufficient_cases = sufficient_count
@@ -289,6 +307,30 @@ class PredictionEngineV2:
         )
 
         return result
+
+    @staticmethod
+    def _uses_purposeful_repairs_retrieval(
+        case_file: CaseFile,
+        issues: List[IssueContext],
+        mode: PredictionMode,
+        retrieval_strategy: RetrievalStrategy,
+    ) -> bool:
+        if (
+            mode != PredictionMode.HYBRID
+            or retrieval_strategy != RetrievalStrategy.CHUNK_RAG
+        ):
+            return False
+        repairs_issue_values = {
+            "repairs_disrepair",
+            "repairs_damp_mould",
+            "complaint_handling_failure",
+        }
+        if any(issue.issue_type.value in repairs_issue_values for issue in issues):
+            return True
+        metadata = getattr(case_file, "metadata", None)
+        return isinstance(metadata, dict) and (
+            metadata.get("domain_id") == "housing.repairs_social.v1"
+        )
 
     async def _agentic_retrieve_all(
         self,

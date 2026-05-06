@@ -1,5 +1,6 @@
 """Tests for the PredictionMode ablation seam (SHA-33)."""
 
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -23,6 +24,24 @@ def test_prediction_mode_hybrid_value():
     assert PredictionMode.LLM_ONLY.value == "llm_only"
 
 
+def test_outcome_type_serialises_plural_but_accepts_legacy_singular():
+    from llm_orchestrator.models.prediction_v2 import OutcomeType, PredictionResult
+
+    assert OutcomeType.TENANT_WIN.value == "tenant_wins"
+    assert OutcomeType.LANDLORD_WIN.value == "landlord_wins"
+    assert OutcomeType("tenant_win") is OutcomeType.TENANT_WIN
+    assert OutcomeType("landlord_win") is OutcomeType.LANDLORD_WIN
+
+    result = PredictionResult(
+        case_id="case-outcome-normalisation",
+        overall_outcome="tenant_win",
+        overall_confidence=0.7,
+    )
+
+    assert result.overall_outcome is OutcomeType.TENANT_WIN
+    assert result.overall_outcome.value == "tenant_wins"
+
+
 def test_retrieval_strategy_is_separate_from_prediction_mode():
     assert {s.value for s in RetrievalStrategy} == {
         "chunk_rag",
@@ -36,6 +55,30 @@ def test_retrieval_strategy_is_separate_from_prediction_mode():
         "agentic",
     }
     assert PredictionMode.HYBRID.value == "hybrid"
+
+
+def test_purposeful_repairs_trace_only_applies_to_chunk_rag_strategy():
+    from llm_orchestrator.models.prediction_v2 import IssueContext, IssueType
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    case_file = SimpleNamespace(metadata={"domain_id": "housing.repairs_social.v1"})
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+    )
+
+    assert PredictionEngineV2._uses_purposeful_repairs_retrieval(
+        case_file,
+        [issue],
+        PredictionMode.HYBRID,
+        RetrievalStrategy.CHUNK_RAG,
+    )
+    assert not PredictionEngineV2._uses_purposeful_repairs_retrieval(
+        case_file,
+        [issue],
+        PredictionMode.HYBRID,
+        RetrievalStrategy.PROPOSITION_DIRECT,
+    )
 
 
 @pytest.mark.asyncio
@@ -246,3 +289,80 @@ async def test_predict_metadata_records_mode():
     # The short-circuit returns create_uncertain — verify the trace is well-formed for both
     # the short-circuit path and the metadata recorded on the engine instance.
     assert result is not None
+
+
+@pytest.mark.asyncio
+async def test_hybrid_repairs_metadata_records_purposeful_retrieval_steps():
+    from llm_orchestrator.models.prediction_v2 import IssueContext, IssueType
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": [
+                {
+                    "case_reference": "HOS-1",
+                    "year": 2025,
+                    "semantic_score": 0.8,
+                    "bm25_score": 0.1,
+                    "chunk_text": (
+                        "Damp and mould service failure. The landlord must pay "
+                        "£400 compensation."
+                    ),
+                }
+            ],
+            "confidence": 0.8,
+        }
+    )
+    llm = MagicMock()
+    llm.generate = AsyncMock(
+        return_value=(
+            '{"outcome":"tenant_wins","raw_confidence":0.7,'
+            '"reasoning":"r","supporting_cases":[],'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+    )
+    engine = PredictionEngineV2(
+        llm_client=llm,
+        rag_pipeline=rag,
+        min_cases_required=1,
+    )
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        kg_constraints=[],
+        data_completeness=0.8,
+    )
+    engine.issue_decomposer.decompose = lambda case_file, kg=None: [issue]
+
+    case_file = SimpleNamespace(
+        case_id="housing-ombudsman-202515515",
+        metadata={
+            "domain_id": "housing.repairs_social.v1",
+            "matter_type": "repairs_damp_mould",
+        },
+        property=SimpleNamespace(region="London", postcode=None),
+        tenancy=SimpleNamespace(
+            deposit_amount=None,
+            start_date=None,
+            end_date=None,
+            tenancy_type=None,
+        ),
+        tenant_narrative="Resident reported damp and mould.",
+        landlord_narrative=None,
+        dispute_amount=None,
+    )
+
+    result = await engine.predict(
+        case_file=case_file,
+        mode=PredictionMode.HYBRID,
+        top_k=1,
+    )
+
+    steps = result.pipeline_metadata.steps_executed
+    assert "retrieval_planning" in steps
+    assert "liability_retrieval" in steps
+    assert "remedy_retrieval" in steps
+    assert "counterexample_retrieval" in steps
+    assert "award_amount_retrieval" in steps
+    assert rag.retrieve.await_count >= 8
