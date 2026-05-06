@@ -1,0 +1,604 @@
+"""TDD tests for scripts/eval/factor_catalog_review.py — §22.1 LLM panel.
+
+All tests are offline: no real LLM calls, no network I/O.
+The fake BaseLLMClient returns canned PanelistReview JSON.
+
+Run with:
+    pytest scripts/eval/tests/test_factor_catalog_review.py -v
+from the repo root.
+"""
+from __future__ import annotations
+
+import asyncio
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Type, TypeVar
+from unittest.mock import AsyncMock
+
+import pytest
+from pydantic import BaseModel
+
+# ---------------------------------------------------------------------------
+# Path bootstrap so we can import scripts/eval/factor_catalog_review.py
+# ---------------------------------------------------------------------------
+
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_SCRIPTS = _REPO_ROOT / "scripts" / "eval"
+sys.path.insert(0, str(_SCRIPTS))
+
+# Add packages/ parent dir so `import llm_orchestrator` (and siblings) resolve.
+_PACKAGES = str(_REPO_ROOT / "packages")
+if _PACKAGES not in sys.path:
+    sys.path.insert(0, _PACKAGES)
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+# ---------------------------------------------------------------------------
+# Lazy module loader (avoids registering the module too early)
+# ---------------------------------------------------------------------------
+
+
+def _load_cli():
+    """Load factor_catalog_review as a module; re-use across the session."""
+    key = "factor_catalog_review"
+    if key in sys.modules:
+        existing = sys.modules[key]
+        # Only re-use if it loaded successfully (has the expected attribute).
+        if hasattr(existing, "REVIEWER_PROMPT"):
+            return existing
+        # Previous import failed — evict and retry.
+        del sys.modules[key]
+    spec = importlib.util.spec_from_file_location(key, _SCRIPTS / "factor_catalog_review.py")
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[key] = mod
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    return mod
+
+
+# ---------------------------------------------------------------------------
+# Helpers / fixtures
+# ---------------------------------------------------------------------------
+
+FACTORS_3 = ["repair_responsibility_established", "hazard_or_disrepair_reported", "landlord_notice_established"]
+
+def _make_finding(factor_id: str, *, labelable=True, definition_clear=True,
+                  polarity_correct=True, authority_grounded=True,
+                  redundant_with=None, flags=None):
+    return {
+        "factor_id": factor_id,
+        "labelable_from_narrative": labelable,
+        "definition_clear": definition_clear,
+        "polarity_correct": polarity_correct,
+        "authority_grounded": authority_grounded,
+        "redundant_with": redundant_with or [],
+        "flags": flags or [],
+    }
+
+
+def _canned_review(panelist_id: str, findings: list, missing=None, notes="") -> dict:
+    return {
+        "panelist_id": panelist_id,
+        "per_factor_findings": findings,
+        "missing_factors_suggested": missing or [],
+        "overall_notes": notes,
+    }
+
+
+class FakeLLMClient:
+    """Synchronous fake — generate_structured returns a canned Pydantic model."""
+
+    def __init__(self, canned: dict, model_id: str = "fake-model"):
+        self._canned = canned
+        self.model = model_id
+        self._stats: Dict[str, Any] = {
+            "calls": 0,
+            "tokens_in": 50,
+            "tokens_out": 200,
+            "cached_tokens_in": 0,
+            "reasoning_tokens_out": 0,
+            "errors": 0,
+            "estimated_cost_usd": 0.0001,
+            "provider": "fake",
+            "model": model_id,
+        }
+
+    async def generate_structured(
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: str,
+        response_model: Type[T],
+        max_tokens: int = 4096,
+    ) -> T:
+        self._stats["calls"] += 1
+        return response_model.model_validate(self._canned)
+
+    async def generate(self, messages, system_prompt, max_tokens=4096, temperature=0.7) -> str:
+        self._stats["calls"] += 1
+        return json.dumps(self._canned)
+
+    def get_stats(self) -> Dict[str, Any]:
+        return dict(self._stats)
+
+    def reset_stats(self) -> None:
+        self._stats["calls"] = 0
+
+
+# ---------------------------------------------------------------------------
+# 1. Import smoke test
+# ---------------------------------------------------------------------------
+
+
+class TestImport:
+    def test_imports_cleanly(self):
+        mod = _load_cli()
+        assert mod is not None
+
+    def test_pydantic_models_exist(self):
+        mod = _load_cli()
+        assert hasattr(mod, "PanelistReview")
+        assert hasattr(mod, "FactorFinding")
+        assert hasattr(mod, "PanelReview")
+
+    def test_reviewer_prompt_constant_exists(self):
+        mod = _load_cli()
+        assert hasattr(mod, "REVIEWER_PROMPT")
+        prompt = mod.REVIEWER_PROMPT
+        assert "skeptical UK housing" in prompt
+        assert "labelable_from_narrative" in prompt
+
+
+# ---------------------------------------------------------------------------
+# 2. Pydantic model constraints
+# ---------------------------------------------------------------------------
+
+
+class TestPydanticModels:
+    def test_factor_finding_frozen_and_forbids_extra(self):
+        mod = _load_cli()
+        ff = mod.FactorFinding(
+            factor_id="f1",
+            labelable_from_narrative=True,
+            definition_clear=True,
+            polarity_correct=True,
+            authority_grounded=True,
+            redundant_with=[],
+            flags=[],
+        )
+        with pytest.raises(Exception):
+            ff.factor_id = "mutated"  # type: ignore[misc]
+
+    def test_panelist_review_forbids_extra(self):
+        mod = _load_cli()
+        with pytest.raises(Exception):
+            mod.PanelistReview(
+                panelist_id="x",
+                per_factor_findings=[],
+                missing_factors_suggested=[],
+                overall_notes="",
+                extra_field_not_allowed="bad",  # type: ignore[call-arg]
+            )
+
+    def test_panel_review_frozen(self):
+        mod = _load_cli()
+        assert mod.PanelReview.model_config.get("frozen") is True
+
+
+# ---------------------------------------------------------------------------
+# 3. Determination stripping
+# ---------------------------------------------------------------------------
+
+
+class TestDeterminationStripping:
+    def test_strips_at_determination_header(self):
+        mod = _load_cli()
+        narrative = (
+            "The resident reported damp in March 2022.\n"
+            "The landlord failed to respond promptly.\n"
+            "\n"
+            "## Determination\n"
+            "The Ombudsman finds maladministration.\n"
+            "The landlord must pay £400."
+        )
+        stripped = mod.strip_determination(narrative)
+        assert "Determination" not in stripped
+        assert "The resident reported damp" in stripped
+
+    def test_strips_at_decision_header(self):
+        mod = _load_cli()
+        narrative = "Background facts here.\n\n## Decision\nThe landlord wins."
+        stripped = mod.strip_determination(narrative)
+        assert "Decision" not in stripped
+        assert "Background facts" in stripped
+
+    def test_strips_at_findings_header(self):
+        mod = _load_cli()
+        text = "Some facts.\n## Findings\nResults here."
+        stripped = mod.strip_determination(text)
+        assert "Findings" not in stripped
+
+    def test_strips_at_outcome_header(self):
+        mod = _load_cli()
+        text = "Pre-outcome text.\n## Outcome\nOutcome text."
+        stripped = mod.strip_determination(text)
+        assert "Outcome" not in stripped
+
+    def test_strips_at_order_header(self):
+        mod = _load_cli()
+        text = "Pre-order text.\n## Order\nOrder text."
+        stripped = mod.strip_determination(text)
+        assert "Order" not in stripped
+
+    def test_strips_at_compensation_header(self):
+        mod = _load_cli()
+        text = "Pre-compensation text.\n## Compensation\n£400 awarded."
+        stripped = mod.strip_determination(text)
+        assert "£400" not in stripped
+
+    def test_case_insensitive(self):
+        mod = _load_cli()
+        text = "Facts.\n## DETERMINATION\nResult."
+        stripped = mod.strip_determination(text)
+        assert "Result" not in stripped
+
+    def test_no_header_returns_full_text(self):
+        mod = _load_cli()
+        text = "Just narrative text with no determination section."
+        assert mod.strip_determination(text) == text
+
+    def test_h3_header_stripped(self):
+        mod = _load_cli()
+        text = "Facts.\n### Determination\nResult."
+        stripped = mod.strip_determination(text)
+        assert "Result" not in stripped
+
+    def test_excerpt_capped_at_1500_chars(self):
+        mod = _load_cli()
+        long_text = "A" * 3000
+        result = mod.cap_excerpt(long_text, max_chars=1500)
+        assert len(result) <= 1500
+
+
+# ---------------------------------------------------------------------------
+# 4. Domain pack loading
+# ---------------------------------------------------------------------------
+
+
+class TestDomainPackLoading:
+    def test_resolves_housing_repairs_social_v1(self):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        assert "factors" in pack
+        assert len(pack["factors"]) > 0
+
+    def test_loads_outcomes(self):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        assert "outcomes" in pack
+        assert any(o["id"] == "maladministration" for o in pack["outcomes"])
+
+    def test_loads_rubric(self):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        assert "rubric" in pack
+        assert len(pack["rubric"]) > 100  # non-trivial content
+
+    def test_unknown_domain_raises(self):
+        mod = _load_cli()
+        with pytest.raises(Exception):
+            mod.load_domain_pack("nonexistent.domain.v99", repo_root=_REPO_ROOT)
+
+
+# ---------------------------------------------------------------------------
+# 5. Panel class — dispatch without real LLM
+# ---------------------------------------------------------------------------
+
+
+class TestPanel:
+    def _make_3_clients(self, mod):
+        findings = [_make_finding(f) for f in FACTORS_3]
+        reviews = [
+            _canned_review("p1", findings, notes="all good"),
+            _canned_review("p2", findings, notes="all good"),
+            _canned_review("p3", findings, notes="all good"),
+        ]
+        return [FakeLLMClient(r, model_id=f"fake-{i}") for i, r in enumerate(reviews)]
+
+    def test_panel_runs_3_clients(self, tmp_path):
+        mod = _load_cli()
+        clients = self._make_3_clients(mod)
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        panel = mod.Panel(clients=clients)
+        reviews = asyncio.get_event_loop().run_until_complete(
+            panel.run(pack=pack, excerpts=[], seed=42)
+        )
+        assert len(reviews) == 3
+        for r in reviews:
+            assert isinstance(r, mod.PanelistReview)
+
+    def test_dry_run_does_not_call_client(self, tmp_path):
+        mod = _load_cli()
+        findings = [_make_finding(f) for f in FACTORS_3]
+        canned = _canned_review("p1", findings)
+        client = FakeLLMClient(canned)
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        panel = mod.Panel(clients=[client])
+        # dry_run=True — no LLM calls
+        result = asyncio.get_event_loop().run_until_complete(
+            panel.dry_run_info(pack=pack, excerpts=[], seed=42)
+        )
+        assert client.get_stats()["calls"] == 0
+        assert "prompt" in result or "system_prompt" in result  # returns preview dict
+
+
+# ---------------------------------------------------------------------------
+# 6. Aggregator — disagreement matrix
+# ---------------------------------------------------------------------------
+
+
+class TestAggregator:
+    def _make_reviews(self, mod):
+        """3 panelists; factor F1 flagged by all, F2 by 2, F3 by 1."""
+        # F1: all 3 say NOT labelable
+        # F2: 2 say NOT definition_clear
+        # F3: 1 says NOT authority_grounded
+        f1_bad = _make_finding("F1", labelable=False)
+        f1_good_def = _make_finding("F1", labelable=False)
+        f1_good_dup = _make_finding("F1", labelable=False)
+
+        f2_bad = _make_finding("F2", definition_clear=False)
+        f2_bad2 = _make_finding("F2", definition_clear=False)
+        f2_good = _make_finding("F2")
+
+        f3_p1_bad = _make_finding("F3", authority_grounded=False)
+        f3_p2_good = _make_finding("F3")
+        f3_p3_good = _make_finding("F3")
+
+        r1 = mod.PanelistReview.model_validate(_canned_review(
+            "p1", [f1_bad, f2_bad, f3_p1_bad], notes="p1"))
+        r2 = mod.PanelistReview.model_validate(_canned_review(
+            "p2", [f1_good_def, f2_bad2, f3_p2_good], notes="p2"))
+        r3 = mod.PanelistReview.model_validate(_canned_review(
+            "p3", [f1_good_dup, f2_good, f3_p3_good], notes="p3"))
+        return [r1, r2, r3]
+
+    def test_unanimous_flags_detected(self):
+        mod = _load_cli()
+        reviews = self._make_reviews(mod)
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+        # F1 is flagged (labelable=False) by all 3
+        unanimous = panel_review.unanimous_flags
+        assert any(e["factor_id"] == "F1" for e in unanimous), \
+            f"Expected F1 in unanimous flags, got: {unanimous}"
+
+    def test_majority_flags_detected(self):
+        mod = _load_cli()
+        reviews = self._make_reviews(mod)
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+        majority = panel_review.majority_flags
+        assert any(e["factor_id"] == "F2" for e in majority), \
+            f"Expected F2 in majority flags, got: {majority}"
+
+    def test_single_flags_detected(self):
+        mod = _load_cli()
+        reviews = self._make_reviews(mod)
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+        single = panel_review.single_flags
+        assert any(e["factor_id"] == "F3" for e in single), \
+            f"Expected F3 in single flags, got: {single}"
+
+    def test_matrix_has_all_factors(self):
+        mod = _load_cli()
+        reviews = self._make_reviews(mod)
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+        factor_ids = {row["factor_id"] for row in panel_review.disagreement_matrix}
+        assert {"F1", "F2", "F3"}.issubset(factor_ids)
+
+
+# ---------------------------------------------------------------------------
+# 7. Renderer — end-to-end artifact write
+# ---------------------------------------------------------------------------
+
+
+class TestRenderer:
+    def _make_panel_review(self, mod):
+        reviews = TestAggregator()._make_reviews(mod)
+        agg = mod.Aggregator(reviews)
+        return agg.aggregate()
+
+    def test_writes_artifact(self, tmp_path):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        panel_review = self._make_panel_review(mod)
+        out_path = tmp_path / "test_output.md"
+        renderer = mod.Renderer()
+        renderer.write(
+            panel_review=panel_review,
+            pack=pack,
+            output_path=out_path,
+            date_str="2026-05-06",
+        )
+        assert out_path.exists()
+        content = out_path.read_text()
+        assert "## Panel Composition" in content or "Panel" in content
+        assert "Disagreement Matrix" in content or "disagreement" in content.lower()
+        assert "Unanimous" in content or "unanimous" in content.lower()
+
+    def test_artifact_contains_cost_report(self, tmp_path):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        panel_review = self._make_panel_review(mod)
+        out_path = tmp_path / "test_cost.md"
+        renderer = mod.Renderer()
+        renderer.write(
+            panel_review=panel_review,
+            pack=pack,
+            output_path=out_path,
+            date_str="2026-05-06",
+        )
+        content = out_path.read_text()
+        # cost report section should mention tokens
+        assert "token" in content.lower() or "cost" in content.lower()
+
+    def test_artifact_contains_catalog_sha(self, tmp_path):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        panel_review = self._make_panel_review(mod)
+        out_path = tmp_path / "test_sha.md"
+        renderer = mod.Renderer()
+        renderer.write(
+            panel_review=panel_review,
+            pack=pack,
+            output_path=out_path,
+            date_str="2026-05-06",
+        )
+        content = out_path.read_text()
+        assert "sha" in content.lower() or "hash" in content.lower()
+
+
+# ---------------------------------------------------------------------------
+# 8. Full end-to-end with fake clients
+# ---------------------------------------------------------------------------
+
+
+class TestEndToEnd:
+    def _build_canned_for_real_factors(self, mod, panelist_id: str):
+        """Build a canned review that covers all 15 housing.repairs_social.v1 factors."""
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        factor_ids = [f["id"] for f in pack["factors"]]
+        findings = [_make_finding(fid) for fid in factor_ids]
+        return _canned_review(panelist_id, findings, notes=f"Review from {panelist_id}")
+
+    def test_end_to_end_produces_artifact(self, tmp_path):
+        mod = _load_cli()
+        canned_reviews = [
+            self._build_canned_for_real_factors(mod, f"panelist-{i}")
+            for i in range(3)
+        ]
+        clients = [FakeLLMClient(c, model_id=f"fake-{i}") for i, c in enumerate(canned_reviews)]
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+
+        panel = mod.Panel(clients=clients)
+        reviews = asyncio.get_event_loop().run_until_complete(
+            panel.run(pack=pack, excerpts=[], seed=42)
+        )
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+
+        out_path = tmp_path / "output.md"
+        renderer = mod.Renderer()
+        renderer.write(panel_review=panel_review, pack=pack, output_path=out_path, date_str="2026-05-06")
+        assert out_path.exists()
+        content = out_path.read_text()
+        assert len(content) > 500
+
+    def test_determinism_same_seed_same_output(self, tmp_path):
+        """Same seed + same canned outputs → identical artifact bodies (modulo date line)."""
+        mod = _load_cli()
+        canned = [self._build_canned_for_real_factors(mod, f"p{i}") for i in range(3)]
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+
+        def _run() -> str:
+            clients = [FakeLLMClient(c, model_id=f"fake-{i}") for i, c in enumerate(canned)]
+            panel = mod.Panel(clients=clients)
+            reviews = asyncio.get_event_loop().run_until_complete(
+                panel.run(pack=pack, excerpts=[], seed=42)
+            )
+            agg = mod.Aggregator(reviews)
+            pr = agg.aggregate()
+            out_path = tmp_path / f"out_{id(clients)}.md"
+            renderer = mod.Renderer()
+            renderer.write(panel_review=pr, pack=pack, output_path=out_path, date_str="2026-05-06")
+            lines = out_path.read_text().splitlines()
+            # Strip any line containing a wall-clock timestamp (iso datetime)
+            return "\n".join(
+                ln for ln in lines
+                if not any(tok in ln for tok in ["generated_at", "Generated at", "generated at"])
+            )
+
+        run1 = _run()
+        run2 = _run()
+        assert run1 == run2
+
+
+# ---------------------------------------------------------------------------
+# 9. CLI entry-point — dry-run does not call LLM
+# ---------------------------------------------------------------------------
+
+
+class TestCLIDryRun:
+    def test_dry_run_exits_0_and_no_llm_calls(self, tmp_path, capsys):
+        mod = _load_cli()
+        # Patch the factory so no real client is instantiated
+        captured_calls = []
+
+        class _SpyClient(FakeLLMClient):
+            async def generate_structured(self, *a, **kw):
+                captured_calls.append(1)
+                return await super().generate_structured(*a, **kw)
+
+        findings = [_make_finding(f) for f in FACTORS_3]
+        canned = _canned_review("spy", findings)
+        spy = _SpyClient(canned)
+
+        out_path = tmp_path / "review.md"
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--dry-run",
+                "--output", str(out_path),
+                "--panelists", "1",
+            ],
+            injected_clients=[spy],
+            repo_root=_REPO_ROOT,
+        )
+        assert exit_code == 0
+        assert len(captured_calls) == 0, "dry-run must NOT call LLM"
+        assert not out_path.exists(), "dry-run must NOT write artifact"
+
+    def test_execute_mode_writes_artifact(self, tmp_path):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        factor_ids = [f["id"] for f in pack["factors"]]
+        canned = _canned_review(
+            "fake-model",
+            [_make_finding(fid) for fid in factor_ids],
+        )
+        client = FakeLLMClient(canned, model_id="fake-model")
+
+        out_path = tmp_path / "panel_review.md"
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--output", str(out_path),
+                "--panelists", "1",
+                "--seed", "42",
+            ],
+            injected_clients=[client],
+            repo_root=_REPO_ROOT,
+        )
+        assert exit_code == 0
+        assert out_path.exists()
+
+    def test_missing_domain_exits_nonzero(self, tmp_path, capsys):
+        mod = _load_cli()
+        out_path = tmp_path / "x.md"
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "does.not.exist.v99",
+                "--execute",
+                "--output", str(out_path),
+            ],
+            injected_clients=[],
+            repo_root=_REPO_ROOT,
+        )
+        assert exit_code != 0
