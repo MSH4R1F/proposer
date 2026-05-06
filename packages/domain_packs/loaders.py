@@ -22,6 +22,40 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 
 # ---------------------------------------------------------------------------
+# Private loader helper
+# ---------------------------------------------------------------------------
+
+
+def _load_yaml_into(model_cls: type[BaseModel], path: Path | str, label: str) -> Any:
+    """Common loader pipeline used by every domain-pack model.
+
+    Catches FileNotFoundError, yaml.YAMLError, and ValidationError, and
+    re-raises as ValueError with actionable messages. Centralising this
+    means that adding behaviour later (e.g. encoding fallback, IOError
+    handling) applies to every loader.
+    """
+    path = Path(path)
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            data: Any = yaml.safe_load(fh)
+    except FileNotFoundError as exc:
+        raise ValueError(f"{label} YAML file not found: {path}") from exc
+    except yaml.YAMLError as exc:
+        raise ValueError(f"YAML parse error in {path}: {exc}") from exc
+    if data is None:
+        raise ValueError(f"YAML file is empty: {path}")
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"YAML file {path} must contain a mapping at top level, "
+            f"got {type(data).__name__}"
+        )
+    try:
+        return model_cls.model_validate(data)
+    except ValidationError as exc:
+        raise ValueError(f"{label} validation failed for {path.name}:\n{exc}") from exc
+
+
+# ---------------------------------------------------------------------------
 # Controlled vocabularies
 # ---------------------------------------------------------------------------
 
@@ -96,29 +130,7 @@ class FactorCatalog(BaseModel):
         ValueError
             If the YAML cannot be parsed, is empty, or fails Pydantic validation.
         """
-        path = Path(path)
-        try:
-            with path.open("r", encoding="utf-8") as fh:
-                data: Any = yaml.safe_load(fh)
-        except FileNotFoundError as exc:
-            raise ValueError(f"Factor catalog file not found: {path}") from exc
-        except yaml.YAMLError as exc:
-            raise ValueError(f"YAML parse error in {path}: {exc}") from exc
-
-        if data is None:
-            raise ValueError(f"YAML file is empty: {path}")
-        if not isinstance(data, dict):
-            raise ValueError(
-                f"YAML file {path} must contain a mapping at top level, "
-                f"got {type(data).__name__}"
-            )
-
-        try:
-            return cls.model_validate(data)
-        except ValidationError as exc:
-            raise ValueError(
-                f"Factor catalog validation failed for {path.name}:\n{exc}"
-            ) from exc
+        return _load_yaml_into(cls, path, label="Factor catalog")
 
 
 # ===========================================================================
@@ -147,7 +159,7 @@ class OutcomeSchema(BaseModel):
     outcomes: List[OutcomeEntry]
 
     @classmethod
-    def from_yaml(cls, path: "Path | str") -> "OutcomeSchema":
+    def from_yaml(cls, path: Path | str) -> "OutcomeSchema":
         """Load an OutcomeSchema from a YAML file.
 
         Raises
@@ -155,29 +167,7 @@ class OutcomeSchema(BaseModel):
         ValueError
             If the file is missing, unparseable, empty, or fails validation.
         """
-        path = Path(path)
-        try:
-            with path.open("r", encoding="utf-8") as fh:
-                data: Any = yaml.safe_load(fh)
-        except FileNotFoundError as exc:
-            raise ValueError(f"Outcomes YAML file not found: {path}") from exc
-        except yaml.YAMLError as exc:
-            raise ValueError(f"YAML parse error in {path}: {exc}") from exc
-
-        if data is None:
-            raise ValueError(f"YAML file is empty: {path}")
-        if not isinstance(data, dict):
-            raise ValueError(
-                f"YAML file {path} must contain a mapping at top level, "
-                f"got {type(data).__name__}"
-            )
-
-        try:
-            return cls.model_validate(data)
-        except ValidationError as exc:
-            raise ValueError(
-                f"OutcomeSchema validation failed for {path.name}:\n{exc}"
-            ) from exc
+        return _load_yaml_into(cls, path, label="Outcome schema")
 
 
 # ===========================================================================
@@ -206,7 +196,7 @@ class RemedySchema(BaseModel):
     remedies: List[RemedyEntry]
 
     @classmethod
-    def from_yaml(cls, path: "Path | str") -> "RemedySchema":
+    def from_yaml(cls, path: Path | str) -> "RemedySchema":
         """Load a RemedySchema from a YAML file.
 
         Raises
@@ -214,29 +204,7 @@ class RemedySchema(BaseModel):
         ValueError
             If the file is missing, unparseable, empty, or fails validation.
         """
-        path = Path(path)
-        try:
-            with path.open("r", encoding="utf-8") as fh:
-                data: Any = yaml.safe_load(fh)
-        except FileNotFoundError as exc:
-            raise ValueError(f"Remedies YAML file not found: {path}") from exc
-        except yaml.YAMLError as exc:
-            raise ValueError(f"YAML parse error in {path}: {exc}") from exc
-
-        if data is None:
-            raise ValueError(f"YAML file is empty: {path}")
-        if not isinstance(data, dict):
-            raise ValueError(
-                f"YAML file {path} must contain a mapping at top level, "
-                f"got {type(data).__name__}"
-            )
-
-        try:
-            return cls.model_validate(data)
-        except ValidationError as exc:
-            raise ValueError(
-                f"RemedySchema validation failed for {path.name}:\n{exc}"
-            ) from exc
+        return _load_yaml_into(cls, path, label="Remedy schema")
 
 
 # ===========================================================================
@@ -339,7 +307,7 @@ class RetrievalProfile(BaseModel):
     notes: Optional[List[str]] = None
 
     @classmethod
-    def from_yaml(cls, path: "Path | str") -> "RetrievalProfile":
+    def from_yaml(cls, path: Path | str) -> "RetrievalProfile":
         """Load a RetrievalProfile from a YAML file.
 
         Raises
@@ -347,29 +315,7 @@ class RetrievalProfile(BaseModel):
         ValueError
             If the file is missing, unparseable, empty, or fails validation.
         """
-        path = Path(path)
-        try:
-            with path.open("r", encoding="utf-8") as fh:
-                data: Any = yaml.safe_load(fh)
-        except FileNotFoundError as exc:
-            raise ValueError(f"Retrieval profile YAML file not found: {path}") from exc
-        except yaml.YAMLError as exc:
-            raise ValueError(f"YAML parse error in {path}: {exc}") from exc
-
-        if data is None:
-            raise ValueError(f"YAML file is empty: {path}")
-        if not isinstance(data, dict):
-            raise ValueError(
-                f"YAML file {path} must contain a mapping at top level, "
-                f"got {type(data).__name__}"
-            )
-
-        try:
-            return cls.model_validate(data)
-        except ValidationError as exc:
-            raise ValueError(
-                f"RetrievalProfile validation failed for {path.name}:\n{exc}"
-            ) from exc
+        return _load_yaml_into(cls, path, label="Retrieval profile")
 
 
 # ===========================================================================
@@ -396,7 +342,7 @@ class GraphQualityGate(BaseModel):
     notes: Optional[List[str]] = None
 
     @classmethod
-    def from_yaml(cls, path: "Path | str") -> "GraphQualityGate":
+    def from_yaml(cls, path: Path | str) -> "GraphQualityGate":
         """Load a GraphQualityGate from a YAML file.
 
         Raises
@@ -404,26 +350,4 @@ class GraphQualityGate(BaseModel):
         ValueError
             If the file is missing, unparseable, empty, or fails validation.
         """
-        path = Path(path)
-        try:
-            with path.open("r", encoding="utf-8") as fh:
-                data: Any = yaml.safe_load(fh)
-        except FileNotFoundError as exc:
-            raise ValueError(f"Graph quality gate YAML file not found: {path}") from exc
-        except yaml.YAMLError as exc:
-            raise ValueError(f"YAML parse error in {path}: {exc}") from exc
-
-        if data is None:
-            raise ValueError(f"YAML file is empty: {path}")
-        if not isinstance(data, dict):
-            raise ValueError(
-                f"YAML file {path} must contain a mapping at top level, "
-                f"got {type(data).__name__}"
-            )
-
-        try:
-            return cls.model_validate(data)
-        except ValidationError as exc:
-            raise ValueError(
-                f"GraphQualityGate validation failed for {path.name}:\n{exc}"
-            ) from exc
+        return _load_yaml_into(cls, path, label="Graph quality gate")

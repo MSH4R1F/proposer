@@ -392,7 +392,7 @@ def test_requires_evidence_defaults_true():
 def test_from_yaml_raises_value_error_for_missing_file(tmp_path):
     """from_yaml must raise ValueError (not FileNotFoundError) for a missing path."""
     missing = tmp_path / "does_not_exist.yaml"
-    with pytest.raises(ValueError, match="Factor catalog file not found"):
+    with pytest.raises(ValueError, match="Factor catalog YAML file not found"):
         FactorCatalog.from_yaml(missing)
 
 
@@ -457,18 +457,6 @@ def test_factor_entry_rejects_unknown_bucket_strategy(tmp_path):
 # B2-1 / B2-7: YAML files exist and load without errors
 # ---------------------------------------------------------------------------
 
-EXPECTED_OUTCOME_IDS = frozenset(
-    {
-        "no_maladministration",
-        "service_failure",
-        "maladministration",
-        "severe_maladministration",
-        "reasonable_redress",
-        "outside_jurisdiction",
-        "resolved_with_intervention",
-    }
-)
-
 EXPECTED_REMEDY_IDS = frozenset(
     {
         "compensation_ordered",
@@ -498,8 +486,8 @@ def test_outcomes_yaml_ids_match_closed_set():
     """outcomes.yaml must contain exactly the 7 closed outcome IDs."""
     schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
     actual_ids = frozenset(o.id for o in schema.outcomes)
-    assert actual_ids == EXPECTED_OUTCOME_IDS, (
-        f"outcomes.yaml IDs mismatch.\nExpected: {sorted(EXPECTED_OUTCOME_IDS)}\n"
+    assert actual_ids == CLOSED_OUTCOME_IDS, (
+        f"outcomes.yaml IDs mismatch.\nExpected: {sorted(CLOSED_OUTCOME_IDS)}\n"
         f"Got: {sorted(actual_ids)}"
     )
 
@@ -522,7 +510,7 @@ def test_outcomes_yaml_domain_id():
 def test_outcomes_schema_is_frozen():
     """B2-6: OutcomeSchema and its entries must be frozen."""
     schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         schema.outcomes = []  # type: ignore[misc]
 
 
@@ -563,7 +551,7 @@ def test_remedies_yaml_domain_id():
 def test_remedies_schema_is_frozen():
     """B2-6: RemedySchema must be frozen."""
     schema = RemedySchema.from_yaml(REMEDIES_YAML)
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         schema.remedies = []  # type: ignore[misc]
 
 
@@ -610,7 +598,7 @@ def test_retrieval_profile_domain_id():
 def test_retrieval_profile_is_frozen():
     """B2-6: RetrievalProfile must be frozen."""
     profile = RetrievalProfile.from_yaml(RETRIEVAL_PROFILE_YAML)
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         profile.domain_id = "other"  # type: ignore[misc]
 
 
@@ -641,7 +629,7 @@ def test_graph_quality_gate_domain_id():
 def test_graph_quality_gate_is_frozen():
     """B2-6: GraphQualityGate must be frozen."""
     gate = GraphQualityGate.from_yaml(GRAPH_QUALITY_GATE_YAML)
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         gate.domain_id = "other"  # type: ignore[misc]
 
 
