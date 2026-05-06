@@ -19,6 +19,7 @@ import json
 import shutil
 import sys
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -40,7 +41,12 @@ from eval.auto_label.append_gate import (  # noqa: E402
     MANDATORY_REVIEW_FIELDS,
     assert_real_gold_appendable,
 )
-from eval.schema import GoldCase  # noqa: E402
+from eval.schema import GoldCase, _legacy_winner_for  # noqa: E402
+from migrate_balanced50_to_determination_schema import (  # noqa: E402
+    _OUTCOME_NORMALIZED_RE,
+    map_outcome_normalized_to_determination,
+    split_amount_by_determination,
+)
 
 
 DEFAULT_RUN_ID = "housing-ombudsman-stratified-50-review-20260504"
@@ -85,6 +91,65 @@ def _mandatory_paths_from_case(case_payload: Mapping[str, Any]) -> set[str]:
     return paths
 
 
+def _read_outcome_normalized_from_packet(packet_path: Path) -> str | None:
+    """Extract the manifest's ``outcome_normalized`` tag from a review packet.
+
+    The prepare script renders this as a Markdown bullet of the form
+    ``- Outcome normalized: \`<tag>\``` inside the ``## Manifest Strata``
+    section. Returns ``None`` if the file is missing or the tag is absent.
+    """
+    if not packet_path.exists():
+        return None
+    text = packet_path.read_text(encoding="utf-8")
+    match = _OUTCOME_NORMALIZED_RE.search(text)
+    if not match:
+        return None
+    return match.group(1).strip().lower()
+
+
+def _apply_determination_to_case_payload(
+    case_payload: dict[str, Any],
+    outcome_normalized: str | None,
+) -> None:
+    """Populate ``determination``, ``overall_winner_legacy`` and the
+    amount-split fields on ``case_payload['ground_truth_outcome']`` from the
+    manifest's ``outcome_normalized`` tag.
+
+    Mutates ``case_payload`` in place. No-op when ``outcome_normalized`` is
+    missing or the tag is unknown — INV-D4 will then reject the case so the
+    reviewer fixes it manually before promotion succeeds.
+    """
+    if not outcome_normalized:
+        return
+    gto = case_payload.get("ground_truth_outcome")
+    if not isinstance(gto, dict):
+        return
+    try:
+        determination = map_outcome_normalized_to_determination(
+            str(outcome_normalized).lower().strip()
+        )
+    except KeyError:
+        return
+
+    try:
+        total = Decimal(str(gto.get("total_awarded_gbp", "0")))
+    except (InvalidOperation, ValueError):
+        return
+    try:
+        split = split_amount_by_determination(determination, total)
+    except ValueError:
+        # Internal inconsistency (e.g. outside_jurisdiction with non-zero
+        # total). Leave determination unset so INV-D4 surfaces the case for
+        # manual fix-up rather than promoting wrong values.
+        return
+
+    gto["determination"] = determination.value
+    gto["overall_winner_legacy"] = _legacy_winner_for(determination).value
+    for key, value in split.items():
+        gto[key] = str(value) if value is not None else None
+    case_payload["ground_truth_outcome"] = gto
+
+
 def _agreement_rate(artifact: Mapping[str, Any], queues: Mapping[str, Any]) -> float:
     grounding_a = _artifact_grounding(dict(artifact), "a")
     grounding_b = _artifact_grounding(dict(artifact), "b")
@@ -111,10 +176,18 @@ def _normalise_decision(
     queues: Mapping[str, Any],
     reviewer: str,
     reviewed_at: datetime,
+    review_packet_path: Path | None = None,
 ) -> dict[str, Any]:
     decision = copy.deepcopy(dict(draft))
     case_payload = dict(decision["case"])
     prov = dict(decision["labeling_provenance"])
+
+    if review_packet_path is not None:
+        outcome_normalized = _read_outcome_normalized_from_packet(
+            review_packet_path
+        )
+        _apply_determination_to_case_payload(case_payload, outcome_normalized)
+        decision["case"] = case_payload
 
     mandatory_paths = _mandatory_paths_from_case(case_payload)
     existing = list(prov.get("field_provenance") or [])
@@ -217,12 +290,17 @@ def _promote(args: argparse.Namespace) -> dict[str, Any]:
         )
         draft_path = _repo_path(packet["draft_decision_path"])
         draft = _read_json(draft_path)
+        review_packet_path: Path | None = None
+        packet_path_value = packet.get("review_packet_path")
+        if packet_path_value:
+            review_packet_path = _repo_path(packet_path_value)
         decision = _normalise_decision(
             draft,
             artifact=artifact,
             queues=queues,
             reviewer=args.reviewer,
             reviewed_at=reviewed_at,
+            review_packet_path=review_packet_path,
         )
 
         decision_path = decisions_dir / f"{case_id}.reviewed_decision.json"

@@ -562,6 +562,90 @@ def _quote_from_candidate(
     return _clean_text(paragraphs[0].text), paragraphs[0].provenance()
 
 
+def _build_determination_suggestion_block(
+    outcome_normalized: str | None,
+    total_awarded_gbp: object | None,
+) -> str | None:
+    """Return the '## Determination (auto-suggested)' section, or ``None`` if
+    we cannot suggest one (missing or unknown ``outcome_normalized``).
+
+    The suggestion is derived deterministically from ``outcome_normalized`` via
+    the canonical mapping in
+    ``docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md``. The
+    reviewer must confirm or override before promoting the case to gold.
+    """
+    if not outcome_normalized:
+        return None
+    try:
+        # Prefer absolute package-style import when the repo root is on
+        # sys.path (e.g. when invoked via `python -m scripts.eval.<name>`).
+        from scripts.eval.migrate_balanced50_to_determination_schema import (  # type: ignore[import-not-found]
+            map_outcome_normalized_to_determination,
+            split_amount_by_determination,
+        )
+    except ImportError:
+        # Fall back to a sibling-module import when the script lives next to
+        # the migration helper but the package path is not configured.
+        try:
+            from migrate_balanced50_to_determination_schema import (  # type: ignore[import-not-found]
+                map_outcome_normalized_to_determination,
+                split_amount_by_determination,
+            )
+        except ImportError:
+            return None
+
+    try:
+        determination = map_outcome_normalized_to_determination(
+            str(outcome_normalized).lower().strip()
+        )
+    except KeyError:
+        return None
+
+    total: Decimal | None = None
+    if total_awarded_gbp is not None:
+        try:
+            total = Decimal(str(total_awarded_gbp))
+        except (InvalidOperation, ValueError):
+            total = None
+
+    lines = [
+        "## Determination (auto-suggested)",
+        "",
+        (
+            "The following are deterministic suggestions from the manifest's"
+            " `outcome_normalized` tag. **Reviewer: confirm or override before"
+            " promoting to gold.** See"
+            " `docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`."
+        ),
+        "",
+        f"- determination: `{determination.value}`",
+    ]
+    if total is not None:
+        try:
+            split = split_amount_by_determination(determination, total)
+        except ValueError as exc:
+            lines.append(f"- amount split: HUMAN-REVIEW REQUIRED ({exc})")
+        else:
+            for key, value in split.items():
+                if value is not None:
+                    lines.append(f"- {key}: `{value}`")
+                else:
+                    lines.append(f"- {key}: `null`")
+    else:
+        lines.append(
+            "- amount split: total_awarded_gbp not yet set; "
+            "defer until reviewer fills it."
+        )
+
+    lines.append("")
+    lines.append(
+        "For mixed determinations (raw outcome contains `;`), the reviewer"
+        " should also fill `determination_per_complaint` with one entry per"
+        " complaint head."
+    )
+    return "\n".join(lines)
+
+
 def _review_markdown(
     row: dict[str, Any],
     *,
@@ -578,6 +662,13 @@ def _review_markdown(
         f"- score={c.score} amount={c.amount} span={c.provenance} context={c.context[:500]}"
         for c in top_amounts
     ) or "- No money candidates found."
+    determination_block = _build_determination_suggestion_block(
+        outcome_normalized=row.get("outcome_normalized"),
+        total_awarded_gbp=case["ground_truth_outcome"].get("total_awarded_gbp"),
+    )
+    determination_section = (
+        f"\n\n{determination_block}\n" if determination_block else ""
+    )
     return f"""# Housing Ombudsman Gold Review Packet
 
 Case: `{row['case_id']}`
@@ -594,7 +685,7 @@ URL: {row.get('source_url')}
 - Primary matter type: `{row.get('primary_matter_type')}`
 - Decision date: `{row.get('decision_date')}`
 - Landlord: `{row.get('landlord_name')}`
-
+{determination_section}
 ## Candidate Gold Fields
 
 - Draft winner: `{case['ground_truth_outcome']['overall_winner']}`
