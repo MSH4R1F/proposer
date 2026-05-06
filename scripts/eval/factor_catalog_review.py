@@ -46,6 +46,11 @@ _PACKAGES_DIR = str(_REPO_ROOT / "packages")
 if _PACKAGES_DIR not in sys.path:
     sys.path.insert(0, _PACKAGES_DIR)
 
+# Load .env early so ANTHROPIC_API_KEY / OPENAI_API_KEY / LLM_* vars are set
+# before any client construction.  Mirrors scripts/eval/predict_all.py:50,57.
+from dotenv import load_dotenv  # noqa: E402 (after path fixup)
+load_dotenv(_REPO_ROOT / ".env")
+
 from llm_orchestrator.clients.base import BaseLLMClient  # noqa: E402 (after path fixup)
 
 T = TypeVar("T", bound=BaseModel)
@@ -388,7 +393,9 @@ class Panel:
     async def _call_one(
         self, client: BaseLLMClient, user_msg: str
     ) -> PanelistReview:
-        model_id = getattr(client, "model", "unknown-model")
+        # Prefer the explicit provider:model label set by _build_clients_from_providers;
+        # fall back to bare model attribute for injected-test clients.
+        model_id = getattr(client, "_panelist_label", None) or getattr(client, "model", "unknown-model")
         # Inject the model identifier into the system prompt so the panelist
         # fills in panelist_id correctly (the fake client ignores this and
         # returns its canned value; real clients will use it).
@@ -408,7 +415,10 @@ class Panel:
     ) -> Dict[str, Any]:
         """Return a preview dict without calling any LLM (synchronous)."""
         user_msg = build_user_message(pack, excerpts)
-        model_ids = [getattr(c, "model", "unknown") for c in self.clients]
+        model_ids = [
+            getattr(c, "_panelist_label", None) or getattr(c, "model", "unknown")
+            for c in self.clients
+        ]
         prompt_preview = REVIEWER_PROMPT[:400] + "\n...[truncated]..."
         return {
             "panelist_count": len(self.clients),
@@ -773,6 +783,71 @@ class Renderer:
 
 
 # ---------------------------------------------------------------------------
+# Multi-provider client factory helpers
+# ---------------------------------------------------------------------------
+
+_SUPPORTED_PROVIDERS = frozenset({"anthropic", "openai"})
+
+
+def _build_clients_from_providers(
+    providers_csv: str,
+) -> "List[BaseLLMClient] | str":
+    """Parse *providers_csv* (``provider:model[,provider:model,...]``) and
+    construct one :class:`BaseLLMClient` per entry.
+
+    Returns a list of clients on success, or an error message string on failure.
+    Supported providers: ``anthropic``, ``openai``.
+    """
+    import os
+
+    pairs = [p.strip() for p in providers_csv.split(",") if p.strip()]
+    if not pairs:
+        return "Empty --panelist-providers CSV."
+
+    clients: List[BaseLLMClient] = []
+    for pair in pairs:
+        if ":" not in pair:
+            return (
+                f"Invalid provider:model pair {pair!r}: missing colon. "
+                f"Format: provider:model (e.g. anthropic:claude-opus-4-20250514)."
+            )
+        provider, _, model_id = pair.partition(":")
+        if not model_id:
+            return f"Invalid provider:model pair {pair!r}: empty model ID after colon."
+        if provider not in _SUPPORTED_PROVIDERS:
+            return (
+                f"Unknown provider {provider!r} in {pair!r}. "
+                f"Supported: {sorted(_SUPPORTED_PROVIDERS)}."
+            )
+
+        if provider == "anthropic":
+            from llm_orchestrator.clients.claude_client import ClaudeClient  # noqa: PLC0415
+            api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+            if not api_key:
+                return (
+                    "ANTHROPIC_API_KEY is not set. "
+                    "Set it in .env or the environment before using anthropic provider."
+                )
+            client: BaseLLMClient = ClaudeClient(api_key=api_key, model=model_id)
+        else:  # openai
+            from llm_orchestrator.clients.openai_client import OpenAIClient  # noqa: PLC0415
+            api_key = os.environ.get("OPENAI_API_KEY", "")
+            if not api_key:
+                return (
+                    "OPENAI_API_KEY is not set. "
+                    "Set it in .env or the environment before using openai provider."
+                )
+            client = OpenAIClient(api_key=api_key, model=model_id)
+
+        # Tag the client so Panel._call_one uses the full provider:model label
+        # as the panelist_id in the system-prompt injection.
+        client._panelist_label = pair  # type: ignore[attr-defined]
+        clients.append(client)
+
+    return clients
+
+
+# ---------------------------------------------------------------------------
 # CLI entry-point
 # ---------------------------------------------------------------------------
 
@@ -806,6 +881,17 @@ def cli_main(
         "--corpus-path",
         default=None,
         help="Override path to corpus JSONL for excerpt selection",
+    )
+    parser.add_argument(
+        "--panelist-providers",
+        default=None,
+        help=(
+            "CSV of provider:model pairs for explicit multi-model panels, e.g. "
+            "'anthropic:claude-opus-4-20250514,openai:gpt-4o'. "
+            "When set, constructs one client per pair directly (bypassing the role-router). "
+            "Overrides --panelists count with a warning if both are given. "
+            "Supported providers: anthropic, openai."
+        ),
     )
 
     args = parser.parse_args(argv)
@@ -852,6 +938,22 @@ def cli_main(
             while len(clients) < args.panelists:
                 clients.append(clients[0])
         clients = clients[: args.panelists]
+    elif args.panelist_providers:
+        # Explicit multi-provider panel — construct one client per provider:model pair.
+        result = _build_clients_from_providers(args.panelist_providers)
+        if isinstance(result, str):
+            # Error message returned
+            print(f"Error: {result}", file=sys.stderr)
+            return 1
+        clients = result
+        # Override --panelists with the derived count, warning if they differ.
+        if args.panelists != 3 and args.panelists != len(clients):
+            print(
+                f"WARNING: --panelists={args.panelists} overridden by "
+                f"--panelist-providers CSV length ({len(clients)}). "
+                f"Using {len(clients)} panelists.",
+                file=sys.stderr,
+            )
     else:
         try:
             from llm_orchestrator.clients.factory import get_llm_client

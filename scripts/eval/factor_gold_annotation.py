@@ -45,6 +45,11 @@ _PACKAGES_DIR = str(_REPO_ROOT / "packages")
 if _PACKAGES_DIR not in sys.path:
     sys.path.insert(0, _PACKAGES_DIR)
 
+# Load .env early so ANTHROPIC_API_KEY / OPENAI_API_KEY / LLM_* vars are set
+# before any client construction.  Mirrors scripts/eval/predict_all.py:50,57.
+from dotenv import load_dotenv  # noqa: E402 (after path fixup)
+load_dotenv(_REPO_ROOT / ".env")
+
 from llm_orchestrator.clients.base import BaseLLMClient  # noqa: E402
 
 T = TypeVar("T", bound=BaseModel)
@@ -689,6 +694,83 @@ def print_alpha_summary(alphas: List[PerFactorAlpha]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Multi-provider annotator factory helpers
+# ---------------------------------------------------------------------------
+
+_SUPPORTED_PROVIDERS = frozenset({"anthropic", "openai"})
+_REQUIRED_ANNOTATOR_COUNT = 2
+
+
+def _build_annotator_clients_from_providers(
+    providers_csv: str,
+) -> "List[BaseLLMClient] | str":
+    """Parse *providers_csv* (``provider:model,provider:model``) and construct
+    exactly 2 :class:`BaseLLMClient` instances.
+
+    Returns a list of 2 clients on success, or an error message string on
+    failure.  Supported providers: ``anthropic``, ``openai``.
+    """
+    import os
+
+    pairs = [p.strip() for p in providers_csv.split(",") if p.strip()]
+    if len(pairs) != _REQUIRED_ANNOTATOR_COUNT:
+        return (
+            f"--annotator-providers must have exactly {_REQUIRED_ANNOTATOR_COUNT} "
+            f"comma-separated provider:model entries, got {len(pairs)}: {providers_csv!r}."
+        )
+
+    clients: List[BaseLLMClient] = []
+    for pair in pairs:
+        if ":" not in pair:
+            return (
+                f"Invalid provider:model pair {pair!r}: missing colon. "
+                f"Format: provider:model (e.g. anthropic:claude-sonnet-4-20250514)."
+            )
+        provider, _, model_id = pair.partition(":")
+        if not model_id:
+            return f"Invalid provider:model pair {pair!r}: empty model ID after colon."
+        if provider not in _SUPPORTED_PROVIDERS:
+            return (
+                f"Unknown provider {provider!r} in {pair!r}. "
+                f"Supported: {sorted(_SUPPORTED_PROVIDERS)}."
+            )
+
+        if provider == "anthropic":
+            from llm_orchestrator.clients.claude_client import ClaudeClient  # noqa: PLC0415
+            api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+            if not api_key:
+                return (
+                    "ANTHROPIC_API_KEY is not set. "
+                    "Set it in .env or the environment before using anthropic provider."
+                )
+            client: BaseLLMClient = ClaudeClient(api_key=api_key, model=model_id)
+        else:  # openai
+            from llm_orchestrator.clients.openai_client import OpenAIClient  # noqa: PLC0415
+            api_key = os.environ.get("OPENAI_API_KEY", "")
+            if not api_key:
+                return (
+                    "OPENAI_API_KEY is not set. "
+                    "Set it in .env or the environment before using openai provider."
+                )
+            client = OpenAIClient(api_key=api_key, model=model_id)
+
+        # Tag the client so annotator_id is the full provider:model label.
+        client._annotator_label = pair  # type: ignore[attr-defined]
+        clients.append(client)
+
+    return clients
+
+
+def _annotator_id_from_client(client: BaseLLMClient, fallback: str) -> str:
+    """Return the annotator_id to use for *client*.
+
+    Priority: ``_annotator_label`` (set by the multi-provider factory) >
+    *fallback* (the value from ``--annotators`` or the default).
+    """
+    return getattr(client, "_annotator_label", None) or fallback
+
+
+# ---------------------------------------------------------------------------
 # CLI entry-point
 # ---------------------------------------------------------------------------
 
@@ -747,7 +829,23 @@ def cli_main(
     parser.add_argument(
         "--annotators",
         default=_DEFAULT_ANNOTATORS,
-        help=f"Comma-separated model IDs for 2 annotators (default: {_DEFAULT_ANNOTATORS!r})",
+        help=(
+            f"Comma-separated label IDs for 2 annotators (default: {_DEFAULT_ANNOTATORS!r}). "
+            "When --injected-clients is used in tests, acts as label-only override. "
+            "For real-LLM execution, prefer --annotator-providers."
+        ),
+    )
+    parser.add_argument(
+        "--annotator-providers",
+        default=None,
+        help=(
+            "CSV of exactly 2 provider:model pairs for explicit multi-model annotation, e.g. "
+            "'anthropic:claude-sonnet-4-20250514,openai:gpt-4o'. "
+            "Constructs clients directly (bypassing the role-router). "
+            "annotator_id becomes 'provider:model'. "
+            "Supported providers: anthropic, openai. "
+            "Falls back to two copies of get_llm_client(LLMRole.PREDICTION) if unset."
+        ),
     )
     parser.add_argument(
         "--seed",
@@ -828,7 +926,24 @@ def cli_main(
                 file=sys.stderr,
             )
             return 1
+        # annotator_ids: respect --annotators as label-only override when clients are injected.
+        # (Backwards compat for tests that pass injected_clients with explicit annotator_ids.)
+    elif args.annotator_providers:
+        # Explicit multi-provider panel — construct one client per pair, derive annotator_ids.
+        result = _build_annotator_clients_from_providers(args.annotator_providers)
+        if isinstance(result, str):
+            print(f"Error: {result}", file=sys.stderr)
+            return 1
+        clients = result
+        # Override annotator_ids with the provider:model labels from the CSV.
+        annotator_ids = [pair.strip() for pair in args.annotator_providers.split(",") if pair.strip()]
     else:
+        print(
+            "WARNING: --annotator-providers not set; falling back to two copies of "
+            "get_llm_client(LLMRole.PREDICTION). Both annotators will use the same model — "
+            "IAA scores will be inflated and the panel will not represent diverse opinions.",
+            file=sys.stderr,
+        )
         try:
             from llm_orchestrator.clients.factory import get_llm_client  # noqa: PLC0415
             from llm_orchestrator.clients.types import LLMRole  # noqa: PLC0415

@@ -833,3 +833,153 @@ class TestPaddingWarning:
         assert "1" in captured.err and "3" in captured.err, (
             f"Expected counts (1 provided, 3 requested) in warning, got: {captured.err!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# 14. --panelist-providers CSV parsing (new flag)
+# ---------------------------------------------------------------------------
+
+
+class TestPanelistProvidersParser:
+    """Tests for _build_clients_from_providers (offline — no real API calls)."""
+
+    def _load(self):
+        return _load_cli()
+
+    def test_missing_colon_returns_error_string(self):
+        """A pair with no colon should return an error string."""
+        mod = self._load()
+        result = mod._build_clients_from_providers("anthropic_claude-opus-4-20250514")
+        assert isinstance(result, str)
+        assert "colon" in result.lower() or "missing" in result.lower()
+
+    def test_empty_model_id_returns_error_string(self):
+        """A pair like 'anthropic:' (no model) should return an error string."""
+        mod = self._load()
+        result = mod._build_clients_from_providers("anthropic:")
+        assert isinstance(result, str)
+        assert "empty model" in result.lower()
+
+    def test_unknown_provider_returns_error_string(self):
+        """A pair with an unsupported provider returns an error string."""
+        mod = self._load()
+        result = mod._build_clients_from_providers("cohere:command-r")
+        assert isinstance(result, str)
+        assert "cohere" in result or "Unknown provider" in result
+
+    def test_empty_csv_returns_error_string(self):
+        """An empty or whitespace-only CSV returns an error string."""
+        mod = self._load()
+        result = mod._build_clients_from_providers("   ")
+        assert isinstance(result, str)
+
+    def test_anthropic_pair_missing_api_key_returns_error(self, monkeypatch):
+        """anthropic: pair without ANTHROPIC_API_KEY set returns an error string."""
+        mod = self._load()
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        result = mod._build_clients_from_providers("anthropic:claude-opus-4-20250514")
+        assert isinstance(result, str)
+        assert "ANTHROPIC_API_KEY" in result
+
+    def test_openai_pair_missing_api_key_returns_error(self, monkeypatch):
+        """openai: pair without OPENAI_API_KEY set returns an error string."""
+        mod = self._load()
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        result = mod._build_clients_from_providers("openai:gpt-4o")
+        assert isinstance(result, str)
+        assert "OPENAI_API_KEY" in result
+
+    def test_valid_anthropic_pair_returns_client_list(self, monkeypatch):
+        """With a valid ANTHROPIC_API_KEY, a single anthropic: pair returns a list."""
+        mod = self._load()
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-key")
+        result = mod._build_clients_from_providers("anthropic:claude-opus-4-20250514")
+        assert isinstance(result, list)
+        assert len(result) == 1
+        client = result[0]
+        # client.model should reflect the requested model ID
+        assert getattr(client, "model", None) == "claude-opus-4-20250514"
+        # _panelist_label must be set for dry-run display
+        assert getattr(client, "_panelist_label", None) == "anthropic:claude-opus-4-20250514"
+
+    def test_valid_openai_pair_returns_client_list(self, monkeypatch):
+        """With a valid OPENAI_API_KEY, a single openai: pair returns a list."""
+        mod = self._load()
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test-key")
+        result = mod._build_clients_from_providers("openai:gpt-4o")
+        assert isinstance(result, list)
+        assert len(result) == 1
+        client = result[0]
+        assert getattr(client, "model", None) == "gpt-4o"
+        assert getattr(client, "_panelist_label", None) == "openai:gpt-4o"
+
+    def test_mixed_csv_returns_two_clients(self, monkeypatch):
+        """Two provider:model pairs build two distinct clients."""
+        mod = self._load()
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test")
+        result = mod._build_clients_from_providers(
+            "anthropic:claude-opus-4-20250514,openai:gpt-4o"
+        )
+        assert isinstance(result, list)
+        assert len(result) == 2
+        labels = [getattr(c, "_panelist_label", "") for c in result]
+        assert "anthropic:claude-opus-4-20250514" in labels
+        assert "openai:gpt-4o" in labels
+
+    def test_cli_dry_run_shows_provider_model_labels(self, tmp_path, monkeypatch, capsys):
+        """--dry-run with --panelist-providers shows provider:model labels in output."""
+        mod = self._load()
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test")
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--dry-run",
+                "--panelist-providers", "anthropic:claude-opus-4-20250514,openai:gpt-4o",
+                "--output", str(tmp_path / "preview.md"),
+            ],
+            repo_root=_REPO_ROOT,
+        )
+        captured = capsys.readouterr()
+        assert exit_code == 0
+        assert "anthropic:claude-opus-4-20250514" in captured.out
+        assert "openai:gpt-4o" in captured.out
+
+    def test_cli_panelist_providers_overrides_panelists_count_with_warning(
+        self, tmp_path, monkeypatch, capsys
+    ):
+        """When --panelists and --panelist-providers both set, providers wins with a warning."""
+        mod = self._load()
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test")
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--dry-run",
+                "--panelists", "5",  # conflicts: providers gives 2
+                "--panelist-providers", "anthropic:claude-opus-4-20250514,openai:gpt-4o",
+                "--output", str(tmp_path / "preview.md"),
+            ],
+            repo_root=_REPO_ROOT,
+        )
+        captured = capsys.readouterr()
+        assert exit_code == 0
+        # Should warn that --panelists was overridden
+        assert "WARNING" in captured.err or "overridden" in captured.err.lower()
+
+    def test_cli_unknown_provider_exits_nonzero(self, tmp_path, capsys):
+        """A bad provider in --panelist-providers exits non-zero with an error."""
+        mod = self._load()
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--panelist-providers", "groq:llama-3",
+                "--output", str(tmp_path / "out.md"),
+            ],
+            repo_root=_REPO_ROOT,
+        )
+        captured = capsys.readouterr()
+        assert exit_code != 0
+        assert "Error" in captured.err

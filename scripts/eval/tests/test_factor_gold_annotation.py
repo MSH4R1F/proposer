@@ -1289,3 +1289,157 @@ class TestSummarySidecar:
 
         sidecar_path = tmp_path / "annotations.jsonl.summary.json"
         assert not sidecar_path.exists(), "Sidecar must not be written on --dry-run"
+
+
+# ---------------------------------------------------------------------------
+# 16. --annotator-providers CSV parsing (new flag)
+# ---------------------------------------------------------------------------
+
+
+class TestAnnotatorProvidersParser:
+    """Tests for _build_annotator_clients_from_providers (offline — no real API calls)."""
+
+    def _load(self):
+        return _load_cli()
+
+    def test_missing_colon_returns_error_string(self):
+        """A pair with no colon returns an error string."""
+        mod = self._load()
+        result = mod._build_annotator_clients_from_providers(
+            "anthropic_claude-sonnet-4-20250514,openai:gpt-4o"
+        )
+        assert isinstance(result, str)
+        assert "colon" in result.lower() or "missing" in result.lower()
+
+    def test_empty_model_id_returns_error_string(self):
+        """'anthropic:' with empty model returns an error string."""
+        mod = self._load()
+        result = mod._build_annotator_clients_from_providers("anthropic:,openai:gpt-4o")
+        assert isinstance(result, str)
+        assert "empty model" in result.lower()
+
+    def test_unknown_provider_returns_error_string(self):
+        """An unsupported provider returns an error string."""
+        mod = self._load()
+        result = mod._build_annotator_clients_from_providers(
+            "cohere:command-r,openai:gpt-4o"
+        )
+        assert isinstance(result, str)
+        assert "cohere" in result or "Unknown provider" in result
+
+    def test_only_one_pair_returns_error_string(self):
+        """Exactly 1 pair is rejected (2 required)."""
+        mod = self._load()
+        result = mod._build_annotator_clients_from_providers(
+            "anthropic:claude-sonnet-4-20250514"
+        )
+        assert isinstance(result, str)
+        assert "2" in result or "exactly" in result.lower()
+
+    def test_three_pairs_returns_error_string(self):
+        """More than 2 pairs is rejected."""
+        mod = self._load()
+        result = mod._build_annotator_clients_from_providers(
+            "anthropic:claude-sonnet-4-20250514,openai:gpt-4o,anthropic:claude-haiku-4-5"
+        )
+        assert isinstance(result, str)
+        assert "2" in result or "exactly" in result.lower()
+
+    def test_anthropic_pair_missing_api_key_returns_error(self, monkeypatch):
+        mod = self._load()
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        result = mod._build_annotator_clients_from_providers(
+            "anthropic:claude-sonnet-4-20250514,openai:gpt-4o"
+        )
+        assert isinstance(result, str)
+        assert "ANTHROPIC_API_KEY" in result
+
+    def test_openai_pair_missing_api_key_returns_error(self, monkeypatch):
+        mod = self._load()
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        result = mod._build_annotator_clients_from_providers(
+            "anthropic:claude-sonnet-4-20250514,openai:gpt-4o"
+        )
+        # Will fail on ANTHROPIC_API_KEY check first if that's also absent;
+        # set both, then clear only OPENAI.
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        result2 = mod._build_annotator_clients_from_providers(
+            "anthropic:claude-sonnet-4-20250514,openai:gpt-4o"
+        )
+        assert isinstance(result2, str)
+        assert "OPENAI_API_KEY" in result2
+
+    def test_valid_mixed_pair_returns_two_clients(self, monkeypatch):
+        """Valid CSV with both keys set returns a list of 2 clients."""
+        mod = self._load()
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test")
+        result = mod._build_annotator_clients_from_providers(
+            "anthropic:claude-sonnet-4-20250514,openai:gpt-4o"
+        )
+        assert isinstance(result, list)
+        assert len(result) == 2
+        labels = [getattr(c, "_annotator_label", "") for c in result]
+        assert "anthropic:claude-sonnet-4-20250514" in labels
+        assert "openai:gpt-4o" in labels
+
+    def test_annotator_ids_derived_from_providers_in_dry_run(
+        self, tmp_path, monkeypatch, capsys
+    ):
+        """--dry-run with --annotator-providers shows provider:model labels."""
+        mod = self._load()
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test")
+        corpus_path = tmp_path / "corpus.jsonl"
+        with corpus_path.open("w") as fh:
+            for i in range(5):
+                fh.write(
+                    json.dumps(
+                        {
+                            "case_id": f"c{i}",
+                            "title": f"C{i}",
+                            "outcome_raw": "m",
+                            "matter_types": [],
+                            "landlord_name": "L",
+                        }
+                    )
+                    + "\n"
+                )
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--dry-run",
+                "--n", "3",
+                "--corpus-path", str(corpus_path),
+                "--annotator-providers",
+                "anthropic:claude-sonnet-4-20250514,openai:gpt-4o",
+            ],
+            repo_root=_REPO_ROOT,
+        )
+        captured = capsys.readouterr()
+        assert exit_code == 0
+        assert "anthropic:claude-sonnet-4-20250514" in captured.out
+        assert "openai:gpt-4o" in captured.out
+
+    def test_cli_unknown_provider_exits_nonzero(self, tmp_path, capsys):
+        """A bad provider in --annotator-providers exits non-zero."""
+        mod = self._load()
+        corpus_path = tmp_path / "corpus.jsonl"
+        corpus_path.write_text(
+            json.dumps({"case_id": "c0", "title": "C", "outcome_raw": "m",
+                        "matter_types": [], "landlord_name": "L"}) + "\n"
+        )
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--n", "1",
+                "--corpus-path", str(corpus_path),
+                "--annotator-providers", "vertex:gemini-pro,openai:gpt-4o",
+            ],
+            repo_root=_REPO_ROOT,
+        )
+        captured = capsys.readouterr()
+        assert exit_code != 0
+        assert "Error" in captured.err
