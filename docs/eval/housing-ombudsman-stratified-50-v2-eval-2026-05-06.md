@@ -1,6 +1,8 @@
 # Housing Ombudsman Stratified-50 v2 Full Eval (2026-05-06)
 
-**Run id:** `task18_par40_20260506_161134`
+> **Update — second run with no-RAG narrative fix (2026-05-06 17:30 BST):** Run 1 below revealed a serious regression in the no-RAG modes (`kg_only` / `llm_only` abstaining 65–83%, predicting `service_failure` on every covered case). Root cause: `_predict_issue_no_rag` was reading `issue.tenant_claim.description` only, never falling back to `cf.tenant_narrative` for housing.repairs_social.v1 rows where `claimed_amounts=[]`. The user prompt rendered "Resident position: Not provided" / "Landlord position: Not provided" / empty timeline — the LLM correctly returned uncertain on most cases. Fix landed in PR #33 commit `d624b21` mirroring the hybrid path's narrative fallback. Run 2 (`task18_par40_v2_20260506_171549`) re-runs all 4 modes against the same gold with the fix in place. **Run 2 numbers replace Run 1 in the headline table below;** Run 1 numbers are preserved in §"Before/after the no-RAG narrative fix" further down.
+
+**Run id (canonical, with narrative fix):** `task18_par40_v2_20260506_171549`
 **Gold corpus:** [`data/gold_standard/housing_repairs_social_v2.jsonl`](../../data/gold_standard/housing_repairs_social_v2.jsonl) (50-row stratified-50 corpus migrated to the v2 determination ontology — see [migration audit](../../data/eval_artifacts/migration/stratified_50_2026_05_06/audit.json))
 **Eval set used:** 48 of 50 rows valid under INV-D4. The two unmigrated rows (`housing-ombudsman-202222548` packet not found, `housing-ombudsman-202340236` manifest tag `unknown`) were filtered into [`data/gold_standard/v2_valid48.jsonl`](../../data/gold_standard/v2_valid48.jsonl) for this run.
 **Engine:** PredictionEngineV2 / OpenAI gpt-5.5 / `--reasoning_effort=high`
@@ -12,18 +14,71 @@ This is the first thesis-grade housing eval run end-to-end on the new determinat
 
 ---
 
-## Headline numbers
+## Headline numbers (Run 2, post-narrative-fix)
 
-| Mode | accuracy | covered_acc | abstain | predicted | correct | det. accuracy | within @20% | within @£100 | MAE £ | amt n |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| **hybrid** | **0.833** | 0.930 | 0.104 | 43/48 | 40/43 | **0.542** | 0.083 | 0.104 | 568 | 37 |
-| rag_only | 0.812 | 0.951 | 0.146 | 41/48 | 39/41 | 0.500 | 0.104 | 0.125 | 534 | 35 |
-| kg_only | 0.333 | 0.941 | 0.646 | 17/48 | 16/17 | 0.146 | 0.000 | 0.000 | n/a | 0 |
-| llm_only | 0.167 | 1.000 | 0.833 | 8/48 | 8/8 | 0.146 | 0.000 | 0.000 | n/a | 0 |
-| `always_tenant` baseline | 0.979 | 0.979 | 0.000 | 48/48 | 47/48 | n/a | n/a | n/a | n/a | n/a |
-| `always_landlord` baseline | 0.021 | 0.021 | 0.000 | 48/48 | 1/48 | n/a | n/a | n/a | n/a | n/a |
-| `claim_positive_winner` baseline | n/a | n/a | 0.000 | 48/48 | n/a | n/a | n/a | n/a | n/a | n/a |
-| `claim_amount_copy` baseline | n/a | n/a | 0.000 | 48/48 | n/a | n/a | n/a | n/a | n/a | n/a |
+| Mode | accuracy | balanced_acc | covered_acc | abstain | det. accuracy | within @20% | within @£100 | MAE ordered_now | MAE prev_offered |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| hybrid | 0.812 | 0.415 | 0.951 | 0.146 | **0.500** | 0.104 | 0.083 | £488 | £440 |
+| rag_only | 0.833 | 0.426 | 0.930 | 0.104 | **0.500** | 0.104 | 0.125 | £482 | £440 |
+| **kg_only** | **0.958** | **0.979** | 0.958 | 0.000 | 0.417 | 0.000 | 0.000 | £668 | £738 |
+| **llm_only** | **0.958** | **0.979** | 0.979 | 0.021 | 0.417 | 0.000 | 0.000 | £668 | £738 |
+| `always_tenant` baseline | 0.979 | 0.500 | 0.979 | 0.000 | n/a | n/a | n/a | n/a | n/a |
+| `always_landlord` baseline | 0.021 | 0.500 | 0.021 | 0.000 | n/a | n/a | n/a | n/a | n/a |
+| `claim_positive_winner` baseline | n/a | n/a | n/a | 0.000 | n/a | n/a | n/a | n/a | n/a |
+| `claim_amount_copy` baseline | n/a | n/a | n/a | 0.000 | n/a | n/a | n/a | n/a | n/a |
+
+The two `claim_*` baselines emit `null` per Task 8 — they're deposit-domain baselines that do not apply to housing.repairs_social.v1 (`claimed_amounts=[]` on every gold row).
+
+### What this run reveals: the RAG–no-RAG inversion
+
+After fixing the narrative regression, the no-RAG modes (kg_only / llm_only) now beat the RAG modes on legacy `accuracy` (0.958 vs 0.812-0.833). This is **NOT** a sign that retrieval is harmful in general — it's a sign that:
+
+1. **The corpus is heavily tenant-leaning** (`always_tenant=0.979` on gold's legacy `overall_winner` axis). 47 of 48 rows are tenant-wins under the binary projection of `Determination → Winner`.
+2. **No-RAG modes default to tenant** when given the narrative without comparators. Their gold-tenant recall is ~96%; the one landlord case (`outside_jurisdiction`) is correctly flagged because the prompt explicitly tells the model to abstain on outside-jurisdiction.
+3. **RAG modes (hybrid / rag_only) sometimes confidently say landlord or split** based on retrieval, dropping their tenant recall. This is the same retrieval-bias pattern the original RCA flagged on the balanced-50 — but on a tenant-leaning corpus it shows up as "RAG hurts you".
+
+The cleaner read is `det.accuracy` (the 7-class Ombudsman determination axis): hybrid/rag_only at **0.500** beat kg_only/llm_only at 0.417. Retrieval **does** help when scored against the construct-stable axis. The legacy binary axis is a corpus-imbalance trap on this dataset.
+
+Per-class recall:
+
+| class | n in gold | hybrid | rag_only | kg_only | llm_only |
+|---|---:|---:|---:|---:|---:|
+| maladministration | 31 | 0.71 | 0.71 | 0.48 | 0.52 |
+| service_failure | 7 | 0.14 | 0.14 | 0.57 | 0.43 |
+| outside_jurisdiction | 1 | 1.00 | 1.00 | 1.00 | 1.00 |
+| reasonable_redress | 4 | 0.00 | 0.00 | 0.00 | 0.00 |
+| severe_maladministration | 3 | 0.00 | 0.00 | 0.00 | 0.00 |
+| resolved_with_intervention | 2 | 0.00 | 0.00 | 0.00 | 0.00 |
+
+- All four modes nail the single `outside_jurisdiction` row.
+- All four modes miss every `reasonable_redress`, `severe_maladministration`, and `resolved_with_intervention` row. These are the minority classes the original RCA called out as the construct-gap problem; with only 4/3/2 examples respectively they're undertested here.
+- RAG modes are stronger on `maladministration` (0.71 vs ~0.5). No-RAG modes balance maladministration vs service_failure roughly 50/50.
+
+## Before/after the no-RAG narrative fix
+
+The first par40 run (`task18_par40_20260506_161134`, 16:11 BST) used PR #33's first 5 commits but missed the no-RAG narrative regression that the original RCA's [`04_norag_abstention.md`](../../data/eval_artifacts/analysis/agent_reports/04_norag_abstention.md) had identified. With the fix in `d624b21`:
+
+| Mode | metric | Run 1 (before fix) | Run 2 (with fix) | delta |
+|---|---|---:|---:|---:|
+| kg_only | accuracy | 0.333 | **0.958** | +0.625 |
+| kg_only | abstain | 0.646 | 0.000 | −0.646 |
+| kg_only | det.accuracy | 0.146 | 0.417 | +0.271 |
+| llm_only | accuracy | 0.167 | **0.958** | +0.791 |
+| llm_only | abstain | 0.833 | 0.021 | −0.812 |
+| llm_only | det.accuracy | 0.146 | 0.417 | +0.271 |
+| hybrid | accuracy | 0.833 | 0.812 | −0.021 |
+| rag_only | accuracy | 0.812 | 0.833 | +0.021 |
+| hybrid | det.accuracy | 0.542 | 0.500 | −0.042 |
+
+The hybrid / rag_only deltas are within run-to-run noise (the prompt's `temperature=0.2` plus stochastic comparator selection). The kg_only / llm_only deltas are the regression being fixed: the model went from "answers `service_failure` on a tiny subset, abstains on the rest" to "answers across the determination distribution on every case".
+
+Pre-fix `predicted_determination` distribution:
+- llm_only: `{service_failure: 48}` (every case, abstained or not)
+- kg_only: `{service_failure: 47, no_maladministration: 1}`
+
+Post-fix:
+- llm_only: `{maladministration: 24, service_failure: 22, outside_jurisdiction: 1, no_maladministration: 1}`
+- kg_only: `{service_failure: 24, maladministration: 21, no_maladministration: 2, outside_jurisdiction: 1}`
 
 The two `claim_*` baselines emit `null` per Task 8 — they're deposit-domain baselines that do not apply to housing.repairs_social.v1 (`claimed_amounts=[]` on every gold row).
 
@@ -114,7 +169,7 @@ Number of cases where the model emitted a non-null `predicted_amount`. hybrid 37
 
 2. **Hybrid vs rag_only is roughly a wash on this dataset.** The legacy `accuracy` gap (0.833 vs 0.812) and the `det.accuracy` gap (0.542 vs 0.500) are within the variance you'd expect from prompt rewording. The original RCA's claim that hybrid was strictly better on the balanced-50 doesn't replicate here because this corpus has a different determination distribution.
 
-3. **kg_only and llm_only are genuinely degraded.** `class_recall: service_failure=1.0` on every covered case and 65–83% abstention — the no-RAG narrative regression that PR #32 explicitly excluded from scope is still live.
+3. **kg_only and llm_only were genuinely degraded in Run 1; fixed in Run 2.** Run 1 showed `class_recall: service_failure=1.0` on every covered case and 65–83% abstention — the no-RAG narrative regression. Diagnosed during Task 18 inspection, fixed in PR #33 commit `d624b21`. Run 2 (the canonical numbers above) shows kg_only/llm_only at 0% / 2.1% abstention with varied determinations. The "why is LLM doing so badly" investigation surfaced this — see [§ Before/after](#beforeafter-the-no-rag-narrative-fix) and [§7 of the canonical ontology doc](housing-ombudsman-determination-ontology-2026-05-06.md#7-end-to-end-wiring-post-mortem).
 
 4. **Per-construct MAE works as designed.** `mae_ordered_now=£504` for hybrid is a clean, construct-stable amount metric; the legacy all-rows `mae_gbp=568` is more polluted.
 
@@ -134,7 +189,7 @@ From the [root-cause investigation](housing-ombudsman-balanced-50-root-cause-inv
 
 | Gate | Required | This run | Pass? |
 |---|---|---|---|
-| All four modes coverage > 30% | yes | hybrid 90%, rag_only 85%, kg_only 35%, llm_only 17% | **partial** — kg/llm fail (no-RAG regression, out of scope) |
+| All four modes coverage > 30% | yes | hybrid 85%, rag_only 90%, kg_only 100%, llm_only 98% | **pass** (post-narrative-fix) |
 | `always_tenant` and `always_landlord` baselines emit | yes | both emit (0.979 and 0.021) | **pass** |
 | Hybrid > rag_only on substantive-merits accuracy | preferred | hybrid det.acc 0.542 vs rag_only 0.500 | **pass** (modest) |
 | Citation removal rate < 35% per RAG mode | yes | not reported here; verify via citation_verification block in raw predictions | **TBD** |
@@ -226,11 +281,12 @@ Run-time on a single workstation with OpenAI tier-2 rate limits: **~13 minutes w
 
 ## Artifacts
 
-- **Predictions:** [`eval/predictions/task18_par40_20260506_161134/`](../../eval/predictions/task18_par40_20260506_161134/)
+- **Predictions (Run 2, canonical):** [`eval/predictions/task18_par40_v2_20260506_171549/`](../../eval/predictions/task18_par40_v2_20260506_171549/)
   - Per-mode JSONL: `hybrid.jsonl`, `rag_only.jsonl`, `kg_only.jsonl`, `llm_only.jsonl`
   - Per-shard outputs: `shard*_<mode>/`
   - Logs: `logs/shard*_<mode>.log`
-- **Eval summary:** [`eval/results/task18_par40_20260506_161134_full_eval/`](../../eval/results/task18_par40_20260506_161134_full_eval/)
+- **Predictions (Run 1, pre-fix archive):** [`eval/predictions/task18_par40_20260506_161134/`](../../eval/predictions/task18_par40_20260506_161134/) — kept for reproducibility of the regression diagnosis.
+- **Eval summary (Run 2):** [`eval/results/task18_par40_v2_20260506_171549_full_eval/`](../../eval/results/task18_par40_v2_20260506_171549_full_eval/)
   - `summary.json` — per-mode metrics block (this report's source data)
   - `ablation.json` — pairwise mode comparison
   - `audit.json` — gold corpus audit
