@@ -82,6 +82,8 @@ IRAC_JSON_SCHEMA = """Output your prediction as a single JSON object with this e
     "raw_confidence": <number between 0.0 and 1.0>,
     "predicted_amount": <number in pounds or null if uncertain>,
     "amount_band": "0" or "1-100" or "101-250" or "251-600" or "601-1000" or "1000+" or null,
+    "amount_construct": "ordered_now" or "previously_offered" or "global_unapportioned" or null,
+    "predicted_determination": "maladministration" or "severe_maladministration" or "service_failure" or "reasonable_redress" or "no_maladministration" or "resolved_with_intervention" or "outside_jurisdiction" or null,
     "reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>",
     "key_factors": ["factor1", "factor2", "factor3"],
     "supporting_cases": [
@@ -100,6 +102,8 @@ Rules for the JSON:
 - "evidence_strength" MUST be exactly one of: "strong", "moderate", "weak", "insufficient"
 - "predicted_amount" should be a positive number (the amount the winning party recovers for this issue) or null
 - "amount_band" is optional; when used, it MUST be one of: "0", "1-100", "101-250", "251-600", "601-1000", "1000+"
+- "amount_construct" identifies the legal source of the predicted amount: "ordered_now" for a fresh Ombudsman compensation order, "previously_offered" for a landlord pre-existing offer accepted as proportionate, "global_unapportioned" for settlement-style totals, null otherwise. Required for housing.repairs_social.v1; optional elsewhere.
+- "predicted_determination" is the Housing Ombudsman finding class. Set null on non-Ombudsman matters.
 - For deposit_protection penalty issues, "predicted_amount" should be the penalty amount (1x-3x deposit)
 - Include at least 1 supporting case citation
 - If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation
