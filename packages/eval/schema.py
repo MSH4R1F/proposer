@@ -55,6 +55,39 @@ class Winner(str, Enum):
     SPLIT = "split"
 
 
+class Determination(str, Enum):
+    """Housing Ombudsman determination class.
+
+    Captures the substantive Ombudsman finding for a single complaint head.
+    Used in `GroundTruthOutcome.determination` for `housing.repairs_social.v1`
+    gold rows. The legacy `Winner` enum is preserved for backward compatibility
+    via `overall_winner_legacy`.
+
+    Mapping rules (canonical, see
+    `docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`):
+
+    * `maladministration`, `severe_maladministration`, `service_failure`
+      indicate the Ombudsman found against the landlord on the merits and
+      typically issues a binding compensation order.
+    * `reasonable_redress` indicates the Ombudsman found the landlord's
+      pre-existing offer proportionate; only non-binding recommendations are
+      issued.
+    * `no_maladministration` is a substantive landlord defence.
+    * `resolved_with_intervention` indicates settlement during Ombudsman
+      involvement; not a merits decision.
+    * `outside_jurisdiction` is a non-determination — the Ombudsman declined
+      to investigate. Eval should test for abstention on these rows.
+    """
+
+    MALADMINISTRATION = "maladministration"
+    SEVERE_MALADMINISTRATION = "severe_maladministration"
+    SERVICE_FAILURE = "service_failure"
+    REASONABLE_REDRESS = "reasonable_redress"
+    NO_MALADMINISTRATION = "no_maladministration"
+    RESOLVED_WITH_INTERVENTION = "resolved_with_intervention"
+    OUTSIDE_JURISDICTION = "outside_jurisdiction"
+
+
 class RegionUK(str, Enum):
     """Closed enumeration of UK regions used by the stratification audit.
 
@@ -150,6 +183,21 @@ class IssueOutcome(StrictBaseModel):
     issue: str = Field(min_length=1)
     winner: Winner
     awarded_gbp: Decimal = Field(ge=0)
+
+
+class ComplaintFinding(StrictBaseModel):
+    """Per-complaint-head determination + award.
+
+    Housing Ombudsman cases frequently contain mixed findings across multiple
+    complaint heads (e.g. `no maladministration; maladministration; service
+    failure; reasonable redress`). When non-empty, this list captures each
+    head separately so eval metrics can score per-finding accuracy and not
+    just the collapsed top-level determination.
+    """
+
+    complaint_label: str = Field(min_length=1)
+    finding: Determination
+    awarded_gbp: Decimal = Field(ge=0, default=Decimal("0"))
 
 
 class ReasoningQuote(StrictBaseModel):
