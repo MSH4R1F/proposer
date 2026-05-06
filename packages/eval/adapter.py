@@ -63,6 +63,7 @@ def from_prediction_result(result: "PredictionResult") -> Prediction:
         overall_win_probability=overall_win_prob,
         total_predicted_gbp=total,
         per_issue=per_issue,
+        abstained=result.overall_outcome.value == "uncertain",
     )
 
 
@@ -83,6 +84,7 @@ def _adapt_issue(ip: "OrchestratorIssuePrediction") -> IssuePrediction:
         predicted_winner=_outcome_to_winner(ip.outcome.value),
         win_probability=win_prob,
         predicted_amount_gbp=amount,
+        abstained=ip.outcome.value == "uncertain",
     )
 
 

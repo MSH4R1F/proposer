@@ -22,18 +22,28 @@ from eval.dataset import load
 from eval.metrics import (
     IssuePrediction,
     Prediction,
+    abstention_rate,
+    balanced_accuracy,
     bootstrap_ci,
     brier_score,
+    coverage_adjusted_accuracy,
+    covered_accuracy,
     expected_calibration_error,
     issue_winner_accuracy,
+    macro_f1,
 )
 from eval.metrics.types import MetricResult
 from eval.schema import Winner
 
 _METRICS = {
+    "abstention_rate": abstention_rate,
     "accuracy": issue_winner_accuracy,
+    "balanced_accuracy": balanced_accuracy,
     "brier": brier_score,
+    "coverage_adjusted_accuracy": coverage_adjusted_accuracy,
+    "covered_accuracy": covered_accuracy,
     "ece": expected_calibration_error,
+    "macro_f1": macro_f1,
 }
 
 
@@ -71,9 +81,17 @@ def _dict_to_prediction(d: dict) -> Prediction:
                 predicted_amount_gbp=_optional_decimal(
                     ip.get("predicted_amount_gbp")
                 ),
+                abstained=bool(
+                    ip.get("abstained")
+                    or ip.get("raw_outcome") in {"uncertain", "unknown"}
+                ),
             )
             for ip in d.get("per_issue", [])
         ],
+        abstained=bool(
+            d.get("abstained")
+            or d.get("raw_overall_outcome") in {"uncertain", "unknown"}
+        ),
     )
 
 

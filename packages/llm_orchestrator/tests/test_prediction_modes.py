@@ -29,6 +29,11 @@ def test_retrieval_strategy_is_separate_from_prediction_mode():
         "proposition_direct",
         "proposition_pagerank",
         "hybrid_chunk_proposition",
+        # Architecture C: LLM-driven iterative retrieval agent (added on
+        # feature/agentic-retrieval). Distinct from PredictionMode —
+        # AGENTIC composes with HYBRID or RAG_ONLY (KG_ONLY / LLM_ONLY
+        # skip retrieval entirely so AGENTIC is moot there).
+        "agentic",
     }
     assert PredictionMode.HYBRID.value == "hybrid"
 

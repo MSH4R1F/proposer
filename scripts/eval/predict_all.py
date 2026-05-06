@@ -47,10 +47,14 @@ _HERE = Path(__file__).resolve()
 _REPO_ROOT = _HERE.parents[2]
 sys.path.insert(0, str(_REPO_ROOT / "packages"))
 
+from dotenv import load_dotenv  # noqa: E402
+
 from eval._stub_prediction import make_stub_prediction  # noqa: E402
 from eval.adapter import from_prediction_result  # noqa: E402
 from eval.case_file_adapter import gold_case_to_case_file  # noqa: E402
 from eval.dataset import load  # noqa: E402
+
+load_dotenv(_REPO_ROOT / ".env")
 
 _VALID_MODES = ("hybrid", "rag_only", "kg_only", "llm_only")
 _VALID_CLIENTS = ("claude", "openai", "stub")
@@ -538,6 +542,23 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
             issue_outcome = getattr(getattr(raw_issue, "outcome", None), "value", None)
             row["raw_outcome"] = issue_outcome
             row["abstained"] = issue_outcome == "uncertain"
+            row["amount_band"] = getattr(raw_issue, "amount_band", None)
+            row["supporting_cases"] = [
+                _serialise_model(citation)
+                for citation in getattr(raw_issue, "supporting_cases", []) or []
+            ]
+        out["verification"] = _serialise_model(
+            getattr(raw_result, "citation_verification", None)
+        )
+        out["retrieval"] = _json_ready(
+            getattr(raw_result, "retrieval_evidence", {}) or {}
+        )
+        out["retrieved_cases"] = list(getattr(raw_result, "retrieved_cases", []) or [])
+        out["total_cases_analyzed"] = int(
+            getattr(raw_result, "total_cases_analyzed", 0) or 0
+        )
+        out["rag_confidence"] = float(getattr(raw_result, "rag_confidence", 0.0) or 0.0)
+        out["retrieval_quality"] = getattr(raw_result, "retrieval_quality", None)
     return out
 
 
@@ -548,6 +569,29 @@ def _serialise_amount(amount) -> str | None:
     if value == value.to_integral_value():
         return f"{value:.1f}"
     return format(value, "f")
+
+
+def _serialise_model(value: Any) -> Any:
+    if value is None:
+        return None
+    if hasattr(value, "model_dump"):
+        return value.model_dump(mode="json")
+    if hasattr(value, "dict"):
+        return value.dict()
+    return _json_ready(value)
+
+
+def _json_ready(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    enum_value = getattr(value, "value", None)
+    if enum_value is not None:
+        return enum_value
+    if isinstance(value, dict):
+        return {str(k): _json_ready(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_json_ready(v) for v in value]
+    return str(value)
 
 
 def _resolve_mode_enum(mode_value: str):

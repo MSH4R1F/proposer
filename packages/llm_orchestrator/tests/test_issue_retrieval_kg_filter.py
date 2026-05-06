@@ -19,6 +19,9 @@ def _stub_case_file():
     cf.tenancy.start_date = None
     cf.tenancy.end_date = None
     cf.property.region = "London"
+    cf.dispute_amount = None
+    cf.tenant_narrative = None
+    cf.metadata = {}
     return cf
 
 
@@ -262,5 +265,87 @@ async def test_repairs_rerank_promotes_issue_and_outcome_chunks():
     assert refs[0] == "OUTCOME"
     assert result.results[0]["repairs_issue_match_score"] > 0
     assert result.results[0]["ombudsman_outcome_signal_score"] == 1.0
+    assert rag.retrieve.await_count == 2
+    assert [call.kwargs["top_k"] for call in rag.retrieve.await_args_list] == [12, 7]
+    assert "REMEDY PASS:" in result.query_used
+
+
+@pytest.mark.asyncio
+async def test_repairs_retrieval_runs_remedy_pass_and_keeps_order_chunk():
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        side_effect=[
+            {
+                "results": _make_results(
+                    (
+                        "BACKGROUND",
+                        0.95,
+                        "The resident lives in a flat and contacted the landlord.",
+                    ),
+                ),
+                "confidence": 0.7,
+            },
+            {
+                "results": _make_results(
+                    (
+                        "ORDER",
+                        0.55,
+                        "What the landlord must do: ordered the landlord to pay "
+                        "£600 compensation for maladministration.",
+                    ),
+                ),
+                "confidence": 0.8,
+            },
+        ]
+    )
+    retriever = IssueRetriever(rag, min_cases_required=1)
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DISREPAIR,
+        issue_description="repairs and complaint handling",
+        kg_constraints=[],
+        data_completeness=0.8,
+    )
+
+    result = await retriever._retrieve_for_issue(
+        issue,
+        _stub_case_file(),
+        top_k=2,
+        kg_facts=KGFacts(),
+        mode=PredictionMode.HYBRID,
+    )
+
+    refs = [r["case_reference"] for r in result.results]
+    assert refs[0] == "ORDER"
+    assert rag.retrieve.await_count == 2
+    assert "ordered the landlord" in rag.retrieve.await_args_list[1].kwargs["query"]
+
+
+@pytest.mark.asyncio
+async def test_deposit_retrieval_does_not_run_remedy_pass():
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": _make_results(
+                ("A", 0.8, "deposit protected late"),
+                ("B", 0.7, "deposit protected on time"),
+            ),
+            "confidence": 0.7,
+        }
+    )
+    retriever = IssueRetriever(rag, min_cases_required=1)
+    issue = IssueContext(
+        issue_type=IssueType.DEPOSIT_PROTECTION,
+        issue_description="deposit protection",
+        kg_constraints=[],
+        data_completeness=0.8,
+    )
+
+    await retriever._retrieve_for_issue(
+        issue,
+        _stub_case_file(),
+        top_k=2,
+        kg_facts=KGFacts(),
+        mode=PredictionMode.RAG_ONLY,
+    )
+
     rag.retrieve.assert_awaited_once()
-    assert rag.retrieve.await_args.kwargs["top_k"] == 12

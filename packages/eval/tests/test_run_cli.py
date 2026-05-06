@@ -71,6 +71,22 @@ class TestRunCli:
         assert report["metric"] == "expected_calibration_error"
         assert 0.0 <= report["point"] <= 1.0
 
+    def test_new_imbalance_metric_against_synthetic_corpus(self, synthetic_corpus):
+        gold, preds = synthetic_corpus
+        proc = _run(
+            "--metric",
+            "balanced_accuracy",
+            "--gold",
+            str(gold),
+            "--predictions",
+            str(preds),
+            "--no-bootstrap",
+        )
+        assert proc.returncode == 0, proc.stderr
+        report = json.loads(proc.stdout)
+        assert report["metric"] == "balanced_accuracy"
+        assert 0.0 <= report["point"] <= 1.0
+
     def test_no_bootstrap_collapses_ci(self, synthetic_corpus):
         gold, preds = synthetic_corpus
         proc = _run(
@@ -211,6 +227,32 @@ class TestRunCliInProcess:
         preds = _load_predictions(path)
         assert len(preds) == 1
         assert preds[0].case_id == "X"
+
+    def test_load_predictions_preserves_raw_abstention_flags(self, tmp_path):
+        from eval.run import _load_predictions
+
+        path = tmp_path / "p.jsonl"
+        path.write_text(
+            json.dumps({
+                "case_id": "X",
+                "overall_winner": "split",
+                "overall_win_probability": 0.5,
+                "total_predicted_gbp": None,
+                "raw_overall_outcome": "uncertain",
+                "per_issue": [
+                    {
+                        "issue": "primary_issue",
+                        "predicted_winner": "split",
+                        "win_probability": 0.5,
+                        "predicted_amount_gbp": None,
+                        "raw_outcome": "uncertain",
+                    }
+                ],
+            }) + "\n"
+        )
+        preds = _load_predictions(path)
+        assert preds[0].abstained is True
+        assert preds[0].per_issue[0].abstained is True
 
     def test_load_predictions_missing_file(self, tmp_path):
         from eval.run import _load_predictions

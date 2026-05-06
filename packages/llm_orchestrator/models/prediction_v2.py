@@ -49,6 +49,11 @@ class RetrievalStrategy(str, Enum):
     PROPOSITION_DIRECT = "proposition_direct"
     PROPOSITION_PAGERANK = "proposition_pagerank"
     HYBRID_CHUNK_PROPOSITION = "hybrid_chunk_proposition"
+    # Architecture C: an LLM-driven retrieval agent that runs a query
+    # planner at iter 1 and a sufficiency judge for iters 2-MAX_ITER.
+    # See packages/llm_orchestrator/pipeline/retrieval_agent_loop.py
+    # and docs/research/hybrid-rag-agentic-retrieval-plan-2026-05-05.md.
+    AGENTIC = "agentic"
 
 
 IssueType = DisputeIssue
@@ -121,6 +126,7 @@ class IssuePrediction(BaseModel):
     raw_confidence: float = Field(..., ge=0, le=1, validation_alias="confidence")
     calibrated_confidence: Optional[float] = None
     predicted_amount: Optional[float] = None
+    amount_band: Optional[str] = None
     amount_range: Optional[Tuple[float, float]] = None
     reasoning: str = ""
     key_factors: List[str] = Field(default_factory=list)
@@ -199,6 +205,13 @@ class PipelineMetadata(BaseModel):
     fallbacks_used: List[str] = Field(default_factory=list)
     mode: str = "hybrid"  # PredictionMode value — surfaced in trace for SHA-68
     retrieval_strategy: str = RetrievalStrategy.CHUNK_RAG.value
+    # Per-issue agent traces emitted when retrieval_strategy=AGENTIC.
+    # Each entry is a JSON-shaped summary of one run_agent_loop call:
+    # iter_count, terminator, tokens_used, queries_so_far, blocked_queries,
+    # judge_log. Empty list when not running the agent. The full schema
+    # is documented in docs/research/agentic-retrieval-architecture-research-2026-05-05.md
+    # §3.4 (OpenTelemetry GenAI semantic-convention aligned).
+    agent_traces: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class PredictionResult(BaseModel):
@@ -226,6 +239,7 @@ class PredictionResult(BaseModel):
 
     retrieved_cases: List[str] = Field(default_factory=list)
     total_cases_analyzed: int = 0
+    retrieval_evidence: Dict[str, Any] = Field(default_factory=dict)
 
     disclaimer: str = Field(
         default=(

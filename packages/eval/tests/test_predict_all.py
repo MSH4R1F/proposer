@@ -222,6 +222,86 @@ class TestLiveModeRequiresExplicitClient:
         assert (tmp_path / "hybrid.jsonl").exists()
 
 
+class TestSerialisationDiagnostics:
+    def test_serialise_prediction_persists_verification_and_retrieval(self):
+        mod = _import_script_module()
+        from eval.metrics.types import IssuePrediction, Prediction
+        from eval.schema import Winner
+        from llm_orchestrator.models.prediction_v2 import (
+            Citation,
+            VerificationResult,
+        )
+
+        citation = Citation(
+            case_reference="housing-ombudsman-202400001",
+            year=2024,
+            paragraph="42",
+            quote="landlord must pay",
+            relevance="Comparator order",
+            similarity_score=0.9,
+            verified=True,
+        )
+        eval_prediction = Prediction(
+            case_id="case-001",
+            overall_winner=Winner.TENANT,
+            overall_win_probability=0.28,
+            total_predicted_gbp=Decimal("250.00"),
+            per_issue=[
+                IssuePrediction(
+                    issue="primary_issue",
+                    predicted_winner=Winner.TENANT,
+                    win_probability=0.28,
+                    predicted_amount_gbp=Decimal("250.00"),
+                )
+            ],
+        )
+        raw_result = SimpleNamespace(
+            overall_outcome=SimpleNamespace(value="tenant_win"),
+            overall_confidence=0.72,
+            issue_predictions=[
+                SimpleNamespace(
+                    outcome=SimpleNamespace(value="tenant_wins"),
+                    amount_band="101-250",
+                    supporting_cases=[citation],
+                )
+            ],
+            citation_verification=VerificationResult(
+                verified_citations=[citation],
+                removed_citations=[],
+                removal_rate=0.0,
+                needs_reprediction=False,
+                all_citations_valid=True,
+            ),
+            retrieval_evidence={
+                "repairs_damp_mould": {
+                    "results": [
+                        {
+                            "chunk_id": "chunk-123",
+                            "section_type": "orders",
+                            "combined_score": 0.77,
+                        }
+                    ]
+                }
+            },
+            retrieved_cases=["housing-ombudsman-202400001"],
+            total_cases_analyzed=1,
+            rag_confidence=0.8,
+            retrieval_quality="good",
+        )
+
+        row = mod._serialise_prediction(eval_prediction, raw_result)
+
+        assert row["verification"]["verified_citations"][0]["case_reference"] == (
+            "housing-ombudsman-202400001"
+        )
+        assert row["retrieval"]["repairs_damp_mould"]["results"][0]["chunk_id"] == (
+            "chunk-123"
+        )
+        assert row["per_issue"][0]["amount_band"] == "101-250"
+        assert row["per_issue"][0]["supporting_cases"][0]["verified"] is True
+        assert row["retrieval_quality"] == "good"
+
+
 class TestRunContextHashInputs:
     def test_domain_run_context_resolves_ontology_hash(self):
         mod = _import_script_module()

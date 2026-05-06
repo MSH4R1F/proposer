@@ -27,6 +27,7 @@ class IssuePrediction:
     predicted_winner: Winner
     win_probability: float  # P(landlord wins this issue), [0, 1]
     predicted_amount_gbp: Decimal | None
+    abstained: bool = False
 
     def __post_init__(self) -> None:
         self.win_probability = _validate_probability(
@@ -44,6 +45,7 @@ class Prediction:
     overall_win_probability: float  # P(landlord wins overall), [0, 1]
     total_predicted_gbp: Decimal | None
     per_issue: list
+    abstained: bool = False
 
     def __post_init__(self) -> None:
         self.overall_win_probability = _validate_probability(

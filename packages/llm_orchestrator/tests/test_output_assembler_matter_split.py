@@ -16,6 +16,7 @@ from llm_orchestrator.models.prediction_v2 import (
     IssueContext,
     IssueOutcome,
     IssuePrediction,
+    IssueRetrievalResult,
     IssueType,
     PipelineMetadata,
     VerificationResult,
@@ -23,7 +24,7 @@ from llm_orchestrator.models.prediction_v2 import (
 from llm_orchestrator.pipeline.output_assembler import OutputAssembler
 
 
-def _make_case_file(*, deposit: float, matter_type: str | None) -> CaseFile:
+def _make_case_file(*, deposit: float | None, matter_type: str | None) -> CaseFile:
     cf = CaseFile(user_role=PartyRole.TENANT)
     cf.tenancy.deposit_amount = deposit
     if matter_type is not None:
@@ -43,7 +44,7 @@ def _make_issue(issue_type: IssueType, claimed: float | None = None) -> IssueCon
 def _make_prediction(
     issue_type: IssueType,
     outcome: IssueOutcome,
-    amount: float,
+    amount: float | None,
 ) -> IssuePrediction:
     return IssuePrediction(
         issue_type=issue_type,
@@ -174,3 +175,95 @@ def test_explicit_matter_type_kwarg_overrides_case_file():
     )
     assert result.metadata["matter_type"] == "deposit_non_protection"
     assert result.metadata["penalty_recovery"] == 3000.0
+
+
+def test_missing_predicted_amount_preserves_unknown_recovery():
+    cf = _make_case_file(deposit=None, matter_type="repairs_damp_mould")
+    issues = [_make_issue(IssueType.REPAIRS_DAMP_MOULD)]
+    predictions = [
+        _make_prediction(IssueType.REPAIRS_DAMP_MOULD, IssueOutcome.TENANT_WINS, None)
+    ]
+
+    result = OutputAssembler().assemble(
+        case_file=cf,
+        issues=issues,
+        issue_predictions=predictions,
+        retrieval_results={},
+        verification=VerificationResult(),
+        pipeline_metadata=_empty_metadata(),
+    )
+
+    assert result.tenant_recovery_amount is None
+    assert result.landlord_recovery_amount is None
+    assert result.predicted_settlement_range is None
+    assert "Monetary remedy amount unknown" in result.outcome_summary
+
+
+def test_explicit_zero_predicted_amount_remains_zero_not_unknown():
+    cf = _make_case_file(deposit=None, matter_type="repairs_damp_mould")
+    issues = [_make_issue(IssueType.REPAIRS_DAMP_MOULD)]
+    predictions = [
+        _make_prediction(IssueType.REPAIRS_DAMP_MOULD, IssueOutcome.TENANT_WINS, 0.0)
+    ]
+
+    result = OutputAssembler().assemble(
+        case_file=cf,
+        issues=issues,
+        issue_predictions=predictions,
+        retrieval_results={},
+        verification=VerificationResult(),
+        pipeline_metadata=_empty_metadata(),
+    )
+
+    assert result.tenant_recovery_amount == 0.0
+    assert result.landlord_recovery_amount == 0.0
+    assert result.predicted_settlement_range == (0.0, 0.0)
+
+
+def test_retrieval_evidence_is_persisted_on_prediction_result():
+    cf = _make_case_file(deposit=None, matter_type="repairs_damp_mould")
+    issues = [_make_issue(IssueType.REPAIRS_DAMP_MOULD)]
+    predictions = [
+        _make_prediction(IssueType.REPAIRS_DAMP_MOULD, IssueOutcome.TENANT_WINS, 250.0)
+    ]
+    retrieval = IssueRetrievalResult(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        query_used="damp mould | REMEDY PASS: ordered the landlord must pay",
+        rag_confidence=0.8,
+        temporal_distribution={2024: 1},
+        legislative_regime="current",
+        is_sufficient=True,
+        results=[
+            {
+                "chunk_id": "chunk-123",
+                "source_id": "source-123",
+                "source_kind": "ombudsman_decision",
+                "case_reference": "housing-ombudsman-202400001",
+                "year": 2024,
+                "paragraph": "42",
+                "section_type": "orders",
+                "combined_score": 0.77,
+                "semantic_score": 0.66,
+                "bm25_score": 2.5,
+                "repairs_issue_match_score": 0.75,
+                "ombudsman_outcome_signal_score": 1.0,
+                "chunk_text": "What the landlord must do: pay £250 compensation.",
+            }
+        ],
+    )
+
+    result = OutputAssembler().assemble(
+        case_file=cf,
+        issues=issues,
+        issue_predictions=predictions,
+        retrieval_results={IssueType.REPAIRS_DAMP_MOULD: retrieval},
+        verification=VerificationResult(),
+        pipeline_metadata=_empty_metadata(),
+    )
+
+    evidence = result.retrieval_evidence["repairs_damp_mould"]
+    assert evidence["query_used"].startswith("damp mould")
+    assert evidence["is_sufficient"] is True
+    assert evidence["results"][0]["chunk_id"] == "chunk-123"
+    assert evidence["results"][0]["section_type"] == "orders"
+    assert "£250 compensation" in evidence["results"][0]["text_preview"]

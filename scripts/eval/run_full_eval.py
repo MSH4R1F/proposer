@@ -25,7 +25,16 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MODES = ("hybrid", "rag_only", "kg_only", "llm_only")
-DEFAULT_METRICS = ("accuracy", "brier", "ece")
+DEFAULT_METRICS = (
+    "accuracy",
+    "balanced_accuracy",
+    "macro_f1",
+    "abstention_rate",
+    "covered_accuracy",
+    "coverage_adjusted_accuracy",
+    "brier",
+    "ece",
+)
 
 
 def _env() -> dict[str, str]:
@@ -99,6 +108,20 @@ def _summarise_eval_row(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "accuracy": _metric_point(row.get("accuracy")),
         "accuracy_ci": _metric_ci(row.get("accuracy")),
+        "balanced_accuracy": _metric_point(row.get("balanced_accuracy")),
+        "balanced_accuracy_ci": _metric_ci(row.get("balanced_accuracy")),
+        "macro_f1": _metric_point(row.get("macro_f1")),
+        "macro_f1_ci": _metric_ci(row.get("macro_f1")),
+        "abstention_rate": _metric_point(row.get("abstention_rate")),
+        "abstention_rate_ci": _metric_ci(row.get("abstention_rate")),
+        "covered_accuracy": _metric_point(row.get("covered_accuracy")),
+        "covered_accuracy_ci": _metric_ci(row.get("covered_accuracy")),
+        "coverage_adjusted_accuracy": _metric_point(
+            row.get("coverage_adjusted_accuracy")
+        ),
+        "coverage_adjusted_accuracy_ci": _metric_ci(
+            row.get("coverage_adjusted_accuracy")
+        ),
         "brier": _metric_point(row.get("brier")),
         "brier_ci": _metric_ci(row.get("brier")),
         "ece": _metric_point(row.get("ece")),
@@ -263,6 +286,11 @@ def run(args: argparse.Namespace) -> None:
         print(
             f"  {mode}: "
             f"accuracy={_format_optional(row['accuracy'])}, "
+            f"balanced_accuracy={_format_optional(row['balanced_accuracy'])}, "
+            f"macro_f1={_format_optional(row['macro_f1'])}, "
+            f"abstention_rate={_format_optional(row['abstention_rate'])}, "
+            f"covered_accuracy={_format_optional(row['covered_accuracy'])}, "
+            f"coverage_adjusted_accuracy={_format_optional(row['coverage_adjusted_accuracy'])}, "
             f"brier={_format_optional(row['brier'])}, "
             f"ece={_format_optional(row['ece'])}, "
             f"{custom_amount}"
@@ -279,6 +307,10 @@ def run(args: argparse.Namespace) -> None:
             print(
                 f"  {baseline}: "
                 f"accuracy={_format_optional(row['accuracy'])}, "
+                f"balanced_accuracy={_format_optional(row['balanced_accuracy'])}, "
+                f"macro_f1={_format_optional(row['macro_f1'])}, "
+                f"abstention_rate={_format_optional(row['abstention_rate'])}, "
+                f"coverage_adjusted_accuracy={_format_optional(row['coverage_adjusted_accuracy'])}, "
                 f"brier={_format_optional(row['brier'])}, "
                 f"amount@GBP100={_format_optional(row['amount_within_gbp100'])}, "
                 f"mae_gbp={_format_optional(row['amount_mae_gbp'])}, "

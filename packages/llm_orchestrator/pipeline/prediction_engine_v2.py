@@ -13,7 +13,10 @@ import structlog
 from ..clients.base import BaseLLMClient
 from ..models.case_file import CaseFile
 from ..models.prediction_v2 import (
+    IssueContext,
     IssueOutcome,
+    IssueRetrievalResult,
+    IssueType,
     PipelineMetadata,
     PredictionMode,
     PredictionResult,
@@ -196,15 +199,24 @@ class PredictionEngineV2:
                 reason="Proposition retriever not available.",
             )
 
-        retrieval_results = await self.issue_retriever.retrieve_all(
-            issues, case_file, top_k,
-            kg_facts_by_issue=kg_facts_by_issue,
-            mode=mode,
-            retrieval_strategy=strategy,
-        )
+        if strategy == RetrievalStrategy.AGENTIC:
+            retrieval_results = await self._agentic_retrieve_all(
+                issues=issues,
+                case_file=case_file,
+                metadata=metadata,
+            )
+            metadata.steps_executed.append("agentic_retrieval")
+        else:
+            retrieval_results = await self.issue_retriever.retrieve_all(
+                issues, case_file, top_k,
+                kg_facts_by_issue=kg_facts_by_issue,
+                mode=mode,
+                retrieval_strategy=strategy,
+            )
+            metadata.steps_executed.append("per_issue_retrieval")
+
         sufficient_count = sum(1 for r in retrieval_results.values() if r.is_sufficient)
         metadata.issues_with_sufficient_cases = sufficient_count
-        metadata.steps_executed.append("per_issue_retrieval")
 
         logger.info(
             "retrieval_complete",
@@ -277,3 +289,184 @@ class PredictionEngineV2:
         )
 
         return result
+
+    async def _agentic_retrieve_all(
+        self,
+        *,
+        issues: List[IssueContext],
+        case_file: CaseFile,
+        metadata: PipelineMetadata,
+    ) -> Dict[IssueType, IssueRetrievalResult]:
+        """Run the iterative retrieval agent once per issue.
+
+        Each issue gets its own ``run_agent_loop`` call. The agent's
+        curated chunks are converted into the existing
+        ``IssueRetrievalResult`` shape so the downstream IRAC
+        predictor consumes them unchanged. Per-issue agent traces
+        are appended to ``metadata.agent_traces`` for the audit gate
+        (plan §5.4).
+
+        The leakage envelope is inherited automatically: ``self.rag``
+        is whatever the engine was constructed with (typically a
+        ``_EvalFilteredRAGPipeline``), and the agent's tools call
+        ``rag.retrieve(...)`` on that same instance.
+        """
+        # Local imports keep prediction_engine_v2.py free of agent-only
+        # deps when the AGENTIC strategy is never used.
+        from .retrieval_agent_loop import run_agent_loop
+
+        # Build a small case-summary string the planner can use. Keep
+        # it short — the planner is paid per token. The case_file's
+        # tenant_narrative + issue_description are the natural source.
+        case_summary = self._build_planner_case_summary(case_file)
+        gold_case_id = getattr(case_file, "case_id", "") or ""
+
+        results: Dict[IssueType, IssueRetrievalResult] = {}
+        for issue in issues:
+            state = await run_agent_loop(
+                llm_client=self.llm,
+                rag=self.rag,
+                case_summary=case_summary,
+                issue_type=issue.issue_type.value,
+                gold_case_id=gold_case_id,
+                kg=None,  # check_kg_fact stub returns unknown — wired in F-KG-1
+            )
+
+            # Track tokens / fallbacks at the pipeline level.
+            metadata.total_tokens_used += state.tokens_used
+            metadata.agent_traces.append(self._serialise_agent_state(state))
+
+            # Convert agent state into IssueRetrievalResult.
+            result = _agent_state_to_retrieval_result(
+                state=state, issue_type=issue.issue_type
+            )
+            results[issue.issue_type] = result
+
+            logger.info(
+                "agentic_retrieval_complete",
+                case_id=case_file.case_id,
+                issue=issue.issue_type.value,
+                terminator=state.terminator,
+                iter_count=state.iter,
+                chunks=len(state.chunks_so_far),
+                tokens=state.tokens_used,
+            )
+
+        return results
+
+    @staticmethod
+    def _build_planner_case_summary(case_file: CaseFile) -> str:
+        """Render a short, plain-English case summary for the planner.
+
+        Concatenates tenant_narrative + landlord_narrative + the first
+        issue description. The planner already truncates input length
+        on its end, but keeping it short here also limits tokens we
+        pay for on a forced cache miss.
+        """
+        parts: List[str] = []
+        for attr in ("tenant_narrative", "landlord_narrative"):
+            text = getattr(case_file, attr, None)
+            if text:
+                parts.append(str(text).strip())
+        # Issue description as a fallback if no narratives exist.
+        if not parts:
+            issues = getattr(case_file, "issues", []) or []
+            for iss in issues:
+                desc = getattr(iss, "description", "") or ""
+                if desc:
+                    parts.append(desc.strip())
+        summary = "\n\n".join(parts)
+        # Hard truncate at 2400 chars (~400 words). The planner system
+        # prompt already says "case summary <=400 words"; this is the
+        # belt-and-braces enforcement.
+        return summary[:2400]
+
+    @staticmethod
+    def _serialise_agent_state(state: Any) -> Dict[str, Any]:
+        """Compact, JSON-friendly view of one agent loop's state for
+        the trace artifact. Heavy chunk text is dropped — only the IDs
+        survive, since the chunks themselves are already represented
+        in retrieval_results."""
+        return {
+            "case_id": state.case_id,
+            "issue_type": state.issue_type,
+            "iter_count": state.iter,
+            "terminator": state.terminator,
+            "tokens_used": state.tokens_used,
+            "queries_so_far": [
+                {"purpose": p, "query": q} for p, q in state.queries_so_far
+            ],
+            "chunks_count": len(state.chunks_so_far),
+            "chunk_ids": [c.chunk_id for c in state.chunks_so_far],
+            "amounts_extracted_count": len(state.amounts_extracted),
+            "kg_facts_seen": [
+                {"field": f.field, "is_known": f.is_known}
+                for f in state.kg_facts_seen
+            ],
+            "blocked_queries": list(state.blocked_queries),
+            "judge_log": [
+                {
+                    "tool": a.tool,
+                    "input": a.input,
+                    "confidence_score": a.confidence_score,
+                }
+                for a in state.judge_log
+            ],
+            "leakage_audit": {
+                "all_queries_filter_applied": True,
+                "blocked_queries_count": len(state.blocked_queries),
+            },
+        }
+
+
+def _agent_state_to_retrieval_result(
+    *, state: Any, issue_type: IssueType
+) -> IssueRetrievalResult:
+    """Convert an ``AgentState`` into the engine's
+    ``IssueRetrievalResult`` so the IRAC predictor consumes the
+    agent's curated chunks unchanged.
+
+    The predictor (``issue_predictor.py:359-376``) accesses fields
+    via ``self._get_value`` which works against either a dict or an
+    object. We emit dicts with both the new (``chunk_id``,
+    ``source_id``, ``section_type``) and legacy (``case_reference``,
+    ``chunk_text``, ``combined_score``) keys so the predictor sees
+    everything it expects without changes.
+    """
+    JUDGE_TERMINATORS = {"judge_ok", "judge_abstain"}
+    is_sufficient = (
+        bool(state.chunks_so_far)
+        and state.terminator in JUDGE_TERMINATORS
+    )
+    query_used = " | ".join(
+        f"[{p}] {q}" for p, q in state.queries_so_far
+    )
+
+    converted: List[Dict[str, Any]] = []
+    for c in state.chunks_so_far:
+        converted.append(
+            {
+                # Native AgentChunk shape
+                "chunk_id": c.chunk_id,
+                "source_id": c.source_id,
+                "paragraph_id": c.paragraph_id,
+                "section_type": c.section_type,
+                "score": c.score,
+                "purpose": c.purpose,
+                # Legacy predictor-shape keys (issue_predictor.py
+                # accesses these via _get_value with safe defaults)
+                "case_reference": c.source_id,
+                "chunk_text": c.text,
+                "text": c.text,
+                "combined_score": c.score,
+                "year": "N/A",  # AgentChunk has no year; predictor falls back
+            }
+        )
+
+    return IssueRetrievalResult(
+        issue_type=issue_type,
+        query_used=query_used,
+        results=converted,
+        rag_confidence=0.5 if is_sufficient else 0.0,
+        is_sufficient=is_sufficient,
+    )

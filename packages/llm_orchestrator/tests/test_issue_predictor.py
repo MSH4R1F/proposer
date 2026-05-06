@@ -274,3 +274,82 @@ def test_parse_prediction_response_maps_ombudsman_outcome_language() -> None:
     assert no_maladministration.outcome == IssueOutcome.LANDLORD_WINS
     assert partial_maladministration.outcome == IssueOutcome.TENANT_WINS
     assert mixed.outcome == IssueOutcome.SPLIT
+
+
+def test_parse_prediction_response_accepts_amount_band() -> None:
+    predictor = IssuePredictor(_DummyLLM())
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        data_completeness=0.8,
+    )
+
+    prediction = predictor._parse_prediction_response(
+        json.dumps(
+            {
+                "outcome": "service failure",
+                "raw_confidence": 0.68,
+                "predicted_amount": 450,
+                "amount_band": "251 to 600",
+                "reasoning": "Likely service failure with a mid-band remedy.",
+                "evidence_strength": "moderate",
+            }
+        ),
+        issue,
+    )
+
+    assert prediction.amount_band == "251-600"
+    assert prediction.predicted_amount == 450
+
+
+@pytest.mark.asyncio
+async def test_repairs_prompt_requires_liability_remedy_and_comparator_amounts() -> None:
+    from llm_orchestrator.prompts.packs import get_prompt_pack
+
+    llm = _CaptureLLM()
+    case_file = SimpleNamespace(
+        metadata={
+            "domain_id": "housing.repairs_social.v1",
+            "matter_type": "repairs_damp_mould",
+        },
+        tenancy=SimpleNamespace(
+            deposit_amount=None,
+            start_date=None,
+            end_date=None,
+            tenancy_type=None,
+        ),
+        property=SimpleNamespace(region="london", postcode=None),
+        tenant_narrative="Resident reported damp and mould for months.",
+        landlord_narrative="Landlord says it inspected promptly.",
+    )
+    predictor = IssuePredictor(
+        llm,
+        case_file=case_file,
+        prompt_pack=get_prompt_pack("housing.repairs_social.v1"),
+    )
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        data_completeness=0.8,
+    )
+
+    await predictor._predict_issue(
+        issue,
+        SimpleNamespace(
+            results=[
+                {
+                    "case_reference": "HOS-1",
+                    "year": 2025,
+                    "chunk_text": "The landlord must pay £400 compensation.",
+                    "combined_score": 0.8,
+                }
+            ]
+        ),
+        case_file=case_file,
+    )
+
+    prompt = llm.calls[0]["messages"][0]["content"]
+    assert "separate liability from remedy" in prompt
+    assert "cited comparator award amounts" in prompt
+    assert "amount_band" in prompt
+    assert "predicted_amount to null" in prompt
