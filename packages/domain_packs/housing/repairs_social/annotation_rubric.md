@@ -91,9 +91,8 @@ or hazard to the landlord.
 
 **Polarity:** `pro_claimant`
 
-**Source authority:** Housing Act 2004 Part 1 (HHSRS framework — landlord
-must respond to identified hazards); Housing Ombudsman Complaint Handling
-Code 2024 (record-keeping obligations regarding service requests).
+**Source authority:** Housing Ombudsman Complaint Handling Code 2024
+(record-keeping obligations regarding service requests).
 
 ---
 
@@ -168,9 +167,11 @@ recommending proactive inspection.
 ## inspection_delay_days
 
 **Operational definition:** Whole-number count of days between the date the
-landlord received notice (per `landlord_notice_established`) and the date of
-the first inspection actually carried out (or attempted with access). If
-inspection never occurred, this factor is **null/unknown**, not 0.
+landlord received notice (the date the resident's report was acknowledged,
+logged, or first responded to — the same underlying evidence that supports
+`landlord_notice_established`) and the date of the first inspection actually
+carried out (or attempted with access). If inspection never occurred, this
+factor is **null/unknown**, not 0.
 
 **Affirmative phrasings (numeric):**
 - "Inspection took place 14 days after the report."
@@ -224,8 +225,7 @@ response to the report. Includes partial or unsuccessful repairs.
 **Polarity:** `pro_respondent`
 
 **Source authority:** Landlord and Tenant Act 1985 s11 (duty to repair
-implies active remediation); Housing Act 2004 Part 1 (duty to abate
-identified hazards).
+implies active remediation).
 
 ---
 
@@ -415,11 +415,13 @@ whether the report carries weight.
   "The cold caused significant disruption to daily life."
 - *minor*: "The resident was inconvenienced by the noise" / "Some
   redecoration was needed."
-- *none*: "The resident reported no health or living impact" / no impact
-  language at all.
+- *none*: "The resident reported no health or living impact" / an explicit
+  statement that there was no impact.
 
 **Negative phrasings:**
-- The narrative has no language about impact. (encode as **none**)
+- The narrative has no language about impact. (encode as **null** —
+  unknown, not "no impact"; silence does not equal an explicit no-impact
+  statement)
 - The Ombudsman's own characterisation, not the resident's. (use only as a
   fallback if no resident report is available)
 
@@ -464,8 +466,8 @@ temporary alternative accommodation, a decant, or a comparable alternative
 **Polarity:** `pro_respondent`
 
 **Source authority:** No direct statutory ground — guidance-derived from
-Housing Ombudsman determinations on reasonable redress (Scheme ¶54) and
-landlord decant policies.
+Housing Ombudsman Remedies Guidance (current edition) and Spotlight reports
+on temporary accommodation; landlord decant policies.
 
 ---
 
@@ -495,8 +497,7 @@ the determination. Includes offers refused by the resident.
 
 **Polarity:** `pro_respondent`
 
-**Source authority:** Housing Ombudsman Scheme ¶54 (reasonable redress);
-Housing Ombudsman Remedies Guidance (current edition).
+**Source authority:** Housing Ombudsman Remedies Guidance (current edition).
 
 ---
 
@@ -528,5 +529,5 @@ ombudsman, or one expressly excluded by the Scheme.
 
 **Polarity:** `neutral`
 
-**Source authority:** Housing Ombudsman Scheme ¶25 and ¶39 (matters the
-Ombudsman may decline to investigate, and matters outside jurisdiction).
+**Source authority:** Housing Ombudsman Scheme ¶39 (matters outside
+Ombudsman remit that may be declined).
