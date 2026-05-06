@@ -25,6 +25,17 @@ class TestDeterminationEnum:
             "outside_jurisdiction",
         }
 
+    def test_legacy_winner_for_handles_every_determination(self):
+        from eval.schema import _legacy_winner_for
+        # Every Determination value must produce a Winner — guards against a
+        # future enum addition that forgets to update _legacy_winner_for.
+        seen = set()
+        for d in Determination:
+            seen.add(_legacy_winner_for(d))
+        # Sanity: at least all three Winner values appear in the mapping.
+        from eval.schema import Winner
+        assert seen == {Winner.TENANT, Winner.LANDLORD, Winner.SPLIT}
+
 
 class TestComplaintFinding:
     def test_minimal_valid(self):
@@ -136,6 +147,18 @@ class TestGroundTruthOutcomeExtended:
                     total_awarded_gbp=Decimal("100"),
                     determination=Determination.OUTSIDE_JURISDICTION,
                     amount_ordered_now_gbp=Decimal("100"),
+                )
+            )
+
+    def test_outside_jurisdiction_with_nonzero_total_no_split_rejected(self):
+        # INV-D2 must trip even when no split fields are set, if total is non-zero.
+        with pytest.raises(ValidationError, match="outside_jurisdiction"):
+            GroundTruthOutcome(
+                **self._base_unapportioned_kwargs(
+                    overall_winner=Winner.LANDLORD,
+                    total_awarded_gbp=Decimal("100"),
+                    determination=Determination.OUTSIDE_JURISDICTION,
+                    # No split fields set — INV-D1 should NOT trip; INV-D2 must.
                 )
             )
 

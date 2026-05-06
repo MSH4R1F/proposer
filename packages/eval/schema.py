@@ -88,6 +88,34 @@ class Determination(str, Enum):
     OUTSIDE_JURISDICTION = "outside_jurisdiction"
 
 
+def _legacy_winner_for(determination: Determination) -> Winner:
+    """Canonical mapping from Determination to the legacy binary Winner.
+
+    Used by `GroundTruthOutcome._validate_outcome` to enforce that any caller-
+    supplied `overall_winner_legacy` matches the rule, and by the migration
+    script to populate the field deterministically.
+
+    `RESOLVED_WITH_INTERVENTION` maps to SPLIT because settlement during
+    Ombudsman intervention is not a clean tenant-or-landlord merits win.
+    """
+
+    if determination in (
+        Determination.MALADMINISTRATION,
+        Determination.SEVERE_MALADMINISTRATION,
+        Determination.SERVICE_FAILURE,
+    ):
+        return Winner.TENANT
+    if determination in (
+        Determination.REASONABLE_REDRESS,
+        Determination.NO_MALADMINISTRATION,
+        Determination.OUTSIDE_JURISDICTION,
+    ):
+        return Winner.LANDLORD
+    if determination == Determination.RESOLVED_WITH_INTERVENTION:
+        return Winner.SPLIT
+    raise ValueError(f"unhandled determination: {determination!r}")
+
+
 class RegionUK(str, Enum):
     """Closed enumeration of UK regions used by the stratification audit.
 
@@ -313,34 +341,6 @@ class GroundTruthOutcome(StrictBaseModel):
                     f"expected {expected.value!r}"
                 )
         return self
-
-
-def _legacy_winner_for(determination: Determination) -> Winner:
-    """Canonical mapping from Determination to the legacy binary Winner.
-
-    Used by `GroundTruthOutcome._validate_outcome` to enforce that any caller-
-    supplied `overall_winner_legacy` matches the rule, and by the migration
-    script to populate the field deterministically.
-
-    `RESOLVED_WITH_INTERVENTION` maps to SPLIT because settlement during
-    Ombudsman intervention is not a clean tenant-or-landlord merits win.
-    """
-
-    if determination in (
-        Determination.MALADMINISTRATION,
-        Determination.SEVERE_MALADMINISTRATION,
-        Determination.SERVICE_FAILURE,
-    ):
-        return Winner.TENANT
-    if determination in (
-        Determination.REASONABLE_REDRESS,
-        Determination.NO_MALADMINISTRATION,
-        Determination.OUTSIDE_JURISDICTION,
-    ):
-        return Winner.LANDLORD
-    if determination == Determination.RESOLVED_WITH_INTERVENTION:
-        return Winner.SPLIT
-    raise ValueError(f"unhandled determination: {determination!r}")
 
 
 class LabelerModel(StrictBaseModel):
