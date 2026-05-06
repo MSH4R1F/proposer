@@ -120,6 +120,26 @@ class PerFactorAlpha(BaseModel):
     note: str
 
 
+class RunSummary(BaseModel):
+    """Sidecar artifact written alongside the JSONL output.
+
+    Persists run metadata, per-factor IAA, and cost for CI / audit trails.
+    Written to ``{output_path}.summary.json``.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    domain_id: str
+    n_cases: int
+    factors: List[str]
+    annotators: List[str]
+    seed: int
+    date: str
+    per_factor_alpha: List[PerFactorAlpha]
+    cost_report: Dict[str, Any]
+    catalog_sha: Optional[str]
+
+
 # ---------------------------------------------------------------------------
 # Corpus loading (returns full rows with metadata + stripped text)
 # ---------------------------------------------------------------------------
@@ -572,6 +592,20 @@ def write_annotations_jsonl(annotations: List[Annotation], output_path: Path) ->
             fh.write(ann.model_dump_json() + "\n")
 
 
+def write_run_summary(
+    summary: "RunSummary",
+    output_path: Path,
+) -> Path:
+    """Write *summary* as pretty-printed JSON to ``{output_path}.summary.json``.
+
+    Returns the sidecar path so callers can log it.
+    """
+    sidecar = output_path.parent / (output_path.name + ".summary.json")
+    sidecar.parent.mkdir(parents=True, exist_ok=True)
+    sidecar.write_text(summary.model_dump_json(indent=2), encoding="utf-8")
+    return sidecar
+
+
 # ---------------------------------------------------------------------------
 # Cost report
 # ---------------------------------------------------------------------------
@@ -866,6 +900,22 @@ def cli_main(
             f"tokens_out={pa['tokens_out']} "
             f"cost_usd=${pa['estimated_cost_usd']:.6f}"
         )
+
+    # Write sidecar summary artifact
+    catalog_sha: Optional[str] = pack.get("catalog_sha")  # present if pack loader sets it
+    summary = RunSummary(
+        domain_id=args.domain,
+        n_cases=len(cases),
+        factors=factor_ids,
+        annotators=annotator_ids,
+        seed=args.seed,
+        date=today,
+        per_factor_alpha=alphas,
+        cost_report=cost,
+        catalog_sha=catalog_sha,
+    )
+    sidecar_path = write_run_summary(summary, out_path)
+    print(f"Summary written to:     {sidecar_path}")
 
     return 0
 

@@ -909,23 +909,48 @@ class TestDryRunNoLLMCalls:
 
 
 # ---------------------------------------------------------------------------
+# Shared corpus fixture (replaces three byte-identical _write_corpus helpers)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def write_corpus():
+    """Return a callable ``write_corpus(tmp_path, n=10) -> Path``.
+
+    Writes a minimal JSONL corpus of *n* synthetic case rows to
+    ``tmp_path / "corpus.jsonl"`` and returns the path.
+    """
+
+    def _write(tmp_path: Path, n: int = 10) -> Path:
+        p = tmp_path / "corpus.jsonl"
+        with p.open("w") as fh:
+            for i in range(n):
+                fh.write(
+                    json.dumps(
+                        {
+                            "case_id": f"c{i}",
+                            "title": f"C{i}",
+                            "outcome_raw": "m",
+                            "matter_types": [],
+                            "landlord_name": "L",
+                        }
+                    )
+                    + "\n"
+                )
+        return p
+
+    return _write
+
+
+# ---------------------------------------------------------------------------
 # 11. CLI exit codes
 # ---------------------------------------------------------------------------
 
 
 class TestCLIExitCodes:
-    def _write_corpus(self, tmp_path: Path, n: int = 10) -> Path:
-        p = tmp_path / "corpus.jsonl"
-        with p.open("w") as fh:
-            for i in range(n):
-                fh.write(json.dumps({"case_id": f"c{i}", "title": f"C{i}",
-                                     "outcome_raw": "m", "matter_types": [],
-                                     "landlord_name": "L"}) + "\n")
-        return p
-
-    def test_exits_0_on_dry_run_success(self, tmp_path):
+    def test_exits_0_on_dry_run_success(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         exit_code = mod.cli_main(
             argv=[
                 "--domain", "housing.repairs_social.v1",
@@ -938,9 +963,9 @@ class TestCLIExitCodes:
         )
         assert exit_code == 0
 
-    def test_exits_0_on_execute_success(self, tmp_path):
+    def test_exits_0_on_execute_success(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         out_path = tmp_path / "out.jsonl"
         exit_code = mod.cli_main(
             argv=[
@@ -984,9 +1009,9 @@ class TestCLIExitCodes:
         )
         assert exit_code != 0
 
-    def test_exits_nonzero_on_unknown_factor(self, tmp_path):
+    def test_exits_nonzero_on_unknown_factor(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         exit_code = mod.cli_main(
             argv=[
                 "--domain", "housing.repairs_social.v1",
@@ -1000,9 +1025,9 @@ class TestCLIExitCodes:
         )
         assert exit_code != 0
 
-    def test_exits_2_when_no_mode_given(self, tmp_path):
+    def test_exits_2_when_no_mode_given(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         exit_code = mod.cli_main(
             argv=[
                 "--domain", "housing.repairs_social.v1",
@@ -1014,9 +1039,9 @@ class TestCLIExitCodes:
         )
         assert exit_code != 0
 
-    def test_exits_1_wrong_annotator_count(self, tmp_path):
+    def test_exits_1_wrong_annotator_count(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         exit_code = mod.cli_main(
             argv=[
                 "--domain", "housing.repairs_social.v1",
@@ -1037,18 +1062,9 @@ class TestCLIExitCodes:
 
 
 class TestErrorPaths:
-    def _write_corpus(self, tmp_path: Path, n: int = 10) -> Path:
-        p = tmp_path / "corpus.jsonl"
-        with p.open("w") as fh:
-            for i in range(n):
-                fh.write(json.dumps({"case_id": f"c{i}", "title": f"C{i}",
-                                     "outcome_raw": "m", "matter_types": [],
-                                     "landlord_name": "L"}) + "\n")
-        return p
-
-    def test_raising_annotator_exits_nonzero(self, tmp_path, capsys):
+    def test_raising_annotator_exits_nonzero(self, tmp_path, capsys, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         ok_client = FakeLLMClient(canned_value=True, annotator_id="ann-0")
         bad_client = RaisingClient(canned_value=True, annotator_id="ann-1")
 
@@ -1068,9 +1084,9 @@ class TestErrorPaths:
         captured = capsys.readouterr()
         assert "Error" in captured.err or "error" in captured.err.lower()
 
-    def test_malformed_pydantic_exits_nonzero(self, tmp_path, capsys):
+    def test_malformed_pydantic_exits_nonzero(self, tmp_path, capsys, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         bad_client = MalformedClient(canned_value=True, annotator_id="ann-0")
         ok_client = FakeLLMClient(canned_value=True, annotator_id="ann-1")
 
@@ -1088,9 +1104,9 @@ class TestErrorPaths:
         )
         assert exit_code != 0
 
-    def test_wrong_injected_client_count_exits_1(self, tmp_path, capsys):
+    def test_wrong_injected_client_count_exits_1(self, tmp_path, capsys, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         # Pass only 1 client (need exactly 2)
         exit_code = mod.cli_main(
             argv=[
@@ -1111,18 +1127,9 @@ class TestErrorPaths:
 
 
 class TestEndToEnd:
-    def _write_corpus(self, tmp_path: Path, n: int = 10) -> Path:
-        p = tmp_path / "corpus.jsonl"
-        with p.open("w") as fh:
-            for i in range(n):
-                fh.write(json.dumps({"case_id": f"c{i}", "title": f"C{i}",
-                                     "outcome_raw": "m", "matter_types": [],
-                                     "landlord_name": "L"}) + "\n")
-        return p
-
-    def test_end_to_end_produces_correct_row_count(self, tmp_path):
+    def test_end_to_end_produces_correct_row_count(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path)
+        corpus_path = write_corpus(tmp_path)
         out_path = tmp_path / "annotations.jsonl"
         n = 3
         factors = "repair_responsibility_established,hazard_or_disrepair_reported"
@@ -1145,9 +1152,9 @@ class TestEndToEnd:
         # n cases × 2 factors × 2 annotators = 12
         assert len(rows) == n * 2 * 2
 
-    def test_determinism_same_seed_identical_output(self, tmp_path):
+    def test_determinism_same_seed_identical_output(self, tmp_path, write_corpus):
         mod = _load_cli()
-        corpus_path = self._write_corpus(tmp_path, n=10)
+        corpus_path = write_corpus(tmp_path, n=10)
 
         def _run(run_id: int) -> str:
             out_path = tmp_path / f"out_{run_id}.jsonl"
@@ -1167,3 +1174,118 @@ class TestEndToEnd:
             return out_path.read_text()
 
         assert _run(0) == _run(1)
+
+
+# ---------------------------------------------------------------------------
+# 14. I2 — compute_krippendorff_alpha when n_valid < 2
+# ---------------------------------------------------------------------------
+
+
+class TestKrippendorffAlphaInsufficientData:
+    def test_compute_alpha_returns_none_when_insufficient_valid_pairs(self):
+        """When all annotation values are None, n_valid < 2 → alpha is None, no crash."""
+        mod = _load_cli()
+        # Build 4 annotation pairs where every value is None
+        case_ids = [f"c{i}" for i in range(4)]
+        anns = _make_annotations(
+            case_ids,
+            factor_id="repair_responsibility_established",
+            values_a=[None, None, None, None],
+            values_b=[None, None, None, None],
+            value_type="boolean",
+        )
+        factor = {"id": "repair_responsibility_established", "value_type": "boolean"}
+        pfa = mod.compute_krippendorff_alpha(anns, factor)
+
+        assert pfa.alpha is None, "Expected alpha=None when all values are null"
+        assert pfa.note != "", "Expected a non-empty note describing the skip reason"
+        assert "insufficient" in pfa.note.lower() or "< 2" in pfa.note, (
+            f"Note should describe the insufficient-data case; got: {pfa.note!r}"
+        )
+
+    def test_compute_alpha_returns_none_when_only_one_valid_pair(self):
+        """When only one annotator has a non-null value, n_valid < 2 → alpha is None."""
+        mod = _load_cli()
+        # ann-0 has one real value; ann-1 always None → valid mask = False everywhere
+        case_ids = ["c0", "c1", "c2"]
+        anns = _make_annotations(
+            case_ids,
+            factor_id="hazard_or_disrepair_reported",
+            values_a=[True, None, None],
+            values_b=[None, None, None],
+            value_type="boolean",
+        )
+        factor = {"id": "hazard_or_disrepair_reported", "value_type": "boolean"}
+        pfa = mod.compute_krippendorff_alpha(anns, factor)
+
+        assert pfa.alpha is None
+        assert isinstance(pfa, mod.PerFactorAlpha)
+
+
+# ---------------------------------------------------------------------------
+# 15. I3 — summary sidecar written alongside JSONL output
+# ---------------------------------------------------------------------------
+
+
+class TestSummarySidecar:
+    def test_summary_sidecar_written(self, tmp_path, write_corpus):
+        """execute mode must write a {output}.summary.json sidecar."""
+        mod = _load_cli()
+        corpus_path = write_corpus(tmp_path)
+        out_path = tmp_path / "annotations.jsonl"
+
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--n", "3",
+                "--factors", "repair_responsibility_established,hazard_or_disrepair_reported",
+                "--corpus-path", str(corpus_path),
+                "--output", str(out_path),
+                "--seed", "42",
+            ],
+            injected_clients=_make_clients(),
+            repo_root=_REPO_ROOT,
+        )
+        assert exit_code == 0
+
+        sidecar_path = tmp_path / "annotations.jsonl.summary.json"
+        assert sidecar_path.exists(), f"Sidecar not found at {sidecar_path}"
+
+        raw = json.loads(sidecar_path.read_text())
+        summary = mod.RunSummary.model_validate(raw)
+
+        assert summary.domain_id == "housing.repairs_social.v1"
+        assert summary.n_cases == 3
+        assert set(summary.factors) == {
+            "repair_responsibility_established",
+            "hazard_or_disrepair_reported",
+        }
+        assert len(summary.per_factor_alpha) == 2
+        factor_ids_in_summary = {pfa.factor_id for pfa in summary.per_factor_alpha}
+        assert factor_ids_in_summary == {
+            "repair_responsibility_established",
+            "hazard_or_disrepair_reported",
+        }
+        assert "total_tokens_in" in summary.cost_report
+
+    def test_summary_sidecar_not_written_on_dry_run(self, tmp_path, write_corpus):
+        """--dry-run must NOT produce a sidecar."""
+        mod = _load_cli()
+        corpus_path = write_corpus(tmp_path)
+        out_path = tmp_path / "annotations.jsonl"
+
+        mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--dry-run",
+                "--n", "3",
+                "--corpus-path", str(corpus_path),
+                "--output", str(out_path),
+            ],
+            injected_clients=_make_clients(),
+            repo_root=_REPO_ROOT,
+        )
+
+        sidecar_path = tmp_path / "annotations.jsonl.summary.json"
+        assert not sidecar_path.exists(), "Sidecar must not be written on --dry-run"
