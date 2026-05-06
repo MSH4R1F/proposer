@@ -166,11 +166,25 @@ class IssuePredictor:
             elif issue.tenant_claim and issue.tenant_claim.claimed_amount is not None:
                 claimed_amount = issue.tenant_claim.claimed_amount
 
-        tenant_claim_text = (
-            issue.tenant_claim.description if issue.tenant_claim else "Not provided"
+        # 2026-05-06: mirror the narrative-fallback the hybrid path uses
+        # (_predict_issue) so the no-RAG modes (kg_only / llm_only) see the
+        # case story when the issue lacks a structured tenant_claim /
+        # landlord_claim. Without this, housing.repairs_social.v1 rows hit
+        # the no-RAG predict path with both party positions reading "Not
+        # provided" and the LLM correctly returns outcome=uncertain on
+        # every case (the regression the original RCA traced to commit
+        # c7e1340). See docs/eval/housing-ombudsman-stratified-50-v2-eval-2026-05-06.md.
+        tenant_narrative = (
+            getattr(cf, "tenant_narrative", None) if cf else None
         )
-        landlord_claim_text = (
-            issue.landlord_claim.description if issue.landlord_claim else "Not provided"
+        landlord_narrative = (
+            getattr(cf, "landlord_narrative", None) if cf else None
+        )
+        tenant_claim_text = self._format_party_position(
+            claim=issue.tenant_claim, narrative=tenant_narrative
+        )
+        landlord_claim_text = self._format_party_position(
+            claim=issue.landlord_claim, narrative=landlord_narrative
         )
 
         if self._is_repairs_case(cf, issue):
