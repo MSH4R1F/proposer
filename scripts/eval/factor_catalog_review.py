@@ -47,9 +47,10 @@ if _PACKAGES_DIR not in sys.path:
     sys.path.insert(0, _PACKAGES_DIR)
 
 # Load .env early so ANTHROPIC_API_KEY / OPENAI_API_KEY / LLM_* vars are set
-# before any client construction.  Mirrors scripts/eval/predict_all.py:50,57.
+# before any client construction.  override=True so empty shell-env values
+# (e.g. inherited ANTHROPIC_API_KEY="") don't beat the real .env value.
 from dotenv import load_dotenv  # noqa: E402 (after path fixup)
-load_dotenv(_REPO_ROOT / ".env")
+load_dotenv(_REPO_ROOT / ".env", override=True)
 
 from llm_orchestrator.clients.base import BaseLLMClient  # noqa: E402 (after path fixup)
 
