@@ -250,3 +250,28 @@ Per-case audit trail. Carries every hash and version needed to replay a labeling
 ### Invariant: `labeling_provenance is None` semantics
 
 A `None` value means the row predates the auto-label pipeline. The real-gold append gate (`packages/eval/auto_label/append_gate.py`, Phase 6) refuses to append any new real-gold row whose `labeling_provenance` is `None`, so the absence of provenance can only persist for legacy rows already in `housing_v1.jsonl`.
+
+
+## Determination ontology (housing.repairs_social.v1)
+
+Added 2026-05-06 — see [`docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`](housing-ombudsman-determination-ontology-2026-05-06.md) for the canonical mapping.
+
+`GroundTruthOutcome` carries (all optional in the schema; required for `housing.repairs_social.v1` rows by INV-D4):
+
+- `determination: Determination | None` — the substantive Ombudsman finding. One of `maladministration`, `severe_maladministration`, `service_failure`, `reasonable_redress`, `no_maladministration`, `resolved_with_intervention`, `outside_jurisdiction`.
+- `determination_per_complaint: list[ComplaintFinding]` — per-complaint-head findings for mixed cases (`outcome_raw` contains `;`).
+- `amount_ordered_now_gbp: Decimal | None` — fresh binding compensation order (use for `maladministration` / `severe_maladministration` / `service_failure`).
+- `amount_previously_offered_gbp: Decimal | None` — landlord pre-existing offer accepted as proportionate (use for `reasonable_redress`).
+- `amount_global_unapportioned_gbp: Decimal | None` — settlement total without an apportionment (use for `resolved_with_intervention`).
+- `overall_winner_legacy: Winner | None` — backward-compat derived winner. When set, must match `_legacy_winner_for(determination)` (INV-D3).
+
+Invariants:
+
+- **INV-D1** — when any of the three split amount fields is set, their sum equals `total_awarded_gbp` (the unset fields default to None and contribute zero to the sum).
+- **INV-D2** — `outside_jurisdiction` requires `total_awarded_gbp == 0` and all split fields None (or `Decimal("0")`).
+- **INV-D3** — `overall_winner_legacy`, if set, must match the canonical mapping in `_legacy_winner_for`.
+- **INV-D4** — when `domain_id == "housing.repairs_social.v1"`, `ground_truth_outcome.determination` must be set.
+
+Legacy housing.deposit.v1 rows are unaffected — `determination` defaults to None and the additional invariants are vacuously satisfied.
+
+The orchestrator-side mirror enum lives in `packages/llm_orchestrator/models/prediction_v2.py::Determination` (same string values; cross-package conversion handled by `packages/eval/adapter.py::_adapt_determination`).
