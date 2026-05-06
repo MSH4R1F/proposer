@@ -6,7 +6,7 @@ V2 models with backwards-compatible field aliases and import paths.
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -21,6 +21,24 @@ class OutcomeType(str, Enum):
     LANDLORD_WIN = "landlord_win"
     SPLIT = "split"
     UNCERTAIN = "uncertain"
+
+
+class Determination(str, Enum):
+    """Housing Ombudsman determination class — orchestrator-side mirror of
+    `eval.schema.Determination`. Kept independently so the orchestrator does
+    not import from `packages/eval/`.
+
+    Mapping is canonical and documented in
+    `docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`.
+    """
+
+    MALADMINISTRATION = "maladministration"
+    SEVERE_MALADMINISTRATION = "severe_maladministration"
+    SERVICE_FAILURE = "service_failure"
+    REASONABLE_REDRESS = "reasonable_redress"
+    NO_MALADMINISTRATION = "no_maladministration"
+    RESOLVED_WITH_INTERVENTION = "resolved_with_intervention"
+    OUTSIDE_JURISDICTION = "outside_jurisdiction"
 
 
 class PredictionMode(str, Enum):
@@ -135,6 +153,12 @@ class IssuePrediction(BaseModel):
     evidence_strength: EvidenceStrength = EvidenceStrength.MODERATE
     data_completeness_impact: str = ""
 
+    # 2026-05-06 — Housing Ombudsman determination ontology (additive).
+    amount_construct: Optional[
+        Literal["ordered_now", "previously_offered", "global_unapportioned"]
+    ] = None
+    predicted_determination: Optional[Determination] = None
+
     model_config = {"populate_by_name": True}
 
 
@@ -227,6 +251,9 @@ class PredictionResult(BaseModel):
     landlord_recovery_amount: Optional[float] = None
     predicted_settlement_range: Optional[Tuple[float, float]] = None
     deposit_at_stake: Optional[float] = None
+
+    # 2026-05-06 — Housing Ombudsman determination ontology (additive).
+    predicted_determination: Optional[Determination] = None
 
     issue_predictions: List[IssuePrediction] = Field(default_factory=list)
     reasoning_trace: List[ReasoningStep] = Field(default_factory=list)
