@@ -29,6 +29,15 @@ TRAIN_CUTOFF = date(2022, 12, 31)
 TEST_START = date(2023, 1, 1)
 STRATIFICATION_FLOOR = 5
 
+# ClaimType stratification scope per domain. Domains absent from this map
+# fall back to "every ClaimType in scope" (legacy deposit gold). Used by
+# audit() to avoid spurious "cleaning has 0 cases" warnings on
+# housing.repairs_social.v1, where DISREPAIR is the only claim type by
+# schema design (RCA-2026-05-06 §5 F7).
+_DOMAIN_EXPECTED_CLAIM_TYPES: dict[str, set] = {
+    "housing.repairs_social.v1": {ClaimType.DISREPAIR},
+}
+
 
 @dataclass
 class LoadError:
@@ -212,9 +221,28 @@ def audit(cases: list) -> AuditReport:
     for case in cases:
         for t in case.claim_types:
             type_counts[t] += 1
+
+    # Restrict ClaimType stratification check to types that apply to the
+    # domains present in the corpus. Avoids spurious "cleaning has 0 cases"
+    # warnings on housing.repairs_social.v1 (RCA-2026-05-06 §5 F7). A domain
+    # not in _DOMAIN_EXPECTED_CLAIM_TYPES falls back to "every ClaimType is
+    # in scope", preserving legacy deposit-gold behaviour. Mixed corpora
+    # therefore correctly fall back too. An empty corpus also keeps the
+    # legacy behaviour (every ClaimType reported as understratified).
+    expected_types: set = set()
+    if not cases:
+        expected_types = set(ClaimType)
+    for case in cases:
+        domain_id = getattr(case, "domain_id", None) or ""
+        domain_types = _DOMAIN_EXPECTED_CLAIM_TYPES.get(domain_id)
+        if domain_types is None:
+            expected_types = set(ClaimType)
+            break
+        expected_types |= domain_types
+
     understratified = {
         t: type_counts.get(t, 0)
-        for t in ClaimType
+        for t in expected_types
         if type_counts.get(t, 0) < STRATIFICATION_FLOOR
     }
     matter_counts = Counter(

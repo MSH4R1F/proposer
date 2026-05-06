@@ -343,6 +343,105 @@ class TestAudit:
         assert report.is_clean is False
         assert report.clean_failure_reasons
 
+    def test_audit_housing_corpus_does_not_flag_deposit_only_claim_types(self):
+        """RCA-2026-05-06 §5 F7: on housing.repairs_social.v1 corpora,
+        cleaning/damages/deposit_non_protection/end_of_tenancy must NOT
+        appear in understratified_types — they're deposit-domain only."""
+        from eval.dataset import STRATIFICATION_FLOOR, audit
+        from eval.schema import ClaimType
+
+        # 3 disrepair-only housing cases, below STRATIFICATION_FLOOR=5.
+        cases = self._build(
+            [
+                gold_case_dict(
+                    case_id=f"HO-{i}",
+                    domain_id="housing.repairs_social.v1",
+                    forum="housing_ombudsman",
+                    source_kind="ombudsman_determination",
+                    source_publisher="housing_ombudsman",
+                    retrieval_namespace_id="housing_repairs_social_v1",
+                    target_source_id=f"20260000{i}",
+                    claim_types=["disrepair"],
+                    matter_type="repairs_damp_mould",
+                    disputed_amount_gbp=None,
+                    claimed_amounts=[],
+                    ground_truth_outcome={
+                        "overall_winner": "tenant",
+                        "total_awarded_gbp": "100.00",
+                        "per_issue": [],
+                        "unapportioned_reason": (
+                            "Housing Ombudsman determination made a global "
+                            "compensation order without apportioning the "
+                            "final total."
+                        ),
+                        "determination": "maladministration",
+                        "amount_ordered_now_gbp": "100.00",
+                    },
+                    case_size="unknown",
+                )
+                for i in range(3)
+            ]
+        )
+
+        report = audit(cases)
+
+        # Deposit-domain ClaimTypes must not be flagged on a housing corpus.
+        for deposit_only in (
+            ClaimType.CLEANING,
+            ClaimType.DAMAGES,
+            ClaimType.DEPOSIT_NON_PROTECTION,
+            ClaimType.END_OF_TENANCY,
+        ):
+            assert deposit_only not in report.understratified_types
+
+        # Disrepair IS the housing domain ClaimType, and 3 < floor so it
+        # SHOULD be flagged (the floor still applies in-scope).
+        assert ClaimType.DISREPAIR in report.understratified_types
+        assert (
+            report.understratified_types[ClaimType.DISREPAIR] == 3
+            < STRATIFICATION_FLOOR
+        )
+
+    def test_audit_mixed_corpus_keeps_legacy_every_claim_type_scope(self):
+        """A corpus with at least one non-housing case falls back to the
+        legacy "every ClaimType in scope" stratification check."""
+        from eval.dataset import audit
+        from eval.schema import ClaimType
+
+        # One housing case + one legacy deposit case (no domain_id).
+        housing = gold_case_dict(
+            case_id="HO-1",
+            domain_id="housing.repairs_social.v1",
+            forum="housing_ombudsman",
+            source_kind="ombudsman_determination",
+            source_publisher="housing_ombudsman",
+            retrieval_namespace_id="housing_repairs_social_v1",
+            target_source_id="20260001",
+            claim_types=["disrepair"],
+            matter_type="repairs_damp_mould",
+            disputed_amount_gbp=None,
+            claimed_amounts=[],
+            ground_truth_outcome={
+                "overall_winner": "tenant",
+                "total_awarded_gbp": "100.00",
+                "per_issue": [],
+                "unapportioned_reason": (
+                    "Housing Ombudsman determination made a global "
+                    "compensation order without apportioning the final total."
+                ),
+                "determination": "maladministration",
+                "amount_ordered_now_gbp": "100.00",
+            },
+            case_size="unknown",
+        )
+        legacy = gold_case_dict(case_id="LEG-1", claim_types=["cleaning"])
+        report = audit(self._build([housing, legacy]))
+
+        # Mixed corpus -> all deposit ClaimTypes back in scope.
+        assert ClaimType.CLEANING in report.understratified_types
+        assert ClaimType.DAMAGES in report.understratified_types
+        assert ClaimType.END_OF_TENANCY in report.understratified_types
+
     def test_audit_housing_ombudsman_matter_types(self):
         from eval.dataset import audit
 
