@@ -228,14 +228,26 @@ class IssueRetriever:
                 query_used=query,
                 is_sufficient=False,
             )
+        retrieval_top_k = top_k + 5
+        if self._is_repairs_case(issue, case_file):
+            # Repairs/Ombudsman predictions need enough candidate chunks to
+            # choose both fact-similar and outcome-bearing passages. The
+            # product asks for a small final top-k, but a slightly wider
+            # retrieval pool lets the repairs reranker demote generic
+            # background chunks without losing relevant determinations.
+            retrieval_top_k = max(top_k + 10, top_k * 3)
+
         rag_result = await self.rag.retrieve(
             query=query,
-            top_k=top_k + 5,
+            top_k=retrieval_top_k,
             query_region=case_file.property.region,
         )
 
         raw_results = self._extract_results(rag_result)
-        reranked = self._apply_temporal_decay(raw_results, issue)
+        if self._is_repairs_case(issue, case_file):
+            reranked = self._apply_repairs_ombudsman_rerank(raw_results, issue)
+        else:
+            reranked = self._apply_temporal_decay(raw_results, issue)
         if (
             mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY)
             and not kg_facts.is_empty()
@@ -261,6 +273,144 @@ class IssueRetriever:
             legislative_regime=legislative_regime,
             is_sufficient=len(trimmed_results) >= self.min_cases_required,
         )
+
+    def _is_repairs_case(self, issue: IssueContext, case_file: CaseFile) -> bool:
+        metadata = getattr(case_file, "metadata", None)
+        return issue.issue_type.value in {
+            "repairs_disrepair",
+            "repairs_damp_mould",
+            "complaint_handling_failure",
+        } or (
+            isinstance(metadata, dict)
+            and metadata.get("domain_id") == "housing.repairs_social.v1"
+        )
+
+    def _apply_repairs_ombudsman_rerank(
+        self,
+        results: List[Any],
+        issue: IssueContext,
+    ) -> List[Any]:
+        """Repairs/Ombudsman-specific rerank for prediction prompts.
+
+        The generic deposit rerank is deliberately conservative and mostly
+        score/rank based. For Ombudsman prediction we need the final prompt to
+        include chunks that both match the issue and expose the determination's
+        outcome/remedy. Otherwise the LLM sees lots of fact/background chunks
+        and tends to hedge into ``split``/``uncertain``.
+        """
+        scored: List[tuple[float, Any]] = []
+        for result in results:
+            text = str(
+                self._get_value(
+                    result,
+                    "text",
+                    self._get_value(result, "chunk_text", ""),
+                )
+            )
+            base = self._to_float(
+                self._get_value(
+                    result,
+                    "rerank_score",
+                    self._get_value(result, "combined_score", 0.0),
+                )
+            )
+            if base <= 0:
+                base = self._to_float(self._get_value(result, "combined_score", 0.0))
+            semantic = self._to_float(self._get_value(result, "semantic_score", 0.0))
+            issue_match = self._repairs_issue_match_score(text, issue)
+            outcome_signal = self._ombudsman_outcome_signal_score(text)
+
+            final_score = (
+                (0.35 * base)
+                + (0.30 * semantic)
+                + (0.25 * issue_match)
+                + (0.10 * outcome_signal)
+            )
+            self._set_value(result, "repairs_issue_match_score", issue_match)
+            self._set_value(result, "ombudsman_outcome_signal_score", outcome_signal)
+            self._set_value(result, "combined_score", final_score)
+            self._set_value(result, "final_score", final_score)
+            scored.append((final_score, result))
+
+        scored.sort(key=lambda item: item[0], reverse=True)
+        return [result for _, result in scored]
+
+    def _repairs_issue_match_score(self, text: str, issue: IssueContext) -> float:
+        text_lower = text.lower()
+        issue_value = issue.issue_type.value
+        if issue_value == "repairs_damp_mould":
+            terms = [
+                "damp",
+                "mould",
+                "mold",
+                "condensation",
+                "ventilation",
+                "black mould",
+                "respiratory",
+            ]
+        elif issue_value == "complaint_handling_failure":
+            terms = [
+                "complaint handling",
+                "stage 1",
+                "stage 2",
+                "complaint response",
+                "complaints policy",
+                "complaint handling code",
+            ]
+        else:
+            terms = [
+                "disrepair",
+                "repair",
+                "repairs",
+                "leak",
+                "flood",
+                "roof",
+                "boiler",
+                "heating",
+                "water ingress",
+                "drain",
+                "subsidence",
+                "crack",
+                "balcony",
+            ]
+        matches = sum(1 for term in terms if term in text_lower)
+        if matches >= 3:
+            return 1.0
+        if matches == 2:
+            return 0.75
+        if matches == 1:
+            return 0.45
+        return 0.0
+
+    @staticmethod
+    def _ombudsman_outcome_signal_score(text: str) -> float:
+        text_lower = text.lower()
+        strong = [
+            "severe maladministration",
+            "maladministration",
+            "service failure",
+            "no maladministration",
+            "reasonable redress",
+            "finding",
+            "we have found",
+            "landlord must pay",
+            "ordered the landlord",
+            "compensation order",
+            "what the landlord must do",
+        ]
+        soft = [
+            "compensation",
+            "apology",
+            "case review",
+            "policy review",
+            "repair action",
+            "remedies guidance",
+        ]
+        if any(term in text_lower for term in strong):
+            return 1.0
+        if any(term in text_lower for term in soft):
+            return 0.6
+        return 0.0
 
     async def _retrieve_propositions(
         self,
@@ -350,6 +500,16 @@ class IssueRetriever:
         )
 
     def _build_issue_query(self, issue: IssueContext, case_file: CaseFile) -> str:
+        metadata = getattr(case_file, "metadata", None)
+        if isinstance(metadata, dict):
+            domain_id = metadata.get("domain_id")
+            if domain_id == "housing.repairs_social.v1" or issue.issue_type.value in {
+                "repairs_disrepair",
+                "repairs_damp_mould",
+                "complaint_handling_failure",
+            }:
+                return self._build_repairs_issue_query(issue, case_file, metadata)
+
         parts = [
             f"Tenancy deposit dispute: {issue.issue_type.value}",
             f"Deposit amount: \u00a3{case_file.tenancy.deposit_amount or 'unknown'}",
@@ -382,6 +542,59 @@ class IssueRetriever:
             parts.append(f"Landlord claims: {issue.landlord_claim.description}")
 
         return " | ".join(parts)
+
+    def _build_repairs_issue_query(
+        self,
+        issue: IssueContext,
+        case_file: CaseFile,
+        metadata: Dict[str, Any],
+    ) -> str:
+        parts = [self._repairs_query_seed(issue)]
+        matter_type = metadata.get("matter_type")
+        if matter_type:
+            parts.append(f"Matter type: {matter_type}")
+        if case_file.dispute_amount:
+            parts.append(f"Compensation in dispute: \u00a3{case_file.dispute_amount:.2f}")
+
+        narrative = (case_file.tenant_narrative or "").strip()
+        if narrative:
+            parts.append(f"Resident account: {narrative[:700]}")
+
+        if issue.supporting_evidence:
+            ev_types = set()
+            for evidence in issue.supporting_evidence:
+                evidence_type = getattr(evidence, "type", None)
+                if evidence_type is not None and hasattr(evidence_type, "value"):
+                    ev_types.add(str(evidence_type.value))
+                elif evidence_type is not None:
+                    ev_types.add(str(evidence_type))
+            if ev_types:
+                parts.append(f"Evidence available: {', '.join(sorted(ev_types))}")
+
+        if issue.kg_constraints:
+            parts.append(f"Key facts: {'; '.join(issue.kg_constraints)}")
+        if issue.tenant_claim:
+            parts.append(f"Resident claims: {issue.tenant_claim.description}")
+        if issue.landlord_claim:
+            parts.append(f"Landlord response: {issue.landlord_claim.description}")
+
+        return " | ".join(parts)
+
+    def _repairs_query_seed(self, issue: IssueContext) -> str:
+        if issue.issue_type == IssueType.REPAIRS_DAMP_MOULD:
+            return (
+                "damp mould condensation ventilation repair delay health "
+                "vulnerability compensation service failure"
+            )
+        if issue.issue_type == IssueType.COMPLAINT_HANDLING_FAILURE:
+            return (
+                "complaint handling stage 1 stage 2 delayed response poor "
+                "communication complaint handling code compensation"
+            )
+        return (
+            "disrepair repair delay leak flooding boiler heating hot water "
+            "structural defect service failure compensation"
+        )
 
     def _apply_temporal_decay(
         self, results: List[Any], issue: IssueContext

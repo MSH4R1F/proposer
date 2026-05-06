@@ -103,6 +103,37 @@ def _allocate_quotas(counts: Counter[str], total: int) -> dict[str, int]:
     return quotas
 
 
+def _allocate_balanced_quotas(counts: Counter[str], total: int) -> dict[str, int]:
+    """Near-balance outcome strata for a harder evaluation set."""
+    labels = sorted(label for label, count in counts.items() if count > 0)
+    if total < len(labels):
+        raise ValueError(
+            f"sample size {total} is smaller than non-empty strata {len(labels)}"
+        )
+
+    quotas = {label: 0 for label in labels}
+    allocated = 0
+    while allocated < total:
+        progressed = False
+        for label in labels:
+            if allocated >= total:
+                break
+            if quotas[label] >= counts[label]:
+                continue
+            quotas[label] += 1
+            allocated += 1
+            progressed = True
+        if not progressed:
+            break
+
+    if allocated < total:
+        raise ValueError(
+            f"could only allocate {allocated} cases from available strata; "
+            f"requested {total}"
+        )
+    return quotas
+
+
 def _select_with_matter_diversity(
     candidates: list[dict[str, Any]],
     quota: int,
@@ -218,7 +249,10 @@ def build(args: argparse.Namespace) -> None:
     ]
     rows = [row for row in all_rows if row.get("decision_date")]
     outcome_counts = Counter(row["outcome_normalized"] for row in rows)
-    quotas = _allocate_quotas(outcome_counts, args.size)
+    if args.allocation == "balanced_outcome":
+        quotas = _allocate_balanced_quotas(outcome_counts, args.size)
+    else:
+        quotas = _allocate_quotas(outcome_counts, args.size)
 
     by_outcome: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -246,7 +280,7 @@ def build(args: argparse.Namespace) -> None:
     for index, row in enumerate(selected, start=1):
         row["selection_index"] = index
         row["selection_seed"] = args.seed
-        row["selection_method"] = "outcome_min1_largest_remainder_matter_round_robin"
+        row["selection_method"] = f"{args.allocation}_matter_round_robin"
         row["generated_at"] = generated_at
 
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -267,6 +301,7 @@ def build(args: argparse.Namespace) -> None:
         "output": str(output),
         "generated_at": generated_at,
         "selection_seed": args.seed,
+        "allocation_strategy": args.allocation,
         "sample_size": len(selected),
         "source_cases": len(all_rows),
         "eligible_cases": len(rows),
@@ -298,6 +333,16 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--size", type=int, default=DEFAULT_SIZE)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument(
+        "--allocation",
+        choices=("proportional_outcome", "balanced_outcome"),
+        default="proportional_outcome",
+        help=(
+            "Outcome quota strategy. proportional_outcome mirrors corpus "
+            "prevalence; balanced_outcome oversamples rare negative/edge "
+            "outcomes for a harder eval set."
+        ),
+    )
     parser.add_argument(
         "--output",
         default="data/eval/housing_ombudsman_stratified_50.jsonl",

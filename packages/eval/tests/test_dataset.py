@@ -341,6 +341,51 @@ class TestAudit:
         # Every claim type is "0 cases" — all five are under-stratified.
         assert set(report.understratified_types) == set(ClaimType)
         assert report.is_clean is False
+        assert report.clean_failure_reasons
+
+    def test_audit_housing_ombudsman_matter_types(self):
+        from eval.dataset import audit
+
+        cases = self._build(
+            [
+                gold_case_dict(
+                    case_id=f"HO-DAMP-{i}",
+                    domain_id="housing.repairs_social.v1",
+                    forum="housing_ombudsman",
+                    source_kind="ombudsman_determination",
+                    source_publisher="housing_ombudsman",
+                    retrieval_namespace_id="housing_repairs_social_v1",
+                    target_source_id=f"20260000{i}",
+                    claim_types=["disrepair"],
+                    matter_type="repairs_damp_mould",
+                    disputed_amount_gbp=None,
+                    claimed_amounts=[],
+                    ground_truth_outcome={
+                        "overall_winner": "tenant",
+                        "total_awarded_gbp": "100.00",
+                        "per_issue": [],
+                        "unapportioned_reason": (
+                            "Housing Ombudsman determination made a global "
+                            "compensation order without apportioning the final "
+                            "total."
+                        ),
+                    },
+                    case_size="unknown",
+                )
+                for i in range(5)
+            ]
+        )
+
+        report = audit(cases)
+
+        assert "repairs_damp_mould" not in report.understratified_types
+        assert report.understratified_types["repairs_disrepair"] == 0
+        assert report.understratified_types["complaint_handling_failure"] == 0
+        assert report.matter_type_distribution == {"repairs_damp_mould": 5}
+        assert any(
+            "complaint_handling_failure" in reason
+            for reason in report.clean_failure_reasons
+        )
 
 
 class TestSyntheticCorpus10:
@@ -540,6 +585,7 @@ class TestCliInProcess:
         assert again["leakage_violations"][0]["case_id"] == "LEAK"
         assert again["leakage_violations"][0]["authority_cited_date"] == "2024-03-01"
         assert again["case_size_distribution"]["small"] == 1
+        assert again["clean_failure_reasons"]
 
     def test_cli_main_audit_clean_returns_zero(self, tmp_path):
         from eval.dataset import _cli_main

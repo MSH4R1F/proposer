@@ -13,9 +13,11 @@ Mapping policy:
     * LANDLORD_WIN  → confidence
     * TENANT_WIN    → 1 - confidence
     * SPLIT/UNCERTAIN → 0.5
-- total_predicted_gbp = (tenant_recovery or 0) + (landlord_recovery or 0)
+- total_predicted_gbp = null when neither top-level recovery field is set;
+  otherwise `(tenant_recovery or 0) + (landlord_recovery or 0)`
 - per-issue calibrated_confidence wins over raw_confidence when set
-- per-issue predicted_amount=None → Decimal("0")
+- per-issue predicted_amount=None remains null so amount coverage can
+  distinguish "model predicted £0" from "model omitted an amount"
 - per-issue issue labels are normalised from orchestrator `DisputeIssue`
   values into eval `ClaimType` values where a clean mapping exists
 
@@ -44,10 +46,17 @@ def from_prediction_result(result: "PredictionResult") -> Prediction:
     overall_win_prob = _confidence_to_p_landlord(
         result.overall_outcome.value, float(result.overall_confidence)
     )
-    total = Decimal(str(result.tenant_recovery_amount or 0)) + Decimal(
-        str(result.landlord_recovery_amount or 0)
-    )
     per_issue = [_adapt_issue(ip) for ip in result.issue_predictions]
+    has_top_level_amount = (
+        result.tenant_recovery_amount is not None
+        or result.landlord_recovery_amount is not None
+    )
+    total = (
+        Decimal(str(result.tenant_recovery_amount or 0))
+        + Decimal(str(result.landlord_recovery_amount or 0))
+        if has_top_level_amount
+        else None
+    )
     return Prediction(
         case_id=result.case_id,
         overall_winner=overall_winner,
@@ -67,7 +76,7 @@ def _adapt_issue(ip: "OrchestratorIssuePrediction") -> IssuePrediction:
     amount = (
         Decimal(str(ip.predicted_amount))
         if ip.predicted_amount is not None
-        else Decimal("0")
+        else None
     )
     return IssuePrediction(
         issue=_issue_type_to_str(ip.issue_type),

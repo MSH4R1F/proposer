@@ -8,7 +8,8 @@ made in tribunal decisions; DisputeIssue is intake/UI categories of
 - damages ↔ damage (spelling)
 - deposit_non_protection ↔ deposit_protection (eval names the breach,
   orchestrator names the issue area; semantically same dispute)
-- disrepair, end_of_tenancy (eval) — no clean DisputeIssue equivalent
+- disrepair (eval) maps only for Housing Ombudsman repairs matter types
+- end_of_tenancy (eval) — no clean DisputeIssue equivalent
 
 The Phase 5b live runner needs both directions: forward to construct a
 CaseFile from a GoldCase, inverse to normalise predicted-issue strings
@@ -49,11 +50,22 @@ class TestEvalToOrchestrator:
         out = eval_to_orchestrator(ClaimType.DEPOSIT_NON_PROTECTION)
         assert out.value == "deposit_protection"
 
-    def test_disrepair_is_unmappable(self):
-        """No DisputeIssue equivalent — runner must decide whether to
-        skip or fall back to OTHER. Surface explicitly."""
+    def test_disrepair_without_repairs_matter_type_is_unmappable(self):
+        """Avoid pretending deposit disrepair has a clean production issue."""
         with pytest.raises(UnmappableIssue, match="disrepair"):
             eval_to_orchestrator(ClaimType.DISREPAIR)
+
+    def test_disrepair_maps_to_repairs_disrepair_for_ombudsman_rows(self):
+        out = eval_to_orchestrator(
+            ClaimType.DISREPAIR, matter_type="repairs_disrepair"
+        )
+        assert out.value == "repairs_disrepair"
+
+    def test_disrepair_maps_to_damp_mould_for_ombudsman_rows(self):
+        out = eval_to_orchestrator(
+            ClaimType.DISREPAIR, matter_type="repairs_damp_mould"
+        )
+        assert out.value == "repairs_damp_mould"
 
     def test_end_of_tenancy_is_unmappable(self):
         with pytest.raises(UnmappableIssue, match="end_of_tenancy"):
@@ -80,6 +92,14 @@ class TestOrchestratorToEval:
     def test_deposit_protection_maps_to_non_protection(self):
         out = orchestrator_to_eval(_orch_dispute_issue("deposit_protection"))
         assert out is ClaimType.DEPOSIT_NON_PROTECTION
+
+    def test_repairs_disrepair_maps_to_eval_disrepair(self):
+        out = orchestrator_to_eval(_orch_dispute_issue("repairs_disrepair"))
+        assert out is ClaimType.DISREPAIR
+
+    def test_repairs_damp_mould_maps_to_eval_disrepair(self):
+        out = orchestrator_to_eval(_orch_dispute_issue("repairs_damp_mould"))
+        assert out is ClaimType.DISREPAIR
 
     def test_orch_only_value_is_unmappable(self):
         """garden, keys, redecoration etc. exist only on the orchestrator

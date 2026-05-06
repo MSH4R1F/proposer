@@ -1,0 +1,575 @@
+{
+  "n_cases": 50,
+  "seed": 42,
+  "n_resamples": 1000,
+  "amount_threshold_pct": 0.2,
+  "amount_absolute_threshold_gbp": "100",
+  "modes": [
+    {
+      "mode": "hybrid",
+      "accuracy": {
+        "point": 0.42,
+        "lower_95": 0.3,
+        "upper_95": 0.56,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.5,
+        "lower_95": 0.36,
+        "upper_95": 0.64,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.5,
+          "lower_95": 0.36,
+          "upper_95": 0.64,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.54,
+          "lower_95": 0.4,
+          "upper_95": 0.68,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": {
+          "point": 339.1644,
+          "lower_95": 194.90390500000004,
+          "upper_95": 529.4038999999999,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "median_absolute_error_gbp": {
+          "point": 50.0,
+          "lower_95": 0.0,
+          "upper_95": 270.1249999999999,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mean_signed_error_gbp": {
+          "point": -339.1644,
+          "lower_95": -529.4038999999999,
+          "upper_95": -194.90390500000004,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 50,
+          "n_evaluable": 50,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 0
+        }
+      },
+      "brier": {
+        "point": 0.23843799999999998,
+        "lower_95": 0.2221839,
+        "upper_95": 0.25619814999999996,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.4638,
+        "lower_95": 0.41359,
+        "upper_95": 0.4986049999999999,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    },
+    {
+      "mode": "rag_only",
+      "accuracy": {
+        "point": 0.54,
+        "lower_95": 0.4,
+        "upper_95": 0.68,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.56,
+        "lower_95": 0.42,
+        "upper_95": 0.7,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.56,
+          "lower_95": 0.42,
+          "upper_95": 0.7,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.58,
+          "lower_95": 0.44,
+          "upper_95": 0.72,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": {
+          "point": 321.2644,
+          "lower_95": 175.63279500000002,
+          "upper_95": 498.33738999999997,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "median_absolute_error_gbp": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 275.62499999999943,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mean_signed_error_gbp": {
+          "point": -321.2644,
+          "lower_95": -498.33738999999997,
+          "upper_95": -175.63279500000002,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 50,
+          "n_evaluable": 50,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 0
+        }
+      },
+      "brier": {
+        "point": 0.22899800000000003,
+        "lower_95": 0.21122455,
+        "upper_95": 0.24610409999999996,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.4558,
+        "lower_95": 0.4122,
+        "upper_95": 0.487805,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    },
+    {
+      "mode": "kg_only",
+      "accuracy": {
+        "point": 0.68,
+        "lower_95": 0.54,
+        "upper_95": 0.8,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.64,
+        "lower_95": 0.5,
+        "upper_95": 0.76,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.64,
+          "lower_95": 0.5,
+          "upper_95": 0.76,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.66,
+          "lower_95": 0.52,
+          "upper_95": 0.8,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": {
+          "point": 238.5044,
+          "lower_95": 129.8989,
+          "upper_95": 369.66008,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "median_absolute_error_gbp": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 70.905,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mean_signed_error_gbp": {
+          "point": -214.5044,
+          "lower_95": -344.92481,
+          "upper_95": -102.97929000000003,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 50,
+          "n_evaluable": 50,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 0
+        }
+      },
+      "brier": {
+        "point": 0.32299999999999995,
+        "lower_95": 0.30619999999999997,
+        "upper_95": 0.33799999999999997,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.5500000000000004,
+        "lower_95": 0.5199500000000002,
+        "upper_95": 0.5780000000000005,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    },
+    {
+      "mode": "llm_only",
+      "accuracy": {
+        "point": 0.68,
+        "lower_95": 0.54,
+        "upper_95": 0.8,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.6,
+        "lower_95": 0.46,
+        "upper_95": 0.74,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.6,
+          "lower_95": 0.46,
+          "upper_95": 0.74,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.6,
+          "lower_95": 0.46,
+          "upper_95": 0.74,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": {
+          "point": 247.1362,
+          "lower_95": 130.89531000000002,
+          "upper_95": 407.88280999999995,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "median_absolute_error_gbp": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 195.905,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mean_signed_error_gbp": {
+          "point": -227.1362,
+          "lower_95": -388.440795,
+          "upper_95": -103.18500000000002,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 50,
+          "n_evaluable": 50,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 0
+        }
+      },
+      "brier": {
+        "point": 0.32299999999999995,
+        "lower_95": 0.3072,
+        "upper_95": 0.33799999999999997,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.5500000000000004,
+        "lower_95": 0.5220000000000001,
+        "upper_95": 0.5780500000000005,
+        "n": 50,
+        "n_resamples": 1000
+      }
+    }
+  ],
+  "baselines": [
+    {
+      "baseline": "always_tenant",
+      "accuracy": {
+        "point": 0.98,
+        "lower_95": 0.94,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.0,
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": null,
+        "median_absolute_error_gbp": null,
+        "mean_signed_error_gbp": null,
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 0,
+          "n_evaluable": 0,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 50
+        }
+      },
+      "brier": {
+        "point": 0.02,
+        "lower_95": 0.0,
+        "upper_95": 0.06,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.02,
+        "lower_95": 0.0,
+        "upper_95": 0.06,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "description": "Predict tenant wins every case/issue; no amount estimate.",
+      "supported": {
+        "winner": true,
+        "amount": false
+      }
+    },
+    {
+      "baseline": "always_landlord",
+      "accuracy": {
+        "point": 0.02,
+        "lower_95": 0.0,
+        "upper_95": 0.06,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.0,
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": null,
+        "median_absolute_error_gbp": null,
+        "mean_signed_error_gbp": null,
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 0,
+          "n_evaluable": 0,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 50
+        }
+      },
+      "brier": {
+        "point": 0.98,
+        "lower_95": 0.94,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.98,
+        "lower_95": 0.94,
+        "upper_95": 1.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "description": "Predict landlord wins every case/issue; no amount estimate.",
+      "supported": {
+        "winner": true,
+        "amount": false
+      }
+    },
+    {
+      "baseline": "claim_positive_winner",
+      "accuracy": {
+        "point": 0.0,
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.0,
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": null,
+        "median_absolute_error_gbp": null,
+        "mean_signed_error_gbp": null,
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 0,
+          "n_evaluable": 0,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 50
+        }
+      },
+      "brier": {
+        "point": 0.25,
+        "lower_95": 0.25,
+        "upper_95": 0.25,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.48,
+        "lower_95": 0.44,
+        "upper_95": 0.5,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "description": "Predict the positive claimant wins; split when both tenant and landlord/agent have positive claims.",
+      "supported": {
+        "winner": false,
+        "amount": false
+      }
+    },
+    {
+      "baseline": "claim_amount_copy",
+      "accuracy": {
+        "point": 0.0,
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount_threshold": {
+        "point": 0.0,
+        "lower_95": 0.0,
+        "upper_95": 0.0,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "amount": {
+        "within_20pct": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "within_gbp100": {
+          "point": 0.0,
+          "lower_95": 0.0,
+          "upper_95": 0.0,
+          "n": 50,
+          "n_resamples": 1000
+        },
+        "mae_gbp": null,
+        "median_absolute_error_gbp": null,
+        "mean_signed_error_gbp": null,
+        "coverage": {
+          "n_cases": 50,
+          "n_gold_amount_available": 50,
+          "n_predicted_amount_available": 0,
+          "n_evaluable": 0,
+          "missing_gold_amount": 0,
+          "missing_predicted_amount": 50
+        }
+      },
+      "brier": {
+        "point": 0.25,
+        "lower_95": 0.25,
+        "upper_95": 0.25,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "ece": {
+        "point": 0.48,
+        "lower_95": 0.44,
+        "upper_95": 0.5,
+        "n": 50,
+        "n_resamples": 1000
+      },
+      "description": "Use the claim-positive winner rule and copy the canonical disputed amount as the total predicted award.",
+      "supported": {
+        "winner": false,
+        "amount": false
+      }
+    }
+  ],
+  "gold_path": "data/gold_standard/housing_repairs_social_v1.jsonl",
+  "predictions_paths": {
+    "hybrid": "eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered/hybrid.jsonl",
+    "rag_only": "eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered/rag_only.jsonl",
+    "kg_only": "eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered/kg_only.jsonl",
+    "llm_only": "eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered/llm_only.jsonl"
+  },
+  "computed_at": "2026-05-06T00:38:04.489807+00:00"
+}

@@ -19,6 +19,7 @@ from typing import Optional
 
 from pydantic import ValidationError
 
+from eval.constants import HOUSING_REPAIRS_MATTER_TYPES
 from eval.schema import CaseSize, ClaimType, GoldCase
 
 _log = logging.getLogger(__name__)
@@ -64,10 +65,27 @@ class AuditReport:
     understratified_types: dict = field(default_factory=dict)
     region_distribution: dict = field(default_factory=dict)
     case_size_distribution: dict = field(default_factory=dict)
+    matter_type_distribution: dict = field(default_factory=dict)
 
     @property
     def is_clean(self) -> bool:
         return not self.leakage_violations and not self.understratified_types
+
+    @property
+    def clean_failure_reasons(self) -> list[str]:
+        reasons: list[str] = []
+        if self.leakage_violations:
+            reasons.append(
+                f"{len(self.leakage_violations)} temporal leakage violation(s)"
+            )
+        for type_key, count in sorted(
+            self.understratified_types.items(), key=lambda item: _key_value(item[0])
+        ):
+            reasons.append(
+                f"{_key_value(type_key)} has {count} case(s), below "
+                f"STRATIFICATION_FLOOR={STRATIFICATION_FLOOR}"
+            )
+        return reasons
 
 
 def load(
@@ -199,6 +217,20 @@ def audit(cases: list) -> AuditReport:
         for t in ClaimType
         if type_counts.get(t, 0) < STRATIFICATION_FLOOR
     }
+    matter_counts = Counter(
+        getattr(case, "matter_type", None)
+        for case in cases
+        if getattr(case, "domain_id", None) == "housing.repairs_social.v1"
+        and getattr(case, "matter_type", None)
+    )
+    if matter_counts:
+        understratified.update(
+            {
+                matter_type: matter_counts.get(matter_type, 0)
+                for matter_type in HOUSING_REPAIRS_MATTER_TYPES
+                if matter_counts.get(matter_type, 0) < STRATIFICATION_FLOOR
+            }
+        )
 
     region_dist: dict = {}
     size_dist: dict = {}
@@ -214,6 +246,7 @@ def audit(cases: list) -> AuditReport:
         understratified_types=understratified,
         region_distribution=region_dist,
         case_size_distribution=size_dist,
+        matter_type_distribution=dict(matter_counts),
     )
 
 
@@ -238,9 +271,9 @@ def _format_report(report: AuditReport) -> str:
     if report.understratified_types:
         lines.append(f"\nunderstratified types (floor {STRATIFICATION_FLOOR}):")
         for t, n in sorted(
-            report.understratified_types.items(), key=lambda x: x[0].value
+            report.understratified_types.items(), key=lambda x: _key_value(x[0])
         ):
-            lines.append(f"  - {t.value}: {n}")
+            lines.append(f"  - {_key_value(t)}: {n}")
     else:
         lines.append("\nstratification: all types at or above floor")
     lines.append(
@@ -251,8 +284,20 @@ def _format_report(report: AuditReport) -> str:
         "case_size_distribution: "
         + str({k.value: v for k, v in report.case_size_distribution.items()})
     )
+    if report.matter_type_distribution:
+        lines.append(
+            "matter_type_distribution: " + str(report.matter_type_distribution)
+        )
     lines.append(f"\nis_clean: {report.is_clean}")
+    if not report.is_clean:
+        lines.append("clean_failure_reasons:")
+        for reason in report.clean_failure_reasons:
+            lines.append(f"  - {reason}")
     return "\n".join(lines)
+
+
+def _key_value(key) -> str:
+    return str(getattr(key, "value", key))
 
 
 def _report_to_dict(report: AuditReport) -> dict:
@@ -270,13 +315,15 @@ def _report_to_dict(report: AuditReport) -> dict:
             for v in report.leakage_violations
         ],
         "understratified_types": {
-            t.value: n for t, n in report.understratified_types.items()
+            _key_value(t): n for t, n in report.understratified_types.items()
         },
         "region_distribution": {k.value: v for k, v in report.region_distribution.items()},
         "case_size_distribution": {
             k.value: v for k, v in report.case_size_distribution.items()
         },
+        "matter_type_distribution": report.matter_type_distribution,
         "is_clean": report.is_clean,
+        "clean_failure_reasons": report.clean_failure_reasons,
     }
 
 

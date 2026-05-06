@@ -217,3 +217,50 @@ async def test_kg_filter_demotes_inventory_present_chunks_when_baseline_absent()
     assert refs[0] == "NO_INV", (
         f"KG-aware reranker should put NO_INV first when KG says inventory absent, got {refs}"
     )
+
+
+@pytest.mark.asyncio
+async def test_repairs_rerank_promotes_issue_and_outcome_chunks():
+    """Ombudsman retrieval should prefer outcome-bearing on-issue chunks.
+
+    A very semantic generic background chunk is less useful to the prediction
+    prompt than a slightly lower-semantic chunk that mentions damp/mould plus
+    the Ombudsman finding/remedy.
+    """
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": _make_results(
+                (
+                    "BACKGROUND",
+                    0.95,
+                    "The resident lives in a two bedroom flat and contacted the landlord.",
+                ),
+                (
+                    "OUTCOME",
+                    0.65,
+                    "The damp and mould complaint led to a service failure finding. "
+                    "The landlord must pay compensation.",
+                ),
+            ),
+            "confidence": 0.8,
+        }
+    )
+    retriever = IssueRetriever(rag, min_cases_required=1)
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        kg_constraints=[],
+        data_completeness=0.9,
+    )
+
+    result = await retriever._retrieve_for_issue(
+        issue, _stub_case_file(), top_k=2, kg_facts=KGFacts(), mode=PredictionMode.HYBRID,
+    )
+
+    refs = [r["case_reference"] for r in result.results]
+    assert refs[0] == "OUTCOME"
+    assert result.results[0]["repairs_issue_match_score"] > 0
+    assert result.results[0]["ombudsman_outcome_signal_score"] == 1.0
+    rag.retrieve.assert_awaited_once()
+    assert rag.retrieve.await_args.kwargs["top_k"] == 12

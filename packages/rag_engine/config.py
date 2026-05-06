@@ -522,8 +522,10 @@ class RetrievalFilterEnvelope(BaseModel):
     def to_chroma_where(self) -> Optional[Dict[str, Any]]:
         """Translate to a ChromaDB ``where`` clause (or ``None``).
 
-        Date comparisons fall back to ISO-string ``$lte`` clauses since
-        Chroma stores dates as strings.
+        Date comparisons are intentionally not pushed into Chroma. The
+        Chroma version used by this project rejects string operands for
+        range operators such as ``$lte``; date limits are still enforced by
+        the shared Python post-filter in ``matches_metadata``.
         """
         clauses: List[Dict[str, Any]] = []
         if self.excluded_source_ids:
@@ -533,13 +535,9 @@ class RetrievalFilterEnvelope(BaseModel):
             # exclusion for both backends after retrieval.
             pass
         if self.max_decision_date is not None:
-            clauses.append(
-                {"decision_date": {"$lte": self.max_decision_date.isoformat()}}
-            )
+            pass
         if self.as_of_date is not None:
-            clauses.append(
-                {"law_effective_date": {"$lte": self.as_of_date.isoformat()}}
-            )
+            pass
         if self.forum is not None:
             clauses.append({"forum": {"$eq": self.forum.value}})
         if self.source_kind is not None:
@@ -599,6 +597,55 @@ DEPOSIT_ISSUE_KEYWORDS = {
     "decoration": [
         "redecoration", "painting", "redecorating", "walls",
         "paintwork", "marks on walls"
+    ],
+    "repairs_damp_mould": [
+        "repairs_damp_mould",
+        "damp and mould",
+        "damp",
+        "mould",
+        "mold",
+        "condensation",
+        "black mould",
+        "humidity",
+        "ventilation",
+        "respiratory",
+        "asthma",
+        "fungal",
+    ],
+    "repairs_disrepair": [
+        "repairs_disrepair",
+        "disrepair",
+        "repair",
+        "repairs",
+        "leak",
+        "leaking",
+        "water ingress",
+        "roof",
+        "boiler",
+        "heating",
+        "hot water",
+        "blocked drain",
+        "drainpipe",
+        "flooding",
+        "subsidence",
+        "cracks",
+        "balcony",
+        "window",
+        "door",
+        "plaster",
+        "electrical",
+    ],
+    "complaint_handling_failure": [
+        "complaint_handling_failure",
+        "complaint handling",
+        "stage 1",
+        "stage 2",
+        "complaint response",
+        "delayed response",
+        "complaints policy",
+        "complaint handling code",
+        "poor communication",
+        "failure to respond",
     ],
 }
 

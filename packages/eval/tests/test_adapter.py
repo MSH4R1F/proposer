@@ -178,12 +178,28 @@ class TestAmountAggregation:
         prediction = from_prediction_result(result)
         assert prediction.total_predicted_gbp == Decimal("600.00")
 
-    def test_both_none_yields_zero(self):
+    def test_both_none_yields_unknown_amount(self):
         result = _build_orchestrator_prediction(
             tenant_recovery=None, landlord_recovery=None
         )
         prediction = from_prediction_result(result)
-        assert prediction.total_predicted_gbp == Decimal("0")
+        assert prediction.total_predicted_gbp is None
+
+    def test_per_issue_amount_without_case_recovery_stays_unknown(self):
+        IssueOutcome, _, _, _ = _orchestrator_imports()
+        result = _build_orchestrator_prediction(
+            tenant_recovery=None,
+            landlord_recovery=None,
+            issue_predictions=[
+                _build_orchestrator_issue(
+                    outcome=IssueOutcome.TENANT_WINS,
+                    predicted_amount=250.0,
+                )
+            ],
+        )
+        prediction = from_prediction_result(result)
+        assert prediction.total_predicted_gbp is None
+        assert prediction.per_issue[0].predicted_amount_gbp == Decimal("250.0")
 
 
 class TestPerIssueMapping:
@@ -250,7 +266,7 @@ class TestPerIssueMapping:
         assert winners["garden"] is Winner.SPLIT
         assert probs["garden"] == pytest.approx(0.5)
 
-    def test_per_issue_amount_none_becomes_zero(self):
+    def test_per_issue_amount_none_stays_unknown(self):
         IssueOutcome, _, _, _ = _orchestrator_imports()
         issues = [
             _build_orchestrator_issue(
@@ -262,7 +278,7 @@ class TestPerIssueMapping:
         ]
         result = _build_orchestrator_prediction(issue_predictions=issues)
         prediction = from_prediction_result(result)
-        assert prediction.per_issue[0].predicted_amount_gbp == Decimal("0")
+        assert prediction.per_issue[0].predicted_amount_gbp is None
 
     def test_per_issue_normalises_orchestrator_issue_to_eval_claim_type(self):
         """The metrics join per-issue predictions to gold by eval ClaimType."""

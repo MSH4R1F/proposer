@@ -19,6 +19,7 @@ import hashlib
 import json
 import re
 import shutil
+import sys
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -28,6 +29,10 @@ from typing import Any, Iterable
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "packages"))
+
+from eval.constants import OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON  # noqa: E402
+
 DEFAULT_MANIFEST = REPO_ROOT / "data/eval/housing_ombudsman_stratified_50.jsonl"
 DEFAULT_RUN_ID = "housing-ombudsman-stratified-50-review-20260504"
 DOMAIN_ID = "housing.repairs_social.v1"
@@ -37,21 +42,14 @@ SOURCE_PUBLISHER = "housing_ombudsman"
 SOURCE_KIND = "ombudsman_determination"
 SOURCE_LICENSE = "unknown_housing_ombudsman_decisions_permission_pending"
 GOLD_CORPUS = "housing_repairs_social_v1"
-UNAPPORTIONED_REASON = (
-    "Housing Ombudsman determination made a global compensation order without "
-    "apportioning the final total across housing_v1 issue categories."
-)
+UNAPPORTIONED_REASON = OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
 MANDATORY_PATHS = (
     "facts",
-    "disputed_amount_gbp",
     "claim_types",
     "matter_type",
     "ground_truth_outcome.overall_winner",
     "ground_truth_outcome.total_awarded_gbp",
     "ground_truth_outcome.unapportioned_reason",
-)
-CLAIMED_AMOUNT_PATH = (
-    "claimed_amounts[issue=ombudsman_compensation|by_party=tenant].amount_gbp"
 )
 
 _MONEY_RE = re.compile(r"\u00a3\s*([0-9][0-9\s,]*(?:\.[0-9]{1,2})?)")
@@ -345,16 +343,20 @@ def _matter_type(row: dict[str, Any]) -> str:
 
 def _draft_winner(row: dict[str, Any], amount: Decimal | None) -> str:
     outcome = str(row.get("outcome_normalized") or "").lower()
+    if outcome in {"maladministration", "service-failure", "severe-maladministration"}:
+        return "tenant"
+    if outcome in {"outside-jurisdiction", "no-maladministration", "reasonable-redress"}:
+        return "landlord"
+    if outcome in {"resolved-with-intervention", "unknown"}:
+        return "split"
     if amount is not None and amount > 0:
         return "tenant"
-    if outcome in {"outside-jurisdiction", "no-maladministration"}:
-        return "landlord"
-    if outcome == "unknown":
-        return "split"
-    return "tenant"
+    return "split"
 
 
-def _case_size(amount: Decimal) -> str:
+def _case_size(amount: Decimal | None) -> str:
+    if amount is None:
+        return "unknown"
     return "small" if amount <= Decimal("1500.00") else "large"
 
 
@@ -421,14 +423,14 @@ def _draft_decision(
     paragraphs: list[Paragraph],
     facts: str,
     facts_span: dict[str, Any],
-    amount: Decimal,
-    amount_span: dict[str, Any],
+    final_award: Decimal,
+    final_award_span: dict[str, Any],
     quote_text: str,
     quote_span: dict[str, Any],
 ) -> dict[str, Any]:
     landlord_name = str(row.get("landlord_name") or "")
     region, region_source = _infer_region(landlord_name)
-    winner = _draft_winner(row, amount)
+    winner = _draft_winner(row, final_award)
     decision_date = row.get("decision_date")
     case_payload = {
         "schema_version": "v1",
@@ -440,8 +442,8 @@ def _draft_decision(
             if landlord_name
             else "REVIEW_REQUIRED"
         ),
-        "case_size": _case_size(amount),
-        "disputed_amount_gbp": str(amount),
+        "case_size": "unknown",
+        "disputed_amount_gbp": None,
         "claim_types": ["disrepair"],
         "source_pdf_sha256": bundle["source_pdf_sha256"],
         "ocr_confidence": None,
@@ -466,16 +468,10 @@ def _draft_decision(
             "not extracted into this GoldCase field in the draft review packet."
         ),
         "cited_authorities": [],
-        "claimed_amounts": [
-            {
-                "issue": "ombudsman_compensation",
-                "amount_gbp": str(amount),
-                "by_party": "tenant",
-            }
-        ],
+        "claimed_amounts": [],
         "ground_truth_outcome": {
             "overall_winner": winner,
-            "total_awarded_gbp": str(amount),
+            "total_awarded_gbp": str(final_award),
             "per_issue": [],
             "unapportioned_reason": UNAPPORTIONED_REASON,
         },
@@ -502,13 +498,11 @@ def _draft_decision(
     }
     path_to_span = {
         "facts": facts_span,
-        "disputed_amount_gbp": amount_span,
         "claim_types": quote_span,
         "matter_type": quote_span,
         "ground_truth_outcome.overall_winner": quote_span,
-        "ground_truth_outcome.total_awarded_gbp": amount_span,
+        "ground_truth_outcome.total_awarded_gbp": final_award_span,
         "ground_truth_outcome.unapportioned_reason": quote_span,
-        CLAIMED_AMOUNT_PATH: amount_span,
     }
     return {
         "_review_instructions": (
@@ -516,7 +510,12 @@ def _draft_decision(
             "and source text. Before appending, set human_adjudicator, "
             "mandatory_review_completed_at, adjudicated_fields, flip rates, and "
             "change mandatory field_provenance sources from deterministic_manifest "
-            "to human_mandatory_review for confirmed cells."
+            "to human_mandatory_review for confirmed cells. If you populate "
+            "disputed_amount_gbp or claimed_amounts, also add matching "
+            "field_provenance rows with source='human_mandatory_review'. Do not "
+            "populate disputed_amount_gbp or claimed_amounts from final "
+            "Ombudsman compensation/order figures; only use a clean "
+            "pre-decision claim amount if the source exposes one."
         ),
         "_review_status": "needs_human_review",
         "case": case_payload,
@@ -600,11 +599,13 @@ URL: {row.get('source_url')}
 
 - Draft winner: `{case['ground_truth_outcome']['overall_winner']}`
 - Draft total awarded: `{case['ground_truth_outcome']['total_awarded_gbp']}`
+- Draft disputed amount: `{case['disputed_amount_gbp']}` (left empty unless a clean pre-decision claim amount is found)
+- Draft claimed amounts: `{case['claimed_amounts']}` (left empty unless a clean pre-decision claim amount is found)
 - Draft region: `{case['region']}` from `{case['region_source']}`
 - Draft matter type: `{case['matter_type']}`
 - Draft facts: {facts}
 
-## Money Candidates
+## Final Award Money Candidates
 
 {amount_rows}
 
@@ -619,9 +620,13 @@ URL: {row.get('source_url')}
 1. Run dual-provider auto-labeling for this case or for the whole run using
    `commands.sh`.
 2. Open this packet and the raw text side by side.
-3. Verify the mandatory fields: `facts`, `disputed_amount_gbp`, `claim_types`,
-   `matter_type`, `overall_winner`, `total_awarded_gbp`, and
-   `unapportioned_reason`.
+3. Verify the mandatory fields: `facts`, `claim_types`, `matter_type`,
+   `overall_winner`, `total_awarded_gbp`, and `unapportioned_reason`.
+   Set `disputed_amount_gbp` and `claimed_amounts` only if the source exposes
+   a clean pre-decision claimed amount. If you populate either amount field,
+   also add matching `field_provenance` rows with
+   `source='human_mandatory_review'`. Do not copy final compensation/order
+   amounts into prediction-input fields.
 4. Edit the draft decision template with the reviewed values and convert
    confirmed mandatory `field_provenance[].source` values from
    `deterministic_manifest` to `human_mandatory_review`.
@@ -706,8 +711,8 @@ def prepare(args: argparse.Namespace) -> dict[str, Any]:
             paragraphs=paragraphs,
             facts=facts,
             facts_span=facts_span,
-            amount=amount,
-            amount_span=amount_span,
+            final_award=amount,
+            final_award_span=amount_span,
             quote_text=quote_text,
             quote_span=quote_span,
         )
@@ -746,7 +751,8 @@ def prepare(args: argparse.Namespace) -> dict[str, Any]:
                 "bundle_path": str(bundle_path.relative_to(REPO_ROOT)),
                 "review_packet_path": str(packet_path.relative_to(REPO_ROOT)),
                 "draft_decision_path": str(draft_path.relative_to(REPO_ROOT)),
-                "draft_amount_gbp": str(amount),
+                "draft_total_awarded_gbp": str(amount),
+                "draft_disputed_amount_gbp": None,
                 "draft_winner": draft["case"]["ground_truth_outcome"]["overall_winner"],
                 "amount_candidate_count": len(candidates),
                 "top_amount_score": best.score if best is not None else None,

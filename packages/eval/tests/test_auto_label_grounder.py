@@ -434,6 +434,8 @@ def _full_gold_case_dict() -> dict:
     from eval.auto_label.append_gate import MANDATORY_REVIEW_FIELDS
 
     paths = set(MANDATORY_REVIEW_FIELDS)
+    if base.get("disputed_amount_gbp") is not None:
+        paths.add("disputed_amount_gbp")
     for io in base["ground_truth_outcome"]["per_issue"]:
         paths.add(f"ground_truth_outcome.per_issue[issue={io['issue']}].winner")
         paths.add(f"ground_truth_outcome.per_issue[issue={io['issue']}].awarded_gbp")

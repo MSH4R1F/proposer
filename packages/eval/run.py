@@ -62,17 +62,25 @@ def _dict_to_prediction(d: dict) -> Prediction:
         case_id=d["case_id"],
         overall_winner=Winner(d["overall_winner"]),
         overall_win_probability=float(d["overall_win_probability"]),
-        total_predicted_gbp=Decimal(str(d["total_predicted_gbp"])),
+        total_predicted_gbp=_optional_decimal(d.get("total_predicted_gbp")),
         per_issue=[
             IssuePrediction(
                 issue=ip["issue"],
                 predicted_winner=Winner(ip["predicted_winner"]),
                 win_probability=float(ip["win_probability"]),
-                predicted_amount_gbp=Decimal(str(ip["predicted_amount_gbp"])),
+                predicted_amount_gbp=_optional_decimal(
+                    ip.get("predicted_amount_gbp")
+                ),
             )
             for ip in d.get("per_issue", [])
         ],
     )
+
+
+def _optional_decimal(value) -> Decimal | None:
+    if value is None:
+        return None
+    return Decimal(str(value))
 
 
 def _check_alignment(gold: list, predictions: list) -> None:
@@ -102,8 +110,8 @@ def _format_report(
     return {
         "metric": metric_fn_name,
         "metric_alias": metric_name,
-        "gold_path": str(gold_path),
-        "predictions_path": str(predictions_path),
+        "gold_path": _portable_path(gold_path),
+        "predictions_path": _portable_path(predictions_path),
         "point": result.point,
         "lower_95": result.lower_95,
         "upper_95": result.upper_95,
@@ -112,6 +120,13 @@ def _format_report(
         "seed": seed,
         "computed_at": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def _portable_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(Path.cwd().resolve()))
+    except ValueError:
+        return str(path)
 
 
 def _cli_main(argv: Optional[Sequence[str]] = None) -> int:

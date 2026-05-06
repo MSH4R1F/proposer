@@ -85,6 +85,13 @@ _OMBUDSMAN_PREDICTION_SYSTEM = (
     "service failure, maladministration, severe maladministration) and the "
     "typical remedy (apology, repair action, compensation, case review, "
     "policy review). Cite at least one similar determination.\n\n"
+    "JSON outcome mapping for this eval/product contract: use tenant_wins "
+    "when any substantive repairs or complaint-handling issue is likely "
+    "upheld or an additional resident remedy is likely, even if some "
+    "complaint heads are not upheld. Use landlord_wins for likely no "
+    "maladministration/no service failure. Use split only when the likely "
+    "result is genuinely balanced after remedies, with material findings for "
+    "both sides and no clear resident-upheld remedy dominance.\n\n"
     + _OMBUDSMAN_POLICY
     + "\n"
     + _OMBUDSMAN_FORUM_FRAMING

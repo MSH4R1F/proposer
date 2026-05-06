@@ -498,10 +498,87 @@ baseline harness result, not a live product-accuracy claim. Artifacts live under
   the baseline result is useful evidence that the gold-promotion and metric
   plumbing works end to end, provided the caveats are explicit.
 
-**Trigger to revisit:** implement live Ombudsman retrieval/exclusion in
-`predict_all.py`, add a domain issue mapping for `disrepair`, regenerate
-independent predictions for all four modes, and rerun the same full-eval
-command. Only that successor run can be considered for SHA-68 thesis evidence.
+**Trigger to revisit:** live Ombudsman retrieval/exclusion and repairs-specific
+`disrepair` mapping are now wired in `predict_all.py`. Regenerate independent
+predictions for all four modes with provider API keys, then rerun the same
+full-eval command. Only that successor run can be considered for SHA-68 thesis
+evidence.
+
+---
+
+## D-025 — Do not treat no-RAG abstentions as meaningful `split` predictions
+
+**Linear:** SHA-68 / SHA-139-141
+**Decision:** No-RAG Housing Ombudsman ablations (`kg_only`, `llm_only`) need
+their own forum-specific ablation prompt and raw abstention diagnostics. The
+eval-compatible JSONL still uses the existing three-value `Winner` enum, but
+`predict_all.py` now also emits `raw_overall_outcome`, `raw_overall_confidence`,
+`abstained`, and per-issue `raw_outcome` fields.
+
+**Why:** The first clean live 50-case run on 2026-05-04 showed
+`kg_only=0.000` and `llm_only=0.000` accuracy, with every JSONL row appearing
+as `overall_winner="split"`. The logs showed the raw orchestrator outcome was
+actually `uncertain` for every no-RAG row. The eval adapter had collapsed
+`uncertain -> split` because the metric `Winner` enum has no fourth value.
+That collapse is acceptable for binary calibration as a coin-flip proxy, but
+it is misleading as a diagnostic label and invalid as product evidence.
+
+The underlying model behavior was also prompt-induced: no-RAG Ombudsman modes
+were reusing a cite-or-abstain system prompt that required similar retrieved
+determinations. With no retrieved determinations by design, the model abstained.
+
+**Rejected alternatives:**
+- **Report the `0.000` no-RAG numbers as model failure.** Rejected because the
+  raw logs proved this was prompt/eval-output wiring, not a fair baseline.
+- **Add `uncertain` to `eval.schema.Winner` immediately.** Rejected for this
+  patch because it would ripple through accuracy, calibration, fixtures, and
+  historic result files. Raw diagnostic fields solve the immediate ambiguity
+  while preserving metric compatibility.
+- **Let no-RAG modes invent supporting determinations.** Rejected because it
+  violates cite-or-abstain. The correct ablation rule is citation-free
+  prediction with `supporting_cases=[]`, not fabricated authority.
+
+**Trigger to revisit:** add first-class abstention metrics and, if needed, a
+four-value prediction outcome model before reporting final SHA-68 thesis
+numbers. Any live no-RAG ablation run before this fix must be marked invalid
+for product evidence.
+
+---
+
+## D-026 — Treat the post-fix Ombudsman live rerun as a valid baseline, not a hybrid win
+
+**Linear:** SHA-68 / SHA-139-141
+**Decision:** The fixed 2026-05-04 live 50-case rerun is valid as a live
+baseline/diagnostic run, but it must not be framed as evidence that the hybrid
+RAG+KG system outperforms its ablations. The report is
+`docs/eval/housing-ombudsman-stratified-50-full-eval.md`; artifacts live under
+`eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/`
+and
+`eval/results/housing_ombudsman_stratified_50_live_20260504_202405_fixed_ordered_full_eval/`.
+
+**Why:** The no-RAG prompt/output wiring bug was fixed and the fresh run no
+longer collapses `kg_only`/`llm_only` into all-uncertain outputs. Those modes
+now score `0.680` accuracy. The retrieval-backed modes are more conservative
+after citation verification: `rag_only=0.540`, `hybrid=0.420`. On a 50-case
+gold set with `tenant=49`, `landlord=1`, that means the retrieval path is
+turning too many tenant-win cases into `split`/raw abstention predictions.
+
+**Rejected alternatives:**
+- **Report hybrid as thesis evidence anyway because it is more cited.** Rejected
+  because citation discipline is valuable but does not rescue lower outcome
+  accuracy on the held-out gold labels.
+- **Discard the run because hybrid underperformed.** Rejected because failed
+  ablations are still useful product evidence: they identify the retrieval and
+  citation-verification layer as the next bottleneck.
+- **Optimize against this one tenant-heavy set immediately.** Rejected because
+  `n=50` with one landlord-win case can encourage majority-class overfitting.
+  The next fix should inspect failure cases and retrieval quality, not hard-code
+  tenant-favouring behavior.
+
+**Trigger to revisit:** after issue-specific retrieval tuning, abstention
+metrics, and a less tenant-skewed evaluation slice land, rerun the same live
+ablation and update SHA-68 evidence only if hybrid improves on both accuracy
+and calibration without weakening citation integrity.
 
 ---
 

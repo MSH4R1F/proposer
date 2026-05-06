@@ -21,12 +21,15 @@ class PartyRole(str, Enum):
 
 
 class DisputeIssue(str, Enum):
-    """Types of issues in a tenancy deposit dispute."""
+    """Types of issues in a tenancy / housing dispute."""
 
     CLEANING = "cleaning"
     DAMAGE = "damage"
     RENT_ARREARS = "rent_arrears"
     DEPOSIT_PROTECTION = "deposit_protection"
+    REPAIRS_DISREPAIR = "repairs_disrepair"
+    REPAIRS_DAMP_MOULD = "repairs_damp_mould"
+    COMPLAINT_HANDLING_FAILURE = "complaint_handling_failure"
     INVENTORY = "inventory"
     GARDEN = "garden"
     REDECORATION = "redecoration"

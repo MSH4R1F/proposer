@@ -32,7 +32,7 @@ from pydantic import ValidationError
 
 from eval.compare import build_comparison_report, report_to_dict
 from eval.dataset import load
-from eval.run import _load_predictions  # reuse the existing JSONL parser
+from eval.run import _load_predictions, _portable_path  # reuse the JSONL parser
 
 
 def _parse_predictions_arg(values: List[str]) -> Dict[str, Path]:
@@ -199,8 +199,10 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
 
     # 5. Render
     payload = report_to_dict(report)
-    payload["gold_path"] = str(args.gold)
-    payload["predictions_paths"] = {m: str(p) for m, p in predictions_paths.items()}
+    payload["gold_path"] = _portable_path(args.gold)
+    payload["predictions_paths"] = {
+        m: _portable_path(p) for m, p in predictions_paths.items()
+    }
     payload["computed_at"] = datetime.now(timezone.utc).isoformat()
 
     rendered = json.dumps(payload, indent=2)

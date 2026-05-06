@@ -27,8 +27,9 @@ from eval.case_file_adapter import (
     LossyReconstruction,
     gold_case_to_case_file,
 )
+from eval.constants import OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
 from eval.dataset import load
-from eval.schema import GoldCase
+from eval.schema import ClaimedAmount, GoldCase, PartyRole
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -93,6 +94,46 @@ class TestIssueMapping:
         # The reconstruction tracks unmappable claim types so the runner
         # can write an alignment report.
         assert "disrepair" in out.unmapped_claim_types
+
+    def test_ombudsman_disrepair_maps_to_repairs_issue(self, synthetic_gold_cases):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR"))
+        case = case.model_copy(
+            update={
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+            }
+        )
+        out = gold_case_to_case_file(case)
+        issue_values = [i.value for i in out.case_file.issues]
+        assert "repairs_damp_mould" in issue_values
+        assert "disrepair" not in out.unmapped_claim_types
+
+    def test_ombudsman_domain_fields_are_top_level_on_case_file(
+        self, synthetic_gold_cases
+    ):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR"))
+        case = case.model_copy(
+            update={
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+            }
+        )
+
+        out = gold_case_to_case_file(case)
+
+        assert out.case_file.domain_id == "housing.repairs_social.v1"
+        assert out.case_file.matter_types == ["repairs_damp_mould"]
+        assert out.case_file.routing_confidence == 1.0
 
     def test_end_of_tenancy_also_falls_back(self, synthetic_gold_cases):
         case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-EOT"))
@@ -175,6 +216,87 @@ class TestClaimedAmountsSplitByParty:
         for c in cf.landlord_claims:
             cf_total += Decimal(str(c.amount))
         assert cf_total == gold_total
+
+    def test_ombudsman_compensation_claim_attaches_to_repairs_issue(
+        self, synthetic_gold_cases
+    ):
+        case = next(g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR"))
+        case = case.model_copy(
+            update={
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+                "claimed_amounts": [
+                    ClaimedAmount(
+                        issue="ombudsman_compensation",
+                        amount_gbp=Decimal("575.00"),
+                        by_party=PartyRole.TENANT,
+                    )
+                ],
+            }
+        )
+
+        out = gold_case_to_case_file(case)
+
+        assert out.case_file.tenant_claims[0].issue.value == "repairs_damp_mould"
+        assert (
+            "Pre-decision complaint facts"
+            in out.case_file.tenant_claims[0].description
+        )
+        assert case.facts[:80] in out.case_file.tenant_claims[0].description
+
+    def test_ombudsman_generated_final_award_amounts_are_omitted(
+        self, synthetic_gold_cases
+    ):
+        case = next(
+            g for g in synthetic_gold_cases if g.case_id.startswith("SYN-DISREPAIR")
+        )
+        payload = case.model_dump(mode="json")
+        payload.update(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "matter_type": "repairs_damp_mould",
+                "forum": "housing_ombudsman",
+                "source_publisher": "housing_ombudsman",
+                "source_kind": "ombudsman_determination",
+                "retrieval_namespace_id": "housing_repairs_social_v1",
+                "target_source_id": "202399999",
+                "case_size": "small",
+                "disputed_amount_gbp": "575.00",
+                "claimed_amounts": [
+                    {
+                        "issue": "ombudsman_compensation",
+                        "amount_gbp": "575.00",
+                        "by_party": "tenant",
+                    }
+                ],
+                "ground_truth_outcome": {
+                    "overall_winner": "tenant",
+                    "total_awarded_gbp": "575.00",
+                    "per_issue": [],
+                    "unapportioned_reason": (
+                        OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
+                    ),
+                },
+            }
+        )
+        generated_ombudsman_gold = GoldCase.model_validate(payload)
+
+        out = gold_case_to_case_file(generated_ombudsman_gold)
+
+        assert out.case_file.dispute_amount is None
+        assert out.case_file.tenant_claims == []
+        assert out.case_file.landlord_claims == []
+        assert "575" not in out.case_file.model_dump_json()
+        assert out.gold_issue_labels_by_claim_type == {}
+        assert out.case_file.metadata["omitted_outcome_derived_amount_fields"] == [
+            "claimed_amounts[issue=ombudsman_compensation|by_party=tenant].amount_gbp",
+            "disputed_amount_gbp",
+        ]
 
 
 class TestRoundTripAllSyntheticCases:

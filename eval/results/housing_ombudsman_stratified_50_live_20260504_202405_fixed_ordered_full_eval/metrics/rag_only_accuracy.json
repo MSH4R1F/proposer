@@ -1,0 +1,13 @@
+{
+  "metric": "issue_winner_accuracy",
+  "metric_alias": "accuracy",
+  "gold_path": "data/gold_standard/housing_repairs_social_v1.jsonl",
+  "predictions_path": "eval/predictions/housing_ombudsman_stratified_50_live_20260504_202405_fixed/ordered/rag_only.jsonl",
+  "point": 0.54,
+  "lower_95": 0.4,
+  "upper_95": 0.68,
+  "n": 50,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-06T00:38:00.170836+00:00"
+}

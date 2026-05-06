@@ -1,5 +1,13 @@
 """Evaluation metrics: accuracy, calibration, uncertainty (bootstrap CIs)."""
-from eval.metrics.accuracy import amount_within_threshold, issue_winner_accuracy
+from eval.metrics.accuracy import (
+    amount_coverage,
+    amount_mae_gbp,
+    amount_mean_signed_error_gbp,
+    amount_median_absolute_error_gbp,
+    amount_within_absolute_threshold,
+    amount_within_threshold,
+    issue_winner_accuracy,
+)
 from eval.metrics.calibration import (
     brier_score,
     expected_calibration_error,
@@ -12,6 +20,11 @@ __all__ = [
     "IssuePrediction",
     "MetricResult",
     "Prediction",
+    "amount_coverage",
+    "amount_mae_gbp",
+    "amount_mean_signed_error_gbp",
+    "amount_median_absolute_error_gbp",
+    "amount_within_absolute_threshold",
     "amount_within_threshold",
     "bootstrap_ci",
     "brier_score",
