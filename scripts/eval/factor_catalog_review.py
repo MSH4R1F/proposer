@@ -370,15 +370,20 @@ class Panel:
         self,
         pack: Dict[str, Any],
         excerpts: List[str],
-        seed: int = 42,
-    ) -> List[PanelistReview]:
-        """Dispatch prompts to all clients concurrently and return reviews."""
+    ) -> "tuple[List[PanelistReview], Dict[str, Any]]":
+        """Dispatch prompts to all clients concurrently.
+
+        Returns a ``(reviews, cost_report)`` tuple so the caller can pass the
+        cost data directly into ``Aggregator.aggregate`` without a rebuild.
+        """
         user_msg = build_user_message(pack, excerpts)
         tasks = [
             self._call_one(client, user_msg)
             for client in self.clients
         ]
-        return list(await asyncio.gather(*tasks))
+        reviews = list(await asyncio.gather(*tasks))
+        cost_report = _build_cost_report(self.clients)
+        return reviews, cost_report
 
     async def _call_one(
         self, client: BaseLLMClient, user_msg: str
@@ -396,13 +401,12 @@ class Panel:
             max_tokens=8192,
         )
 
-    async def dry_run_info(
+    def dry_run_info(
         self,
         pack: Dict[str, Any],
         excerpts: List[str],
-        seed: int = 42,
     ) -> Dict[str, Any]:
-        """Return a preview dict without calling any LLM."""
+        """Return a preview dict without calling any LLM (synchronous)."""
         user_msg = build_user_message(pack, excerpts)
         model_ids = [getattr(c, "model", "unknown") for c in self.clients]
         prompt_preview = REVIEWER_PROMPT[:400] + "\n...[truncated]..."
@@ -430,16 +434,12 @@ _BINARY_AXES = [
 
 
 def _axes_flagged(finding: FactorFinding) -> List[str]:
-    """Return the list of boolean axes that are *False* (flagged) for this finding."""
-    axes = []
-    if not finding.labelable_from_narrative:
-        axes.append("labelable_from_narrative")
-    if not finding.definition_clear:
-        axes.append("definition_clear")
-    if not finding.polarity_correct:
-        axes.append("polarity_correct")
-    if not finding.authority_grounded:
-        axes.append("authority_grounded")
+    """Return the list of boolean axes that are *False* (flagged) for this finding.
+
+    Boolean axes are driven by ``_BINARY_AXES`` so that adding a new axis to
+    ``FactorFinding`` only requires one update site.
+    """
+    axes = [ax for ax in _BINARY_AXES if not getattr(finding, ax)]
     if finding.redundant_with:
         axes.append("redundancy")
     if finding.flags:
@@ -453,7 +453,13 @@ class Aggregator:
     def __init__(self, reviews: List[PanelistReview]) -> None:
         self.reviews = reviews
 
-    def aggregate(self) -> PanelReview:
+    def aggregate(self, cost_report: Optional[Dict[str, Any]] = None) -> PanelReview:
+        """Build a complete PanelReview.
+
+        *cost_report* is the dict returned by ``_build_cost_report``; when
+        omitted (e.g. tests that don't have real clients), a zeroed placeholder
+        is substituted so the object is always well-formed.
+        """
         n_panelists = len(self.reviews)
 
         # Collect all unique factor IDs across all reviews
@@ -515,8 +521,16 @@ class Aggregator:
             elif level == "single":
                 single.append(entry)
 
-        # Aggregate cost
-        cost = self._aggregate_cost()
+        # Use provided cost report or a zeroed placeholder
+        if cost_report is None:
+            cost_report = {
+                "total_tokens_in": 0,
+                "total_tokens_out": 0,
+                "estimated_cost_usd": 0.0,
+                "estimated_cost_gbp": 0.0,
+                "panelist_stats": [],
+                "note": "No cost data available (aggregated without client stats).",
+            }
 
         return PanelReview(
             panelist_reviews=self.reviews,
@@ -524,25 +538,8 @@ class Aggregator:
             unanimous_flags=unanimous,
             majority_flags=majority,
             single_flags=single,
-            cost_report=cost,
+            cost_report=cost_report,
         )
-
-    def _aggregate_cost(self) -> Dict[str, Any]:
-        """Sum token usage and estimated cost from all clients.
-
-        Reviews carry no client refs — cost is computed on the PanelReview
-        after run() returns.  This method returns zeroed-out placeholders;
-        the Panel.run() caller populates the real numbers via
-        ``_build_cost_report``.
-        """
-        return {
-            "total_tokens_in": 0,
-            "total_tokens_out": 0,
-            "estimated_cost_usd": 0.0,
-            "estimated_cost_gbp": 0.0,
-            "panelist_stats": [],
-            "note": "Cost populated by Panel.run(); zeroed if aggregated standalone.",
-        }
 
 
 def _build_cost_report(clients: List[BaseLLMClient]) -> Dict[str, Any]:
@@ -762,6 +759,16 @@ class Renderer:
             lines.append(f"_{cr['note']}_")
         lines.append(f"")
 
+        # Reviewer prompt (§22.1 requirement: embed full prompt in artifact)
+        lines.append(f"---")
+        lines.append(f"")
+        lines.append(f"## Reviewer Prompt")
+        lines.append(f"")
+        lines.append(f"```")
+        lines.append(REVIEWER_PROMPT)
+        lines.append(f"```")
+        lines.append(f"")
+
         return "\n".join(lines)
 
 
@@ -835,8 +842,15 @@ def cli_main(
     if injected_clients is not None:
         clients: List[BaseLLMClient] = list(injected_clients)
         # If fewer injected clients than requested panelists, pad with copies
-        while len(clients) < args.panelists and clients:
-            clients.append(clients[0])
+        if clients and len(clients) < args.panelists:
+            print(
+                f"WARNING: {len(clients)} client(s) provided but {args.panelists} panelists "
+                f"requested; padding by repeating the first client. "
+                f"Independent opinions may be compromised.",
+                file=sys.stderr,
+            )
+            while len(clients) < args.panelists:
+                clients.append(clients[0])
         clients = clients[: args.panelists]
     else:
         try:
@@ -850,9 +864,7 @@ def cli_main(
     panel = Panel(clients=clients)
 
     if args.dry_run:
-        info = asyncio.get_event_loop().run_until_complete(
-            panel.dry_run_info(pack=pack, excerpts=excerpts, seed=args.seed)
-        )
+        info = panel.dry_run_info(pack=pack, excerpts=excerpts)
         print("=== §22.1 Factor Catalog Panel Review — DRY RUN ===")
         print(f"Domain:         {args.domain}")
         print(f"Date:           {today}")
@@ -873,28 +885,16 @@ def cli_main(
 
     # Execute mode
     try:
-        reviews = asyncio.get_event_loop().run_until_complete(
-            panel.run(pack=pack, excerpts=excerpts, seed=args.seed)
+        reviews, cost_report = asyncio.run(
+            panel.run(pack=pack, excerpts=excerpts)
         )
     except Exception as e:
         print(f"Error running panel: {e}", file=sys.stderr)
         return 1
 
-    # Aggregate
+    # Aggregate — pass cost_report directly so no frozen-rebuild needed
     agg = Aggregator(reviews)
-    panel_review = agg.aggregate()
-
-    # Overwrite cost report with real stats from clients
-    cost = _build_cost_report(clients)
-    # PanelReview is frozen — rebuild with real cost report
-    panel_review = PanelReview(
-        panelist_reviews=panel_review.panelist_reviews,
-        disagreement_matrix=panel_review.disagreement_matrix,
-        unanimous_flags=panel_review.unanimous_flags,
-        majority_flags=panel_review.majority_flags,
-        single_flags=panel_review.single_flags,
-        cost_report=cost,
-    )
+    panel_review = agg.aggregate(cost_report=cost_report)
 
     # Render
     renderer = Renderer()

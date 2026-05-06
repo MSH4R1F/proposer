@@ -313,9 +313,7 @@ class TestPanel:
         clients = self._make_3_clients(mod)
         pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
         panel = mod.Panel(clients=clients)
-        reviews = asyncio.get_event_loop().run_until_complete(
-            panel.run(pack=pack, excerpts=[], seed=42)
-        )
+        reviews, _cost = asyncio.run(panel.run(pack=pack, excerpts=[]))
         assert len(reviews) == 3
         for r in reviews:
             assert isinstance(r, mod.PanelistReview)
@@ -327,10 +325,8 @@ class TestPanel:
         client = FakeLLMClient(canned)
         pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
         panel = mod.Panel(clients=[client])
-        # dry_run=True — no LLM calls
-        result = asyncio.get_event_loop().run_until_complete(
-            panel.dry_run_info(pack=pack, excerpts=[], seed=42)
-        )
+        # dry_run_info is now synchronous — no asyncio wrapper
+        result = panel.dry_run_info(pack=pack, excerpts=[])
         assert client.get_stats()["calls"] == 0
         assert "prompt" in result or "system_prompt" in result  # returns preview dict
 
@@ -487,11 +483,9 @@ class TestEndToEnd:
         pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
 
         panel = mod.Panel(clients=clients)
-        reviews = asyncio.get_event_loop().run_until_complete(
-            panel.run(pack=pack, excerpts=[], seed=42)
-        )
+        reviews, cost_report = asyncio.run(panel.run(pack=pack, excerpts=[]))
         agg = mod.Aggregator(reviews)
-        panel_review = agg.aggregate()
+        panel_review = agg.aggregate(cost_report=cost_report)
 
         out_path = tmp_path / "output.md"
         renderer = mod.Renderer()
@@ -509,11 +503,9 @@ class TestEndToEnd:
         def _run() -> str:
             clients = [FakeLLMClient(c, model_id=f"fake-{i}") for i, c in enumerate(canned)]
             panel = mod.Panel(clients=clients)
-            reviews = asyncio.get_event_loop().run_until_complete(
-                panel.run(pack=pack, excerpts=[], seed=42)
-            )
+            reviews, cost_report = asyncio.run(panel.run(pack=pack, excerpts=[]))
             agg = mod.Aggregator(reviews)
-            pr = agg.aggregate()
+            pr = agg.aggregate(cost_report=cost_report)
             out_path = tmp_path / f"out_{id(clients)}.md"
             renderer = mod.Renderer()
             renderer.write(panel_review=pr, pack=pack, output_path=out_path, date_str="2026-05-06")
@@ -602,3 +594,242 @@ class TestCLIDryRun:
             repo_root=_REPO_ROOT,
         )
         assert exit_code != 0
+
+
+# ---------------------------------------------------------------------------
+# 10. C2: _BINARY_AXES drives _axes_flagged — no drift
+# ---------------------------------------------------------------------------
+
+
+class TestBinaryAxesDriven:
+    def test_axes_flagged_matches_binary_axes_for_all_false(self):
+        """When all _BINARY_AXES are False, _axes_flagged must include every one."""
+        mod = _load_cli()
+        # Build a finding where every binary axis is False
+        finding = mod.FactorFinding(
+            factor_id="test",
+            labelable_from_narrative=False,
+            definition_clear=False,
+            polarity_correct=False,
+            authority_grounded=False,
+            redundant_with=[],
+            flags=[],
+        )
+        flagged = mod._axes_flagged(finding)
+        for ax in mod._BINARY_AXES:
+            assert ax in flagged, f"Expected axis '{ax}' in flagged list but got: {flagged}"
+
+    def test_axes_flagged_excludes_true_axes(self):
+        """Axes that are True must NOT appear in _axes_flagged output."""
+        mod = _load_cli()
+        finding = mod.FactorFinding(
+            factor_id="test",
+            labelable_from_narrative=True,
+            definition_clear=False,
+            polarity_correct=True,
+            authority_grounded=True,
+            redundant_with=[],
+            flags=[],
+        )
+        flagged = mod._axes_flagged(finding)
+        assert "definition_clear" in flagged
+        assert "labelable_from_narrative" not in flagged
+        assert "polarity_correct" not in flagged
+        assert "authority_grounded" not in flagged
+
+    def test_binary_axes_covers_all_boolean_fields(self):
+        """_BINARY_AXES must enumerate the same boolean fields as FactorFinding declares."""
+        mod = _load_cli()
+        boolean_fields = {
+            name
+            for name, field in mod.FactorFinding.model_fields.items()
+            if field.annotation is bool
+        }
+        assert set(mod._BINARY_AXES) == boolean_fields, (
+            f"_BINARY_AXES {mod._BINARY_AXES} does not match FactorFinding boolean fields {boolean_fields}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 11. I1: Rendered artifact contains the full REVIEWER_PROMPT
+# ---------------------------------------------------------------------------
+
+
+class TestRendererPromptEmbedded:
+    def test_artifact_contains_reviewer_prompt_opening(self, tmp_path):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        findings = [_make_finding(fid) for fid in [f["id"] for f in pack["factors"]]]
+        reviews = [
+            mod.PanelistReview.model_validate(_canned_review("p1", findings))
+        ]
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+
+        out_path = tmp_path / "prompt_test.md"
+        renderer = mod.Renderer()
+        renderer.write(
+            panel_review=panel_review,
+            pack=pack,
+            output_path=out_path,
+            date_str="2026-05-06",
+        )
+        content = out_path.read_text()
+        # §22.1 requires the full reviewer prompt to be in the artifact
+        assert "You are a skeptical UK housing/employment paralegal" in content, (
+            "Rendered artifact must embed the REVIEWER_PROMPT opening phrase"
+        )
+
+    def test_artifact_reviewer_prompt_section_present(self, tmp_path):
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        findings = [_make_finding(fid) for fid in [f["id"] for f in pack["factors"]]]
+        reviews = [
+            mod.PanelistReview.model_validate(_canned_review("p1", findings))
+        ]
+        agg = mod.Aggregator(reviews)
+        panel_review = agg.aggregate()
+
+        out_path = tmp_path / "prompt_section.md"
+        renderer = mod.Renderer()
+        renderer.write(
+            panel_review=panel_review,
+            pack=pack,
+            output_path=out_path,
+            date_str="2026-05-06",
+        )
+        content = out_path.read_text()
+        assert "## Reviewer Prompt" in content
+
+
+# ---------------------------------------------------------------------------
+# 12. I4: Error-path tests
+# ---------------------------------------------------------------------------
+
+
+class RaisingClient(FakeLLMClient):
+    """Client that raises RuntimeError on generate_structured."""
+
+    async def generate_structured(self, *args, **kwargs):
+        raise RuntimeError("Simulated LLM failure for panelist test")
+
+
+class MalformedClient(FakeLLMClient):
+    """Client that returns JSON missing required Pydantic fields."""
+
+    async def generate_structured(self, messages, system_prompt, response_model, max_tokens=4096):
+        self._stats["calls"] += 1
+        # Missing all required fields → model_validate will raise
+        return response_model.model_validate({"panelist_id": "bad-panelist"})
+
+
+class TestErrorPaths:
+    def _real_factor_ids(self, mod):
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        return [f["id"] for f in pack["factors"]]
+
+    def test_raising_client_exits_nonzero_with_clear_error(self, tmp_path, capsys):
+        """If generate_structured raises, CLI must exit non-zero with panelist context."""
+        mod = _load_cli()
+        factor_ids = self._real_factor_ids(mod)
+        canned = _canned_review("ok-panelist", [_make_finding(fid) for fid in factor_ids])
+        # First client is fine; second raises
+        ok_client = FakeLLMClient(canned, model_id="ok")
+        bad_client = RaisingClient(canned, model_id="bad")
+
+        out_path = tmp_path / "error_output.md"
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--output", str(out_path),
+                "--panelists", "2",
+            ],
+            injected_clients=[ok_client, bad_client],
+            repo_root=_REPO_ROOT,
+        )
+        assert exit_code != 0
+        captured = capsys.readouterr()
+        assert "Error" in captured.err or "error" in captured.err.lower(), (
+            f"Expected error message on stderr, got: {captured.err!r}"
+        )
+
+    def test_malformed_json_exits_nonzero(self, tmp_path, capsys):
+        """If a panelist returns JSON that fails Pydantic validation, CLI exits non-zero."""
+        mod = _load_cli()
+        factor_ids = self._real_factor_ids(mod)
+        canned = _canned_review("ok", [_make_finding(fid) for fid in factor_ids])
+        bad_client = MalformedClient(canned, model_id="malformed")
+
+        out_path = tmp_path / "malformed_output.md"
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--output", str(out_path),
+                "--panelists", "1",
+            ],
+            injected_clients=[bad_client],
+            repo_root=_REPO_ROOT,
+        )
+        assert exit_code != 0
+
+    def test_missing_raw_text_path_uses_stub(self, tmp_path):
+        """load_corpus_excerpts falls back to stub for rows with missing raw_text_path."""
+        mod = _load_cli()
+        # Write a tiny JSONL with a row pointing at a nonexistent file
+        jsonl_path = tmp_path / "mini_corpus.jsonl"
+        jsonl_path.write_text(
+            json.dumps({
+                "case_id": "test-case-001",
+                "title": "Test case title",
+                "outcome_raw": "maladministration",
+                "matter_types": ["repairs"],
+                "landlord_name": "Test Landlord",
+                "raw_text_path": "nonexistent/path/to/missing_file.txt",
+            }) + "\n"
+        )
+        excerpts = mod.load_corpus_excerpts(n=1, seed=42, corpus_path=jsonl_path)
+        # Must return exactly 1 excerpt (stub, not nothing)
+        assert len(excerpts) == 1
+        # Stub must include the case metadata we supplied
+        assert "Test case title" in excerpts[0] or "test-case-001" in excerpts[0], (
+            f"Expected stub to contain case metadata, got: {excerpts[0]!r}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 13. M2: Stderr warning when injected_clients count < --panelists
+# ---------------------------------------------------------------------------
+
+
+class TestPaddingWarning:
+    def test_warning_on_stderr_when_padding(self, tmp_path, capsys):
+        """CLI emits a WARNING to stderr when padding clients to reach panelist count."""
+        mod = _load_cli()
+        pack = mod.load_domain_pack("housing.repairs_social.v1", repo_root=_REPO_ROOT)
+        factor_ids = [f["id"] for f in pack["factors"]]
+        canned = _canned_review("p1", [_make_finding(fid) for fid in factor_ids])
+        # Only 1 client, but requesting 3 panelists → should warn
+        single_client = FakeLLMClient(canned, model_id="model-0")
+
+        out_path = tmp_path / "padded.md"
+        exit_code = mod.cli_main(
+            argv=[
+                "--domain", "housing.repairs_social.v1",
+                "--execute",
+                "--output", str(out_path),
+                "--panelists", "3",
+            ],
+            injected_clients=[single_client],
+            repo_root=_REPO_ROOT,
+        )
+        captured = capsys.readouterr()
+        assert exit_code == 0
+        assert "WARNING" in captured.err, (
+            f"Expected WARNING in stderr when padding clients, got: {captured.err!r}"
+        )
+        # Warning should mention the counts
+        assert "1" in captured.err and "3" in captured.err, (
+            f"Expected counts (1 provided, 3 requested) in warning, got: {captured.err!r}"
+        )
