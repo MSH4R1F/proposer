@@ -22,6 +22,7 @@ from eval.metrics import (
     abstention_rate,
     amount_coverage,
     amount_mae_gbp,
+    amount_mae_gbp_by_construct,
     amount_mean_signed_error_gbp,
     amount_median_absolute_error_gbp,
     amount_within_absolute_threshold,
@@ -31,6 +32,8 @@ from eval.metrics import (
     brier_score,
     coverage_adjusted_accuracy,
     covered_accuracy,
+    determination_accuracy,
+    determination_class_recall,
     expected_calibration_error,
     issue_winner_accuracy,
     macro_f1,
@@ -72,6 +75,18 @@ class ModeMetrics:
     amount_median_absolute_error_gbp: MetricResult | None = None
     amount_mean_signed_error_gbp: MetricResult | None = None
     amount_coverage: dict[str, int] = field(default_factory=dict)
+    # 2026-05-06: per-construct amount MAE (no bootstrap CI — point estimates
+    # only; the underlying metrics function default to 0.0 when no gold rows
+    # carry the construct, so legacy housing_v1 rows produce stable zeros).
+    amount_mae_gbp_ordered_now: float = 0.0
+    amount_mae_gbp_previously_offered: float = 0.0
+    amount_mae_gbp_global_unapportioned: float = 0.0
+    # 2026-05-06: Housing Ombudsman determination metrics. Keyed by the
+    # Determination enum's `.value` string for JSON friendliness. Legacy gold
+    # without a determination yields accuracy=0.0 / class_recall={} / n=0.
+    determination_accuracy: float = 0.0
+    determination_class_recall: dict[str, float] = field(default_factory=dict)
+    n_with_gold_determination: int = 0
 
     def metric_by_alias(self, alias: str) -> MetricResult:
         """Return the metric stored under the public alias used by the CLI."""
@@ -263,6 +278,28 @@ def _compute_mode_metrics(
         if coverage["n_evaluable"] > 0
         else None
     )
+    # 2026-05-06: per-construct MAE + determination metrics. These are point
+    # estimates only (no bootstrap) — they will all default to 0.0 / {} for
+    # legacy housing_v1 gold that doesn't carry the determination ontology,
+    # so existing eval numbers are unchanged on legacy corpora.
+    mae_ordered_now = amount_mae_gbp_by_construct(gold, predictions, "ordered_now")
+    mae_previously_offered = amount_mae_gbp_by_construct(
+        gold, predictions, "previously_offered"
+    )
+    mae_global_unapportioned = amount_mae_gbp_by_construct(
+        gold, predictions, "global_unapportioned"
+    )
+    det_accuracy = determination_accuracy(gold, predictions)
+    det_class_recall = {
+        cls.value: recall
+        for cls, recall in determination_class_recall(gold, predictions).items()
+    }
+    n_with_gold_determination = sum(
+        1
+        for g in gold
+        if getattr(getattr(g, "ground_truth_outcome", None), "determination", None)
+        is not None
+    )
     return ModeMetrics(
         mode=mode,
         accuracy=results["accuracy"],
@@ -278,6 +315,12 @@ def _compute_mode_metrics(
         amount_median_absolute_error_gbp=amount_median_absolute_error,
         amount_mean_signed_error_gbp=amount_mean_signed_error,
         amount_coverage=coverage,
+        amount_mae_gbp_ordered_now=mae_ordered_now,
+        amount_mae_gbp_previously_offered=mae_previously_offered,
+        amount_mae_gbp_global_unapportioned=mae_global_unapportioned,
+        determination_accuracy=det_accuracy,
+        determination_class_recall=det_class_recall,
+        n_with_gold_determination=n_with_gold_determination,
         brier=results["brier"],
         ece=results["ece"],
     )
@@ -571,6 +614,7 @@ def _mode_metrics_to_dict(m: ModeMetrics, *, label_key: str) -> dict:
         # Legacy key retained for existing callers: amount@20% by default.
         "amount_threshold": _metric_to_dict(m.amount_threshold),
         "amount": _amount_metrics_to_dict(m),
+        "determination": _determination_metrics_to_dict(m),
         "brier": _metric_to_dict(m.brier),
         "ece": _metric_to_dict(m.ece),
     }
@@ -598,6 +642,24 @@ def _amount_metrics_to_dict(m: ModeMetrics) -> dict:
             m.amount_mean_signed_error_gbp
         ),
         "coverage": dict(m.amount_coverage),
+        # 2026-05-06: per-construct MAE point estimates (no CI). 0.0 means
+        # "no gold rows carry this construct" — legacy housing_v1 gold returns
+        # 0.0 for all three keys, leaving existing eval numbers unchanged.
+        "mae_gbp_ordered_now": m.amount_mae_gbp_ordered_now,
+        "mae_gbp_previously_offered": m.amount_mae_gbp_previously_offered,
+        "mae_gbp_global_unapportioned": m.amount_mae_gbp_global_unapportioned,
+    }
+
+
+def _determination_metrics_to_dict(m: ModeMetrics) -> dict:
+    """Render the Housing Ombudsman determination block. Legacy gold without
+    determinations yields accuracy=0.0, class_recall={}, n=0 — visible-but-
+    inert so downstream consumers don't have to feature-detect.
+    """
+    return {
+        "accuracy": m.determination_accuracy,
+        "class_recall": dict(m.determination_class_recall),
+        "n_with_gold_determination": m.n_with_gold_determination,
     }
 
 
