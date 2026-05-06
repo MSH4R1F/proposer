@@ -109,12 +109,30 @@ class FakeLLMClient:
                 if len(parts) >= 2:
                     factor_id = parts[1]
 
+        # Build the nested AnnotationValue from the flat canned value
+        mod = _load_cli()
+        vtype = self._canned_value_type
+        raw = self._canned_value
+        if raw is None:
+            av = mod.AnnotationValue(is_null=True)
+        elif vtype == "boolean":
+            av = mod.AnnotationValue(boolean=bool(raw))
+        elif vtype == "enum":
+            av = mod.AnnotationValue(enum=str(raw))
+        elif vtype == "number":
+            av = mod.AnnotationValue(number=float(raw))
+        elif vtype == "duration":
+            av = mod.AnnotationValue(duration_days=int(raw))
+        else:
+            # Default fallback — treat as boolean
+            av = mod.AnnotationValue(boolean=bool(raw))
+
         canned = {
             "case_id": case_id,
             "factor_id": factor_id,
             "annotator_id": self._annotator_id,
-            "value": self._canned_value,
-            "value_type": self._canned_value_type,
+            "value": av,
+            "value_type": vtype,
             "confidence": 0.9,
             "source_span": None,
             "requires_human_review": False,
@@ -554,7 +572,7 @@ class TestAnnotationModel:
                 case_id="c1",
                 factor_id="f1",
                 annotator_id="ann-1",
-                value=True,
+                value=mod.AnnotationValue(boolean=True),
                 value_type="boolean",
                 confidence=1.5,  # invalid
                 source_span=None,
@@ -568,7 +586,7 @@ class TestAnnotationModel:
             case_id="c1",
             factor_id="f1",
             annotator_id="ann-1",
-            value=True,
+            value=mod.AnnotationValue(boolean=True),
             value_type="boolean",
             confidence=0.0,
             source_span=None,
@@ -583,7 +601,7 @@ class TestAnnotationModel:
             case_id="c1",
             factor_id="f1",
             annotator_id="ann-1",
-            value=False,
+            value=mod.AnnotationValue(boolean=False),
             value_type="boolean",
             confidence=0.5,
             source_span=None,
@@ -598,7 +616,7 @@ class TestAnnotationModel:
             case_id="c1",
             factor_id="f1",
             annotator_id="ann-1",
-            value=True,
+            value=mod.AnnotationValue(boolean=True),
             value_type="boolean",
             confidence=0.8,
             source_span=None,
@@ -614,7 +632,7 @@ class TestAnnotationModel:
             case_id="c1",
             factor_id="f1",
             annotator_id="ann-1",
-            value=True,
+            value=mod.AnnotationValue(boolean=True),
             value_type="boolean",
             confidence=0.8,
             source_span="Some quote",
@@ -623,7 +641,119 @@ class TestAnnotationModel:
         )
         row = json.loads(ann.model_dump_json())
         assert row["case_id"] == "c1"
-        assert row["value"] is True
+        # value is now a nested object; boolean sub-field should be True
+        assert row["value"]["boolean"] is True
+        assert row["value"]["is_null"] is False
+
+
+# ---------------------------------------------------------------------------
+# 7b. AnnotationValue model and _extract_typed_value helper
+# ---------------------------------------------------------------------------
+
+
+class TestAnnotationValue:
+    """Tests for the nested AnnotationValue typed-value carrier."""
+
+    # --- round-trip serialisation per typed variant ---
+
+    def test_boolean_variant_serialises(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(boolean=True)
+        d = json.loads(av.model_dump_json())
+        assert d["boolean"] is True
+        assert d["enum"] is None
+        assert d["number"] is None
+        assert d["duration_days"] is None
+        assert d["is_null"] is False
+
+    def test_enum_variant_serialises(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(enum="moderate")
+        d = json.loads(av.model_dump_json())
+        assert d["enum"] == "moderate"
+        assert d["boolean"] is None
+        assert d["is_null"] is False
+
+    def test_number_variant_serialises(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(number=3.14)
+        d = json.loads(av.model_dump_json())
+        assert abs(d["number"] - 3.14) < 1e-9
+        assert d["boolean"] is None
+        assert d["is_null"] is False
+
+    def test_duration_days_variant_serialises(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(duration_days=42)
+        d = json.loads(av.model_dump_json())
+        assert d["duration_days"] == 42
+        assert d["boolean"] is None
+        assert d["is_null"] is False
+
+    def test_is_null_variant_serialises(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(is_null=True)
+        d = json.loads(av.model_dump_json())
+        assert d["is_null"] is True
+        assert d["boolean"] is None
+        assert d["enum"] is None
+
+    # --- validation: rejects invalid states ---
+
+    def test_rejects_multi_populated(self):
+        mod = _load_cli()
+        with pytest.raises(Exception):
+            mod.AnnotationValue(boolean=True, enum="none")
+
+    def test_rejects_empty_without_is_null(self):
+        mod = _load_cli()
+        with pytest.raises(Exception):
+            mod.AnnotationValue()  # no field set and is_null defaults to False
+
+    def test_rejects_is_null_with_populated_field(self):
+        mod = _load_cli()
+        with pytest.raises(Exception):
+            mod.AnnotationValue(boolean=True, is_null=True)
+
+    def test_frozen(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(boolean=False)
+        with pytest.raises(Exception):
+            av.boolean = True  # type: ignore[misc]
+
+    # --- _extract_typed_value helper ---
+
+    def test_extract_boolean(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(boolean=True)
+        assert mod._extract_typed_value(av, "boolean") is True
+
+    def test_extract_enum(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(enum="severe")
+        assert mod._extract_typed_value(av, "enum") == "severe"
+
+    def test_extract_number(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(number=7.5)
+        assert mod._extract_typed_value(av, "number") == pytest.approx(7.5)
+
+    def test_extract_duration(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(duration_days=14)
+        assert mod._extract_typed_value(av, "duration") == 14
+
+    def test_extract_is_null_returns_none(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(is_null=True)
+        for vtype in ("boolean", "enum", "number", "duration"):
+            assert mod._extract_typed_value(av, vtype) is None
+
+    def test_extract_unknown_type_raises(self):
+        mod = _load_cli()
+        av = mod.AnnotationValue(boolean=True)
+        with pytest.raises(ValueError, match="unknown value_type"):
+            mod._extract_typed_value(av, "unknown_type")
 
 
 # ---------------------------------------------------------------------------
@@ -695,6 +825,23 @@ class TestJSONLOutput:
 # ---------------------------------------------------------------------------
 
 
+def _raw_to_annotation_value(raw: Any, value_type: str) -> Any:
+    """Convert a raw Python value to an ``AnnotationValue`` for tests."""
+    mod = _load_cli()
+    if raw is None:
+        return mod.AnnotationValue(is_null=True)
+    if value_type == "boolean":
+        return mod.AnnotationValue(boolean=bool(raw))
+    if value_type == "enum":
+        return mod.AnnotationValue(enum=str(raw))
+    if value_type == "number":
+        return mod.AnnotationValue(number=float(raw))
+    if value_type == "duration":
+        return mod.AnnotationValue(duration_days=int(raw))
+    # fallback
+    return mod.AnnotationValue(boolean=bool(raw))
+
+
 def _make_annotations(
     case_ids: List[str],
     factor_id: str,
@@ -720,7 +867,7 @@ def _make_annotations(
                 case_id=cid,
                 factor_id=factor_id,
                 annotator_id="ann-0",
-                value=va,
+                value=_raw_to_annotation_value(va, value_type),
                 value_type=value_type,
                 confidence=0.9,
                 source_span=None,
@@ -733,7 +880,7 @@ def _make_annotations(
                 case_id=cid,
                 factor_id=factor_id,
                 annotator_id="ann-1",
-                value=vb,
+                value=_raw_to_annotation_value(vb, value_type),
                 value_type=value_type,
                 confidence=0.9,
                 source_span=None,

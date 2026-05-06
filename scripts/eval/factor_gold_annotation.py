@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, TypeVar
 
 import numpy as np
 import yaml
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 # ---------------------------------------------------------------------------
 # Path bootstrap — make packages importable when run as a script
@@ -91,6 +91,73 @@ except ImportError:
 _IMPACT_ORDINAL: Dict[str, int] = {"none": 0, "minor": 1, "moderate": 2, "severe": 3}
 
 
+class AnnotationValue(BaseModel):
+    """Typed value carrier — mirrors the FactorValue pattern from legal_core.
+
+    Exactly one of ``boolean``, ``enum``, ``number``, ``duration_days`` must
+    be populated, OR ``is_null=True`` with all typed fields left as ``None``.
+
+    This nested shape serialises to ``{"type": "object", ...}`` which OpenAI
+    strict-mode JSON-schema accepts (flat unions of primitives do not).
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    boolean: Optional[bool] = None
+    enum: Optional[str] = None
+    number: Optional[float] = None
+    duration_days: Optional[int] = None
+    is_null: bool = False  # explicit "annotator says no value applies"
+
+    @model_validator(mode="after")
+    def _exactly_one_populated_or_null(self) -> "AnnotationValue":
+        populated = [
+            f for f in ("boolean", "enum", "number", "duration_days")
+            if getattr(self, f) is not None
+        ]
+        if self.is_null and populated:
+            raise ValueError(
+                f"is_null=True forbids populated typed fields, got {populated}"
+            )
+        if not self.is_null and not populated:
+            raise ValueError(
+                "must populate exactly one of boolean/enum/number/duration_days, "
+                "or set is_null=True"
+            )
+        if len(populated) > 1:
+            raise ValueError(
+                f"at most one typed field may be populated, got {populated}"
+            )
+        return self
+
+
+def _extract_typed_value(av: "AnnotationValue", value_type: str) -> Any:
+    """Return the populated typed field from *av*, or ``None`` if ``is_null``.
+
+    Args:
+        av: The ``AnnotationValue`` instance.
+        value_type: One of ``"boolean"``, ``"enum"``, ``"number"``, ``"duration"``.
+
+    Returns:
+        The concrete Python value (``bool``, ``str``, ``float``, ``int``) or
+        ``None`` when ``av.is_null`` is ``True``.
+
+    Raises:
+        ValueError: if *value_type* is unrecognised.
+    """
+    if av.is_null:
+        return None
+    if value_type == "boolean":
+        return av.boolean
+    if value_type == "enum":
+        return av.enum
+    if value_type == "number":
+        return av.number
+    if value_type == "duration":
+        return av.duration_days
+    raise ValueError(f"unknown value_type: {value_type!r}")
+
+
 class Annotation(BaseModel):
     """One annotator's assessment of one factor for one case."""
 
@@ -99,8 +166,8 @@ class Annotation(BaseModel):
     case_id: str
     factor_id: str
     annotator_id: str
-    value: Any  # bool | str | int | float | None — typed by factor's value_type
-    value_type: str  # mirrored for serialisation
+    value: AnnotationValue  # nested typed — OpenAI strict-mode compatible
+    value_type: str  # one of: boolean | enum | number | duration
     confidence: float
     source_span: Optional[str]
     requires_human_review: bool
@@ -267,7 +334,13 @@ OUTPUT SCHEMA (respond ONLY with valid JSON matching this schema exactly):
   "case_id": "<the case_id you receive in the user message>",
   "factor_id": "{factor_id}",
   "annotator_id": "<your model identifier>",
-  "value": <annotated value — type matches value_type; null if unclear>,
+  "value": {{
+    "boolean": <true|false|null — populate for value_type=boolean, else null>,
+    "enum": <"none"|"minor"|"moderate"|"severe"|null — populate for value_type=enum, else null>,
+    "number": <float|null — populate for value_type=number, else null>,
+    "duration_days": <integer|null — populate for value_type=duration, else null>,
+    "is_null": <true ONLY when the factor genuinely has no value; leave all typed fields null>
+  }},
   "value_type": "{value_type}",
   "confidence": <float in [0.0, 1.0]>,
   "source_span": <"short supporting quote from narrative, or null if absent">,
@@ -275,10 +348,17 @@ OUTPUT SCHEMA (respond ONLY with valid JSON matching this schema exactly):
   "reasoning": "<one sentence: why you chose this value>"
 }}
 
+VALUE FIELD RULES:
+- Populate EXACTLY ONE of boolean/enum/number/duration_days that matches value_type.
+- Set is_null=true (and leave all typed fields null) when the factor is absent/unclear.
+- Example for value_type=boolean, affirmative: {{"boolean": true, "enum": null, "number": null, "duration_days": null, "is_null": false}}
+- Example for value_type=boolean, absent/unclear: {{"boolean": null, "enum": null, "number": null, "duration_days": null, "is_null": true}}
+- Example for value_type=enum, value "moderate": {{"boolean": null, "enum": "moderate", "number": null, "duration_days": null, "is_null": false}}
+
 RULES:
 - Annotate ONLY from the narrative text. Do not infer facts not stated.
-- "Unclear" defaults to null for boolean and numeric factors.
-- Never guess a duration — set null if dates are not explicit.
+- "Unclear" → set is_null=true for all value types.
+- Never guess a duration — set is_null=true if dates are not explicit.
 - source_span must be ≤ 60 words verbatim from the narrative, or null.
 - Your annotator_id field MUST be exactly: {annotator_id}
 """
@@ -445,35 +525,36 @@ _LEVEL_OF_MEASUREMENT: Dict[str, str] = {
 }
 
 
-def _value_to_numeric(value: Any, factor: Dict[str, Any]) -> float:
-    """Encode an annotation value as a float for krippendorff.
+def _value_to_numeric(value: "AnnotationValue", factor: Dict[str, Any]) -> float:
+    """Encode an ``AnnotationValue`` as a float for Krippendorff α.
 
-    - boolean: True→1.0, False→0.0, None→nan
-    - enum (impact_severity_reported): ordinal integers per _IMPACT_ORDINAL, None→nan
-    - duration/numeric: float(value), None→nan
+    - boolean: True→1.0, False→0.0, is_null→nan
+    - enum (impact_severity_reported): ordinal integers per _IMPACT_ORDINAL, is_null→nan
+    - duration/number: float(duration_days or number), is_null→nan
     """
-    if value is None:
+    vtype = factor.get("value_type", "boolean")
+    raw = _extract_typed_value(value, vtype)
+
+    if raw is None:
         return float("nan")
 
-    vtype = factor.get("value_type", "boolean")
-
     if vtype == "boolean":
-        if isinstance(value, bool):
-            return 1.0 if value else 0.0
-        if isinstance(value, int):
-            return float(value)
+        if isinstance(raw, bool):
+            return 1.0 if raw else 0.0
+        if isinstance(raw, int):
+            return float(raw)
         return float("nan")
 
     if vtype == "enum":
-        if isinstance(value, str):
-            return float(_IMPACT_ORDINAL.get(value.lower(), float("nan")))
-        if isinstance(value, int):
-            return float(value)
+        if isinstance(raw, str):
+            return float(_IMPACT_ORDINAL.get(raw.lower(), float("nan")))
+        if isinstance(raw, int):
+            return float(raw)
         return float("nan")
 
     # duration or other numeric
     try:
-        return float(value)
+        return float(raw)
     except (TypeError, ValueError):
         return float("nan")
 
