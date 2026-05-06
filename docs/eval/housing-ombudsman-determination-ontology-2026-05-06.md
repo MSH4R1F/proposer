@@ -111,3 +111,19 @@ Tests guarding the mapping:
 - `packages/llm_orchestrator/tests/test_housing_prompt_determination.py` (prediction prompt presence)
 
 If you add a new `Determination` value (e.g. `partial_maladministration`), every item above must be updated in a single PR; the exhaustiveness test in `test_legacy_winner_for_handles_every_determination` will catch missing cases in `_legacy_winner_for`.
+
+---
+
+## 7. End-to-end wiring (post-mortem)
+
+PR #32 added the schema/adapter/metrics/orchestrator-side fields. The first end-to-end smoke run (Task 17 of the implementation plan) revealed the wiring was incomplete in three additional places that PR #32 didn't touch — the LLM still emitted the new fields, but they were dropped before the metrics could see them. PR #33 closed all three:
+
+1. **Production user prompt** (`packages/llm_orchestrator/pipeline/issue_predictor.py::_format_repairs_user_prompt`). The IRAC system prompt told the model about the new fields, but the user prompt's "before choosing the final JSON" paragraph only enumerated `outcome` / `predicted_amount` / `amount_band` and treated the new fields as optional. The model dropped them. Fixed by adding an explicit "REQUIRED housing.repairs_social.v1 fields — do not omit" paragraph at the bottom of the user prompt.
+
+2. **JSONL serializer** (`scripts/eval/predict_all.py::_serialise_prediction`). The eval-side `Prediction` dataclass had the fields populated by `_adapt_determination`, but `_serialise_prediction` built the JSONL output from a hand-coded field list that omitted them. Fixed by adding `predicted_determination` to the top-level dict and `amount_construct` to the per-issue dict.
+
+3. **JSONL loader** (`packages/eval/run.py::_dict_to_prediction`). Symmetrical to (2) — even after the JSONL had the fields, the loader built `Prediction` objects without reading them, so all metric calls saw `None`. Fixed by parsing `predicted_determination` back to the eval-side `Determination` enum and threading `amount_construct` through to `IssuePrediction`.
+
+When extending the ontology in the future (e.g. adding a `partial_maladministration` value, or a fourth `amount_construct`), the change-control checklist in §6 covers the schema/orchestrator/prompt/labeler surfaces. **Also verify these three serialisation seams** — they are not symbol-name searchable from the schema and are easy to forget. The exhaustiveness tests in `test_legacy_winner_for_handles_every_determination` and the housing prompt snapshot tests cover the schema/prompt sides; `test_run_summary_determination.py` and `test_adapter_determination.py` cover the metrics/adapter sides; the serializer/loader sides are covered indirectly via the smoke run in [`docs/eval/housing-ombudsman-stratified-50-v2-eval-2026-05-06.md`](housing-ombudsman-stratified-50-v2-eval-2026-05-06.md).
+
+Lesson for future per-domain field additions: any field that needs to flow LLM → eval metrics has six seams that all need the field name in them — Pydantic model, parser, assembler, adapter, serializer, loader. The eval/orchestrator package boundary makes a single grep insufficient; the smoke run is the test that exercises all six together.

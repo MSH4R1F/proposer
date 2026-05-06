@@ -233,4 +233,13 @@ Headline `housing.repairs_social.v1` metrics for thesis-grade reporting (per the
 
 Legacy metrics (`accuracy`, `covered_accuracy`, `amount.mae_gbp`) are still emitted in `summary.json` for backward compatibility. They should not be the headline number on `housing.repairs_social.v1`.
 
+### Live numbers from a 2026-05-06 run
+
+[`docs/eval/housing-ombudsman-stratified-50-v2-eval-2026-05-06.md`](housing-ombudsman-stratified-50-v2-eval-2026-05-06.md) is the canonical worked example. Concrete reading guide for the four most-misunderstood numbers:
+
+- **`accuracy` is corpus-imbalance-sensitive.** On the stratified-50 v2 corpus the `always_tenant` baseline scores 0.979 (47/48 rows are tenant-wins under the legacy binary). Hybrid's 0.833 looks worse than this baseline only because hybrid abstains on 5 cases. Don't compare modes via `accuracy` on housing — use `determination.accuracy` or `coverage_adjusted_accuracy`.
+- **`covered_accuracy` is selection-bias-sensitive.** A mode that abstains on the borderline cases will score higher on covered_accuracy than a mode that tries those cases. On the same run, `llm_only` gets 1.000 covered_accuracy on 8 of 48 cases — that's not a useful comparison number, just an artefact of heavy abstention. Pair covered_accuracy with `abstention_rate` or use `coverage_adjusted_accuracy`.
+- **`determination.accuracy` is construct-stable.** Direct fraction-correct on the 7-class Ombudsman ontology. Hybrid 0.542 in the worked example. Reads honestly across rebalanced corpora because the classes are intrinsic to the source determinations rather than a polysemous binary.
+- **`amount.mae_gbp_ordered_now` is the construct-matched amount metric.** Restricted to cases where the gold amount represents a fresh Ombudsman compensation order (the construct the model's prompt actually targets). Hybrid £504 in the worked example — this is real model quality, not a corpus artefact. The legacy all-rows `amount.mae_gbp` (£568 on the same run) is contaminated by reasonable_redress and resolved_with_intervention rows the model can't see prior offers for.
+
 Deposit-style baselines (`claim_positive_winner`, `claim_amount_copy`) emit `null` (rendered as `n/a`) on housing gold because the deposit construct does not apply — see `packages/eval/compare.py::_baseline_metric_value`.
