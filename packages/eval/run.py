@@ -68,6 +68,11 @@ def _load_predictions(path: Path) -> list:
 
 
 def _dict_to_prediction(d: dict) -> Prediction:
+    from eval.schema import Determination as _Determination
+
+    raw_det = d.get("predicted_determination")
+    pred_det = _Determination(raw_det) if raw_det else None
+
     return Prediction(
         case_id=d["case_id"],
         overall_winner=Winner(d["overall_winner"]),
@@ -85,6 +90,7 @@ def _dict_to_prediction(d: dict) -> Prediction:
                     ip.get("abstained")
                     or ip.get("raw_outcome") in {"uncertain", "unknown"}
                 ),
+                amount_construct=ip.get("amount_construct"),
             )
             for ip in d.get("per_issue", [])
         ],
@@ -92,6 +98,7 @@ def _dict_to_prediction(d: dict) -> Prediction:
             d.get("abstained")
             or d.get("raw_overall_outcome") in {"uncertain", "unknown"}
         ),
+        predicted_determination=pred_det,
     )
 
 

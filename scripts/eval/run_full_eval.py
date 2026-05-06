@@ -139,7 +139,11 @@ def _summarise_eval_row(row: dict[str, Any]) -> dict[str, Any]:
         "amount_mean_signed_error_gbp": _metric_point(bias),
         "amount": amount,
         "determination": determination,
-        "n": row["accuracy"]["n"],
+        "n": (
+            row["accuracy"]["n"]
+            if isinstance(row.get("accuracy"), dict)
+            else None
+        ),
     }
 
 
