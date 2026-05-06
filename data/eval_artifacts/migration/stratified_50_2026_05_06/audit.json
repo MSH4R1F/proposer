@@ -1,0 +1,13 @@
+{
+  "input_rows": 50,
+  "output_rows": 50,
+  "flagged_for_review": 34,
+  "determination_counts": {
+    "maladministration": 31,
+    "outside_jurisdiction": 1,
+    "reasonable_redress": 4,
+    "resolved_with_intervention": 2,
+    "service_failure": 7,
+    "severe_maladministration": 3
+  }
+}

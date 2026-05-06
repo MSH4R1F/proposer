@@ -55,6 +55,67 @@ class Winner(str, Enum):
     SPLIT = "split"
 
 
+class Determination(str, Enum):
+    """Housing Ombudsman determination class.
+
+    Captures the substantive Ombudsman finding for a single complaint head.
+    Used in `GroundTruthOutcome.determination` for `housing.repairs_social.v1`
+    gold rows. The legacy `Winner` enum is preserved for backward compatibility
+    via `overall_winner_legacy`.
+
+    Mapping rules (canonical, see
+    `docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`):
+
+    * `maladministration`, `severe_maladministration`, `service_failure`
+      indicate the Ombudsman found against the landlord on the merits and
+      typically issues a binding compensation order.
+    * `reasonable_redress` indicates the Ombudsman found the landlord's
+      pre-existing offer proportionate; only non-binding recommendations are
+      issued.
+    * `no_maladministration` is a substantive landlord defence.
+    * `resolved_with_intervention` indicates settlement during Ombudsman
+      involvement; not a merits decision.
+    * `outside_jurisdiction` is a non-determination — the Ombudsman declined
+      to investigate. Eval should test for abstention on these rows.
+    """
+
+    MALADMINISTRATION = "maladministration"
+    SEVERE_MALADMINISTRATION = "severe_maladministration"
+    SERVICE_FAILURE = "service_failure"
+    REASONABLE_REDRESS = "reasonable_redress"
+    NO_MALADMINISTRATION = "no_maladministration"
+    RESOLVED_WITH_INTERVENTION = "resolved_with_intervention"
+    OUTSIDE_JURISDICTION = "outside_jurisdiction"
+
+
+def _legacy_winner_for(determination: Determination) -> Winner:
+    """Canonical mapping from Determination to the legacy binary Winner.
+
+    Used by `GroundTruthOutcome._validate_outcome` to enforce that any caller-
+    supplied `overall_winner_legacy` matches the rule, and by the migration
+    script to populate the field deterministically.
+
+    `RESOLVED_WITH_INTERVENTION` maps to SPLIT because settlement during
+    Ombudsman intervention is not a clean tenant-or-landlord merits win.
+    """
+
+    if determination in (
+        Determination.MALADMINISTRATION,
+        Determination.SEVERE_MALADMINISTRATION,
+        Determination.SERVICE_FAILURE,
+    ):
+        return Winner.TENANT
+    if determination in (
+        Determination.REASONABLE_REDRESS,
+        Determination.NO_MALADMINISTRATION,
+        Determination.OUTSIDE_JURISDICTION,
+    ):
+        return Winner.LANDLORD
+    if determination == Determination.RESOLVED_WITH_INTERVENTION:
+        return Winner.SPLIT
+    raise ValueError(f"unhandled determination: {determination!r}")
+
+
 class RegionUK(str, Enum):
     """Closed enumeration of UK regions used by the stratification audit.
 
@@ -152,13 +213,28 @@ class IssueOutcome(StrictBaseModel):
     awarded_gbp: Decimal = Field(ge=0)
 
 
+class ComplaintFinding(StrictBaseModel):
+    """Per-complaint-head determination + award.
+
+    Housing Ombudsman cases frequently contain mixed findings across multiple
+    complaint heads (e.g. `no maladministration; maladministration; service
+    failure; reasonable redress`). When non-empty, this list captures each
+    head separately so eval metrics can score per-finding accuracy and not
+    just the collapsed top-level determination.
+    """
+
+    complaint_label: str = Field(min_length=1)
+    finding: Determination
+    awarded_gbp: Decimal = Field(ge=0, default=Decimal("0"))
+
+
 class ReasoningQuote(StrictBaseModel):
     text: str = Field(min_length=1)
     provenance: Provenance
 
 
 class GroundTruthOutcome(StrictBaseModel):
-    """Ground-truth outcome of a tribunal decision.
+    """Ground-truth outcome of a tribunal or Ombudsman decision.
 
     Two paths are permitted:
 
@@ -168,14 +244,41 @@ class GroundTruthOutcome(StrictBaseModel):
       gave a global figure with no per-issue breakdown. `per_issue` MUST
       be empty in this case; `total_awarded_gbp` is the only authoritative
       number; INV-5 (per-issue/claimed-amounts label match) is vacuously
-      satisfied. Annotators must record *why* the decision is unapportioned
-      so reviewers can re-check the source.
+      satisfied.
+
+    Determination ontology (added 2026-05-06 for housing.repairs_social.v1):
+
+    * `determination` carries the substantive Ombudsman finding.
+    * `determination_per_complaint` carries per-complaint-head findings for
+      mixed cases.
+    * `amount_ordered_now_gbp`, `amount_previously_offered_gbp`,
+      `amount_global_unapportioned_gbp` split the polysemous
+      `total_awarded_gbp` field into the three legally-distinct constructs
+      identified in the balanced-50 RCA.
+    * `overall_winner_legacy` is the derived backward-compat winner — if set,
+      it must match the canonical determination -> winner mapping.
+
+    Invariants enforced by `_validate_outcome`:
+
+    1. If any of the three split amount fields is set, their sum equals
+       `total_awarded_gbp`.
+    2. `outside_jurisdiction` cases must have `total_awarded_gbp == 0` and
+       all split amount fields None.
+    3. `overall_winner_legacy`, if set, matches `_legacy_winner_for(determination)`.
     """
 
     overall_winner: Winner
     total_awarded_gbp: Decimal = Field(ge=0)
     per_issue: list[IssueOutcome] = Field(default_factory=list)
     unapportioned_reason: Optional[str] = None
+
+    # --- 2026-05-06 determination ontology (additive, optional) -------
+    determination: Optional[Determination] = None
+    determination_per_complaint: list[ComplaintFinding] = Field(default_factory=list)
+    amount_ordered_now_gbp: Optional[Decimal] = Field(default=None, ge=0)
+    amount_previously_offered_gbp: Optional[Decimal] = Field(default=None, ge=0)
+    amount_global_unapportioned_gbp: Optional[Decimal] = Field(default=None, ge=0)
+    overall_winner_legacy: Optional[Winner] = None
 
     @model_validator(mode="after")
     def _validate_apportionment(self) -> "GroundTruthOutcome":
@@ -187,18 +290,56 @@ class GroundTruthOutcome(StrictBaseModel):
                     "unapportioned_reason is set but per_issue is non-empty; "
                     "an unapportioned outcome must have per_issue=[]"
                 )
-            return self
-        # Apportioned path
-        if not self.per_issue:
-            raise ValueError(
-                "per_issue must contain >=1 item when unapportioned_reason is None"
-            )
-        s = sum((io.awarded_gbp for io in self.per_issue), start=Decimal("0"))
-        if s != self.total_awarded_gbp:
-            raise ValueError(
-                f"total_awarded_gbp ({self.total_awarded_gbp}) "
-                f"!= sum(per_issue.awarded_gbp) ({s})"
-            )
+        else:
+            if not self.per_issue:
+                raise ValueError(
+                    "per_issue must contain >=1 item when unapportioned_reason is None"
+                )
+            s = sum((io.awarded_gbp for io in self.per_issue), start=Decimal("0"))
+            if s != self.total_awarded_gbp:
+                raise ValueError(
+                    f"total_awarded_gbp ({self.total_awarded_gbp}) "
+                    f"!= sum(per_issue.awarded_gbp) ({s})"
+                )
+        return self
+
+    @model_validator(mode="after")
+    def _validate_outcome(self) -> "GroundTruthOutcome":
+        # INV-D1: split amount fields must sum to total when any is set
+        split_amounts = [
+            self.amount_ordered_now_gbp,
+            self.amount_previously_offered_gbp,
+            self.amount_global_unapportioned_gbp,
+        ]
+        if any(v is not None for v in split_amounts):
+            non_null = [v for v in split_amounts if v is not None]
+            split_sum = sum(non_null, start=Decimal("0"))
+            if split_sum != self.total_awarded_gbp:
+                raise ValueError(
+                    f"sum(amount_ordered_now_gbp, amount_previously_offered_gbp, "
+                    f"amount_global_unapportioned_gbp) = {split_sum} "
+                    f"!= total_awarded_gbp ({self.total_awarded_gbp}); "
+                    "set the unset fields to 0 if there is no contribution from "
+                    "that construct, or omit all three to skip the split."
+                )
+        # INV-D2: outside_jurisdiction is a non-determination — total must be 0
+        if self.determination == Determination.OUTSIDE_JURISDICTION:
+            if self.total_awarded_gbp != Decimal("0") or any(
+                v not in (None, Decimal("0")) for v in split_amounts
+            ):
+                raise ValueError(
+                    "outside_jurisdiction determinations must record "
+                    "total_awarded_gbp == 0 and no split amounts"
+                )
+        # INV-D3: overall_winner_legacy must match canonical mapping
+        if self.overall_winner_legacy is not None and self.determination is not None:
+            expected = _legacy_winner_for(self.determination)
+            if self.overall_winner_legacy != expected:
+                raise ValueError(
+                    f"overall_winner_legacy ({self.overall_winner_legacy.value!r}) "
+                    f"inconsistent with determination ({self.determination.value!r}); "
+                    f"expected {expected.value!r}"
+                )
         return self
 
 
@@ -531,6 +672,14 @@ class GoldCase(StrictBaseModel):
                 raise ValueError(
                     "claimed_amounts must contain at least one row unless "
                     "domain_id is 'housing.repairs_social.v1'"
+                )
+        else:
+            # housing.repairs_social.v1 — determination is required (INV-D4)
+            if self.ground_truth_outcome.determination is None:
+                raise ValueError(
+                    "ground_truth_outcome.determination is required when "
+                    "domain_id == 'housing.repairs_social.v1' (INV-D4); "
+                    "see docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md"
                 )
 
         # INV-5: every per_issue.issue must appear in claimed_amounts

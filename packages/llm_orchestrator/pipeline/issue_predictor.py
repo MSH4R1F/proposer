@@ -11,6 +11,7 @@ from ..clients.base import BaseLLMClient
 from ..data.citation_urls import resolve_source_url
 from ..models.prediction_v2 import (
     Citation,
+    Determination,
     EvidenceStrength,
     IssueContext,
     IssueOutcome,
@@ -685,6 +686,26 @@ class IssuePredictor:
             amount_value = self._to_optional_float(data.get("predicted_amount"))
             amount_band = self._normalise_amount_band(data.get("amount_band"))
 
+            # 2026-05-06 — Housing Ombudsman determination ontology.
+            # Optional. Missing or invalid → None (treat as legacy / non-housing prompt).
+            det_raw = data.get("predicted_determination")
+            predicted_determination: Optional[Determination] = None
+            if det_raw:
+                try:
+                    predicted_determination = Determination(det_raw)
+                except ValueError:
+                    # LLM emitted an invalid value; treat as missing rather than crashing.
+                    predicted_determination = None
+
+            amount_construct = data.get("amount_construct")
+            if amount_construct not in (
+                None,
+                "ordered_now",
+                "previously_offered",
+                "global_unapportioned",
+            ):
+                amount_construct = None
+
             return IssuePrediction(
                 issue_type=issue.issue_type,
                 issue_description=str(
@@ -706,6 +727,8 @@ class IssuePredictor:
                         f"Issue data completeness is {issue.data_completeness:.2f}.",
                     )
                 ),
+                predicted_determination=predicted_determination,
+                amount_construct=amount_construct,
             )
         except Exception as exc:
             logger.warning(

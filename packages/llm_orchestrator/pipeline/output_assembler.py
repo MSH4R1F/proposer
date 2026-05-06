@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 from ..models.case_file import CaseFile
 from ..models.prediction_v2 import (
     Citation,
+    Determination,
     EvidenceStrength,
     IssueContext,
     IssueOutcome,
@@ -25,6 +26,40 @@ logger = structlog.get_logger()
 # when the matter_type is explicitly the non-protection penalty matter.
 _DEPOSIT_DEDUCTION_MATTER = "deposit_deduction"
 _DEPOSIT_NON_PROTECTION_MATTER = "deposit_non_protection"
+
+
+def _aggregate_determination(
+    issue_predictions: List[IssuePrediction],
+) -> Optional[Determination]:
+    """Take the modal Determination across non-uncertain issues.
+
+    Tie-breaker: most severe class wins, by the order
+    severe_maladministration > maladministration > service_failure >
+    reasonable_redress > no_maladministration > resolved_with_intervention >
+    outside_jurisdiction. Returns None if no issue carries a determination.
+    """
+    from collections import Counter
+
+    severity = {
+        Determination.SEVERE_MALADMINISTRATION: 6,
+        Determination.MALADMINISTRATION: 5,
+        Determination.SERVICE_FAILURE: 4,
+        Determination.REASONABLE_REDRESS: 3,
+        Determination.NO_MALADMINISTRATION: 2,
+        Determination.RESOLVED_WITH_INTERVENTION: 1,
+        Determination.OUTSIDE_JURISDICTION: 0,
+    }
+    determinations = [
+        ip.predicted_determination
+        for ip in issue_predictions
+        if getattr(ip, "predicted_determination", None) is not None
+    ]
+    if not determinations:
+        return None
+    counts = Counter(determinations)
+    max_count = max(counts.values())
+    candidates = [d for d, c in counts.items() if c == max_count]
+    return max(candidates, key=lambda d: severity.get(d, -1))
 
 
 class OutputAssembler:
@@ -234,6 +269,7 @@ class OutputAssembler:
             predicted_settlement_range=settlement_range,
             deposit_at_stake=case_file.tenancy.deposit_amount,
             issue_predictions=issue_predictions,
+            predicted_determination=_aggregate_determination(issue_predictions),
             reasoning_trace=reasoning_trace,
             key_strengths=key_strengths,
             key_weaknesses=key_weaknesses,

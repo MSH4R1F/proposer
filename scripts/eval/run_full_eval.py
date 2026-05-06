@@ -104,6 +104,10 @@ def _summarise_eval_row(row: dict[str, Any]) -> dict[str, Any]:
         amount.get("median_absolute_error_gbp") if isinstance(amount, dict) else None
     )
     bias = amount.get("mean_signed_error_gbp") if isinstance(amount, dict) else None
+    # 2026-05-06 Housing Ombudsman determination block (Task 7). Pass through
+    # as-is; legacy housing_v1 ablation rows produce accuracy=0.0,
+    # class_recall={}, n_with_gold_determination=0.
+    determination = row.get("determination")
 
     return {
         "accuracy": _metric_point(row.get("accuracy")),
@@ -134,6 +138,7 @@ def _summarise_eval_row(row: dict[str, Any]) -> dict[str, Any]:
         "amount_median_absolute_error_gbp": _metric_point(median_ae),
         "amount_mean_signed_error_gbp": _metric_point(bias),
         "amount": amount,
+        "determination": determination,
         "n": row["accuracy"]["n"],
     }
 

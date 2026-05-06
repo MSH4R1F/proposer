@@ -211,3 +211,26 @@ These will be opened as a separate sub-issue once 4a is in main.
 - [`docs/eval/gold-schema.md`](gold-schema.md) — what `gold[i]` looks like.
 - [`docs/eval/dataset.md`](dataset.md) — how to load the corpus + the audit.
 - `docs/superpowers/plans/2026-04-29-gold-set-metrics-4a.md` — the bite-sized TDD plan that built this.
+
+## Determination metrics (housing.repairs_social.v1)
+
+Added 2026-05-06. Companion to [`docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`](housing-ombudsman-determination-ontology-2026-05-06.md).
+
+- `determination_accuracy(gold, predictions) -> float` — fraction of correct determination predictions on cases that carry a gold determination. Cases without `gold.ground_truth_outcome.determination` (legacy rows) are excluded from the denominator. Missing predictions count as wrong. Returns `0.0` when no gold determinations are present.
+- `determination_class_recall(gold, predictions) -> dict[Determination, float]` — per-Determination recall. Classes absent from the gold subset are omitted. Returns `{}` when no gold determinations are present.
+- `amount_mae_gbp_by_construct(gold, predictions, construct: str) -> float` — MAE in GBP restricted to cases whose gold amount lives in the named construct (`"ordered_now"`, `"previously_offered"`, or `"global_unapportioned"`). Differs from `amount_mae_gbp` in two ways: (1) the gold side reads from the corresponding split field rather than `total_awarded_gbp`; (2) a missing prediction is counted as a full-magnitude error (`actual` GBP) when actual > 0, rather than excluded — this avoids inflating the visible MAE when the model abstains on every reasonable-redress case it should have predicted.
+
+Headline `housing.repairs_social.v1` metrics for thesis-grade reporting (per the [balanced-50 root-cause investigation](housing-ombudsman-balanced-50-root-cause-investigation-2026-05-06.md) §6 acceptance gates):
+
+| Metric | Replaces (legacy housing) | Why |
+|---|---|---|
+| `determination.accuracy` | binary `accuracy` | Construct-stable across the 7 Ombudsman determination classes; the binary winner is a lossy projection of the manifest tag. |
+| `determination.class_recall` | — | Per-class recall — the only way to surface "is the model honest about reasonable-redress?" or "does the model abstain on outside-jurisdiction?" |
+| `amount.mae_gbp_ordered_now` | `amount.mae_gbp` | Scores fresh compensation orders only — the construct the model is actually asked to predict. |
+| `amount.mae_gbp_previously_offered` | (new) | Captures landlord pre-offer extraction quality (when the model surfaces an estimate). Useful for the reasonable-redress class. |
+| `amount.mae_gbp_global_unapportioned` | (new) | Settlement / resolved-with-intervention totals. |
+| `amount.within_gbp100` | retained | Calibrated on construct-matched amount only when the per-construct MAE is the headline. |
+
+Legacy metrics (`accuracy`, `covered_accuracy`, `amount.mae_gbp`) are still emitted in `summary.json` for backward compatibility. They should not be the headline number on `housing.repairs_social.v1`.
+
+Deposit-style baselines (`claim_positive_winner`, `claim_amount_copy`) emit `null` (rendered as `n/a`) on housing gold because the deposit construct does not apply — see `packages/eval/compare.py::_baseline_metric_value`.

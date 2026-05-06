@@ -376,3 +376,95 @@ def amount_mean_signed_error_gbp(gold: list, predictions: list) -> float:
     return float(
         sum((predicted - actual for actual, predicted in pairs), _ZERO) / len(pairs)
     )
+
+
+def _iter_determination_pairs(gold: list, predictions: list):
+    """Yield `(gold_determination, predicted_determination)` per case for cases
+    that carry a gold determination. Cases without gold determination (legacy
+    domains) are skipped — they do not contribute to the denominator.
+    """
+    _validate_pairing(gold, predictions)
+    for g, p in zip(gold, predictions):
+        gt = getattr(g, "ground_truth_outcome", None)
+        gold_det = getattr(gt, "determination", None) if gt else None
+        if gold_det is None:
+            continue
+        pred_det = getattr(p, "predicted_determination", None)
+        yield gold_det, pred_det
+
+
+def determination_accuracy(gold: list, predictions: list) -> float:
+    """Fraction of predicted Housing Ombudsman determinations matching ground
+    truth. Cases without a gold determination are excluded from the denominator
+    (legacy compatibility). Missing predictions count as wrong.
+    """
+    pairs = list(_iter_determination_pairs(gold, predictions))
+    if not pairs:
+        return 0.0
+    return sum(1 for actual, predicted in pairs if predicted == actual) / len(pairs)
+
+
+def determination_class_recall(gold: list, predictions: list) -> dict:
+    """Per-class recall (0..1) keyed by Determination value. Classes absent
+    from the gold subset are omitted from the result.
+    """
+    pairs = list(_iter_determination_pairs(gold, predictions))
+    classes: dict = {}
+    for actual, _predicted in pairs:
+        classes[actual] = classes.get(actual, 0)
+    out = {}
+    for cls in classes:
+        denom = sum(1 for actual, _ in pairs if actual == cls)
+        if denom == 0:
+            continue
+        tp = sum(1 for actual, predicted in pairs if actual == cls and predicted == cls)
+        out[cls] = tp / denom
+    return out
+
+
+_AMOUNT_CONSTRUCT_FIELD = {
+    "ordered_now": "amount_ordered_now_gbp",
+    "previously_offered": "amount_previously_offered_gbp",
+    "global_unapportioned": "amount_global_unapportioned_gbp",
+}
+
+
+def amount_mae_gbp_by_construct(
+    gold: list,
+    predictions: list,
+    construct: str,
+) -> float:
+    """MAE in GBP restricted to cases whose gold amount lives in the named
+    construct. `construct` is one of 'ordered_now', 'previously_offered',
+    'global_unapportioned'.
+
+    The gold amount used for comparison is the corresponding split field; the
+    predicted amount used is `prediction.total_predicted_gbp` (assembled
+    upstream from per-issue `predicted_amount_gbp`). Cases whose gold has the
+    construct field set to None are excluded from the denominator. When the
+    prediction is missing, the absolute error is `actual` (so a missing
+    prediction on a non-zero gold amount is the worst possible error for that
+    case).
+    """
+    if construct not in _AMOUNT_CONSTRUCT_FIELD:
+        raise ValueError(f"unknown amount construct {construct!r}")
+    field_name = _AMOUNT_CONSTRUCT_FIELD[construct]
+    _validate_pairing(gold, predictions)
+    errors: list[Decimal] = []
+    for g, p in zip(gold, predictions):
+        gt = getattr(g, "ground_truth_outcome", None)
+        actual = _coerce_optional_amount(getattr(gt, field_name, None)) if gt else None
+        if actual is None:
+            continue
+        predicted = _coerce_optional_amount(getattr(p, "total_predicted_gbp", None))
+        if predicted is None:
+            # Treat missing prediction as max-possible miss only when actual > 0.
+            if actual == _ZERO:
+                errors.append(_ZERO)
+            else:
+                errors.append(actual)
+            continue
+        errors.append(abs(predicted - actual))
+    if not errors:
+        return 0.0
+    return float(sum(errors, _ZERO) / len(errors))

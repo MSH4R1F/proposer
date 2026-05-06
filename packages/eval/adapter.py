@@ -40,6 +40,19 @@ if TYPE_CHECKING:
     )
 
 
+def _adapt_determination(orch_det):
+    """Convert orchestrator-side Determination to eval-side Determination.
+
+    The two enums are intentional duplicates (different packages, same string
+    values) so packages/eval/ does not import from packages/llm_orchestrator/.
+    String-value bridging keeps both sides independent.
+    """
+    if orch_det is None:
+        return None
+    from eval.schema import Determination as EvalDetermination
+    return EvalDetermination(orch_det.value)
+
+
 def from_prediction_result(result: "PredictionResult") -> Prediction:
     """Adapt orchestrator output for evaluation metrics."""
     overall_winner = _outcome_to_winner(result.overall_outcome.value)
@@ -64,6 +77,9 @@ def from_prediction_result(result: "PredictionResult") -> Prediction:
         total_predicted_gbp=total,
         per_issue=per_issue,
         abstained=result.overall_outcome.value == "uncertain",
+        predicted_determination=_adapt_determination(
+            getattr(result, "predicted_determination", None)
+        ),
     )
 
 
@@ -85,6 +101,7 @@ def _adapt_issue(ip: "OrchestratorIssuePrediction") -> IssuePrediction:
         win_probability=win_prob,
         predicted_amount_gbp=amount,
         abstained=ip.outcome.value == "uncertain",
+        amount_construct=getattr(ip, "amount_construct", None),
     )
 
 
