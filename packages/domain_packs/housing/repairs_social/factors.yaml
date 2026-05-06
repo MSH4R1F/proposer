@@ -1,0 +1,216 @@
+# housing.repairs_social.v1 factor catalog
+#
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §12
+# Version: v1 (leakage-audited)
+# 15 factors; no forbidden judgment labels.
+#
+# Polarity convention (abstract, surface labels are domain-pack rendering concerns):
+#   pro_claimant  — when present/true, pushes toward resident-favourable findings
+#   pro_respondent — when present/true, pushes toward landlord-favourable findings
+#   neutral        — jurisdictional or routing factor; does not favour either party
+
+factors:
+
+  # ---- Factual / statutory foundation ----------------------------------------
+
+  - id: repair_responsibility_established
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Whether the landlord's repair obligation for the specific issue is
+      established by statute or tenancy contract.
+
+  - id: hazard_or_disrepair_reported
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Whether a formal or informal report of the hazard or disrepair was made
+      to the landlord by the resident.
+
+  - id: landlord_notice_established
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Whether it is provable that the landlord had notice of the disrepair
+      (i.e. report was received and acknowledged or cannot credibly be denied).
+
+  # ---- Inspection --------------------------------------------------------------
+
+  - id: inspection_offered
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - no_maladministration
+      - service_failure
+      - reasonable_redress
+    description: >-
+      Whether the landlord offered or attempted to conduct an inspection of the
+      reported disrepair.
+
+  - id: inspection_delay_days
+    value_type: duration
+    polarity: pro_claimant
+    requires_evidence: true
+    bucket_strategy: log_days
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Duration in days between the disrepair report and the landlord's first
+      inspection. Comparator-driven assessment of excessiveness.
+
+  # ---- Repair action -----------------------------------------------------------
+
+  - id: repair_attempted
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - no_maladministration
+      - service_failure
+      - reasonable_redress
+    description: >-
+      Whether any repair action was recorded as attempted by the landlord
+      following notification.
+
+  - id: repair_delay_days
+    value_type: duration
+    polarity: pro_claimant
+    requires_evidence: true
+    bucket_strategy: log_days
+    maps_to_outcomes:
+      - maladministration
+      - severe_maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Duration in days between landlord notice and completion (or latest
+      recorded state) of the repair. Comparator-driven assessment of
+      excessiveness.
+
+  # ---- Records and communication -----------------------------------------------
+
+  - id: records_inadequate
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+    description: >-
+      Whether the landlord's records contain significant gaps that prevent
+      establishing what actions were taken or when.
+
+  - id: communication_gap_days
+    value_type: duration
+    polarity: pro_claimant
+    requires_evidence: true
+    bucket_strategy: log_days
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Longest gap in days between the landlord's substantive communications
+      with the resident regarding the reported issue.
+
+  - id: complaint_response_delay_days
+    value_type: duration
+    polarity: pro_claimant
+    requires_evidence: true
+    bucket_strategy: log_days
+    maps_to_outcomes:
+      - maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Duration in days between the resident's formal complaint and the
+      landlord's substantive response. Comparator-driven assessment of
+      excessiveness.
+
+  # ---- Vulnerability -----------------------------------------------------------
+
+  - id: vulnerability_known
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - maladministration
+      - severe_maladministration
+    description: >-
+      Whether the landlord knew or should have known that the resident (or a
+      household member) had a vulnerability relevant to the disrepair issue.
+
+  # ---- Impact (resident-reported, not adjudicator judgment) --------------------
+
+  - id: impact_severity_reported
+    value_type: enum
+    polarity: pro_claimant
+    requires_evidence: true
+    enum_values:
+      - none
+      - minor
+      - moderate
+      - severe
+    maps_to_outcomes:
+      - maladministration
+      - severe_maladministration
+      - service_failure
+      - no_maladministration
+    description: >-
+      Resident-reported severity of impact from the disrepair (none, minor,
+      moderate, severe). Significance judgment is left to the predictor.
+
+  # ---- Remediation / offer prior to determination -----------------------------
+
+  - id: temporary_decant_or_alternative_offered
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - no_maladministration
+      - reasonable_redress
+      - service_failure
+    description: >-
+      Whether the landlord offered temporary decant or suitable alternative
+      accommodation while repairs were outstanding.
+
+  - id: prior_compensation_or_apology_offered
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - reasonable_redress
+      - no_maladministration
+    description: >-
+      Whether the landlord offered any compensation or apology to the resident
+      prior to the Ombudsman's determination.
+
+  # ---- Jurisdiction -----------------------------------------------------------
+
+  - id: issue_outside_jurisdiction
+    value_type: boolean
+    polarity: neutral
+    requires_evidence: false
+    maps_to_outcomes:
+      - outside_jurisdiction
+    description: >-
+      Whether the complaint head falls outside the Housing Ombudsman's remit
+      (e.g. legal title disputes, court-concurrent matters).
