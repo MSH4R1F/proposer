@@ -230,16 +230,28 @@ def _compute_mode_metrics(
         alias: bootstrap_ci(fn, gold, predictions, n_resamples=n_resamples, seed=seed)
         for alias, fn in metric_fns.items()
     }
+    coverage = amount_coverage(gold, predictions)
+    amount_mae = results["amount_mae_gbp"] if coverage["n_evaluable"] > 0 else None
+    amount_median_absolute_error = (
+        results["amount_median_absolute_error_gbp"]
+        if coverage["n_evaluable"] > 0
+        else None
+    )
+    amount_mean_signed_error = (
+        results["amount_mean_signed_error_gbp"]
+        if coverage["n_evaluable"] > 0
+        else None
+    )
     return ModeMetrics(
         mode=mode,
         accuracy=results["accuracy"],
         amount_threshold=results["amount_threshold"],
         amount_within_20pct=results["amount_within_20pct"],
         amount_within_gbp100=results["amount_within_gbp100"],
-        amount_mae_gbp=results["amount_mae_gbp"],
-        amount_median_absolute_error_gbp=results["amount_median_absolute_error_gbp"],
-        amount_mean_signed_error_gbp=results["amount_mean_signed_error_gbp"],
-        amount_coverage=amount_coverage(gold, predictions),
+        amount_mae_gbp=amount_mae,
+        amount_median_absolute_error_gbp=amount_median_absolute_error,
+        amount_mean_signed_error_gbp=amount_mean_signed_error,
+        amount_coverage=coverage,
         brier=results["brier"],
         ece=results["ece"],
     )

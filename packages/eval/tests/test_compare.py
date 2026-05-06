@@ -310,6 +310,22 @@ class TestStructure:
         assert claim_copy["amount"]["coverage"]["n_evaluable"] == 0
         assert claim_copy["amount"]["coverage"]["missing_predicted_amount"] == 1
 
+    def test_amount_error_metrics_are_null_when_nothing_evaluable(self):
+        gold = _build_gold_corpus()
+        predictions = _perfect_predictions(gold)
+        for prediction in predictions:
+            prediction.total_predicted_gbp = None
+
+        report = build_comparison_report(
+            gold, {"hybrid": predictions}, n_resamples=0
+        )
+        row = report_to_dict(report)["modes"][0]
+
+        assert row["amount"]["coverage"]["n_evaluable"] == 0
+        assert row["amount"]["mae_gbp"] is None
+        assert row["amount"]["median_absolute_error_gbp"] is None
+        assert row["amount"]["mean_signed_error_gbp"] is None
+
     def test_n_cases_recorded(self):
         gold = _build_gold_corpus()
         report = build_comparison_report(

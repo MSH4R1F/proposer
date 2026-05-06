@@ -30,6 +30,10 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "packages"))
+
+from eval.constants import OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON  # noqa: E402
+
 DEFAULT_RUN_ID = "housing-ombudsman-gold-pilot-20260504"
 RAW_ROOT = REPO_ROOT / "raw/housing_ombudsman"
 DOMAIN_ID = "housing.repairs_social.v1"
@@ -40,10 +44,7 @@ SOURCE_PUBLISHER = "housing_ombudsman"
 SOURCE_KIND = "ombudsman_determination"
 SOURCE_LICENSE = "unknown_housing_ombudsman_decisions_permission_pending"
 GOLD_CORPUS = "housing_repairs_social_v1"
-UNAPPORTIONED_REASON = (
-    "Housing Ombudsman determination made a global compensation order without "
-    "apportioning the final total across housing_v1 issue categories."
-)
+UNAPPORTIONED_REASON = OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
 CLAIMED_AMOUNT_PATH = (
     "claimed_amounts[issue=ombudsman_compensation|by_party=tenant].amount_gbp"
 )

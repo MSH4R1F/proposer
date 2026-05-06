@@ -65,3 +65,5 @@ def test_draft_decision_keeps_final_award_only_in_ground_truth() -> None:
     validated = GoldCase.model_validate(case)
     assert validated.disputed_amount_gbp is None
     assert validated.case_size.value == "unknown"
+    assert "field_provenance rows" in draft["_review_instructions"]
+    assert "disputed_amount_gbp or claimed_amounts" in draft["_review_instructions"]

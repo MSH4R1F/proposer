@@ -41,6 +41,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Set
 
+from eval.constants import OMBUDSMAN_GLOBAL_COMPENSATION_REASON_MARKER
 from eval.issue_alignment import UnmappableIssue, eval_to_orchestrator
 from eval.schema import GoldCase, PartyRole as EvalPartyRole
 
@@ -347,7 +348,7 @@ def _is_generated_ombudsman_global_compensation_outcome(gold: GoldCase) -> bool:
         return False
     outcome = getattr(gold, "ground_truth_outcome", None)
     reason = str(getattr(outcome, "unapportioned_reason", "") or "").lower()
-    return "global compensation order" in reason
+    return OMBUDSMAN_GLOBAL_COMPENSATION_REASON_MARKER in reason
 
 
 def _amount_matches_outcome_total(gold: GoldCase, amount) -> bool:

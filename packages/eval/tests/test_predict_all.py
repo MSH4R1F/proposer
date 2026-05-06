@@ -17,6 +17,7 @@ import os
 import subprocess
 import sys
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -237,6 +238,43 @@ class TestRunContextHashInputs:
         assert ctx["ontology_id"] == "housing.deposit.v1"
         assert ctx["ontology_hash"]
         assert len(ctx["ontology_hash"]) == 64
+
+
+class TestSerialisationHelpers:
+    def test_serialise_amount_formats_integral_amounts_as_decimal_strings(self):
+        mod = _import_script_module()
+
+        assert mod._serialise_amount(Decimal("0")) == "0.0"
+        assert mod._serialise_amount(Decimal("575.25")) == "575.25"
+        assert mod._serialise_amount(None) is None
+
+    def test_serialise_prediction_rejects_issue_count_mismatch(self):
+        mod = _import_script_module()
+        from eval.metrics import IssuePrediction, Prediction
+        from eval.schema import Winner
+
+        pred = Prediction(
+            case_id="case-1",
+            overall_winner=Winner.TENANT,
+            overall_win_probability=0.2,
+            total_predicted_gbp=None,
+            per_issue=[
+                IssuePrediction(
+                    issue="primary",
+                    predicted_winner=Winner.TENANT,
+                    win_probability=0.2,
+                    predicted_amount_gbp=None,
+                )
+            ],
+        )
+        raw = SimpleNamespace(
+            overall_outcome=SimpleNamespace(value="tenant_win"),
+            overall_confidence=0.8,
+            issue_predictions=[],
+        )
+
+        with pytest.raises(ValueError, match="issue-count mismatch"):
+            mod._serialise_prediction(pred, raw)
 
 
 class TestLiveEvalRetrievalFilters:

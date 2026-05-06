@@ -7,7 +7,8 @@
     "cleaning": 0,
     "damages": 0,
     "deposit_non_protection": 0,
-    "end_of_tenancy": 0
+    "end_of_tenancy": 0,
+    "complaint_handling_failure": 0
   },
   "region_distribution": {
     "london": 48,
@@ -17,5 +18,16 @@
     "small": 46,
     "large": 4
   },
-  "is_clean": false
+  "matter_type_distribution": {
+    "repairs_damp_mould": 24,
+    "repairs_disrepair": 26
+  },
+  "is_clean": false,
+  "clean_failure_reasons": [
+    "cleaning has 0 case(s), below STRATIFICATION_FLOOR=5",
+    "complaint_handling_failure has 0 case(s), below STRATIFICATION_FLOOR=5",
+    "damages has 0 case(s), below STRATIFICATION_FLOOR=5",
+    "deposit_non_protection has 0 case(s), below STRATIFICATION_FLOOR=5",
+    "end_of_tenancy has 0 case(s), below STRATIFICATION_FLOOR=5"
+  ]
 }

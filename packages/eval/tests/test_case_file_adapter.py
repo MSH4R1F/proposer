@@ -27,6 +27,7 @@ from eval.case_file_adapter import (
     LossyReconstruction,
     gold_case_to_case_file,
 )
+from eval.constants import OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
 from eval.dataset import load
 from eval.schema import ClaimedAmount, GoldCase, PartyRole
 
@@ -278,9 +279,7 @@ class TestClaimedAmountsSplitByParty:
                     "total_awarded_gbp": "575.00",
                     "per_issue": [],
                     "unapportioned_reason": (
-                        "Housing Ombudsman determination made a global "
-                        "compensation order without apportioning the final "
-                        "total across housing_v1 issue categories."
+                        OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
                     ),
                 },
             }

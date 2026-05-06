@@ -186,7 +186,10 @@ def amount_within_absolute_threshold(
     `threshold_gbp=100` is the thesis-friendly "amount@GBP100" metric.
     Denominator and missing-prediction handling match `amount_within_threshold`.
     """
-    threshold = Decimal(str(threshold_gbp))
+    try:
+        threshold = Decimal(str(threshold_gbp))
+    except (InvalidOperation, TypeError, ValueError):
+        raise ValueError("threshold_gbp must be finite and >= 0") from None
     if not threshold.is_finite() or threshold < _ZERO:
         raise ValueError("threshold_gbp must be finite and >= 0")
     _validate_pairing(gold, predictions)

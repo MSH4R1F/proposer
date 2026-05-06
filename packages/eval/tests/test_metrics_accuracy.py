@@ -289,3 +289,10 @@ class TestRicherAmountMetrics:
         }
         assert amount_mae_gbp(gold, preds) == pytest.approx(20.0)
         assert amount_within_absolute_threshold(gold, preds, threshold_gbp=100) == 0.5
+
+    @pytest.mark.parametrize("threshold", ["£100", None])
+    def test_absolute_threshold_invalid_input_raises_value_error(self, threshold):
+        from eval.metrics import amount_within_absolute_threshold
+
+        with pytest.raises(ValueError, match="threshold_gbp"):
+            amount_within_absolute_threshold([], [], threshold_gbp=threshold)

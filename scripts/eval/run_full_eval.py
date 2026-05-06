@@ -65,6 +65,13 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
+def _portable_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def _metric_point(metric: dict[str, Any] | None) -> float | None:
     if not isinstance(metric, dict):
         return None
@@ -185,7 +192,7 @@ def run(args: argparse.Namespace) -> None:
                 cmd.extend(["--n-resamples", str(args.n_resamples)])
             proc = _run(cmd)
             _require_ok(proc)
-            metric_outputs[mode][metric] = str(out_path)
+            metric_outputs[mode][metric] = _portable_path(out_path)
 
     ablate_cmd = [
         sys.executable,
@@ -226,14 +233,14 @@ def run(args: argparse.Namespace) -> None:
 
     summary = {
         "computed_at": datetime.now(timezone.utc).isoformat(),
-        "gold": str(gold),
-        "predictions_dir": str(predictions_dir),
-        "out_dir": str(out_dir),
+        "gold": _portable_path(gold),
+        "predictions_dir": _portable_path(predictions_dir),
+        "out_dir": _portable_path(out_dir),
         "audit": audit,
         "modes": by_mode,
         "baselines": by_baseline,
         "metric_outputs": metric_outputs,
-        "ablation": str(ablation_path),
+        "ablation": _portable_path(ablation_path),
         "seed": args.seed,
         "n_resamples": 0 if args.no_bootstrap else args.n_resamples,
     }

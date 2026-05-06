@@ -19,6 +19,7 @@ import hashlib
 import json
 import re
 import shutil
+import sys
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -28,6 +29,10 @@ from typing import Any, Iterable
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "packages"))
+
+from eval.constants import OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON  # noqa: E402
+
 DEFAULT_MANIFEST = REPO_ROOT / "data/eval/housing_ombudsman_stratified_50.jsonl"
 DEFAULT_RUN_ID = "housing-ombudsman-stratified-50-review-20260504"
 DOMAIN_ID = "housing.repairs_social.v1"
@@ -37,10 +42,7 @@ SOURCE_PUBLISHER = "housing_ombudsman"
 SOURCE_KIND = "ombudsman_determination"
 SOURCE_LICENSE = "unknown_housing_ombudsman_decisions_permission_pending"
 GOLD_CORPUS = "housing_repairs_social_v1"
-UNAPPORTIONED_REASON = (
-    "Housing Ombudsman determination made a global compensation order without "
-    "apportioning the final total across housing_v1 issue categories."
-)
+UNAPPORTIONED_REASON = OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
 MANDATORY_PATHS = (
     "facts",
     "claim_types",
@@ -508,10 +510,12 @@ def _draft_decision(
             "and source text. Before appending, set human_adjudicator, "
             "mandatory_review_completed_at, adjudicated_fields, flip rates, and "
             "change mandatory field_provenance sources from deterministic_manifest "
-            "to human_mandatory_review for confirmed cells. Do not populate "
-            "disputed_amount_gbp or claimed_amounts from final Ombudsman "
-            "compensation/order figures; only use a clean pre-decision claim "
-            "amount if the source exposes one."
+            "to human_mandatory_review for confirmed cells. If you populate "
+            "disputed_amount_gbp or claimed_amounts, also add matching "
+            "field_provenance rows with source='human_mandatory_review'. Do not "
+            "populate disputed_amount_gbp or claimed_amounts from final "
+            "Ombudsman compensation/order figures; only use a clean "
+            "pre-decision claim amount if the source exposes one."
         ),
         "_review_status": "needs_human_review",
         "case": case_payload,
@@ -619,7 +623,9 @@ URL: {row.get('source_url')}
 3. Verify the mandatory fields: `facts`, `claim_types`, `matter_type`,
    `overall_winner`, `total_awarded_gbp`, and `unapportioned_reason`.
    Set `disputed_amount_gbp` and `claimed_amounts` only if the source exposes
-   a clean pre-decision claimed amount. Do not copy final compensation/order
+   a clean pre-decision claimed amount. If you populate either amount field,
+   also add matching `field_provenance` rows with
+   `source='human_mandatory_review'`. Do not copy final compensation/order
    amounts into prediction-input fields.
 4. Edit the draft decision template with the reviewed values and convert
    confirmed mandatory `field_provenance[].source` values from

@@ -13,7 +13,7 @@ Mapping policy:
     * LANDLORD_WIN  → confidence
     * TENANT_WIN    → 1 - confidence
     * SPLIT/UNCERTAIN → 0.5
-- total_predicted_gbp = null when no issue has an explicit predicted amount;
+- total_predicted_gbp = null when neither top-level recovery field is set;
   otherwise `(tenant_recovery or 0) + (landlord_recovery or 0)`
 - per-issue calibrated_confidence wins over raw_confidence when set
 - per-issue predicted_amount=None remains null so amount coverage can
@@ -47,15 +47,14 @@ def from_prediction_result(result: "PredictionResult") -> Prediction:
         result.overall_outcome.value, float(result.overall_confidence)
     )
     per_issue = [_adapt_issue(ip) for ip in result.issue_predictions]
-    has_explicit_amount = (
+    has_top_level_amount = (
         result.tenant_recovery_amount is not None
         or result.landlord_recovery_amount is not None
-        or any(ip.predicted_amount is not None for ip in result.issue_predictions)
     )
     total = (
         Decimal(str(result.tenant_recovery_amount or 0))
         + Decimal(str(result.landlord_recovery_amount or 0))
-        if has_explicit_amount
+        if has_top_level_amount
         else None
     )
     return Prediction(

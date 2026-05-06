@@ -529,6 +529,11 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
         )
         out["abstained"] = raw_outcome == "uncertain"
         raw_issues = list(getattr(raw_result, "issue_predictions", []) or [])
+        if len(out["per_issue"]) != len(raw_issues):
+            raise ValueError(
+                "serialisation issue-count mismatch: "
+                f"adapted={len(out['per_issue'])} raw={len(raw_issues)}"
+            )
         for row, raw_issue in zip(out["per_issue"], raw_issues):
             issue_outcome = getattr(getattr(raw_issue, "outcome", None), "value", None)
             row["raw_outcome"] = issue_outcome
@@ -537,7 +542,12 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
 
 
 def _serialise_amount(amount) -> str | None:
-    return None if amount is None else str(amount)
+    if amount is None:
+        return None
+    value = Decimal(str(amount))
+    if value == value.to_integral_value():
+        return f"{value:.1f}"
+    return format(value, "f")
 
 
 def _resolve_mode_enum(mode_value: str):

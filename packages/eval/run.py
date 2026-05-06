@@ -110,8 +110,8 @@ def _format_report(
     return {
         "metric": metric_fn_name,
         "metric_alias": metric_name,
-        "gold_path": str(gold_path),
-        "predictions_path": str(predictions_path),
+        "gold_path": _portable_path(gold_path),
+        "predictions_path": _portable_path(predictions_path),
         "point": result.point,
         "lower_95": result.lower_95,
         "upper_95": result.upper_95,
@@ -120,6 +120,13 @@ def _format_report(
         "seed": seed,
         "computed_at": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def _portable_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(Path.cwd().resolve()))
+    except ValueError:
+        return str(path)
 
 
 def _cli_main(argv: Optional[Sequence[str]] = None) -> int:

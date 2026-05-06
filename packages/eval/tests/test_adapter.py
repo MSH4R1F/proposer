@@ -185,6 +185,22 @@ class TestAmountAggregation:
         prediction = from_prediction_result(result)
         assert prediction.total_predicted_gbp is None
 
+    def test_per_issue_amount_without_case_recovery_stays_unknown(self):
+        IssueOutcome, _, _, _ = _orchestrator_imports()
+        result = _build_orchestrator_prediction(
+            tenant_recovery=None,
+            landlord_recovery=None,
+            issue_predictions=[
+                _build_orchestrator_issue(
+                    outcome=IssueOutcome.TENANT_WINS,
+                    predicted_amount=250.0,
+                )
+            ],
+        )
+        prediction = from_prediction_result(result)
+        assert prediction.total_predicted_gbp is None
+        assert prediction.per_issue[0].predicted_amount_gbp == Decimal("250.0")
+
 
 class TestPerIssueMapping:
     def test_per_issue_count_matches(self):
