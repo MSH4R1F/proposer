@@ -947,7 +947,19 @@ class IssuePredictor:
             "Use split only when the likely result is genuinely balanced after "
             "remedies, with material findings for both sides and no clear "
             "resident-upheld remedy dominance. Use uncertain only when the "
-            "facts are too sparse or inconsistent."
+            "facts are too sparse or inconsistent.\n\n"
+            "REQUIRED housing.repairs_social.v1 fields — do not omit:\n"
+            "- `predicted_determination`: pick exactly one of "
+            "'maladministration', 'severe_maladministration', 'service_failure', "
+            "'reasonable_redress', 'no_maladministration', "
+            "'resolved_with_intervention', 'outside_jurisdiction'. Do not leave "
+            "this null on a Housing Ombudsman case.\n"
+            "- `amount_construct`: whenever predicted_amount is non-null, set to "
+            "'ordered_now' (fresh maladministration/service-failure compensation "
+            "order), 'previously_offered' (reasonable-redress: landlord's "
+            "pre-existing offer), or 'global_unapportioned' (resolved with "
+            "intervention settlement). When predicted_amount is null, set "
+            "amount_construct to null."
         )
 
     @staticmethod
