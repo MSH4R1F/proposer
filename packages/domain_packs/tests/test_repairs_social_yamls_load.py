@@ -18,7 +18,20 @@ B2-5. Cross-reference: factor.maps_to_outcomes ⊆ outcomes.yaml IDs.
 B2-6. All B2 loaders are frozen + extra="forbid".
 B2-7. from_yaml raises ValueError for missing path (mirrors B1 pattern).
 
-Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §8.1, §9.2, §9.3, §12
+B7 acceptance criteria:
+B7-1. extractor_strategy.yaml loads via ExtractorStrategy.from_yaml(path) without errors.
+B7-2. Loader rejects unknown strategy values (Literal + extra="forbid").
+B7-3. Validator enforces strategy=deterministic ↔ calculator_id present (both directions).
+B7-4. Validator enforces strategy=llm_verified ↔ verifier_required=True (both directions).
+B7-5. Loader rejects min_confidence_threshold outside [0, 1].
+B7-6. Loader rejects duplicate factor_id entries.
+B7-7. Cross-reference: every factor_id in extractor_strategy.yaml exists in factors.yaml;
+      every factor_id in factors.yaml has exactly one entry in extractor_strategy.yaml.
+B7-8. ExtractorStrategy and ExtractorEntry are frozen + extra="forbid".
+B7-9. from_yaml for missing path raises ValueError (mirrors existing pattern).
+B7-10. strategy=llm_extracted must have gate_counted=False (spec §4.1).
+
+Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §8.1, §9.2, §9.3, §12, §19 PR 3a
 """
 
 from __future__ import annotations
@@ -30,6 +43,8 @@ import yaml
 from pydantic import ValidationError
 
 from domain_packs.loaders import (
+    ExtractorEntry,
+    ExtractorStrategy,
     FactorCatalog,
     FactorEntry,
     GraphQualityGate,
@@ -54,6 +69,7 @@ OUTCOMES_YAML = _PACK_DIR / "outcomes.yaml"
 REMEDIES_YAML = _PACK_DIR / "remedies.yaml"
 RETRIEVAL_PROFILE_YAML = _PACK_DIR / "retrieval_profile.yaml"
 GRAPH_QUALITY_GATE_YAML = _PACK_DIR / "graph_quality_gate.yaml"
+EXTRACTOR_STRATEGY_YAML = _PACK_DIR / "extractor_strategy.yaml"
 
 # Closed outcome ID set (canonical in B2; defined inline here per task spec)
 CLOSED_OUTCOME_IDS = frozenset(
@@ -825,3 +841,562 @@ def test_annotation_rubric_covers_every_factor():
         f"Rubric heading set must equal factor ID set. "
         f"Missing: {sorted(missing)}. Extra: {sorted(extra)}."
     )
+
+
+# ===========================================================================
+# B7 tests: extractor_strategy.yaml and ExtractorStrategy loader
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# B7-1: YAML exists and loads without errors
+# ---------------------------------------------------------------------------
+
+
+def test_extractor_strategy_yaml_exists():
+    """extractor_strategy.yaml must be present at the expected path."""
+    assert EXTRACTOR_STRATEGY_YAML.exists(), (
+        f"extractor_strategy.yaml not found at {EXTRACTOR_STRATEGY_YAML}"
+    )
+
+
+def test_extractor_strategy_yaml_loads():
+    """B7-1: ExtractorStrategy.from_yaml loads without errors."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    assert isinstance(strategy, ExtractorStrategy)
+    assert len(strategy.entries) > 0
+
+
+def test_extractor_strategy_domain_id():
+    """domain_id must be housing.repairs_social.v1."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    assert strategy.domain_id == "housing.repairs_social.v1"
+
+
+def test_extractor_strategy_has_15_entries():
+    """Exactly 15 entries — one per v1 factor."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    assert len(strategy.entries) == 15, (
+        f"Expected 15 extractor entries, got {len(strategy.entries)}: "
+        f"{sorted(e.factor_id for e in strategy.entries)}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# B7-2: Loader rejects unknown strategy values
+# ---------------------------------------------------------------------------
+
+
+def test_extractor_entry_rejects_unknown_strategy(tmp_path):
+    """B7-2: ExtractorEntry rejects unknown strategy values."""
+    bad_yaml = tmp_path / "bad_strategy.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "heuristic",  # invalid
+                        "calculator_id": "some_calc",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 0.5,
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_extractor_entry_rejects_extra_fields(tmp_path):
+    """B7-8: extra fields are rejected (extra='forbid')."""
+    bad_yaml = tmp_path / "extra_field.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 0.5,
+                        "unexpected_field": "should_be_rejected",
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+# ---------------------------------------------------------------------------
+# B7-3: strategy=deterministic ↔ calculator_id present
+# ---------------------------------------------------------------------------
+
+
+def test_deterministic_without_calculator_id_raises(tmp_path):
+    """B7-3a: strategy=deterministic without calculator_id must fail."""
+    bad_yaml = tmp_path / "det_no_calc.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 0.5,
+                        # calculator_id intentionally absent
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_non_deterministic_with_calculator_id_raises(tmp_path):
+    """B7-3b: strategy=llm_verified with calculator_id must fail."""
+    bad_yaml = tmp_path / "llm_with_calc.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "hazard_or_disrepair_reported",
+                        "strategy": "llm_verified",
+                        "calculator_id": "some_calculator",  # must be None
+                        "verifier_required": True,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 0.5,
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_deterministic_with_calculator_id_is_valid(tmp_path):
+    """B7-3c: strategy=deterministic with calculator_id must succeed."""
+    good_yaml = tmp_path / "det_ok.yaml"
+    good_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 1.0,
+                    }
+                ],
+            }
+        )
+    )
+    strategy = ExtractorStrategy.from_yaml(good_yaml)
+    assert strategy.entries[0].calculator_id == "repair_delay_calculator"
+
+
+# ---------------------------------------------------------------------------
+# B7-4: strategy=llm_verified ↔ verifier_required=True
+# ---------------------------------------------------------------------------
+
+
+def test_llm_verified_without_verifier_required_raises(tmp_path):
+    """B7-4a: strategy=llm_verified with verifier_required=False must fail."""
+    bad_yaml = tmp_path / "llm_no_verifier.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "hazard_or_disrepair_reported",
+                        "strategy": "llm_verified",
+                        "verifier_required": False,  # must be True
+                        "gate_counted": True,
+                        "min_confidence_threshold": 0.5,
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_non_llm_verified_with_verifier_required_raises(tmp_path):
+    """B7-4b: strategy=deterministic with verifier_required=True must fail."""
+    bad_yaml = tmp_path / "det_verifier.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": True,  # must be False
+                        "gate_counted": True,
+                        "min_confidence_threshold": 1.0,
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_llm_verified_with_verifier_required_is_valid(tmp_path):
+    """B7-4c: strategy=llm_verified with verifier_required=True must succeed."""
+    good_yaml = tmp_path / "llm_ok.yaml"
+    good_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "hazard_or_disrepair_reported",
+                        "strategy": "llm_verified",
+                        "verifier_required": True,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 0.5,
+                    }
+                ],
+            }
+        )
+    )
+    strategy = ExtractorStrategy.from_yaml(good_yaml)
+    assert strategy.entries[0].verifier_required is True
+
+
+# ---------------------------------------------------------------------------
+# B7-5: min_confidence_threshold out of [0, 1] raises
+# ---------------------------------------------------------------------------
+
+
+def test_confidence_threshold_above_one_raises(tmp_path):
+    """B7-5a: min_confidence_threshold > 1.0 must fail."""
+    bad_yaml = tmp_path / "conf_high.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 1.5,  # invalid
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_confidence_threshold_below_zero_raises(tmp_path):
+    """B7-5b: min_confidence_threshold < 0.0 must fail."""
+    bad_yaml = tmp_path / "conf_low.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": -0.1,  # invalid
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+# ---------------------------------------------------------------------------
+# B7-6: Duplicate factor_id entries raise
+# ---------------------------------------------------------------------------
+
+
+def test_duplicate_factor_id_raises(tmp_path):
+    """B7-6: Duplicate factor_id entries must fail validation."""
+    bad_yaml = tmp_path / "dup_factor.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "repair_delay_days",
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 1.0,
+                    },
+                    {
+                        "factor_id": "repair_delay_days",  # duplicate
+                        "strategy": "deterministic",
+                        "calculator_id": "repair_delay_calculator",
+                        "verifier_required": False,
+                        "gate_counted": True,
+                        "min_confidence_threshold": 1.0,
+                    },
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+# ---------------------------------------------------------------------------
+# B7-7: Cross-reference: extractor_strategy.yaml factor_ids ↔ factors.yaml IDs
+# ---------------------------------------------------------------------------
+
+
+def test_extractor_strategy_factor_ids_subset_of_factors_yaml():
+    """B7-7a: Every factor_id in extractor_strategy.yaml must exist in factors.yaml."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    catalog = FactorCatalog.from_yaml(FACTORS_YAML)
+
+    catalog_ids = frozenset(f.id for f in catalog.factors)
+    strategy_ids = frozenset(e.factor_id for e in strategy.entries)
+
+    unknown = strategy_ids - catalog_ids
+    assert not unknown, (
+        f"extractor_strategy.yaml references factor_ids not in factors.yaml: "
+        f"{sorted(unknown)}"
+    )
+
+
+def test_factors_yaml_factor_ids_subset_of_extractor_strategy():
+    """B7-7b: Every factor_id in factors.yaml must have exactly one entry in extractor_strategy.yaml."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    catalog = FactorCatalog.from_yaml(FACTORS_YAML)
+
+    catalog_ids = frozenset(f.id for f in catalog.factors)
+    strategy_ids = frozenset(e.factor_id for e in strategy.entries)
+
+    missing = catalog_ids - strategy_ids
+    assert not missing, (
+        f"factors.yaml factor_ids missing from extractor_strategy.yaml: "
+        f"{sorted(missing)}"
+    )
+
+
+def test_extractor_strategy_factor_ids_exactly_match_factors_yaml():
+    """B7-7c: extractor_strategy.yaml factor_id set must equal factors.yaml ID set exactly."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    catalog = FactorCatalog.from_yaml(FACTORS_YAML)
+
+    catalog_ids = frozenset(f.id for f in catalog.factors)
+    strategy_ids = frozenset(e.factor_id for e in strategy.entries)
+
+    assert catalog_ids == strategy_ids, (
+        f"Factor ID sets diverge.\n"
+        f"Only in factors.yaml: {sorted(catalog_ids - strategy_ids)}\n"
+        f"Only in extractor_strategy.yaml: {sorted(strategy_ids - catalog_ids)}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# B7-8: frozen + extra="forbid"
+# ---------------------------------------------------------------------------
+
+
+def test_extractor_entry_is_frozen():
+    """B7-8: ExtractorEntry is frozen — mutation raises."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    entry = strategy.entries[0]
+    with pytest.raises(Exception):
+        entry.factor_id = "mutated"  # type: ignore[misc]
+
+
+def test_extractor_strategy_is_frozen():
+    """B7-8: ExtractorStrategy is frozen — mutation raises."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    with pytest.raises(Exception):
+        strategy.entries = []  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# B7-9: from_yaml raises ValueError for missing path
+# ---------------------------------------------------------------------------
+
+
+def test_extractor_strategy_from_yaml_missing_path_raises_value_error(tmp_path):
+    """B7-9: from_yaml for missing path raises ValueError."""
+    missing = tmp_path / "does_not_exist.yaml"
+    with pytest.raises(ValueError, match="Extractor strategy YAML file not found"):
+        ExtractorStrategy.from_yaml(missing)
+
+
+# ---------------------------------------------------------------------------
+# B7-10: strategy=llm_extracted must have gate_counted=False
+# ---------------------------------------------------------------------------
+
+
+def test_llm_extracted_with_gate_counted_true_raises(tmp_path):
+    """B7-10a: strategy=llm_extracted with gate_counted=True must fail (spec §4.1)."""
+    bad_yaml = tmp_path / "llm_extracted_gate.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "hazard_or_disrepair_reported",
+                        "strategy": "llm_extracted",
+                        "verifier_required": False,
+                        "gate_counted": True,  # must be False for llm_extracted
+                        "min_confidence_threshold": 0.5,
+                    }
+                ],
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        ExtractorStrategy.from_yaml(bad_yaml)
+
+
+def test_llm_extracted_with_gate_counted_false_is_valid(tmp_path):
+    """B7-10b: strategy=llm_extracted with gate_counted=False must succeed."""
+    good_yaml = tmp_path / "llm_extracted_ok.yaml"
+    good_yaml.write_text(
+        yaml.dump(
+            {
+                "domain_id": "housing.repairs_social.v1",
+                "entries": [
+                    {
+                        "factor_id": "hazard_or_disrepair_reported",
+                        "strategy": "llm_extracted",
+                        "verifier_required": False,
+                        "gate_counted": False,
+                        "min_confidence_threshold": 0.5,
+                    }
+                ],
+            }
+        )
+    )
+    strategy = ExtractorStrategy.from_yaml(good_yaml)
+    assert strategy.entries[0].gate_counted is False
+
+
+# ---------------------------------------------------------------------------
+# B7 - strategy distribution sanity checks on the real YAML
+# ---------------------------------------------------------------------------
+
+
+def test_extractor_strategy_has_5_deterministic():
+    """v1 strategy assigns exactly 5 deterministic factors."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    det = [e for e in strategy.entries if e.strategy == "deterministic"]
+    assert len(det) == 5, (
+        f"Expected 5 deterministic entries, got {len(det)}: "
+        f"{sorted(e.factor_id for e in det)}"
+    )
+
+
+def test_extractor_strategy_has_10_llm_verified():
+    """v1 strategy assigns exactly 10 llm_verified factors."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    llm_v = [e for e in strategy.entries if e.strategy == "llm_verified"]
+    assert len(llm_v) == 10, (
+        f"Expected 10 llm_verified entries, got {len(llm_v)}: "
+        f"{sorted(e.factor_id for e in llm_v)}"
+    )
+
+
+def test_all_deterministic_entries_have_calculator_id():
+    """All deterministic entries must have a non-None calculator_id."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    violations = [
+        e.factor_id
+        for e in strategy.entries
+        if e.strategy == "deterministic" and e.calculator_id is None
+    ]
+    assert not violations, (
+        f"Deterministic entries missing calculator_id: {sorted(violations)}"
+    )
+
+
+def test_all_llm_verified_entries_have_verifier_required_true():
+    """All llm_verified entries must have verifier_required=True."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    violations = [
+        e.factor_id
+        for e in strategy.entries
+        if e.strategy == "llm_verified" and not e.verifier_required
+    ]
+    assert not violations, (
+        f"llm_verified entries with verifier_required=False: {sorted(violations)}"
+    )
+
+
+def test_all_non_llm_verified_entries_have_verifier_required_false():
+    """All non-llm_verified entries must have verifier_required=False."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    violations = [
+        e.factor_id
+        for e in strategy.entries
+        if e.strategy != "llm_verified" and e.verifier_required
+    ]
+    assert not violations, (
+        f"Non-llm_verified entries with verifier_required=True: {sorted(violations)}"
+    )
+
+
+def test_deterministic_entries_threshold_is_one():
+    """Deterministic entries should have min_confidence_threshold=1.0 (exact derivation)."""
+    strategy = ExtractorStrategy.from_yaml(EXTRACTOR_STRATEGY_YAML)
+    violations = [
+        e.factor_id
+        for e in strategy.entries
+        if e.strategy == "deterministic" and e.min_confidence_threshold != 1.0
+    ]
+    assert not violations, (
+        f"Deterministic entries with threshold != 1.0: {sorted(violations)}"
+    )
+
+
+def test_extractor_entry_direct_construction():
+    """ExtractorEntry constructs correctly with minimum valid fields (llm_verified)."""
+    entry = ExtractorEntry(
+        factor_id="some_factor",
+        strategy="llm_verified",
+        verifier_required=True,
+    )
+    assert entry.factor_id == "some_factor"
+    assert entry.strategy == "llm_verified"
+    assert entry.verifier_required is True
+    assert entry.calculator_id is None
+    assert entry.gate_counted is True
+    assert entry.min_confidence_threshold == 0.5

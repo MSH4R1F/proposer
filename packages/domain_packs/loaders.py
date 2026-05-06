@@ -6,10 +6,11 @@ Provides:
   - RemedySchema / RemedyEntry
   - RetrievalProfile (with nested ComparatorWeights, CounterexampleConfig, BucketDefinitions)
   - GraphQualityGate
+  - ExtractorStrategy / ExtractorEntry
 
 All models: extra="forbid" + frozen=True.
 
-Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §8.1, §9.2, §9.3, §12
+Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §8.1, §9.2, §9.3, §12, §19 PR 3a
 """
 
 from __future__ import annotations
@@ -351,3 +352,110 @@ class GraphQualityGate(BaseModel):
             If the file is missing, unparseable, empty, or fails validation.
         """
         return _load_yaml_into(cls, path, label="Graph quality gate")
+
+
+# ===========================================================================
+# ExtractorStrategy
+# ===========================================================================
+
+ExtractorStrategyType = Literal["deterministic", "llm_extracted", "llm_verified"]
+
+
+class ExtractorEntry(BaseModel):
+    """Per-factor extractor strategy entry.
+
+    Invariants enforced by model_validator:
+    - strategy == "deterministic"  ↔  calculator_id is non-None
+    - strategy != "deterministic"  →  calculator_id must be None
+    - strategy == "llm_verified"   ↔  verifier_required is True
+    - strategy != "llm_verified"   →  verifier_required is False
+    - strategy == "llm_extracted"  →  gate_counted must be False
+      (spec §4.1: llm_extracted blocks the graph-quality gate by default)
+
+    Immutable; extra fields rejected.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    factor_id: str
+    strategy: ExtractorStrategyType
+    calculator_id: Optional[str] = None
+    verifier_required: bool = False
+    gate_counted: bool = True
+    min_confidence_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+
+    @model_validator(mode="after")
+    def _validate_strategy_consistency(self) -> "ExtractorEntry":
+        # calculator_id ↔ deterministic
+        if self.strategy == "deterministic" and self.calculator_id is None:
+            raise ValueError(
+                f"ExtractorEntry for factor_id={self.factor_id!r}: "
+                "strategy='deterministic' requires calculator_id to be set."
+            )
+        if self.strategy != "deterministic" and self.calculator_id is not None:
+            raise ValueError(
+                f"ExtractorEntry for factor_id={self.factor_id!r}: "
+                f"calculator_id must be None for strategy={self.strategy!r} "
+                "(only 'deterministic' strategies may have a calculator_id)."
+            )
+        # verifier_required ↔ llm_verified
+        if self.strategy == "llm_verified" and not self.verifier_required:
+            raise ValueError(
+                f"ExtractorEntry for factor_id={self.factor_id!r}: "
+                "strategy='llm_verified' requires verifier_required=True."
+            )
+        if self.strategy != "llm_verified" and self.verifier_required:
+            raise ValueError(
+                f"ExtractorEntry for factor_id={self.factor_id!r}: "
+                f"verifier_required must be False for strategy={self.strategy!r} "
+                "(only 'llm_verified' strategies may have verifier_required=True)."
+            )
+        # gate_counted must be False for llm_extracted (spec §4.1)
+        if self.strategy == "llm_extracted" and self.gate_counted:
+            raise ValueError(
+                f"ExtractorEntry for factor_id={self.factor_id!r}: "
+                "strategy='llm_extracted' must have gate_counted=False "
+                "(spec §4.1: llm_extracted blocks the graph-quality gate by default)."
+            )
+        return self
+
+
+class ExtractorStrategy(BaseModel):
+    """Per-factor extractor strategy catalog for a domain pack.
+
+    Loaded from extractor_strategy.yaml. Validates that all factor_id
+    values are unique across entries.
+
+    Immutable; extra fields rejected.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    domain_id: str
+    entries: List[ExtractorEntry]
+
+    @model_validator(mode="after")
+    def _no_duplicate_factor_ids(self) -> "ExtractorStrategy":
+        seen: set[str] = set()
+        duplicates: list[str] = []
+        for entry in self.entries:
+            if entry.factor_id in seen:
+                duplicates.append(entry.factor_id)
+            seen.add(entry.factor_id)
+        if duplicates:
+            raise ValueError(
+                f"ExtractorStrategy contains duplicate factor_id entries: "
+                f"{sorted(duplicates)}"
+            )
+        return self
+
+    @classmethod
+    def from_yaml(cls, path: Path | str) -> "ExtractorStrategy":
+        """Load an ExtractorStrategy from a YAML file.
+
+        Raises
+        ------
+        ValueError
+            If the file is missing, unparseable, empty, or fails validation.
+        """
+        return _load_yaml_into(cls, path, label="Extractor strategy")
