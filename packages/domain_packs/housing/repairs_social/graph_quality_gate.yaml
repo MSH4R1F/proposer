@@ -1,0 +1,14 @@
+# housing.repairs_social.v1 — Graph quality gate thresholds
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §8.1
+domain_id: housing.repairs_social.v1
+
+evidence_backed_factor_count_min: 5
+dated_event_count_min: 2
+issue_count_min: 1
+outcome_or_remedy_candidate_count_min: 1
+unsupported_factor_rate_max: 0.30
+source_span_coverage_min: 0.80
+contradiction_count_max: 0
+
+notes:
+  - "Per spec §8.1 — tuneable. Re-derive after PR 3 ships gate-pass-rate analysis."

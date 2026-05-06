@@ -1,0 +1,36 @@
+# housing.repairs_social.v1 — Retrieval profile
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §9.2, §9.2.1, §9.3
+domain_id: housing.repairs_social.v1
+
+comparator_weights:
+  factor_overlap: 0.30
+  text_relevance: 0.25
+  outcome_component_match: 0.15
+  remedy_similarity: 0.10
+  authority_level_match: 0.10
+  chronology_match: 0.05
+  claim_head_exact_match: 0.05
+
+counterexample:
+  n_counterexamples: 2
+  k_overlap_min: 3
+  abstain_if_none: true
+
+bucket_definitions:
+  money:
+    strategy: log_pence
+    bucket_edges_pence: [0, 10000, 50000, 200000, 1000000]
+    # ranges: <£100, £100-£500, £500-£2k, £2k-£10k, >£10k
+  duration:
+    strategy: log_days
+    bucket_edges_days: [1, 7, 30, 90, 365]
+    # ranges: <1d, 1-7d, 7-30d, 30-90d, 90-365d, >365d
+  date:
+    strategy: granularity
+    same_year_score: 0.5
+    same_month_score: 1.0
+    other_score: 0.0
+
+notes:
+  - "These weights are starting hyperparameters per spec §9.2 — tune on a held-out validation slice before thesis-eval lock-in."
+  - "counterexample pass is independent of comparator scoring per spec §9.3."

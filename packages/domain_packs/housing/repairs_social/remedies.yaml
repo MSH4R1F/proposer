@@ -1,0 +1,20 @@
+# housing.repairs_social.v1 — Closed remedy ID list
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §12
+domain_id: housing.repairs_social.v1
+remedies:
+  - id: compensation_ordered
+    description: "Landlord ordered to pay financial compensation to the resident."
+  - id: apology
+    description: "Landlord required to provide a formal written apology to the resident."
+  - id: repair_action
+    description: "Landlord required to carry out or complete specific repair works."
+  - id: inspection_ordered
+    description: "Landlord required to arrange an independent or internal property inspection."
+  - id: case_review
+    description: "Landlord required to review the handling of the specific complaint or case."
+  - id: policy_review
+    description: "Landlord required to review and update relevant policies or procedures."
+  - id: training_order
+    description: "Landlord required to provide staff training in relation to the identified failures."
+  - id: no_further_order
+    description: "No further remedy ordered beyond the determination finding itself."

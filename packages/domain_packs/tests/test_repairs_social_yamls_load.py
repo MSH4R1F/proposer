@@ -1,4 +1,4 @@
-"""Tests for housing.repairs_social.v1 factor catalog YAML.
+"""Tests for housing.repairs_social.v1 factor catalog YAML and B2 supporting YAMLs.
 
 Acceptance criteria (per task spec):
 1. YAML loads via FactorCatalog.from_yaml(path) without errors.
@@ -9,7 +9,16 @@ Acceptance criteria (per task spec):
 6. Factor catalog model is frozen=True and rejects extra fields.
 7. Loader works with pyyaml.
 
-Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §12
+B2 acceptance criteria:
+B2-1. outcomes.yaml, remedies.yaml, retrieval_profile.yaml, graph_quality_gate.yaml load without errors.
+B2-2. RetrievalProfile rejects comparator_weights that don't sum to 1.0.
+B2-3. GraphQualityGate rejects negative thresholds.
+B2-4. GraphQualityGate rejects rate fields outside [0, 1].
+B2-5. Cross-reference: factor.maps_to_outcomes ⊆ outcomes.yaml IDs.
+B2-6. All B2 loaders are frozen + extra="forbid".
+B2-7. from_yaml raises ValueError for missing path (mirrors B1 pattern).
+
+Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §8.1, §9.2, §9.3, §12
 """
 
 from __future__ import annotations
@@ -20,19 +29,31 @@ import pytest
 import yaml
 from pydantic import ValidationError
 
-from domain_packs.loaders import FactorCatalog, FactorEntry
+from domain_packs.loaders import (
+    FactorCatalog,
+    FactorEntry,
+    GraphQualityGate,
+    OutcomeSchema,
+    RemedySchema,
+    RetrievalProfile,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
-FACTORS_YAML = (
+_PACK_DIR = (
     Path(__file__).resolve().parents[2]
     / "domain_packs"
     / "housing"
     / "repairs_social"
-    / "factors.yaml"
 )
+
+FACTORS_YAML = _PACK_DIR / "factors.yaml"
+OUTCOMES_YAML = _PACK_DIR / "outcomes.yaml"
+REMEDIES_YAML = _PACK_DIR / "remedies.yaml"
+RETRIEVAL_PROFILE_YAML = _PACK_DIR / "retrieval_profile.yaml"
+GRAPH_QUALITY_GATE_YAML = _PACK_DIR / "graph_quality_gate.yaml"
 
 # Closed outcome ID set (canonical in B2; defined inline here per task spec)
 CLOSED_OUTCOME_IDS = frozenset(
@@ -426,3 +447,342 @@ def test_factor_entry_rejects_unknown_bucket_strategy(tmp_path):
     )
     with pytest.raises((ValidationError, ValueError)):
         FactorCatalog.from_yaml(bad_yaml)
+
+
+# ===========================================================================
+# B2 tests: outcomes.yaml, remedies.yaml, retrieval_profile.yaml, graph_quality_gate.yaml
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# B2-1 / B2-7: YAML files exist and load without errors
+# ---------------------------------------------------------------------------
+
+EXPECTED_OUTCOME_IDS = frozenset(
+    {
+        "no_maladministration",
+        "service_failure",
+        "maladministration",
+        "severe_maladministration",
+        "reasonable_redress",
+        "outside_jurisdiction",
+        "resolved_with_intervention",
+    }
+)
+
+EXPECTED_REMEDY_IDS = frozenset(
+    {
+        "compensation_ordered",
+        "apology",
+        "repair_action",
+        "inspection_ordered",
+        "case_review",
+        "policy_review",
+        "training_order",
+        "no_further_order",
+    }
+)
+
+
+def test_outcomes_yaml_exists():
+    assert OUTCOMES_YAML.exists(), f"outcomes.yaml not found at {OUTCOMES_YAML}"
+
+
+def test_outcomes_yaml_loads():
+    """B2-1: OutcomeSchema.from_yaml loads without errors."""
+    schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
+    assert isinstance(schema, OutcomeSchema)
+    assert len(schema.outcomes) == 7
+
+
+def test_outcomes_yaml_ids_match_closed_set():
+    """outcomes.yaml must contain exactly the 7 closed outcome IDs."""
+    schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
+    actual_ids = frozenset(o.id for o in schema.outcomes)
+    assert actual_ids == EXPECTED_OUTCOME_IDS, (
+        f"outcomes.yaml IDs mismatch.\nExpected: {sorted(EXPECTED_OUTCOME_IDS)}\n"
+        f"Got: {sorted(actual_ids)}"
+    )
+
+
+def test_outcomes_yaml_descriptions_non_empty():
+    """Each outcome entry must have a non-empty description."""
+    schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
+    for outcome in schema.outcomes:
+        assert outcome.description.strip(), (
+            f"Outcome {outcome.id!r} has empty description"
+        )
+
+
+def test_outcomes_yaml_domain_id():
+    """domain_id must be housing.repairs_social.v1."""
+    schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
+    assert schema.domain_id == "housing.repairs_social.v1"
+
+
+def test_outcomes_schema_is_frozen():
+    """B2-6: OutcomeSchema and its entries must be frozen."""
+    schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
+    with pytest.raises(Exception):
+        schema.outcomes = []  # type: ignore[misc]
+
+
+def test_outcomes_from_yaml_missing_path_raises_value_error(tmp_path):
+    """B2-7: from_yaml for missing path raises ValueError."""
+    missing = tmp_path / "no_such_file.yaml"
+    with pytest.raises(ValueError):
+        OutcomeSchema.from_yaml(missing)
+
+
+def test_remedies_yaml_exists():
+    assert REMEDIES_YAML.exists(), f"remedies.yaml not found at {REMEDIES_YAML}"
+
+
+def test_remedies_yaml_loads():
+    """B2-1: RemedySchema.from_yaml loads without errors."""
+    schema = RemedySchema.from_yaml(REMEDIES_YAML)
+    assert isinstance(schema, RemedySchema)
+    assert len(schema.remedies) == 8
+
+
+def test_remedies_yaml_ids_match_closed_set():
+    """remedies.yaml must contain exactly the 8 closed remedy IDs."""
+    schema = RemedySchema.from_yaml(REMEDIES_YAML)
+    actual_ids = frozenset(r.id for r in schema.remedies)
+    assert actual_ids == EXPECTED_REMEDY_IDS, (
+        f"remedies.yaml IDs mismatch.\nExpected: {sorted(EXPECTED_REMEDY_IDS)}\n"
+        f"Got: {sorted(actual_ids)}"
+    )
+
+
+def test_remedies_yaml_domain_id():
+    """domain_id must be housing.repairs_social.v1."""
+    schema = RemedySchema.from_yaml(REMEDIES_YAML)
+    assert schema.domain_id == "housing.repairs_social.v1"
+
+
+def test_remedies_schema_is_frozen():
+    """B2-6: RemedySchema must be frozen."""
+    schema = RemedySchema.from_yaml(REMEDIES_YAML)
+    with pytest.raises(Exception):
+        schema.remedies = []  # type: ignore[misc]
+
+
+def test_remedies_from_yaml_missing_path_raises_value_error(tmp_path):
+    """B2-7: from_yaml for missing path raises ValueError."""
+    missing = tmp_path / "no_such_file.yaml"
+    with pytest.raises(ValueError):
+        RemedySchema.from_yaml(missing)
+
+
+def test_retrieval_profile_yaml_exists():
+    assert RETRIEVAL_PROFILE_YAML.exists(), (
+        f"retrieval_profile.yaml not found at {RETRIEVAL_PROFILE_YAML}"
+    )
+
+
+def test_retrieval_profile_yaml_loads():
+    """B2-1: RetrievalProfile.from_yaml loads without errors."""
+    profile = RetrievalProfile.from_yaml(RETRIEVAL_PROFILE_YAML)
+    assert isinstance(profile, RetrievalProfile)
+
+
+def test_retrieval_profile_weights_sum_to_one():
+    """comparator_weights must sum to 1.0 (within 1e-6 tolerance)."""
+    profile = RetrievalProfile.from_yaml(RETRIEVAL_PROFILE_YAML)
+    w = profile.comparator_weights
+    total = (
+        w.factor_overlap
+        + w.text_relevance
+        + w.outcome_component_match
+        + w.remedy_similarity
+        + w.authority_level_match
+        + w.chronology_match
+        + w.claim_head_exact_match
+    )
+    assert abs(total - 1.0) < 1e-6, f"Weights sum to {total}, not 1.0"
+
+
+def test_retrieval_profile_domain_id():
+    profile = RetrievalProfile.from_yaml(RETRIEVAL_PROFILE_YAML)
+    assert profile.domain_id == "housing.repairs_social.v1"
+
+
+def test_retrieval_profile_is_frozen():
+    """B2-6: RetrievalProfile must be frozen."""
+    profile = RetrievalProfile.from_yaml(RETRIEVAL_PROFILE_YAML)
+    with pytest.raises(Exception):
+        profile.domain_id = "other"  # type: ignore[misc]
+
+
+def test_retrieval_profile_from_yaml_missing_path_raises_value_error(tmp_path):
+    """B2-7: from_yaml for missing path raises ValueError."""
+    missing = tmp_path / "no_such_file.yaml"
+    with pytest.raises(ValueError):
+        RetrievalProfile.from_yaml(missing)
+
+
+def test_graph_quality_gate_yaml_exists():
+    assert GRAPH_QUALITY_GATE_YAML.exists(), (
+        f"graph_quality_gate.yaml not found at {GRAPH_QUALITY_GATE_YAML}"
+    )
+
+
+def test_graph_quality_gate_yaml_loads():
+    """B2-1: GraphQualityGate.from_yaml loads without errors."""
+    gate = GraphQualityGate.from_yaml(GRAPH_QUALITY_GATE_YAML)
+    assert isinstance(gate, GraphQualityGate)
+
+
+def test_graph_quality_gate_domain_id():
+    gate = GraphQualityGate.from_yaml(GRAPH_QUALITY_GATE_YAML)
+    assert gate.domain_id == "housing.repairs_social.v1"
+
+
+def test_graph_quality_gate_is_frozen():
+    """B2-6: GraphQualityGate must be frozen."""
+    gate = GraphQualityGate.from_yaml(GRAPH_QUALITY_GATE_YAML)
+    with pytest.raises(Exception):
+        gate.domain_id = "other"  # type: ignore[misc]
+
+
+def test_graph_quality_gate_from_yaml_missing_path_raises_value_error(tmp_path):
+    """B2-7: from_yaml for missing path raises ValueError."""
+    missing = tmp_path / "no_such_file.yaml"
+    with pytest.raises(ValueError):
+        GraphQualityGate.from_yaml(missing)
+
+
+# ---------------------------------------------------------------------------
+# B2-2: RetrievalProfile rejects weights that don't sum to 1.0
+# ---------------------------------------------------------------------------
+
+
+def test_retrieval_profile_rejects_weights_not_summing_to_one(tmp_path):
+    """B2-2: comparator_weights that don't sum to 1.0 raise ValidationError."""
+    bad_yaml = tmp_path / "bad_weights.yaml"
+    bad_data = {
+        "domain_id": "housing.repairs_social.v1",
+        "comparator_weights": {
+            "factor_overlap": 0.30,
+            "text_relevance": 0.30,  # changed: now sums > 1
+            "outcome_component_match": 0.15,
+            "remedy_similarity": 0.10,
+            "authority_level_match": 0.10,
+            "chronology_match": 0.05,
+            "claim_head_exact_match": 0.05,
+        },
+        "counterexample": {
+            "n_counterexamples": 2,
+            "k_overlap_min": 3,
+            "abstain_if_none": True,
+        },
+        "bucket_definitions": {
+            "money": {
+                "strategy": "log_pence",
+                "bucket_edges_pence": [0, 10000, 50000, 200000, 1000000],
+            },
+            "duration": {
+                "strategy": "log_days",
+                "bucket_edges_days": [1, 7, 30, 90, 365],
+            },
+            "date": {
+                "strategy": "granularity",
+                "same_year_score": 0.5,
+                "same_month_score": 1.0,
+                "other_score": 0.0,
+            },
+        },
+    }
+    bad_yaml.write_text(yaml.dump(bad_data))
+    with pytest.raises((ValidationError, ValueError)):
+        RetrievalProfile.from_yaml(bad_yaml)
+
+
+# ---------------------------------------------------------------------------
+# B2-3: GraphQualityGate rejects negative thresholds
+# ---------------------------------------------------------------------------
+
+
+def test_graph_quality_gate_rejects_negative_min_threshold(tmp_path):
+    """B2-3: evidence_backed_factor_count_min: -1 raises ValidationError."""
+    bad_yaml = tmp_path / "bad_gate.yaml"
+    bad_data = {
+        "domain_id": "housing.repairs_social.v1",
+        "evidence_backed_factor_count_min": -1,
+        "dated_event_count_min": 2,
+        "issue_count_min": 1,
+        "outcome_or_remedy_candidate_count_min": 1,
+        "unsupported_factor_rate_max": 0.30,
+        "source_span_coverage_min": 0.80,
+        "contradiction_count_max": 0,
+    }
+    bad_yaml.write_text(yaml.dump(bad_data))
+    with pytest.raises((ValidationError, ValueError)):
+        GraphQualityGate.from_yaml(bad_yaml)
+
+
+# ---------------------------------------------------------------------------
+# B2-4: GraphQualityGate rejects rate fields outside [0, 1]
+# ---------------------------------------------------------------------------
+
+
+def test_graph_quality_gate_rejects_rate_above_one(tmp_path):
+    """B2-4: unsupported_factor_rate_max: 1.5 raises ValidationError."""
+    bad_yaml = tmp_path / "bad_rate.yaml"
+    bad_data = {
+        "domain_id": "housing.repairs_social.v1",
+        "evidence_backed_factor_count_min": 5,
+        "dated_event_count_min": 2,
+        "issue_count_min": 1,
+        "outcome_or_remedy_candidate_count_min": 1,
+        "unsupported_factor_rate_max": 1.5,
+        "source_span_coverage_min": 0.80,
+        "contradiction_count_max": 0,
+    }
+    bad_yaml.write_text(yaml.dump(bad_data))
+    with pytest.raises((ValidationError, ValueError)):
+        GraphQualityGate.from_yaml(bad_yaml)
+
+
+def test_graph_quality_gate_rejects_coverage_below_zero(tmp_path):
+    """B2-4: source_span_coverage_min: -0.1 raises ValidationError."""
+    bad_yaml = tmp_path / "bad_coverage.yaml"
+    bad_data = {
+        "domain_id": "housing.repairs_social.v1",
+        "evidence_backed_factor_count_min": 5,
+        "dated_event_count_min": 2,
+        "issue_count_min": 1,
+        "outcome_or_remedy_candidate_count_min": 1,
+        "unsupported_factor_rate_max": 0.30,
+        "source_span_coverage_min": -0.1,
+        "contradiction_count_max": 0,
+    }
+    bad_yaml.write_text(yaml.dump(bad_data))
+    with pytest.raises((ValidationError, ValueError)):
+        GraphQualityGate.from_yaml(bad_yaml)
+
+
+# ---------------------------------------------------------------------------
+# B2-5: Cross-reference: factor.maps_to_outcomes ⊆ outcomes.yaml IDs
+# ---------------------------------------------------------------------------
+
+
+def test_cross_reference_factor_outcomes_subset_of_outcomes_yaml():
+    """B2-5: Every factor.maps_to_outcomes value must exist in outcomes.yaml IDs."""
+    factor_catalog = FactorCatalog.from_yaml(FACTORS_YAML)
+    outcome_schema = OutcomeSchema.from_yaml(OUTCOMES_YAML)
+
+    valid_outcome_ids = frozenset(o.id for o in outcome_schema.outcomes)
+
+    violations: list[str] = []
+    for factor in factor_catalog.factors:
+        for outcome_id in factor.maps_to_outcomes:
+            if outcome_id not in valid_outcome_ids:
+                violations.append(
+                    f"Factor {factor.id!r} references unknown outcome {outcome_id!r} "
+                    f"(not in outcomes.yaml)"
+                )
+
+    assert not violations, (
+        f"Cross-reference failures ({len(violations)}):\n" + "\n".join(violations)
+    )
