@@ -524,7 +524,10 @@ class AnnotationDispatcher:
             messages=messages,
             system_prompt=system_prompt,
             response_model=Annotation,
-            max_tokens=1024,
+            # 4096 covers GPT-5-class models which spend many tokens on
+            # reasoning before emitting structured output; gpt-4o-class
+            # only used ~150 of these.
+            max_tokens=4096,
         )
 
     def dry_run_info(
