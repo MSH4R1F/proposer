@@ -14,7 +14,7 @@ Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, List, Literal, Optional
 
 import yaml
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -49,8 +49,9 @@ class FactorEntry(BaseModel):
     maps_to_outcomes: List[str]
     description: str
 
-    # Optional: present on numeric *_days factors (value_type=duration or number)
-    bucket_strategy: Optional[str] = None
+    # Optional: present on numeric *_days factors (value_type=duration or number).
+    # Only "log_days" is a legal value; other strategies will be added here when needed.
+    bucket_strategy: Optional[Literal["log_days"]] = None
 
     # Optional: present on enum factors
     enum_values: Optional[List[str]] = None
@@ -98,6 +99,8 @@ class FactorCatalog(BaseModel):
         try:
             with path.open("r", encoding="utf-8") as fh:
                 data: Any = yaml.safe_load(fh)
+        except FileNotFoundError as exc:
+            raise ValueError(f"Factor catalog file not found: {path}") from exc
         except yaml.YAMLError as exc:
             raise ValueError(f"YAML parse error in {path}: {exc}") from exc
 

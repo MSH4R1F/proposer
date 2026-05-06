@@ -17,6 +17,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
+from pydantic import ValidationError
 
 from domain_packs.loaders import FactorCatalog, FactorEntry
 
@@ -109,9 +111,6 @@ def test_yaml_loads_via_factor_catalog():
 
 def test_factor_entry_rejects_unknown_value_type(tmp_path):
     """AC2a: FactorEntry rejects unknown value_type."""
-    import yaml
-    from pydantic import ValidationError
-
     bad_yaml = tmp_path / "bad.yaml"
     bad_yaml.write_text(
         yaml.dump(
@@ -135,9 +134,6 @@ def test_factor_entry_rejects_unknown_value_type(tmp_path):
 
 def test_factor_entry_rejects_unknown_polarity(tmp_path):
     """AC2b: FactorEntry rejects unknown polarity."""
-    import yaml
-    from pydantic import ValidationError
-
     bad_yaml = tmp_path / "bad_polarity.yaml"
     bad_yaml.write_text(
         yaml.dump(
@@ -161,9 +157,6 @@ def test_factor_entry_rejects_unknown_polarity(tmp_path):
 
 def test_factor_entry_rejects_extra_fields(tmp_path):
     """AC6 / AC2c: extra fields are rejected (extra='forbid')."""
-    import yaml
-    from pydantic import ValidationError
-
     bad_yaml = tmp_path / "extra_field.yaml"
     bad_yaml.write_text(
         yaml.dump(
@@ -281,8 +274,6 @@ def test_factor_catalog_is_frozen():
 
 def test_loader_uses_pyyaml(tmp_path):
     """AC7: Verify loader works with a minimal valid YAML (pyyaml path)."""
-    import yaml
-
     minimal = tmp_path / "minimal.yaml"
     minimal.write_text(
         yaml.dump(
@@ -370,3 +361,68 @@ def test_requires_evidence_defaults_true():
             f"Factor {factor.id!r} has requires_evidence=False "
             "(expected True for non-rule factors)"
         )
+
+
+# ---------------------------------------------------------------------------
+# Issue 3 fix: FileNotFoundError is converted to ValueError
+# ---------------------------------------------------------------------------
+
+
+def test_from_yaml_raises_value_error_for_missing_file(tmp_path):
+    """from_yaml must raise ValueError (not FileNotFoundError) for a missing path."""
+    missing = tmp_path / "does_not_exist.yaml"
+    with pytest.raises(ValueError, match="Factor catalog file not found"):
+        FactorCatalog.from_yaml(missing)
+
+
+# ---------------------------------------------------------------------------
+# Issue 5 fix: direct FactorEntry construction (makes import live + schema coverage)
+# ---------------------------------------------------------------------------
+
+
+def test_factor_entry_constructs_with_minimum_valid_fields():
+    """FactorEntry must accept only the required fields and apply correct defaults."""
+    entry = FactorEntry(
+        id="some_factor",
+        value_type="boolean",
+        polarity="neutral",
+        maps_to_outcomes=["service_failure"],
+        description="A minimal boolean factor.",
+    )
+    assert entry.id == "some_factor"
+    assert entry.value_type == "boolean"
+    assert entry.polarity == "neutral"
+    assert entry.maps_to_outcomes == ["service_failure"]
+    # Check defaults
+    assert entry.requires_evidence is True
+    assert entry.bucket_strategy is None
+    assert entry.enum_values is None
+
+
+# ---------------------------------------------------------------------------
+# Issue 1 fix: bucket_strategy Literal rejects unknown strategies
+# ---------------------------------------------------------------------------
+
+
+def test_factor_entry_rejects_unknown_bucket_strategy(tmp_path):
+    """bucket_strategy must only accept 'log_days'; unknown values raise ValueError."""
+    bad_yaml = tmp_path / "bad_bucket.yaml"
+    bad_yaml.write_text(
+        yaml.dump(
+            {
+                "factors": [
+                    {
+                        "id": "repair_delay_days",
+                        "value_type": "duration",
+                        "polarity": "pro_claimant",
+                        "requires_evidence": True,
+                        "maps_to_outcomes": ["maladministration"],
+                        "description": "Duration between report and repair.",
+                        "bucket_strategy": "linear",  # invalid: only log_days is allowed
+                    }
+                ]
+            }
+        )
+    )
+    with pytest.raises((ValidationError, ValueError)):
+        FactorCatalog.from_yaml(bad_yaml)
