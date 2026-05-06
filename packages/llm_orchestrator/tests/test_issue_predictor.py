@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from ..clients.base import BaseLLMClient
-from ..models.prediction_v2 import IssueContext, IssueOutcome, IssueType
+from ..models.prediction_v2 import EvidenceStrength, IssueContext, IssueOutcome, IssueType
 from ..pipeline.issue_predictor import IssuePredictor
 
 
@@ -208,13 +208,70 @@ async def test_repairs_no_rag_prompt_uses_ombudsman_framing() -> None:
     assert "Deposit Amount" not in prompt
     assert "repairs_damp_mould" in prompt
     assert "Leave supporting_cases empty" in prompt
-    assert "do not abstain solely because citations are unavailable" in prompt
+    assert "Do not include comparator awards" in prompt
+    assert "Resident reported damp and mould for months." in prompt
+    assert "cited comparator award amounts" not in prompt
+    assert "cited determination" not in prompt
     assert "IRAC_JSON_SCHEMA" not in system_prompt
     assert "Output your prediction as a single JSON object" in system_prompt
     assert "Do NOT invent Ombudsman determination citations" in system_prompt
     assert "tenant_wins" in system_prompt
     assert "supporting_cases MUST be an empty list" in system_prompt
+    assert "case citations in format" not in system_prompt
     assert "Include at least 1 supporting case citation" not in system_prompt
+
+
+@pytest.mark.asyncio
+async def test_repairs_no_rag_empty_context_short_circuits_uncertain() -> None:
+    from llm_orchestrator.prompts.packs import get_prompt_pack
+
+    llm = _CaptureLLM()
+    case_file = SimpleNamespace(
+        metadata={
+            "domain_id": "housing.repairs_social.v1",
+            "matter_type": "repairs_damp_mould",
+        },
+        tenancy=SimpleNamespace(
+            deposit_amount=None,
+            start_date=None,
+            end_date=None,
+            tenancy_type=None,
+        ),
+        property=SimpleNamespace(region="london", postcode=None),
+        tenant_narrative=None,
+        landlord_narrative=None,
+        events=[],
+    )
+    predictor = IssuePredictor(
+        llm,
+        case_file=case_file,
+        prompt_pack=get_prompt_pack("housing.repairs_social.v1"),
+    )
+    issue = IssueContext(
+        issue_type=IssueType.REPAIRS_DAMP_MOULD,
+        issue_description="damp and mould repairs",
+        supporting_evidence=[
+            {
+                "description": (
+                    "Housing Ombudsman determination records the resident's "
+                    "complaint history, repair reports, and landlord response."
+                ),
+                "confidence": 1.0,
+            }
+        ],
+        data_completeness=0.23,
+    )
+
+    predictions = await predictor.predict_no_rag([issue], prompt_mode="kg_only")
+
+    assert llm.calls == []
+    assert predictions[0].outcome == IssueOutcome.UNCERTAIN
+    assert predictions[0].raw_confidence == 0.2
+    assert predictions[0].predicted_amount is None
+    assert predictions[0].amount_band is None
+    assert predictions[0].supporting_cases == []
+    assert predictions[0].evidence_strength == EvidenceStrength.INSUFFICIENT
+    assert "Empty no-RAG context" in predictions[0].data_completeness_impact
 
 
 def test_parse_prediction_response_maps_ombudsman_outcome_language() -> None:

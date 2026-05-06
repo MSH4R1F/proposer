@@ -48,10 +48,11 @@ _REPAIRS_NO_RAG_SYSTEM_PROMPT = """You analyse social-housing complaints heard b
 This is an ablation baseline with NO retrieved Ombudsman determinations. Predict from the resident/landlord facts, evidence summary, timeline, and any structured fact card only.
 
 Critical constraints:
-1. Do NOT invent Ombudsman determination citations. Leave supporting_cases as an empty list.
-2. Do NOT mark the outcome uncertain solely because retrieved determinations are absent.
-3. Use Housing Ombudsman concepts in the reasoning: no maladministration, service failure, maladministration, severe maladministration, reasonable redress, apology, repair action, compensation, case review, or policy review.
-4. The JSON outcome field must still use the shared eval labels:
+1. Do NOT invent Ombudsman determination citations, proposition IDs, paragraph references, comparator awards, or supporting cases. Leave supporting_cases as an empty list.
+2. Base the prediction only on the provided pre-decision facts and structured fact card. If those facts do not contain enough case-specific information to assess liability, choose "uncertain", set evidence_strength to "insufficient", predicted_amount to null, and amount_band to null.
+3. Do not use missing citations as a substitute for factual uncertainty: decide whether the provided facts themselves are sufficient.
+4. Use Housing Ombudsman concepts in the reasoning: no maladministration, service failure, maladministration, severe maladministration, reasonable redress, apology, repair action, compensation, case review, or policy review.
+5. The JSON outcome field must still use the shared eval labels:
    - "tenant_wins" when the resident complaint is likely upheld on any substantive repairs/complaint-handling issue, or the landlord likely faces a service-failure/maladministration finding or additional remedy. Use this even if some complaint heads are not upheld.
    - "landlord_wins" when no maladministration/no service failure is likely.
    - "split" only when the likely result is genuinely balanced after remedies, with material findings for both sides and no clear resident-upheld remedy dominance.
@@ -62,9 +63,18 @@ Safety: legal information, not legal advice. Hedge and explain uncertainty.
 
 _NO_RAG_JSON_SCHEMA = (
     IRAC_JSON_SCHEMA.replace(
+        '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>"',
+        '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, citing only provided user facts/KG facts, with no case citations>"',
+    )
+    .replace(
+        '    "supporting_cases": [\n        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}\n    ],',
+        '    "supporting_cases": [],',
+    )
+    .replace(
         "- Include at least 1 supporting case citation",
         "- In no-RAG ablation modes, supporting_cases MUST be an empty list",
-    ).replace(
+    )
+    .replace(
         "- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation",
         "- No retrieved cases are available in no-RAG ablation modes, so do not include proposition_id values",
     )
@@ -165,11 +175,15 @@ class IssuePredictor:
             elif issue.tenant_claim and issue.tenant_claim.claimed_amount is not None:
                 claimed_amount = issue.tenant_claim.claimed_amount
 
-        tenant_claim_text = (
-            issue.tenant_claim.description if issue.tenant_claim else "Not provided"
+        tenant_narrative = self._get_text_attr(cf, "tenant_narrative")
+        landlord_narrative = self._get_text_attr(cf, "landlord_narrative")
+        tenant_claim_text = self._format_party_position(
+            claim=issue.tenant_claim,
+            narrative=tenant_narrative,
         )
-        landlord_claim_text = (
-            issue.landlord_claim.description if issue.landlord_claim else "Not provided"
+        landlord_claim_text = self._format_party_position(
+            claim=issue.landlord_claim,
+            narrative=landlord_narrative,
         )
 
         if self._is_repairs_case(cf, issue):
@@ -178,6 +192,29 @@ class IssuePredictor:
                 if prompt_mode == "kg_only"
                 else ""
             )
+            if not self._has_no_rag_case_specific_facts(
+                issue=issue,
+                case_file=cf,
+                tenant_claim_text=tenant_claim_text,
+                landlord_claim_text=landlord_claim_text,
+                kg_fact_card=kg_fact_card,
+            ):
+                return self._uncertain_prediction(
+                    issue=issue,
+                    reason=(
+                        "No case-specific resident position, landlord position, "
+                        "timeline, structured fact card, or substantive evidence "
+                        "was available, so liability and remedy cannot be assessed "
+                        "case-specifically in no-RAG mode."
+                    ),
+                    evidence_strength=EvidenceStrength.INSUFFICIENT,
+                    data_impact=(
+                        "Empty no-RAG context: issue label/metadata alone is not "
+                        "enough to make a legally grounded Housing Ombudsman "
+                        "prediction."
+                    ),
+                    raw_confidence=0.2,
+                )
             user_prompt = self._format_repairs_user_prompt(
                 issue=issue,
                 case_file=cf,
@@ -193,10 +230,12 @@ class IssuePredictor:
                 kg_fact_card=kg_fact_card,
                 retrieved_cases=(
                     f"No retrieved cases in {prompt_mode} mode. Leave "
-                    "supporting_cases empty and do not abstain solely because "
-                    "citations are unavailable."
+                    "supporting_cases empty. Do not include comparator awards, "
+                    "proposition IDs, paragraph references, or determination "
+                    "citations."
                 ),
                 num_retrieved_cases=0,
+                no_rag_mode=True,
             )
             system_prompt = self._repairs_no_rag_system_prompt()
         elif prompt_mode == "llm_only":
@@ -371,8 +410,27 @@ class IssuePredictor:
                     self._get_value(result, "rerank_score", 0),
                 )
             )
+            purpose = self._get_value(result, "retrieval_purpose", None)
+            purposes = self._get_value(result, "retrieval_purposes", None)
+            if isinstance(purposes, list) and purposes:
+                purpose = ", ".join(str(p) for p in purposes)
+            purpose_line = f"\nPurpose: {purpose}" if purpose else ""
+            finding = self._get_value(result, "ombudsman_finding_signal", None)
+            finding_line = (
+                f"\nFinding signal: {finding}"
+                if finding and str(finding) != "unknown"
+                else ""
+            )
+            amount_line = (
+                "\nAward amount signal: present"
+                if self._get_value(result, "has_award_amount", False)
+                else ""
+            )
             formatted_cases.append(
-                f"CASE {i}: {case_ref} ({year})\nRelevance: {score:.3f}\n{str(text)[:1500]}\n---"
+                f"CASE {i}: {case_ref} ({year})\n"
+                f"Relevance: {score:.3f}"
+                f"{purpose_line}{finding_line}{amount_line}\n"
+                f"{str(text)[:1500]}\n---"
             )
         retrieved_cases_str = (
             "\n".join(formatted_cases) or "No similar cases retrieved."
@@ -422,8 +480,8 @@ class IssuePredictor:
                 elif getattr(prop, "postcode", None):
                     region = f"postcode {prop.postcode}"
 
-        tenant_narrative = getattr(cf, "tenant_narrative", None) if cf else None
-        landlord_narrative = getattr(cf, "landlord_narrative", None) if cf else None
+        tenant_narrative = self._get_text_attr(cf, "tenant_narrative")
+        landlord_narrative = self._get_text_attr(cf, "landlord_narrative")
 
         tenant_claim_text = self._format_party_position(
             claim=issue.tenant_claim,
@@ -804,12 +862,13 @@ class IssuePredictor:
         reason: str,
         evidence_strength: EvidenceStrength,
         data_impact: str,
+        raw_confidence: float = 0.0,
     ) -> IssuePrediction:
         return IssuePrediction(
             issue_type=issue.issue_type,
             issue_description=issue.issue_description,
             outcome=IssueOutcome.UNCERTAIN,
-            raw_confidence=0.0,
+            raw_confidence=raw_confidence,
             reasoning=reason,
             evidence_strength=evidence_strength,
             data_completeness_impact=data_impact,
@@ -872,6 +931,7 @@ class IssuePredictor:
         kg_fact_card: str,
         retrieved_cases: str,
         num_retrieved_cases: int,
+        no_rag_mode: bool = False,
     ) -> str:
         metadata = getattr(case_file, "metadata", None) if case_file is not None else None
         metadata = metadata if isinstance(metadata, dict) else {}
@@ -883,10 +943,43 @@ class IssuePredictor:
         amount = f"£{claimed_amount:.2f}" if claimed_amount is not None else "unknown"
 
         kg_section = kg_fact_card or "No structured KG fact card available."
+        task_line = (
+            "Task: Predict the likely Ombudsman complaint outcome from the "
+            "pre-decision resident/landlord facts only. No retrieved "
+            "Ombudsman determinations are available in this mode.\n\n"
+            if no_rag_mode
+            else "Task: Predict the likely Ombudsman complaint outcome from the "
+            "pre-decision resident/landlord facts and similar determinations.\n\n"
+        )
+        if no_rag_mode:
+            reasoning_instruction = (
+                "Before choosing the final JSON values, separate liability from "
+                "remedy. In the reasoning field, identify: (1) the likely "
+                "Ombudsman finding for each complaint head, (2) the specific "
+                "user-provided fact, evidence item, timeline event, or KG fact "
+                "that supports it, and (3) uncertainty caused by missing facts. "
+                "Do not mention comparator determinations, proposition IDs, "
+                "paragraph references, case citations, supporting cases, or "
+                "comparator award amounts. For no-RAG ablations, do not model "
+                "comparator-based compensation: set predicted_amount to null "
+                "and amount_band to null.\n\n"
+            )
+        else:
+            reasoning_instruction = (
+                "Before choosing the final JSON values, separate liability from "
+                "remedy. In the reasoning field, include: (1) the likely "
+                "Ombudsman finding for each complaint head, (2) the cited "
+                "determination or user fact that supports it, (3) any cited "
+                "comparator award amounts, and (4) why the final amount_band and "
+                "predicted_amount follow from those comparators. If no retrieved "
+                "determination contains a usable award/order amount, set "
+                "predicted_amount to null and explain the amount uncertainty. "
+                "Use amount_band only as a Proposer modelling band: 0, 1-100, "
+                "101-250, 251-600, 601-1000, or 1000+.\n\n"
+            )
         return (
             "Forum: Housing Ombudsman Service\n"
-            "Task: Predict the likely Ombudsman complaint outcome from the "
-            "pre-decision resident/landlord facts and similar determinations.\n\n"
+            f"{task_line}"
             f"Issue type: {issue.issue_type.value}\n"
             f"Matter type: {matter_type}\n"
             f"Issue description: {issue.issue_description}\n"
@@ -902,16 +995,7 @@ class IssuePredictor:
             f"KG constraints:\n{kg_constraints}\n\n"
             f"Retrieved Ombudsman determinations ({num_retrieved_cases}):\n"
             f"{retrieved_cases}\n\n"
-            "Before choosing the final JSON values, separate liability from "
-            "remedy. In the reasoning field, include: (1) the likely "
-            "Ombudsman finding for each complaint head, (2) the cited "
-            "determination or user fact that supports it, (3) any cited "
-            "comparator award amounts, and (4) why the final amount_band and "
-            "predicted_amount follow from those comparators. If no retrieved "
-            "determination contains a usable award/order amount, set "
-            "predicted_amount to null and explain the amount uncertainty. "
-            "Use amount_band only as a Proposer modelling band: 0, 1-100, "
-            "101-250, 251-600, 601-1000, or 1000+.\n\n"
+            f"{reasoning_instruction}"
             "Return only JSON matching the required prediction schema. In the "
             "reasoning, use Housing Ombudsman outcome language: no "
             "maladministration, service failure, maladministration, severe "
@@ -946,6 +1030,95 @@ class IssuePredictor:
                 label = "Narrative" if parts else "Party narrative (no structured claim filed)"
                 parts.append(f"{label}: {trimmed[:1200]}")
         return "\n".join(parts) if parts else "Not provided"
+
+    def _has_no_rag_case_specific_facts(
+        self,
+        *,
+        issue: IssueContext,
+        case_file: Any,
+        tenant_claim_text: str,
+        landlord_claim_text: str,
+        kg_fact_card: str,
+    ) -> bool:
+        """Return True only when no-RAG has facts beyond issue labels/metadata."""
+
+        candidates: List[Any] = [
+            tenant_claim_text,
+            landlord_claim_text,
+            kg_fact_card,
+        ]
+        candidates.extend(issue.kg_constraints or [])
+
+        for evidence in issue.supporting_evidence or []:
+            if isinstance(evidence, dict):
+                candidates.extend(
+                    [
+                        evidence.get("description"),
+                        evidence.get("text"),
+                        evidence.get("extracted_text"),
+                        evidence.get("image_description"),
+                    ]
+                )
+            else:
+                candidates.extend(
+                    [
+                        getattr(evidence, "description", None),
+                        getattr(evidence, "text", None),
+                        getattr(evidence, "extracted_text", None),
+                        getattr(evidence, "image_description", None),
+                    ]
+                )
+
+        for event in issue.timeline_events or []:
+            candidates.append(getattr(event, "description", None))
+
+        for conflict in issue.evidence_conflicts or []:
+            candidates.append(getattr(conflict, "tenant_position", None))
+            candidates.append(getattr(conflict, "landlord_position", None))
+
+        if case_file is not None:
+            for raw_event in getattr(case_file, "events", []) or []:
+                if isinstance(raw_event, dict):
+                    candidates.append(raw_event.get("description"))
+
+        return any(self._is_substantive_no_rag_fact_text(value) for value in candidates)
+
+    @staticmethod
+    def _is_substantive_no_rag_fact_text(value: Any) -> bool:
+        if not isinstance(value, str):
+            return False
+        text = re.sub(r"\s+", " ", value).strip()
+        if not text:
+            return False
+        lowered = text.lower()
+        nullish = {
+            "not provided",
+            "none",
+            "none identified",
+            "unknown",
+            "no supporting evidence provided.",
+            "no timeline events recorded.",
+            "no structured kg fact card available.",
+            "no retrieved cases in kg_only mode.",
+            "no retrieved cases in llm_only mode.",
+        }
+        if lowered in nullish:
+            return False
+        if (
+            "housing ombudsman determination records" in lowered
+            and "landlord response" in lowered
+        ):
+            return False
+        if lowered.startswith("source metadata only:"):
+            return False
+        return True
+
+    @staticmethod
+    def _get_text_attr(obj: Any, name: str) -> Optional[str]:
+        if obj is None:
+            return None
+        value = getattr(obj, name, None)
+        return value if isinstance(value, str) else None
 
     @staticmethod
     def _get_value(obj: Any, key: str, default: Any = None) -> Any:

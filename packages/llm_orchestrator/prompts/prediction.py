@@ -52,7 +52,7 @@ ANALYSIS FRAMEWORK:
 
 OUTPUT REQUIREMENTS:
 For each prediction, provide:
-1. Overall outcome (tenant_win, landlord_win, split, uncertain)
+1. Overall outcome (tenant_wins, landlord_wins, split, uncertain)
 2. Confidence level (0.0-1.0)
 3. Reasoning trace with specific case citations
 4. Per-issue breakdown
@@ -80,14 +80,14 @@ Remember to cite specific cases from the retrieved cases above for every factual
 PREDICTION_JSON_SCHEMA = """
 Output your prediction as JSON with this structure:
 {
-    "overall_outcome": "tenant_win|landlord_win|split|uncertain",
+    "overall_outcome": "tenant_wins|landlord_wins|split|uncertain",
     "overall_confidence": 0.0-1.0,
     "outcome_summary": "Brief 2-3 sentence summary",
 
     "issue_predictions": [
         {
             "issue_type": "e.g., deposit_protection, cleaning, damage",
-            "predicted_outcome": "tenant_win|landlord_win|split",
+            "predicted_outcome": "tenant_wins|landlord_wins|split",
             "confidence": 0.0-1.0,
             "reasoning": "Explanation with case citations",
             "key_factors": ["factor1", "factor2"],

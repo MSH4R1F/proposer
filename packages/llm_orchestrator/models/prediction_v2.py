@@ -17,10 +17,25 @@ DateType = date
 
 
 class OutcomeType(str, Enum):
-    TENANT_WIN = "tenant_win"
-    LANDLORD_WIN = "landlord_win"
+    TENANT_WIN = "tenant_wins"
+    TENANT_WINS = "tenant_wins"
+    LANDLORD_WIN = "landlord_wins"
+    LANDLORD_WINS = "landlord_wins"
     SPLIT = "split"
     UNCERTAIN = "uncertain"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Optional["OutcomeType"]:
+        raw = str(value or "").strip().lower().replace("-", "_").replace(" ", "_")
+        aliases = {
+            "tenant_win": cls.TENANT_WIN,
+            "tenant_wins": cls.TENANT_WIN,
+            "resident_win": cls.TENANT_WIN,
+            "resident_wins": cls.TENANT_WIN,
+            "landlord_win": cls.LANDLORD_WIN,
+            "landlord_wins": cls.LANDLORD_WIN,
+        }
+        return aliases.get(raw)
 
 
 class PredictionMode(str, Enum):
@@ -309,6 +324,10 @@ class PredictionResult(BaseModel):
     ) -> IssuePrediction:
         """Add an issue-level prediction."""
         issue_type_enum = map_str_to_issue_type(issue_type)
+        try:
+            outcome_type = outcome if isinstance(outcome, OutcomeType) else OutcomeType(outcome)
+        except ValueError:
+            outcome_type = OutcomeType.UNCERTAIN
 
         outcome_map = {
             OutcomeType.TENANT_WIN: IssueOutcome.TENANT_WINS,
@@ -320,7 +339,7 @@ class PredictionResult(BaseModel):
         prediction = IssuePrediction(
             issue_type=issue_type_enum,
             issue_description=kwargs.get("issue_description", issue_type),
-            outcome=outcome_map.get(outcome, IssueOutcome.UNCERTAIN),
+            outcome=outcome_map.get(outcome_type, IssueOutcome.UNCERTAIN),
             raw_confidence=confidence,
             reasoning=reasoning,
             **{k: v for k, v in kwargs.items() if k != "issue_description"},
