@@ -439,22 +439,50 @@ class AnnotationDispatcher:
         cases: List[Dict[str, Any]],
         factor_ids: List[str],
         max_concurrency: int = 8,
+        progress_every: int = 0,
     ) -> List[Annotation]:
         """Dispatch all (case × factor × annotator) triples concurrently.
 
         Bounded by ``max_concurrency`` to avoid hitting LLM rate limits at
         scale (900-call runs will exhaust default OpenAI TPM otherwise).
 
+        If ``progress_every > 0``, prints "[N/total] elapsed=Xs rate=Y/min
+        ETA=Zmin" to stderr after every Nth completion. ``0`` disables.
+
         Returns a flat list of Annotation objects, ordered deterministically:
             for case in cases:
               for factor_id in factor_ids:
                 for (client, annotator_id) in zip(self.clients, self.annotator_ids):
         """
+        import time as _time
+
         sem = asyncio.Semaphore(max_concurrency)
+        # Mutable counter wrapped in a list to keep it shared across closures
+        # without nonlocal gymnastics; an asyncio.Lock guards mutation.
+        progress = {"done": 0, "start": _time.monotonic()}
+        progress_lock = asyncio.Lock()
+
+        # Bind these for the closure so we know the total up front
+        total = len(cases) * len(factor_ids) * len(self.clients)
 
         async def _bounded(case, fid, client, aid):
             async with sem:
-                return await self._annotate_one(case, fid, client, aid)
+                result = await self._annotate_one(case, fid, client, aid)
+            if progress_every > 0:
+                async with progress_lock:
+                    progress["done"] += 1
+                    done = progress["done"]
+                    if done % progress_every == 0 or done == total:
+                        elapsed = _time.monotonic() - progress["start"]
+                        rate = done / elapsed * 60 if elapsed > 0 else 0
+                        eta_min = ((total - done) / rate) if rate > 0 else 0
+                        print(
+                            f"[{done}/{total}] elapsed={elapsed:.0f}s "
+                            f"rate={rate:.1f}/min ETA={eta_min:.1f}min",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+            return result
 
         tasks = []
         task_keys: List[Tuple[str, str, str]] = []  # (case_id, factor_id, annotator_id)
@@ -950,6 +978,20 @@ def cli_main(
         default=None,
         help="Output JSONL path",
     )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=8,
+        help="Max concurrent in-flight LLM calls (default 8). Lower for "
+             "tight TPM tiers; higher to saturate throughput.",
+    )
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=10,
+        help="Print '[N/total] elapsed=Xs rate=Y/min ETA=Zmin' to stderr "
+             "every N completions (default 10). 0 disables progress output.",
+    )
 
     args = parser.parse_args(argv)
 
@@ -1070,7 +1112,12 @@ def cli_main(
     # Execute mode
     try:
         annotations = asyncio.run(
-            dispatcher.annotate_all(cases=cases, factor_ids=factor_ids)
+            dispatcher.annotate_all(
+                cases=cases,
+                factor_ids=factor_ids,
+                max_concurrency=args.concurrency,
+                progress_every=args.progress_every,
+            )
         )
     except RuntimeError as exc:
         print(f"Error during annotation: {exc}", file=sys.stderr)
