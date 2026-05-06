@@ -214,3 +214,20 @@ factors:
     description: >-
       Whether the complaint head falls outside the Housing Ombudsman's remit
       (e.g. legal title disputes, court-concurrent matters).
+
+# ----------------------------------------------------------------------------
+# v2 stretch factor candidates (per §22.1 panel review 2026-05-06)
+# ----------------------------------------------------------------------------
+# These factors were flagged as legitimate but missing from the v1 catalog by
+# the gpt-4.1 panelist. Deferred to v2 to keep the v1 set narrow and
+# high-signal per spec §13.3 pattern. Do not implement until v1 ablation is
+# clean (per spec §17.6 + §17.7).
+#
+# Candidates:
+#   - repair_quality_adequate    # was repair done well, not just done
+#                                # (vs. repair_attempted which only counts presence)
+#   - offer_of_reinspection      # follow-up offered when initial fix is disputed
+#                                # (somewhat overlaps inspection_offered today)
+#   - mitigation_by_resident     # tenant-side contributory behaviour
+#                                # (e.g. refused access, common in
+#                                # "no maladministration due to access" cases)

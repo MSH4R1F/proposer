@@ -431,6 +431,12 @@ whether the report carries weight.
   not adjudicated.
 - *Mixed levels across heads.* Use the highest level reported for any head
   in the case.
+- *Distinct impacts across multiple complaint heads (e.g. moderate impact
+  from damp + severe impact from heating loss).* Encode the highest reported
+  severity ACROSS ALL heads, even if the principal complaint is
+  lower-severity. This intentionally over-weights the worst-case scenario;
+  if you find this biases the encoded distribution, flag for v2
+  reformulation.
 
 **Polarity:** `pro_claimant` (especially when value is `severe`).
 
@@ -523,6 +529,12 @@ ombudsman, or one expressly excluded by the Scheme.
 **Edge cases:**
 - *Some heads in, some heads out.* Call: **present** if any material head
   is excluded. The case may still proceed on the remaining heads.
+- *Mixed-jurisdiction complaints (e.g. one ground inside the Ombudsman's
+  remit, one outside).* Encode `present` if any material part of the
+  complaint is outside jurisdiction, even if the rest is inside. The
+  Ombudsman will still decline that part. The narrative typically signals
+  this with a phrase like "the [X] part of the complaint falls outside…" —
+  capture it.
 - *Pre-Ombudsman complaint stage not exhausted.* This is a procedural bar,
   not a jurisdiction one. Call: **absent** (the complaint can be referred
   back, then re-opened).
