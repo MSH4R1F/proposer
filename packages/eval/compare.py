@@ -19,16 +19,21 @@ from decimal import Decimal, InvalidOperation
 from typing import Callable, Dict, List
 
 from eval.metrics import (
+    abstention_rate,
     amount_coverage,
     amount_mae_gbp,
     amount_mean_signed_error_gbp,
     amount_median_absolute_error_gbp,
     amount_within_absolute_threshold,
     amount_within_threshold,
+    balanced_accuracy,
     bootstrap_ci,
     brier_score,
+    coverage_adjusted_accuracy,
+    covered_accuracy,
     expected_calibration_error,
     issue_winner_accuracy,
+    macro_f1,
 )
 from eval.case_file_adapter import (
     is_outcome_derived_ombudsman_claimed_amount,
@@ -40,6 +45,7 @@ from eval.schema import PartyRole, Winner
 
 # Lower-is-better metrics need flipped dominance logic.
 _LOWER_IS_BETTER = {
+    "abstention_rate",
     "amount_mae_gbp",
     "amount_median_absolute_error_gbp",
     "brier",
@@ -55,6 +61,11 @@ class ModeMetrics:
     amount_threshold: MetricResult
     brier: MetricResult
     ece: MetricResult
+    balanced_accuracy: MetricResult | None = None
+    macro_f1: MetricResult | None = None
+    abstention_rate: MetricResult | None = None
+    covered_accuracy: MetricResult | None = None
+    coverage_adjusted_accuracy: MetricResult | None = None
     amount_within_20pct: MetricResult | None = None
     amount_within_gbp100: MetricResult | None = None
     amount_mae_gbp: MetricResult | None = None
@@ -66,6 +77,11 @@ class ModeMetrics:
         """Return the metric stored under the public alias used by the CLI."""
         mapping = {
             "accuracy": self.accuracy,
+            "balanced_accuracy": self.balanced_accuracy,
+            "macro_f1": self.macro_f1,
+            "abstention_rate": self.abstention_rate,
+            "covered_accuracy": self.covered_accuracy,
+            "coverage_adjusted_accuracy": self.coverage_adjusted_accuracy,
             "amount_threshold": self.amount_threshold,
             "amount_within_20pct": self.amount_within_20pct,
             "amount_within_gbp100": self.amount_within_gbp100,
@@ -172,6 +188,11 @@ def build_comparison_report(
 
     metric_fns: Dict[str, Callable[[list, list], float]] = {
         "accuracy": issue_winner_accuracy,
+        "balanced_accuracy": balanced_accuracy,
+        "macro_f1": macro_f1,
+        "abstention_rate": abstention_rate,
+        "covered_accuracy": covered_accuracy,
+        "coverage_adjusted_accuracy": coverage_adjusted_accuracy,
         "amount_threshold": _amount_threshold_custom,
         "amount_within_20pct": _amount_threshold_20pct,
         "amount_within_gbp100": _amount_threshold_gbp100,
@@ -233,6 +254,11 @@ def _compute_mode_metrics(
     return ModeMetrics(
         mode=mode,
         accuracy=results["accuracy"],
+        balanced_accuracy=results["balanced_accuracy"],
+        macro_f1=results["macro_f1"],
+        abstention_rate=results["abstention_rate"],
+        covered_accuracy=results["covered_accuracy"],
+        coverage_adjusted_accuracy=results["coverage_adjusted_accuracy"],
         amount_threshold=results["amount_threshold"],
         amount_within_20pct=results["amount_within_20pct"],
         amount_within_gbp100=results["amount_within_gbp100"],
@@ -523,6 +549,13 @@ def _mode_metrics_to_dict(m: ModeMetrics, *, label_key: str) -> dict:
     return {
         label_key: m.mode,
         "accuracy": _metric_to_dict(m.accuracy),
+        "balanced_accuracy": _optional_metric_to_dict(m.balanced_accuracy),
+        "macro_f1": _optional_metric_to_dict(m.macro_f1),
+        "abstention_rate": _optional_metric_to_dict(m.abstention_rate),
+        "covered_accuracy": _optional_metric_to_dict(m.covered_accuracy),
+        "coverage_adjusted_accuracy": _optional_metric_to_dict(
+            m.coverage_adjusted_accuracy
+        ),
         # Legacy key retained for existing callers: amount@20% by default.
         "amount_threshold": _metric_to_dict(m.amount_threshold),
         "amount": _amount_metrics_to_dict(m),

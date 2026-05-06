@@ -12,7 +12,6 @@ from decimal import Decimal, InvalidOperation
 from statistics import median
 from typing import Any
 
-
 _ZERO = Decimal("0")
 
 
@@ -48,6 +47,32 @@ def _iter_pairs(gold: list, predictions: list):
             yield io.winner, pred_by_issue.get(io.issue)
 
 
+def _iter_prediction_pairs(gold: list, predictions: list):
+    """Yield `(gold_winner, predicted_winner, abstained)` comparisons.
+
+    This mirrors `_iter_pairs` but carries the raw-abstention signal preserved
+    by `scripts/eval/predict_all.py`. Missing per-issue predictions are treated
+    as abstentions because the model emitted no covered answer for that issue.
+    """
+    for g, p in zip(gold, predictions):
+        gt = g.ground_truth_outcome
+        if not gt.per_issue:
+            yield (
+                gt.overall_winner,
+                p.overall_winner,
+                bool(getattr(p, "abstained", False)),
+            )
+            continue
+
+        pred_by_issue = {ip.issue: ip for ip in p.per_issue}
+        for io in gt.per_issue:
+            ip = pred_by_issue.get(io.issue)
+            if ip is None:
+                yield io.winner, None, True
+                continue
+            yield io.winner, ip.predicted_winner, bool(getattr(ip, "abstained", False))
+
+
 def issue_winner_accuracy(gold: list, predictions: list) -> float:
     """Fraction of predicted per-issue winners matching ground truth.
 
@@ -65,6 +90,116 @@ def issue_winner_accuracy(gold: list, predictions: list) -> float:
     if total == 0:
         return 0.0
     return correct / total
+
+
+def balanced_accuracy(gold: list, predictions: list) -> float:
+    """Macro-average recall over labels present in the gold set.
+
+    This exposes class-imbalance failures hidden by headline accuracy. For a
+    49/1 tenant-heavy set, a model must still recover the minority landlord
+    row to score well here.
+    """
+    _validate_pairing(gold, predictions)
+    pairs = list(_iter_prediction_pairs(gold, predictions))
+    labels = sorted({actual for actual, _, _ in pairs}, key=lambda w: w.value)
+    if not labels:
+        return 0.0
+
+    recalls: list[float] = []
+    for label in labels:
+        actual_count = sum(1 for actual, _, _ in pairs if actual == label)
+        if actual_count == 0:
+            continue
+        true_positive = sum(
+            1 for actual, predicted, _ in pairs if actual == label and predicted == label
+        )
+        recalls.append(true_positive / actual_count)
+    return sum(recalls) / len(recalls) if recalls else 0.0
+
+
+def macro_f1(gold: list, predictions: list) -> float:
+    """Macro-F1 over labels present in either gold or predictions.
+
+    Labels that are absent from both gold and predictions are ignored. Labels
+    predicted spuriously, such as many `split` calls on a no-split gold set,
+    contribute an F1 of 0 and remain visible.
+    """
+    _validate_pairing(gold, predictions)
+    pairs = list(_iter_prediction_pairs(gold, predictions))
+    labels = sorted(
+        {
+            label
+            for actual, predicted, _ in pairs
+            for label in (actual, predicted)
+            if label is not None
+        },
+        key=lambda w: w.value,
+    )
+    if not labels:
+        return 0.0
+
+    f1s: list[float] = []
+    for label in labels:
+        tp = sum(
+            1 for actual, predicted, _ in pairs if actual == label and predicted == label
+        )
+        fp = sum(
+            1 for actual, predicted, _ in pairs if actual != label and predicted == label
+        )
+        fn = sum(
+            1 for actual, predicted, _ in pairs if actual == label and predicted != label
+        )
+        precision = tp / (tp + fp) if tp + fp else 0.0
+        recall = tp / (tp + fn) if tp + fn else 0.0
+        if precision + recall == 0:
+            f1s.append(0.0)
+        else:
+            f1s.append(2 * precision * recall / (precision + recall))
+    return sum(f1s) / len(f1s)
+
+
+def abstention_rate(gold: list, predictions: list) -> float:
+    """Fraction of issue/case comparisons that were raw abstentions."""
+    _validate_pairing(gold, predictions)
+    pairs = list(_iter_prediction_pairs(gold, predictions))
+    if not pairs:
+        return 0.0
+    return sum(1 for _, _, abstained in pairs if abstained) / len(pairs)
+
+
+def covered_accuracy(gold: list, predictions: list) -> float:
+    """Accuracy over non-abstained comparisons only.
+
+    Use this beside `abstention_rate`; a high covered accuracy with low
+    coverage means the model is precise when it answers but too quiet.
+    """
+    _validate_pairing(gold, predictions)
+    covered = [
+        (actual, predicted)
+        for actual, predicted, abstained in _iter_prediction_pairs(gold, predictions)
+        if not abstained
+    ]
+    if not covered:
+        return 0.0
+    return sum(1 for actual, predicted in covered if actual == predicted) / len(covered)
+
+
+def coverage_adjusted_accuracy(gold: list, predictions: list) -> float:
+    """Correct non-abstained answers divided by all comparisons.
+
+    This treats abstentions as uncovered rather than as the eval-schema
+    `split` fallback, so it is robust even when a real gold row is split.
+    """
+    _validate_pairing(gold, predictions)
+    pairs = list(_iter_prediction_pairs(gold, predictions))
+    if not pairs:
+        return 0.0
+    correct_covered = sum(
+        1
+        for actual, predicted, abstained in pairs
+        if not abstained and actual == predicted
+    )
+    return correct_covered / len(pairs)
 
 
 def _coerce_optional_amount(value: Any) -> Decimal | None:

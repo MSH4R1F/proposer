@@ -57,14 +57,22 @@ class OutputAssembler:
         penalty_recovery = 0.0
         uncertain_count = 0
         non_uncertain_for_conf: List[IssuePrediction] = []
+        has_explicit_recovery_amount = False
 
         for prediction in issue_predictions:
-            amount = self._to_float(prediction.predicted_amount)
+            amount_is_explicit = prediction.predicted_amount is not None
+            amount = (
+                self._to_float(prediction.predicted_amount)
+                if amount_is_explicit
+                else 0.0
+            )
             if prediction.outcome == IssueOutcome.UNCERTAIN:
                 uncertain_count += 1
                 continue
 
             non_uncertain_for_conf.append(prediction)
+            if amount_is_explicit:
+                has_explicit_recovery_amount = True
             # Audit D3 split: penalty branch only when matter_type explicitly
             # signals the non-protection penalty matter. Otherwise (the
             # default deposit_deduction matter) treat deposit_protection
@@ -111,7 +119,11 @@ class OutputAssembler:
             verification=verification,
         )
 
-        low, high = self._build_settlement_range(tenant_recovery, deposit)
+        settlement_range = (
+            self._build_settlement_range(tenant_recovery, deposit)
+            if has_explicit_recovery_amount
+            else None
+        )
 
         retrieved_cases = sorted(
             {
@@ -205,6 +217,7 @@ class OutputAssembler:
             landlord_recovery=landlord_recovery,
             uncertain_count=uncertain_count,
             total_issues=len(issue_predictions),
+            amounts_known=has_explicit_recovery_amount,
         )
 
         prediction = PredictionResult(
@@ -212,9 +225,13 @@ class OutputAssembler:
             overall_outcome=overall_outcome,
             overall_confidence=overall_confidence,
             outcome_summary=outcome_summary,
-            tenant_recovery_amount=tenant_recovery,
-            landlord_recovery_amount=landlord_recovery,
-            predicted_settlement_range=(low, high),
+            tenant_recovery_amount=(
+                tenant_recovery if has_explicit_recovery_amount else None
+            ),
+            landlord_recovery_amount=(
+                landlord_recovery if has_explicit_recovery_amount else None
+            ),
+            predicted_settlement_range=settlement_range,
             deposit_at_stake=case_file.tenancy.deposit_amount,
             issue_predictions=issue_predictions,
             reasoning_trace=reasoning_trace,
@@ -224,6 +241,7 @@ class OutputAssembler:
             missing_information=missing_information,
             retrieved_cases=retrieved_cases,
             total_cases_analyzed=len(analyzed_case_refs),
+            retrieval_evidence=self._build_retrieval_evidence(retrieval_results),
             rag_confidence=self._bounded_probability(rag_confidence),
             retrieval_quality=retrieval_quality,
             citation_verification=verification,
@@ -406,15 +424,94 @@ class OutputAssembler:
         landlord_recovery: float,
         uncertain_count: int,
         total_issues: int,
+        amounts_known: bool = True,
     ) -> str:
-        base = (
-            f"Predicted overall outcome: {overall_outcome.value.replace('_', ' ')}. "
-            f"Estimated tenant recovery: £{tenant_recovery:.2f}. "
-            f"Estimated landlord recovery: £{landlord_recovery:.2f}."
-        )
+        base = f"Predicted overall outcome: {overall_outcome.value.replace('_', ' ')}. "
+        if amounts_known:
+            base += (
+                f"Estimated tenant recovery: £{tenant_recovery:.2f}. "
+                f"Estimated landlord recovery: £{landlord_recovery:.2f}."
+            )
+        else:
+            base += (
+                "Monetary remedy amount unknown because no issue-level "
+                "prediction emitted an explicit amount."
+            )
         if uncertain_count > 0:
             base += f" {uncertain_count}/{total_issues} issues remain uncertain."
         return base
+
+    def _build_retrieval_evidence(
+        self,
+        retrieval_results: Dict[IssueType, IssueRetrievalResult],
+    ) -> Dict[str, Any]:
+        """Return compact retrieval diagnostics for eval artifacts."""
+        evidence: Dict[str, Any] = {}
+        for issue_type, retrieval in retrieval_results.items():
+            issue_key = getattr(issue_type, "value", str(issue_type))
+            evidence[issue_key] = {
+                "query_used": retrieval.query_used,
+                "is_sufficient": bool(retrieval.is_sufficient),
+                "rag_confidence": self._bounded_probability(
+                    retrieval.rag_confidence
+                ),
+                "legislative_regime": retrieval.legislative_regime,
+                "temporal_distribution": dict(retrieval.temporal_distribution),
+                "results": [
+                    self._serialise_retrieval_result(result, rank=index)
+                    for index, result in enumerate(retrieval.results, start=1)
+                ],
+            }
+        return evidence
+
+    def _serialise_retrieval_result(self, result: Any, *, rank: int) -> Dict[str, Any]:
+        text = self._get_value(
+            result,
+            "chunk_text",
+            self._get_value(result, "text", ""),
+        )
+        source_metadata = self._get_value(result, "source_metadata", None)
+        source_id = self._get_value(result, "source_id", None)
+        source_kind = self._get_value(result, "source_kind", None)
+        if source_metadata is not None:
+            source_id = source_id or self._get_value(source_metadata, "source_id", None)
+            source_kind = source_kind or self._get_value(
+                source_metadata, "source_kind", None
+            )
+
+        return {
+            "rank": rank,
+            "chunk_id": self._json_scalar(self._get_value(result, "chunk_id", None)),
+            "source_id": self._json_scalar(source_id),
+            "source_kind": self._json_scalar(source_kind),
+            "case_reference": self._json_scalar(
+                self._get_value(result, "case_reference", None)
+            ),
+            "year": self._json_scalar(self._get_value(result, "year", None)),
+            "paragraph": self._json_scalar(self._get_value(result, "paragraph", None)),
+            "section_type": self._json_scalar(
+                self._get_value(result, "section_type", None)
+            ),
+            "combined_score": self._optional_float(
+                self._get_value(result, "combined_score", None)
+            ),
+            "semantic_score": self._optional_float(
+                self._get_value(result, "semantic_score", None)
+            ),
+            "bm25_score": self._optional_float(
+                self._get_value(result, "bm25_score", None)
+            ),
+            "rerank_score": self._optional_float(
+                self._get_value(result, "rerank_score", None)
+            ),
+            "repairs_issue_match_score": self._optional_float(
+                self._get_value(result, "repairs_issue_match_score", None)
+            ),
+            "ombudsman_outcome_signal_score": self._optional_float(
+                self._get_value(result, "ombudsman_outcome_signal_score", None)
+            ),
+            "text_preview": str(text)[:500] if text else "",
+        }
 
     def _validate_prediction(
         self,
@@ -426,12 +523,14 @@ class OutputAssembler:
             if low > high:
                 prediction.predicted_settlement_range = (high, high)
 
-        prediction.tenant_recovery_amount = max(
-            0.0, self._to_float(prediction.tenant_recovery_amount)
-        )
-        prediction.landlord_recovery_amount = max(
-            0.0, self._to_float(prediction.landlord_recovery_amount)
-        )
+        if prediction.tenant_recovery_amount is not None:
+            prediction.tenant_recovery_amount = max(
+                0.0, self._to_float(prediction.tenant_recovery_amount)
+            )
+        if prediction.landlord_recovery_amount is not None:
+            prediction.landlord_recovery_amount = max(
+                0.0, self._to_float(prediction.landlord_recovery_amount)
+            )
 
         has_citations = bool(verification.verified_citations)
         has_non_uncertain_predictions = any(
@@ -504,6 +603,19 @@ class OutputAssembler:
             return float(value)
         except (TypeError, ValueError):
             return 0.0
+
+    @staticmethod
+    def _optional_float(value: Optional[Any]) -> Optional[float]:
+        if value is None:
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _json_scalar(value: Any) -> Any:
+        return getattr(value, "value", value)
 
     @staticmethod
     def _to_int(value: Any, default: Optional[int] = None) -> Optional[int]:

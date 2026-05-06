@@ -234,3 +234,6 @@ def test_ombudsman_pack_uses_complaint_outcome_framing_not_court_damages() -> No
     # Awaab's Law and statutory backdrops must be referenced.
     assert "awaab" in text
     assert "homes (fitness for human habitation)" in text
+    assert "comparator-award ledger" in text
+    assert "predicted_amount only from cited comparator awards" in text
+    assert "amount_band" in text

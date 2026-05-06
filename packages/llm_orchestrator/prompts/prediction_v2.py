@@ -81,6 +81,7 @@ IRAC_JSON_SCHEMA = """Output your prediction as a single JSON object with this e
     "outcome": "tenant_wins" or "landlord_wins" or "split" or "uncertain",
     "raw_confidence": <number between 0.0 and 1.0>,
     "predicted_amount": <number in pounds or null if uncertain>,
+    "amount_band": "0" or "1-100" or "101-250" or "251-600" or "601-1000" or "1000+" or null,
     "reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>",
     "key_factors": ["factor1", "factor2", "factor3"],
     "supporting_cases": [
@@ -98,6 +99,7 @@ Rules for the JSON:
 - "raw_confidence" MUST be a number between 0.0 and 1.0
 - "evidence_strength" MUST be exactly one of: "strong", "moderate", "weak", "insufficient"
 - "predicted_amount" should be a positive number (the amount the winning party recovers for this issue) or null
+- "amount_band" is optional; when used, it MUST be one of: "0", "1-100", "101-250", "251-600", "601-1000", "1000+"
 - For deposit_protection penalty issues, "predicted_amount" should be the penalty amount (1x-3x deposit)
 - Include at least 1 supporting case citation
 - If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation

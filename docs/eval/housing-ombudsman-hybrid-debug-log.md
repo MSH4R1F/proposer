@@ -320,3 +320,53 @@ Verification:
 Do not report the old `kg_only=1.000` or amount metrics as product evidence.
 Regenerate a balanced, reviewed gold set and rerun live predictions through the
 patched adapter before using the numbers in SHA-68 or thesis material.
+
+## 2026-05-05 Leakage-Cleaned Live Rerun
+
+The full 50-case live predictions were regenerated after the adapter and
+amount-leakage fixes. This supersedes the earlier
+`housing_ombudsman_stratified_50_live_20260505_005603_hybrid_fix` metrics for
+thesis-facing discussion.
+
+Artifacts:
+
+- `eval/predictions/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5/`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5_full_eval/summary.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5_full_eval/ablation.json`
+
+Results:
+
+| Mode | Accuracy | Brier | ECE | Amount@20% | Amount@GBP100 | MAE GBP | Bias GBP |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `hybrid` | 0.680 | 0.247 | 0.469 | 0.100 | 0.180 | 520 | -466 |
+| `rag_only` | 0.700 | 0.234 | 0.457 | 0.120 | 0.160 | 539 | -441 |
+| `kg_only` | 0.000 | 0.250 | 0.480 | 0.040 | 0.120 | 708 | -708 |
+| `llm_only` | 0.000 | 0.250 | 0.480 | 0.040 | 0.120 | 708 | -708 |
+
+Baseline context:
+
+- Gold distribution: `tenant=49`, `landlord=1`, `split=0`.
+- `always_tenant` baseline: `accuracy=0.980`, `brier=0.020`.
+- `claim_amount_copy` no longer has usable amount coverage because the patched
+  adapter and baseline suppress legacy outcome-derived Ombudsman amounts.
+
+Interpretation:
+
+- The clean run is methodologically better and numerically worse. That is the
+  expected result when leakage is removed.
+- `kg_only` and `llm_only` collapse to abstention-style `split` predictions
+  because no-RAG modes no longer receive the final award or retrieved
+  determinations. This confirms the earlier no-RAG scores were not usable
+  evidence of product reasoning quality.
+- Retrieval-backed modes carry the only current signal, but `rag_only` slightly
+  beats `hybrid`. Hybrid RAG+KG superiority is therefore not established.
+- The amount model is not ready. Both retrieval-backed modes under-award by
+  more than `GBP400` on average, and only `10-12%` of predictions land within
+  20% of the gold award.
+- The immediate research task is to investigate repairs-specific prompting,
+  retrieval, citation verification, outcome normalization, and compensation
+  estimation before another thesis-facing run.
+
+Next investigation prompt:
+
+- `docs/prompts/hybrid-rag-prompt-pipeline-investigation.md`

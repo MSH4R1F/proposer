@@ -625,6 +625,7 @@ class IssuePredictor:
             )
 
             amount_value = self._to_optional_float(data.get("predicted_amount"))
+            amount_band = self._normalise_amount_band(data.get("amount_band"))
 
             return IssuePrediction(
                 issue_type=issue.issue_type,
@@ -636,6 +637,7 @@ class IssuePredictor:
                     data.get("raw_confidence", data.get("confidence", 0.0))
                 ),
                 predicted_amount=amount_value,
+                amount_band=amount_band,
                 reasoning=str(data.get("reasoning", "")).strip(),
                 key_factors=key_factors,
                 supporting_cases=citations,
@@ -761,6 +763,32 @@ class IssuePredictor:
         except ValueError:
             return IssueOutcome.UNCERTAIN
 
+    @staticmethod
+    def _normalise_amount_band(value: Any) -> Optional[str]:
+        if value is None:
+            return None
+        raw = str(value).strip().replace("£", "").replace(",", "")
+        key = raw.lower().replace("gbp", "").strip()
+        key = re.sub(r"\s+", "", key)
+        aliases = {
+            "0": "0",
+            "zero": "0",
+            "none": "0",
+            "1-100": "1-100",
+            "1to100": "1-100",
+            "101-250": "101-250",
+            "101to250": "101-250",
+            "251-600": "251-600",
+            "251to600": "251-600",
+            "601-1000": "601-1000",
+            "601to1000": "601-1000",
+            "1000+": "1000+",
+            "1001+": "1000+",
+            "over1000": "1000+",
+            "1000plus": "1000+",
+        }
+        return aliases.get(key)
+
     def _assess_evidence_strength(self, issue: IssueContext) -> EvidenceStrength:
         if issue.data_completeness >= 0.8:
             return EvidenceStrength.STRONG
@@ -874,6 +902,16 @@ class IssuePredictor:
             f"KG constraints:\n{kg_constraints}\n\n"
             f"Retrieved Ombudsman determinations ({num_retrieved_cases}):\n"
             f"{retrieved_cases}\n\n"
+            "Before choosing the final JSON values, separate liability from "
+            "remedy. In the reasoning field, include: (1) the likely "
+            "Ombudsman finding for each complaint head, (2) the cited "
+            "determination or user fact that supports it, (3) any cited "
+            "comparator award amounts, and (4) why the final amount_band and "
+            "predicted_amount follow from those comparators. If no retrieved "
+            "determination contains a usable award/order amount, set "
+            "predicted_amount to null and explain the amount uncertainty. "
+            "Use amount_band only as a Proposer modelling band: 0, 1-100, "
+            "101-250, 251-600, 601-1000, or 1000+.\n\n"
             "Return only JSON matching the required prediction schema. In the "
             "reasoning, use Housing Ombudsman outcome language: no "
             "maladministration, service failure, maladministration, severe "

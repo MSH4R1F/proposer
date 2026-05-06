@@ -320,3 +320,87 @@ Interpretation:
 - Retrieval-backed modes still abstain on hard rows after citation
   verification. That keeps accuracy below no-RAG on this skewed set, but gives
   better Brier point estimates than no-RAG.
+
+Leakage-cleaned full live rerun, 2026-05-05:
+
+After the adapter, predictor, and deterministic baseline leakage fixes landed,
+the live prediction artifacts were regenerated through the patched
+`gold_case_to_case_file()` path. This is the current honest diagnostic run for
+the reviewed 50-case Housing Ombudsman set.
+
+Artifacts:
+
+- `eval/predictions/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5/`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5_full_eval/audit.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5_full_eval/ablation.json`
+- `eval/results/housing_ombudsman_stratified_50_live_20260505_post_patch_topk5_sharded5_full_eval/summary.json`
+
+Run method:
+
+- The 50 gold rows were split into five contiguous 10-case shards.
+- Each shard ran `hybrid,rag_only,kg_only,llm_only` with `--engine live`,
+  `--client openai`, `--rag-index-root indices`, and `--top-k 5`.
+- Shard outputs were concatenated back into the original gold order before
+  scoring.
+- Scoring used `domain=housing.repairs_social.v1`, `seed=42`, and
+  `n_resamples=1000`.
+
+Results, n=50:
+
+| Mode | Accuracy | Accuracy 95% CI | Brier | Brier 95% CI | ECE | Amount@20% | Amount@GBP100 | MAE GBP | Bias GBP |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| hybrid | 0.680 | [0.560, 0.800] | 0.247 | [0.226, 0.269] | 0.469 | 0.100 | 0.180 | 520 | -466 |
+| rag_only | 0.700 | [0.580, 0.820] | 0.234 | [0.213, 0.254] | 0.457 | 0.120 | 0.160 | 539 | -441 |
+| kg_only | 0.000 | [0.000, 0.000] | 0.250 | [0.250, 0.250] | 0.480 | 0.040 | 0.120 | 708 | -708 |
+| llm_only | 0.000 | [0.000, 0.000] | 0.250 | [0.250, 0.250] | 0.480 | 0.040 | 0.120 | 708 | -708 |
+
+Gold and prediction distribution:
+
+| Distribution | Tenant | Landlord | Split | Raw abstentions |
+| --- | ---: | ---: | ---: | ---: |
+| gold | 49 | 1 | 0 | n/a |
+| hybrid predictions | 34 | 1 | 15 | 15 |
+| rag_only predictions | 35 | 1 | 14 | 14 |
+| kg_only predictions | 0 | 0 | 50 | 50 |
+| llm_only predictions | 0 | 0 | 50 | 50 |
+
+Deterministic baselines:
+
+| Baseline | Accuracy | Brier | Amount supported? |
+| --- | ---: | ---: | --- |
+| always_tenant | 0.980 | 0.020 | no |
+| always_landlord | 0.020 | 0.980 | no |
+| claim_positive_winner | 0.000 | 0.250 | no |
+| claim_amount_copy | 0.000 | 0.250 | no |
+
+Interpretation:
+
+- This run should be treated as leakage-cleaned diagnostic evidence, not final
+  thesis proof. It is the first run where the promoted legacy Ombudsman award
+  fields are suppressed before prediction.
+- The old no-RAG scores were inflated by outcome-derived amount fields and
+  dataset skew. In the clean run, `kg_only` and `llm_only` return abstention
+  style `split` predictions for all rows. That collapse is a useful sanity
+  check: no-RAG modes no longer have hidden access to the final award.
+- `rag_only` is the strongest current live mode on this diagnostic set:
+  `accuracy=0.700`, `brier=0.234`. `hybrid` is slightly worse:
+  `accuracy=0.680`, `brier=0.247`.
+- The always-tenant baseline beats every model on headline accuracy because the
+  reviewed set is `49/50` tenant-favorable. Accuracy alone is therefore not a
+  valid product or thesis headline on this corpus.
+- Award prediction is weak. The gold mean award is about `GBP708`, while
+  `hybrid` predicts about `GBP242` on average and `rag_only` about `GBP267`.
+  Both retrieval-backed modes under-award by more than `GBP400` on average.
+- Calibration remains weak. Brier is above the target `<0.20`, and ECE remains
+  around `0.46-0.47`.
+
+Thesis-safe wording:
+
+> After leakage removal, no-RAG ablations no longer produce artificially high
+> Housing Ombudsman performance. Retrieval-backed modes remain the only modes
+> with meaningful predictive signal, but they do not beat a skew-exploiting
+> always-tenant baseline on the current 50-case diagnostic set. The result is a
+> negative but useful finding: the current pipeline is not yet thesis-grade
+> evidence for hybrid RAG+KG superiority. The next work must target a balanced
+> reviewed eval set, better repairs-specific retrieval, explicit Ombudsman
+> outcome semantics, and a separate compensation-award prediction path.

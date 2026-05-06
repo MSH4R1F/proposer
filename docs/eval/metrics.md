@@ -7,6 +7,11 @@
 | Metric | Function | Module | Linear |
 |---|---|---|---|
 | Issue-level winner accuracy | `issue_winner_accuracy()` | `eval.metrics.accuracy` | SHA-30 (partial) |
+| Balanced accuracy | `balanced_accuracy()` | `eval.metrics.accuracy` | Hybrid RAG investigation 2026-05-05 |
+| Macro-F1 | `macro_f1()` | `eval.metrics.accuracy` | Hybrid RAG investigation 2026-05-05 |
+| Abstention rate | `abstention_rate()` | `eval.metrics.accuracy` | Hybrid RAG investigation 2026-05-05 |
+| Covered accuracy | `covered_accuracy()` | `eval.metrics.accuracy` | Hybrid RAG investigation 2026-05-05 |
+| Coverage-adjusted accuracy | `coverage_adjusted_accuracy()` | `eval.metrics.accuracy` | Hybrid RAG investigation 2026-05-05 |
 | £-amount within threshold | `amount_within_threshold()` | `eval.metrics.accuracy` | SHA-30 (partial) |
 | £-amount within absolute band | `amount_within_absolute_threshold()` | `eval.metrics.accuracy` | SHA-30 (partial) |
 | £-amount mean absolute error | `amount_mae_gbp()` | `eval.metrics.accuracy` | SHA-30 (partial) |
@@ -34,6 +39,23 @@ Both lists must be the **same length** and **aligned by case_id in order**. The 
 Apportioned cases (gold `per_issue` non-empty) are scored **per issue**. Unapportioned cases (per_issue empty + `unapportioned_reason` set) collapse to **one comparison per case** using `overall_winner` and `overall_win_probability`.
 
 Missing per-issue predictions (predicted `per_issue` lacks an issue label that gold has) count as **wrong** for accuracy and contribute `(P=0.5, actual)` to calibration metrics — i.e. silence is treated as maximum uncertainty, not as a free pass.
+
+## Imbalance And Abstention Metrics
+
+The Housing Ombudsman diagnostic set exposed that headline accuracy can hide
+both class skew and abstention. The full ablation report now also emits:
+
+- `balanced_accuracy` — macro-average recall over labels present in gold.
+- `macro_f1` — macro-F1 over labels present in either gold or predictions, so
+  spurious `split` predictions on a no-split gold set are visible.
+- `abstention_rate` — fraction of comparisons where the raw orchestrator output
+  was `uncertain` or explicitly marked `abstained`.
+- `covered_accuracy` — accuracy over non-abstained comparisons only.
+- `coverage_adjusted_accuracy` — correct non-abstained answers divided by all
+  comparisons.
+
+`covered_accuracy` must always be read beside `abstention_rate`; a model can be
+very accurate when it answers while still being too quiet for product use.
 
 ## Amount Metrics
 

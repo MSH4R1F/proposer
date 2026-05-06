@@ -36,8 +36,14 @@ def _gold_with_outcome(case_id: str, *, per_issue: list, total: str = "100.00",
     return GoldCase.model_validate(case)
 
 
-def _pred(case_id: str, *, per_issue: list, total: str = "100.00",
-          overall: str = "tenant"):
+def _pred(
+    case_id: str,
+    *,
+    per_issue: list,
+    total: str = "100.00",
+    overall: str = "tenant",
+    abstained: bool = False,
+):
     from eval.metrics import IssuePrediction, Prediction
     from eval.schema import Winner
     return Prediction(
@@ -51,9 +57,11 @@ def _pred(case_id: str, *, per_issue: list, total: str = "100.00",
                 predicted_winner=Winner(pi["winner"]),
                 win_probability=pi.get("p", 0.5),
                 predicted_amount_gbp=Decimal(pi.get("amount_gbp", "100.00")),
+                abstained=bool(pi.get("abstained", False)),
             )
             for pi in per_issue
         ],
+        abstained=abstained,
     )
 
 
@@ -150,6 +158,80 @@ class TestIssueWinnerAccuracy:
         preds = [_pred("B", per_issue=[{"issue": "x", "winner": "tenant"}])]
         with pytest.raises(ValueError, match="case_id mismatch"):
             issue_winner_accuracy(gold, preds)
+
+
+class TestImbalanceAndAbstentionMetrics:
+    def test_balanced_accuracy_macro_f1_and_abstention_metrics(self):
+        from eval.metrics import (
+            abstention_rate,
+            balanced_accuracy,
+            coverage_adjusted_accuracy,
+            covered_accuracy,
+            macro_f1,
+        )
+
+        gold = [
+            _gold_with_outcome(
+                "A",
+                per_issue=[
+                    {"issue": "x", "winner": "tenant", "awarded_gbp": "50.00"},
+                    {"issue": "y", "winner": "landlord", "awarded_gbp": "0.00"},
+                ],
+                total="50.00",
+                overall="split",
+            ),
+            _gold_with_outcome(
+                "B",
+                per_issue=[
+                    {"issue": "z", "winner": "tenant", "awarded_gbp": "100.00"},
+                ],
+            ),
+        ]
+        preds = [
+            _pred(
+                "A",
+                per_issue=[
+                    {"issue": "x", "winner": "tenant"},
+                    {"issue": "y", "winner": "tenant"},
+                ],
+                overall="tenant",
+            ),
+            _pred(
+                "B",
+                per_issue=[
+                    {
+                        "issue": "z",
+                        "winner": "split",
+                        "abstained": True,
+                    },
+                ],
+                overall="split",
+                abstained=True,
+            ),
+        ]
+
+        assert balanced_accuracy(gold, preds) == pytest.approx(0.25)
+        assert macro_f1(gold, preds) == pytest.approx((0.5 + 0.0 + 0.0) / 3)
+        assert abstention_rate(gold, preds) == pytest.approx(1 / 3)
+        assert covered_accuracy(gold, preds) == pytest.approx(1 / 2)
+        assert coverage_adjusted_accuracy(gold, preds) == pytest.approx(1 / 3)
+
+    def test_missing_per_issue_prediction_counts_as_abstention(self):
+        from eval.metrics import abstention_rate, covered_accuracy
+
+        gold = [
+            _gold_with_outcome(
+                "A",
+                per_issue=[
+                    {"issue": "x", "winner": "tenant", "awarded_gbp": "50.00"},
+                    {"issue": "y", "winner": "tenant", "awarded_gbp": "50.00"},
+                ],
+            ),
+        ]
+        preds = [_pred("A", per_issue=[{"issue": "x", "winner": "tenant"}])]
+
+        assert abstention_rate(gold, preds) == pytest.approx(0.5)
+        assert covered_accuracy(gold, preds) == pytest.approx(1.0)
 
 
 class TestAmountWithinThreshold:

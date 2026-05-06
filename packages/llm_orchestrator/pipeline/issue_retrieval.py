@@ -244,7 +244,21 @@ class IssueRetriever:
         )
 
         raw_results = self._extract_results(rag_result)
-        if self._is_repairs_case(issue, case_file):
+        rag_confidences = [self._extract_rag_confidence(rag_result)]
+        is_repairs_case = self._is_repairs_case(issue, case_file)
+        if is_repairs_case:
+            remedy_query = self._build_repairs_remedy_query(issue, case_file)
+            remedy_result = await self.rag.retrieve(
+                query=remedy_query,
+                top_k=max(top_k + 5, top_k * 2),
+                query_region=case_file.property.region,
+            )
+            raw_results = self._dedupe_results(
+                [*raw_results, *self._extract_results(remedy_result)]
+            )
+            rag_confidences.append(self._extract_rag_confidence(remedy_result))
+
+        if is_repairs_case:
             reranked = self._apply_repairs_ombudsman_rerank(raw_results, issue)
         else:
             reranked = self._apply_temporal_decay(raw_results, issue)
@@ -262,11 +276,16 @@ class IssueRetriever:
                 temporal_distribution[year] = temporal_distribution.get(year, 0) + 1
 
         legislative_regime = self._determine_legislative_regime(trimmed_results, issue)
-        rag_confidence = self._extract_rag_confidence(rag_result)
+        nonzero_confidences = [c for c in rag_confidences if c > 0]
+        rag_confidence = (
+            sum(nonzero_confidences) / len(nonzero_confidences)
+            if nonzero_confidences
+            else 0.0
+        )
 
         return IssueRetrievalResult(
             issue_type=issue.issue_type,
-            query_used=query,
+            query_used=query if not is_repairs_case else f"{query}\nREMEDY PASS: {remedy_query}",
             results=trimmed_results,
             rag_confidence=rag_confidence,
             temporal_distribution=temporal_distribution,
@@ -321,10 +340,10 @@ class IssueRetriever:
             outcome_signal = self._ombudsman_outcome_signal_score(text)
 
             final_score = (
-                (0.35 * base)
-                + (0.30 * semantic)
+                (0.30 * base)
+                + (0.25 * semantic)
                 + (0.25 * issue_match)
-                + (0.10 * outcome_signal)
+                + (0.20 * outcome_signal)
             )
             self._set_value(result, "repairs_issue_match_score", issue_match)
             self._set_value(result, "ombudsman_outcome_signal_score", outcome_signal)
@@ -501,14 +520,14 @@ class IssueRetriever:
 
     def _build_issue_query(self, issue: IssueContext, case_file: CaseFile) -> str:
         metadata = getattr(case_file, "metadata", None)
-        if isinstance(metadata, dict):
-            domain_id = metadata.get("domain_id")
-            if domain_id == "housing.repairs_social.v1" or issue.issue_type.value in {
-                "repairs_disrepair",
-                "repairs_damp_mould",
-                "complaint_handling_failure",
-            }:
-                return self._build_repairs_issue_query(issue, case_file, metadata)
+        metadata = metadata if isinstance(metadata, dict) else {}
+        domain_id = metadata.get("domain_id")
+        if domain_id == "housing.repairs_social.v1" or issue.issue_type.value in {
+            "repairs_disrepair",
+            "repairs_damp_mould",
+            "complaint_handling_failure",
+        }:
+            return self._build_repairs_issue_query(issue, case_file, metadata)
 
         parts = [
             f"Tenancy deposit dispute: {issue.issue_type.value}",
@@ -553,8 +572,11 @@ class IssueRetriever:
         matter_type = metadata.get("matter_type")
         if matter_type:
             parts.append(f"Matter type: {matter_type}")
-        if case_file.dispute_amount:
-            parts.append(f"Compensation in dispute: \u00a3{case_file.dispute_amount:.2f}")
+        dispute_amount = self._to_optional_float(
+            getattr(case_file, "dispute_amount", None)
+        )
+        if dispute_amount:
+            parts.append(f"Compensation in dispute: \u00a3{dispute_amount:.2f}")
 
         narrative = (case_file.tenant_narrative or "").strip()
         if narrative:
@@ -578,6 +600,36 @@ class IssueRetriever:
         if issue.landlord_claim:
             parts.append(f"Landlord response: {issue.landlord_claim.description}")
 
+        return " | ".join(parts)
+
+    def _build_repairs_remedy_query(
+        self,
+        issue: IssueContext,
+        case_file: CaseFile,
+    ) -> str:
+        """Build a second-pass query for Ombudsman outcome/remedy paragraphs."""
+        metadata = getattr(case_file, "metadata", None)
+        metadata = metadata if isinstance(metadata, dict) else {}
+        parts = [
+            self._repairs_query_seed(issue),
+            "Housing Ombudsman remedy order compensation redress outcome finding",
+            "ordered the landlord must pay what the landlord must do",
+            "service failure maladministration severe maladministration reasonable redress",
+            "distress inconvenience time and trouble apology repair action case review",
+        ]
+        matter_type = metadata.get("matter_type")
+        if matter_type:
+            parts.append(f"Matter type: {matter_type}")
+
+        narrative = (getattr(case_file, "tenant_narrative", None) or "").strip()
+        if narrative:
+            parts.append(f"Resident account: {narrative[:350]}")
+        if issue.tenant_claim:
+            parts.append(f"Resident claim: {issue.tenant_claim.description[:350]}")
+        if issue.landlord_claim:
+            parts.append(f"Landlord response: {issue.landlord_claim.description[:350]}")
+        if issue.kg_constraints:
+            parts.append(f"Key facts: {'; '.join(issue.kg_constraints)}")
         return " | ".join(parts)
 
     def _repairs_query_seed(self, issue: IssueContext) -> str:
@@ -737,6 +789,36 @@ class IssueRetriever:
         return results if isinstance(results, list) else []
 
     @staticmethod
+    def _dedupe_results(results: List[Any]) -> List[Any]:
+        deduped: List[Any] = []
+        seen: set[tuple[str, str, str, str]] = set()
+        for result in results:
+            text = str(
+                IssueRetriever._get_value(
+                    result,
+                    "chunk_text",
+                    IssueRetriever._get_value(result, "text", ""),
+                )
+            )
+            key = (
+                str(IssueRetriever._get_value(result, "kind", "chunk")),
+                str(
+                    IssueRetriever._get_value(
+                        result,
+                        "chunk_id",
+                        IssueRetriever._get_value(result, "proposition_id", ""),
+                    )
+                ),
+                str(IssueRetriever._get_value(result, "case_reference", "")),
+                text[:160],
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append(result)
+        return deduped
+
+    @staticmethod
     def _extract_rag_confidence(rag_result: Any) -> float:
         if rag_result is None:
             return 0.0
@@ -763,6 +845,14 @@ class IssueRetriever:
             return float(value)
         except (TypeError, ValueError):
             return 0.0
+
+    @staticmethod
+    def _to_optional_float(value: Any) -> Optional[float]:
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return None
+        return numeric
 
     @staticmethod
     def _get_value(obj: Any, key: str, default: Any = None) -> Any:

@@ -257,6 +257,11 @@ class TestStructure:
         assert m.amount_median_absolute_error_gbp is not None
         assert m.amount_mean_signed_error_gbp is not None
         assert m.amount_coverage["n_evaluable"] == len(gold)
+        assert m.balanced_accuracy is not None
+        assert m.macro_f1 is not None
+        assert m.abstention_rate is not None
+        assert m.covered_accuracy is not None
+        assert m.coverage_adjusted_accuracy is not None
         assert m.brier is not None
         assert m.ece is not None
 
@@ -267,6 +272,11 @@ class TestStructure:
         )
         row = report_to_dict(report)["modes"][0]
         assert row["amount_threshold"]["point"] == pytest.approx(1.0)
+        assert row["balanced_accuracy"]["point"] == pytest.approx(1.0)
+        assert row["macro_f1"]["point"] == pytest.approx(1.0)
+        assert row["abstention_rate"]["point"] == pytest.approx(0.0)
+        assert row["covered_accuracy"]["point"] == pytest.approx(1.0)
+        assert row["coverage_adjusted_accuracy"]["point"] == pytest.approx(1.0)
         assert row["amount"]["within_20pct"]["point"] == pytest.approx(1.0)
         assert row["amount"]["within_gbp100"]["point"] == pytest.approx(1.0)
         assert row["amount"]["mae_gbp"]["point"] == pytest.approx(0.0)
