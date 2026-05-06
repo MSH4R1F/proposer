@@ -44,8 +44,12 @@
 ┌──────────────────────────────────────┐
 │  Gold-standard corpus                │
 │  data/gold_standard/housing_v1.jsonl │
+│  data/gold_standard/housing_repairs_ │
+│  social_v2.jsonl                     │
 │  one annotated GoldCase per line,    │
 │  each carrying LabelingProvenance    │
+│  plus domain-specific labels such as │
+│  Determination + split amount fields │
 │  (run_id, labeler models, source +   │
 │   OCR hashes, prompt-template hash,  │
 │   canonicalizer/grounder versions,   │
@@ -74,7 +78,10 @@ list[GoldCase]                         AuditReport
 ┌──────────────────────────────────────┐
 │  eval.metrics                        │
 │  ├ accuracy.issue_winner_accuracy    │
+│  ├ accuracy.determination_accuracy   │
+│  ├ accuracy.determination_class_...  │
 │  ├ accuracy.amount_within_threshold  │
+│  ├ accuracy.amount_mae_gbp_by_...  │
 │  ├ calibration.brier_score           │
 │  ├ calibration.expected_calibration… │
 │  └ calibration.reliability_diagram   │
@@ -159,7 +166,48 @@ list[GoldCase]                         AuditReport
 | `packages/rag_engine/**` | Track C (read-only for us) | Retrieval — Phase 5 talks to it via `PredictionEngineV2` |
 | `packages/kg_builder/**` | Track B (read-only for us) | KG — same as above |
 
-The boundary rule: nothing in `packages/eval/` ever directly imports from rag_engine, kg_builder, or `prediction_engine_v2` — *except* `eval.adapter` (orchestrator's `PredictionResult` → eval `Prediction`), `eval.case_file_adapter` (orchestrator's `CaseFile` constructed from gold), and `eval.issue_alignment` (orchestrator's `DisputeIssue` enum), which import orchestrator types but never call any orchestrator pipeline code. `scripts/eval/predict_all.py` is the place that drives `PredictionEngineV2` once Phase 5c wires a real LLM client; today it routes through `_stub_prediction.make_stub_prediction` instead.
+The boundary rule: nothing in `packages/eval/` ever directly imports from rag_engine, kg_builder, or `prediction_engine_v2` — *except* `eval.adapter` (orchestrator's `PredictionResult` → eval `Prediction`), `eval.case_file_adapter` (orchestrator's `CaseFile` constructed from gold), and `eval.issue_alignment` (orchestrator's `DisputeIssue` enum), which import orchestrator types but never call any orchestrator pipeline code. `scripts/eval/predict_all.py` is the driver that chooses either the deterministic stub or the live `PredictionEngineV2` path for each ablation mode.
+
+## Current Housing Ombudsman eval architecture (2026-05-06)
+
+The Housing Ombudsman repairs/social eval no longer uses binary
+tenant/landlord winner as its headline construct. The current stack is:
+
+```text
+housing_repairs_social_v2 GoldCase
+  ├─ ground_truth_outcome.determination
+  ├─ amount_ordered_now_gbp
+  ├─ amount_previously_offered_gbp
+  └─ amount_global_unapportioned_gbp
+        │
+        ▼
+scripts/eval/predict_all.py
+  ├─ mode=hybrid
+  ├─ mode=rag_only
+  ├─ mode=kg_only
+  └─ mode=llm_only
+        │
+        ▼
+PredictionResult / eval.metrics.types.Prediction
+  ├─ predicted_determination
+  ├─ amount_construct
+  ├─ abstained / raw outcome diagnostics
+  └─ citations after cite-or-abstain verification
+        │
+        ▼
+scripts/eval/run_full_eval.py
+  ├─ legacy accuracy / covered accuracy
+  ├─ determination.accuracy
+  ├─ determination.class_recall
+  ├─ amount.within_20pct / within_gbp100
+  └─ amount.mae_gbp_{ordered_now,previously_offered,global_unapportioned}
+```
+
+The Task 18 live run is documented in
+[`housing-ombudsman-task18-determination-live-eval-2026-05-06.md`](housing-ombudsman-task18-determination-live-eval-2026-05-06.md).
+Its headline lesson is architectural: Housing Ombudsman predictions must be
+evaluated on the seven-class determination ontology, with binary winner metrics
+retained only as backward-compatible diagnostics.
 
 ## Phase 5 / 5b ablation pipeline (end-to-end)
 
@@ -180,7 +228,7 @@ The boundary rule: nothing in `packages/eval/` ever directly imports from rag_en
        │         │         unmapped_claim_types, …)         │     DisputeIssue
        │         │   2. predict_fn(case_file, mode):        │     via
        │         │        --engine stub: make_stub_pred…    │     issue_alignment
-       │         │        --engine live: NotImplementedErr  │   (5c blocker)
+       │         │        --engine live: PredictionEngineV2 │
        │         │      → PredictionResult                  │
        │         │   3. eval.adapter.from_prediction_result │
        │         │      → eval.metrics.types.Prediction     │
@@ -192,7 +240,7 @@ The boundary rule: nothing in `packages/eval/` ever directly imports from rag_en
        └─────►│ python -m eval.ablate                          │   ← Phase 5
               │   eval.compare.build_comparison_report:        │
               │     for each mode, for each metric in          │
-              │     {accuracy, amount_threshold, brier, ece}:  │
+              │     {accuracy, determination, amount, brier, ece}: │
               │       bootstrap_ci(metric, gold, predictions,  │
               │                    seed=42, n_resamples=1000)  │
               │   → ComparisonReport(n_cases, seed, modes[])   │
@@ -212,7 +260,10 @@ The boundary rule: nothing in `packages/eval/` ever directly imports from rag_en
 
 `summarise_dominance(a, b)` answers "X significantly better than Y" via non-overlapping bootstrap CIs. Higher-is-better metrics: `a.lower_95 > b.upper_95`. Lower-is-better metrics: `a.upper_95 < b.lower_95`. Overlap → `no_dominance`.
 
-**What's still on the deferred path:** `--engine live` raises until Phase 5c wires a real `BaseLLMClient` (Anthropic / OpenAI choice + key handling). Phase 5b verifies the entire chain runs end-to-end with the stub; swapping in a real LLM is a one-line change at `_resolve_predict_fn` once the client is decided.
+**What's still on the deferred path:** the live runner exists, but thesis-grade
+Housing Ombudsman evidence still depends on minority-class coverage, citation
+validity, and amount-construct calibration. The Task 18 result should be read
+as a live diagnostic baseline, not as final SHA-68 proof.
 
 ## Lifecycle of a single annotated case (LLM-assisted pipeline)
 

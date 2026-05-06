@@ -29,6 +29,9 @@ This index maps every doc in `docs/eval/` to its audience and purpose.
 | [`housing-ombudsman-stratified-50.md`](housing-ombudsman-stratified-50.md) | The 2026-05-04 Housing Ombudsman repairs/social 50-case stratified eval manifest: selection method, distribution, rebuild note, and promotion path into reviewed gold. |
 | [`housing-ombudsman-pilot-full-eval.md`](housing-ombudsman-pilot-full-eval.md) | The 2026-05-04 10-case Housing Ombudsman pilot run for accuracy, Brier, ECE, and four-mode ablation, with limitations. |
 | [`housing-ombudsman-stratified-50-full-eval.md`](housing-ombudsman-stratified-50-full-eval.md) | The 2026-05-04 reviewed 50-case Housing Ombudsman full metric + ablation run. Records baseline results and the live-run caveats. |
+| [`housing-ombudsman-balanced-50-openai-live-eval-2026-05-06.md`](housing-ombudsman-balanced-50-openai-live-eval-2026-05-06.md) | The 2026-05-06 balanced 25/25 tenant/landlord live OpenAI eval, including outcome failure analysis and price/award prediction metrics. |
+| [`housing-ombudsman-determination-ontology-2026-05-06.md`](housing-ombudsman-determination-ontology-2026-05-06.md) | Canonical seven-class Housing Ombudsman determination ontology, legacy-winner mapping, and split amount construct rules. |
+| [`housing-ombudsman-task18-determination-live-eval-2026-05-06.md`](housing-ombudsman-task18-determination-live-eval-2026-05-06.md) | The post-ontology Task 18 `v2_valid48` / `par40` live eval: runtime/cost, hybrid/RAG/KG/LLM metrics, covered-accuracy math, per-class recall, and next steps. |
 
 ## For someone reproducing the work
 
