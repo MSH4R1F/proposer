@@ -264,7 +264,7 @@ def catalog_sha(pack: Dict[str, Any]) -> str:
 _DEFAULT_CORPUS_PATH = (
     _REPO_ROOT / "data" / "eval" / "housing_ombudsman_balanced_50_20260506.jsonl"
 )
-_RAW_BASE = _REPO_ROOT / "data"
+_RAW_BASE = _REPO_ROOT  # raw_text_path values in JSONL are repo-root-relative ("raw/...")
 
 
 def load_corpus_excerpts(
