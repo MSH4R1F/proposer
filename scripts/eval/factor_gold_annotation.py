@@ -496,13 +496,39 @@ class AnnotationDispatcher:
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         annotations: List[Annotation] = []
+        failures: List[str] = []
         for key, result in zip(task_keys, results):
+            case_id, fid, aid = key
             if isinstance(result, BaseException):
-                raise RuntimeError(
-                    f"Annotator failed for case={key[0]}, factor={key[1]}, "
-                    f"annotator={key[2]}: {result}"
-                ) from result
-            annotations.append(result)  # type: ignore[arg-type]
+                # Substitute a placeholder annotation flagged for human review
+                # so one failure doesn't lose the other 899 successful results.
+                # The factor's value_type is preserved for downstream encoding.
+                vtype = (self._factors.get(fid).value_type
+                         if fid in self._factors else "boolean")
+                placeholder = Annotation(
+                    case_id=case_id,
+                    factor_id=fid,
+                    annotator_id=aid,
+                    value=AnnotationValue(is_null=True),
+                    value_type=vtype,
+                    confidence=0.0,
+                    source_span=None,
+                    requires_human_review=True,
+                    reasoning=f"extraction_failed: {type(result).__name__}: {str(result)[:200]}",
+                )
+                annotations.append(placeholder)
+                failures.append(f"{case_id}/{fid}/{aid}: {type(result).__name__}")
+            else:
+                annotations.append(result)  # type: ignore[arg-type]
+
+        if failures:
+            print(
+                f"WARNING: {len(failures)}/{len(task_keys)} annotator calls "
+                f"failed; substituted with placeholders flagged for "
+                f"requires_human_review. Sample: {failures[:3]}",
+                file=sys.stderr,
+                flush=True,
+            )
 
         return annotations
 
@@ -524,10 +550,10 @@ class AnnotationDispatcher:
             messages=messages,
             system_prompt=system_prompt,
             response_model=Annotation,
-            # 4096 covers GPT-5-class models which spend many tokens on
-            # reasoning before emitting structured output; gpt-4o-class
-            # only used ~150 of these.
-            max_tokens=4096,
+            # 8192 covers GPT-5-class models whose reasoning tokens count
+            # against the budget; observed empirically that 4096 still
+            # truncated ~3% of gpt-5 calls. gpt-4o-class only used ~150.
+            max_tokens=8192,
         )
 
     def dry_run_info(
