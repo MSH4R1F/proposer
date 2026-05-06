@@ -435,24 +435,34 @@ class AnnotationDispatcher:
         }
 
     async def annotate_all(
-        self, cases: List[Dict[str, Any]], factor_ids: List[str]
+        self,
+        cases: List[Dict[str, Any]],
+        factor_ids: List[str],
+        max_concurrency: int = 8,
     ) -> List[Annotation]:
         """Dispatch all (case × factor × annotator) triples concurrently.
+
+        Bounded by ``max_concurrency`` to avoid hitting LLM rate limits at
+        scale (900-call runs will exhaust default OpenAI TPM otherwise).
 
         Returns a flat list of Annotation objects, ordered deterministically:
             for case in cases:
               for factor_id in factor_ids:
                 for (client, annotator_id) in zip(self.clients, self.annotator_ids):
         """
+        sem = asyncio.Semaphore(max_concurrency)
+
+        async def _bounded(case, fid, client, aid):
+            async with sem:
+                return await self._annotate_one(case, fid, client, aid)
+
         tasks = []
         task_keys: List[Tuple[str, str, str]] = []  # (case_id, factor_id, annotator_id)
 
         for case in cases:
             for factor_id in factor_ids:
                 for client, annotator_id in zip(self.clients, self.annotator_ids):
-                    tasks.append(
-                        self._annotate_one(case, factor_id, client, annotator_id)
-                    )
+                    tasks.append(_bounded(case, factor_id, client, annotator_id))
                     task_keys.append((case["case_id"], factor_id, annotator_id))
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
