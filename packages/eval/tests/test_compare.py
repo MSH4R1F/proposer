@@ -322,6 +322,60 @@ class TestStructure:
         assert claim_copy["amount"]["coverage"]["n_evaluable"] == 0
         assert claim_copy["amount"]["coverage"]["missing_predicted_amount"] == 1
 
+    def test_unsupported_baselines_emit_null_metrics_on_housing_gold(self):
+        """On housing.repairs_social.v1 gold (no claimed_amounts), the
+        deposit-style baselines must surface ``null`` rather than 0.0 — the
+        latter masquerades as "the baseline beats hybrid". Coverage counts and
+        abstention_rate stay numeric. SHA-RCA-2026-05-06 §5 F5.
+        """
+        gold = [_ombudsman_legacy_outcome_amount_gold()]
+        report = build_comparison_report(
+            gold, {"hybrid": _perfect_predictions(gold)}, n_resamples=0
+        )
+        baselines = {
+            row["baseline"]: row for row in report_to_dict(report)["baselines"]
+        }
+
+        # claim_positive_winner: winner_supported=False -> classification
+        # metrics null. amount_supported=False -> amount block null.
+        cpw = baselines["claim_positive_winner"]
+        assert cpw["supported"] == {"winner": False, "amount": False}
+        assert cpw["accuracy"] is None
+        assert cpw["balanced_accuracy"] is None
+        assert cpw["macro_f1"] is None
+        assert cpw["covered_accuracy"] is None
+        assert cpw["coverage_adjusted_accuracy"] is None
+        assert cpw["brier"] is None
+        assert cpw["ece"] is None
+        assert cpw["amount_threshold"] is None
+        assert cpw["amount"]["mae_gbp"] is None
+        assert cpw["amount"]["median_absolute_error_gbp"] is None
+        assert cpw["amount"]["mean_signed_error_gbp"] is None
+        assert cpw["amount"]["within_20pct"] is None
+        assert cpw["amount"]["within_gbp100"] is None
+        assert cpw["amount"]["mae_gbp_ordered_now"] is None
+        assert cpw["amount"]["mae_gbp_previously_offered"] is None
+        assert cpw["amount"]["mae_gbp_global_unapportioned"] is None
+        # Coverage counts and abstention_rate are factual — never nulled.
+        assert cpw["amount"]["coverage"]["n_evaluable"] == 0
+        assert cpw["amount"]["coverage"]["missing_predicted_amount"] == 1
+        assert cpw["abstention_rate"] is not None
+
+        # claim_amount_copy: same gates; mae_gbp must be None (not 0.0).
+        cac = baselines["claim_amount_copy"]
+        assert cac["supported"] == {"winner": False, "amount": False}
+        assert cac["accuracy"] is None
+        assert cac["amount"]["mae_gbp"] is None
+
+        # always_tenant: winner_supported=True so accuracy stays numeric.
+        # amount_supported=False so the amount block is nulled.
+        always_tenant = baselines["always_tenant"]
+        assert always_tenant["supported"] == {"winner": True, "amount": False}
+        assert always_tenant["accuracy"] is not None
+        assert isinstance(always_tenant["accuracy"]["point"], float)
+        assert always_tenant["amount"]["mae_gbp"] is None
+        assert always_tenant["amount"]["coverage"]["missing_predicted_amount"] == 1
+
     def test_amount_error_metrics_are_null_when_nothing_evaluable(self):
         gold = _build_gold_corpus()
         predictions = _perfect_predictions(gold)

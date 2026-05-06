@@ -620,6 +620,48 @@ def _mode_metrics_to_dict(m: ModeMetrics, *, label_key: str) -> dict:
     }
 
 
+def _baseline_metric_value(value, supported: bool):
+    """Return ``None`` when this baseline isn't supported on the corpus.
+
+    Readers of summary.json should display ``n/a`` for ``None`` rather than
+    showing a misleading 0.0 (e.g. ``claim_positive_winner.accuracy=0.0`` on
+    housing.repairs_social.v1, which has no claimed_amounts by schema rule).
+    Coverage counts and abstention_rate stay numeric — those are factual.
+    SHA-RCA-2026-05-06 §5 F5.
+    """
+    if not supported:
+        return None
+    return value
+
+
+# Keys whose value is meaningless when the baseline can't predict winners on
+# this corpus (e.g. claim_positive_winner on housing where claimed_amounts is
+# empty by schema). Coverage counts, abstention_rate, and amount metrics stay
+# under the separate amount_supported gate.
+_WINNER_GATED_BASELINE_KEYS = (
+    "accuracy",
+    "balanced_accuracy",
+    "macro_f1",
+    "covered_accuracy",
+    "coverage_adjusted_accuracy",
+    "brier",
+    "ece",
+)
+# Keys inside the "amount" sub-block whose value is meaningless when the
+# baseline has no amount to predict. The amount.coverage zero counts are kept
+# (they are accurate facts about how many cases were evaluable).
+_AMOUNT_GATED_BASELINE_KEYS = (
+    "within_20pct",
+    "within_gbp100",
+    "mae_gbp",
+    "median_absolute_error_gbp",
+    "mean_signed_error_gbp",
+    "mae_gbp_ordered_now",
+    "mae_gbp_previously_offered",
+    "mae_gbp_global_unapportioned",
+)
+
+
 def _baseline_metrics_to_dict(baseline: DeterministicBaselineMetrics) -> dict:
     out = _mode_metrics_to_dict(baseline.metrics, label_key="baseline")
     out["description"] = baseline.description
@@ -627,6 +669,16 @@ def _baseline_metrics_to_dict(baseline: DeterministicBaselineMetrics) -> dict:
         "winner": baseline.winner_supported,
         "amount": baseline.amount_supported,
     }
+    for key in _WINNER_GATED_BASELINE_KEYS:
+        out[key] = _baseline_metric_value(out[key], baseline.winner_supported)
+    out["amount_threshold"] = _baseline_metric_value(
+        out["amount_threshold"], baseline.amount_supported
+    )
+    amount_block = out["amount"]
+    for key in _AMOUNT_GATED_BASELINE_KEYS:
+        amount_block[key] = _baseline_metric_value(
+            amount_block[key], baseline.amount_supported
+        )
     return out
 
 
