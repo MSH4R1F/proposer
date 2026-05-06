@@ -200,6 +200,8 @@ def _ombudsman_legacy_outcome_amount_gold():
                     "Housing Ombudsman determination made a global compensation "
                     "order without apportioning the final total."
                 ),
+                "determination": "maladministration",
+                "amount_ordered_now_gbp": "575.00",
             },
             "key_reasoning_quotes": [
                 {

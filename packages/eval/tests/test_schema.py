@@ -185,6 +185,14 @@ class TestGoldCaseInvariants:
         ok = self._base() | {
             "decision_date": "2026-01-08",
             "domain_id": "housing.repairs_social.v1",
+            "ground_truth_outcome": {
+                "overall_winner": "tenant",
+                "total_awarded_gbp": "220.00",
+                "per_issue": [
+                    {"issue": "carpet_cleaning", "winner": "tenant", "awarded_gbp": "220.00"}
+                ],
+                "determination": "maladministration",
+            },
         }
         gc = GoldCase.model_validate(ok)
         assert gc.decision_date.isoformat() == "2026-01-08"
@@ -300,6 +308,8 @@ class TestDisputedAmount:
                         "Housing Ombudsman determination records a global "
                         "compensation order without a per-issue award split."
                     ),
+                    "determination": "maladministration",
+                    "amount_ordered_now_gbp": "575.00",
                 },
             }
         )
@@ -324,6 +334,8 @@ class TestDisputedAmount:
                     "total_awarded_gbp": "575.00",
                     "per_issue": [],
                     "unapportioned_reason": "Global compensation order.",
+                    "determination": "maladministration",
+                    "amount_ordered_now_gbp": "575.00",
                 },
             }
         )

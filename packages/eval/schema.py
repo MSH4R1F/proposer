@@ -673,6 +673,14 @@ class GoldCase(StrictBaseModel):
                     "claimed_amounts must contain at least one row unless "
                     "domain_id is 'housing.repairs_social.v1'"
                 )
+        else:
+            # housing.repairs_social.v1 — determination is required (INV-D4)
+            if self.ground_truth_outcome.determination is None:
+                raise ValueError(
+                    "ground_truth_outcome.determination is required when "
+                    "domain_id == 'housing.repairs_social.v1' (INV-D4); "
+                    "see docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md"
+                )
 
         # INV-5: every per_issue.issue must appear in claimed_amounts
         # (vacuously satisfied when per_issue is empty under an unapportioned outcome)

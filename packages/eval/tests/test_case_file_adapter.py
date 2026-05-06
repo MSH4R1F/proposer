@@ -281,6 +281,8 @@ class TestClaimedAmountsSplitByParty:
                     "unapportioned_reason": (
                         OMBUDSMAN_GLOBAL_COMPENSATION_UNAPPORTIONED_REASON
                     ),
+                    "determination": "maladministration",
+                    "amount_ordered_now_gbp": "575.00",
                 },
             }
         )

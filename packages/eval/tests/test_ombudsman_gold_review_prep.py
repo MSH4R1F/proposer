@@ -62,6 +62,12 @@ def test_draft_decision_keeps_final_award_only_in_ground_truth() -> None:
     assert not any(path.startswith("claimed_amounts[") for path in paths)
     assert "ground_truth_outcome.total_awarded_gbp" in paths
 
+    # The draft is a human-review packet — reviewers fill in determination
+    # before promotion. Mirror that step here so the schema-level validation
+    # (INV-D4) passes for housing.repairs_social.v1 rows.
+    case["ground_truth_outcome"]["determination"] = "maladministration"
+    case["ground_truth_outcome"]["amount_ordered_now_gbp"] = "575.00"
+
     validated = GoldCase.model_validate(case)
     assert validated.disputed_amount_gbp is None
     assert validated.case_size.value == "unknown"

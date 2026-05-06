@@ -369,6 +369,8 @@ class TestAudit:
                             "compensation order without apportioning the final "
                             "total."
                         ),
+                        "determination": "maladministration",
+                        "amount_ordered_now_gbp": "100.00",
                     },
                     case_size="unknown",
                 )

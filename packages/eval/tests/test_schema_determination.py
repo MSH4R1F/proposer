@@ -194,3 +194,65 @@ class TestGroundTruthOutcomeExtended:
                     amount_ordered_now_gbp=Decimal("500"),
                 )
             )
+
+
+class TestGoldCaseHousingDeterminationInvariant:
+    """For housing.repairs_social.v1 rows, determination becomes required."""
+
+    def _make_housing_kwargs(self, **gto_overrides):
+        # Returns a minimal valid GoldCase kwargs dict for housing.repairs_social.v1.
+        # Tests below override the ground_truth_outcome only.
+        from datetime import date
+        from eval.schema import (
+            CaseSize, ClaimType, GoldCase, Party, PartyRole, Provenance,
+            ReasoningQuote, RegionUK, SchemaVersion,
+        )
+        gto_kwargs = dict(
+            overall_winner=Winner.TENANT,
+            total_awarded_gbp=Decimal("500"),
+            per_issue=[],
+            unapportioned_reason="Housing Ombudsman global compensation order.",
+        )
+        gto_kwargs.update(gto_overrides)
+        case_kwargs = dict(
+            schema_version=SchemaVersion.V1,
+            case_id="housing-ombudsman-test",
+            decision_date=date(2025, 6, 1),
+            region=RegionUK.LONDON,
+            case_size=CaseSize.UNKNOWN,
+            disputed_amount_gbp=None,
+            claim_types=[ClaimType.DISREPAIR],
+            source_pdf_sha256="0" * 64,
+            parties=[
+                Party(role=PartyRole.TENANT, represented=False),
+                Party(role=PartyRole.LANDLORD, represented=False),
+            ],
+            facts="x" * 60,
+            evidence=[],
+            evidence_unavailable_reason="No evidence parsed in fixture.",
+            statutory_basis=[],
+            statutory_basis_unavailable_reason="No statutes parsed in fixture.",
+            ground_truth_outcome=GroundTruthOutcome(**gto_kwargs),
+            key_reasoning_quotes=[
+                ReasoningQuote(
+                    text="example",
+                    provenance=Provenance(page=1, paragraph=1),
+                ),
+            ],
+            domain_id="housing.repairs_social.v1",
+            matter_type="repairs_disrepair",
+        )
+        return case_kwargs, GoldCase
+
+    def test_housing_row_without_determination_rejected(self):
+        kwargs, GoldCase = self._make_housing_kwargs()
+        with pytest.raises(ValidationError, match="determination"):
+            GoldCase(**kwargs)
+
+    def test_housing_row_with_determination_accepted(self):
+        kwargs, GoldCase = self._make_housing_kwargs(
+            determination=Determination.MALADMINISTRATION,
+            amount_ordered_now_gbp=Decimal("500"),
+        )
+        case = GoldCase(**kwargs)
+        assert case.ground_truth_outcome.determination == Determination.MALADMINISTRATION
