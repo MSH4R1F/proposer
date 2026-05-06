@@ -256,3 +256,65 @@ class TestGoldCaseHousingDeterminationInvariant:
         )
         case = GoldCase(**kwargs)
         assert case.ground_truth_outcome.determination == Determination.MALADMINISTRATION
+
+
+class TestPredictionDeterminationFields:
+    def test_prediction_carries_determination(self):
+        from eval.metrics.types import Prediction
+        p = Prediction(
+            case_id="x",
+            overall_winner=Winner.TENANT,
+            overall_win_probability=0.5,
+            total_predicted_gbp=None,
+            per_issue=[],
+            abstained=False,
+            predicted_determination=Determination.MALADMINISTRATION,
+        )
+        assert p.predicted_determination == Determination.MALADMINISTRATION
+
+    def test_prediction_default_determination_is_none(self):
+        from eval.metrics.types import Prediction
+        p = Prediction(
+            case_id="x",
+            overall_winner=Winner.TENANT,
+            overall_win_probability=0.5,
+            total_predicted_gbp=None,
+            per_issue=[],
+            abstained=False,
+        )
+        assert p.predicted_determination is None
+
+    def test_issue_prediction_carries_amount_construct(self):
+        from eval.metrics.types import IssuePrediction
+        ip = IssuePrediction(
+            issue="disrepair",
+            predicted_winner=Winner.TENANT,
+            win_probability=0.7,
+            predicted_amount_gbp=None,
+            abstained=False,
+            amount_construct="ordered_now",
+        )
+        assert ip.amount_construct == "ordered_now"
+
+    def test_issue_prediction_default_amount_construct_is_none(self):
+        from eval.metrics.types import IssuePrediction
+        ip = IssuePrediction(
+            issue="disrepair",
+            predicted_winner=Winner.TENANT,
+            win_probability=0.7,
+            predicted_amount_gbp=None,
+            abstained=False,
+        )
+        assert ip.amount_construct is None
+
+    def test_issue_prediction_invalid_amount_construct_rejected(self):
+        from eval.metrics.types import IssuePrediction
+        with pytest.raises(ValueError, match="amount_construct"):
+            IssuePrediction(
+                issue="disrepair",
+                predicted_winner=Winner.TENANT,
+                win_probability=0.7,
+                predicted_amount_gbp=None,
+                abstained=False,
+                amount_construct="bogus_value",
+            )

@@ -10,8 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 import math
+from typing import Literal, Optional
 
-from eval.schema import Winner
+from eval.schema import Determination, Winner
 
 
 def _validate_probability(name: str, value: float) -> float:
@@ -28,6 +29,7 @@ class IssuePrediction:
     win_probability: float  # P(landlord wins this issue), [0, 1]
     predicted_amount_gbp: Decimal | None
     abstained: bool = False
+    amount_construct: Optional[Literal["ordered_now", "previously_offered", "global_unapportioned"]] = None
 
     def __post_init__(self) -> None:
         self.win_probability = _validate_probability(
@@ -36,6 +38,14 @@ class IssuePrediction:
         self.predicted_amount_gbp = _validate_optional_amount(
             "predicted_amount_gbp", self.predicted_amount_gbp
         )
+        if self.amount_construct is not None and self.amount_construct not in (
+            "ordered_now", "previously_offered", "global_unapportioned",
+        ):
+            raise ValueError(
+                f"amount_construct must be one of "
+                f"'ordered_now' / 'previously_offered' / 'global_unapportioned' or None; "
+                f"got {self.amount_construct!r}"
+            )
 
 
 @dataclass
@@ -46,6 +56,7 @@ class Prediction:
     total_predicted_gbp: Decimal | None
     per_issue: list
     abstained: bool = False
+    predicted_determination: Optional[Determination] = None
 
     def __post_init__(self) -> None:
         self.overall_win_probability = _validate_probability(
