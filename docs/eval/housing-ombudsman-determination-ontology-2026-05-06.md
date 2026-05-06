@@ -9,7 +9,7 @@ This document is the single source of truth for:
 - the canonical default amount-split rule (which of the three split fields receives `total_awarded_gbp` for each determination class),
 - the human-escalation queue: cases the default split cannot reliably resolve.
 
-The mapping is implemented authoritatively in code at `packages/eval/schema.py::_legacy_winner_for` and (forthcoming, Task 15) `scripts/eval/migrate_balanced50_to_determination_schema.py::map_outcome_normalized_to_determination` and `split_amount_by_determination`.
+The mapping is implemented authoritatively in code at `packages/eval/schema.py::_legacy_winner_for` and `scripts/eval/migrate_balanced50_to_determination_schema.py::map_outcome_normalized_to_determination` / `split_amount_by_determination`.
 
 ---
 
