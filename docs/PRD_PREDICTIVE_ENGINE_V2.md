@@ -1142,6 +1142,17 @@ class PipelineMetadata(BaseModel):
 | **Latency p95** | 95th percentile end-to-end time | < 45s | Production |
 | **Cost per prediction** | LLM + embedding costs | < £0.30 | Production |
 
+**Housing Ombudsman repairs/social addendum (2026-05-06):** this domain is
+scored on a seven-class determination ontology rather than binary
+tenant/landlord winner as the primary outcome. The Task 18 `v2_valid48` live
+run reached `hybrid=0.833` legacy binary accuracy, but only `0.542`
+determination accuracy, with zero recall on several minority classes. For
+`housing.repairs_social.v1`, the headline gates are now
+`determination.accuracy`, per-class recall, `amount.within_gbp100`, and
+construct-specific amount MAE (`ordered_now`, `previously_offered`,
+`global_unapportioned`). Legacy binary `accuracy` and `covered_accuracy` remain
+diagnostics only.
+
 ### 7.3 Ablation Study Design
 
 Each ablation removes one component and measures degradation:

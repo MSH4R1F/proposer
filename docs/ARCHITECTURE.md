@@ -120,14 +120,14 @@ graph TB
         end
         
         subgraph CaseData["Case Data"]
-            TribunalCases["Tribunal Decisions<br/>data/raw/bailii/<br/>~500+ PDFs"]
+            TribunalCases["Legal Sources<br/>data/raw/{bailii,housing_ombudsman}<br/>tribunal + Ombudsman decisions"]
         end
     end
 
     %% External Services
     subgraph External["☁️ External Services"]
         Anthropic["Anthropic API<br/>Claude 3.5 Sonnet/Haiku"]
-        OpenAI["OpenAI API<br/>text-embedding-3-small"]
+        OpenAI["OpenAI API<br/>gpt-5.x + embeddings"]
     end
 
     %% Frontend Connections
@@ -420,11 +420,36 @@ sequenceDiagram
 |---|---|---|
 | 1. **IssueDecomposer** | `pipeline/issue_decomposer.py` | Splits the case file into independently-judgeable legal issues (deposit-protection-window, prescribed-information-service, cleaning/damage deduction, fair-wear-and-tear, rent-arrears offset, etc.). |
 | 2. **IssueRetriever** | `pipeline/issue_retriever.py` | Per-issue RAG: queries `RAGPipeline` with issue-specific framing, applies the cross-encoder reranker, returns ranked passages with stable citation IDs. |
-| 3. **IssuePredictor** | `pipeline/issue_predictor.py` | Calls Claude with the (issue, passages, KG slice) tuple; returns a structured per-issue judgement: outcome, confidence, claim list, cited passage IDs. |
+| 3. **IssuePredictor** | `pipeline/issue_predictor.py` | Calls the configured LLM with the (issue, passages, KG slice) tuple; returns a structured per-issue judgement: outcome, confidence, claim list, cited passage IDs, and domain-specific fields such as Housing Ombudsman `predicted_determination` / `amount_construct`. |
 | 4. **CitationVerifier** | `pipeline/citation_verifier.py` | Enforces the cite-or-abstain rule. Every claim must reference a passage that actually appeared in the retrieved set; unsupported claims are dropped or marked `Uncertain`. This is the architectural firewall against hallucination. |
-| 5. **OutputAssembler** | `pipeline/output_assembler.py` | Combines verified per-issue judgements into the final `Prediction` model: overall outcome, calibrated confidence, reasoning trace, settlement range, disclaimer. |
+| 5. **OutputAssembler** | `pipeline/output_assembler.py` | Combines verified per-issue judgements into the final `Prediction` model: overall outcome, calibrated confidence, reasoning trace, settlement range, disclaimer, and additive determination/amount-construct fields where the domain supports them. |
 
 The whole pipeline is wrapped by `PredictionService` inside the SHA-102 read-cache → external work → row-lock-recheck-write atomic flow, so two concurrent `POST /predictions/generate` calls for the same case will not both pay the LLM cost.
+
+### Housing Ombudsman Determination Path
+
+The repairs/social Housing Ombudsman domain uses a richer outcome ontology than
+deposit-dispute binary winner prediction. The live prediction path now carries:
+
+- `predicted_determination`: one of seven Ombudsman classes
+  (`maladministration`, `severe_maladministration`, `service_failure`,
+  `reasonable_redress`, `no_maladministration`, `resolved_with_intervention`,
+  `outside_jurisdiction`).
+- `amount_construct`: whether a predicted amount refers to a fresh order
+  (`ordered_now`), a previously offered/ratified amount, or a global
+  unapportioned amount.
+- Cite-or-abstain verification before those fields are rendered as user-facing
+  reasoning.
+
+The evaluation mirror lives in `packages/eval/`: `GoldCase` carries the same
+determination ontology and split amount fields, `eval.adapter` preserves the
+prediction-side fields, and `scripts/eval/run_full_eval.py` emits
+`determination.accuracy`, per-class recall, and per-construct amount MAE. The
+2026-05-06 Task 18 run showed why this matters: hybrid reached `0.833` legacy
+binary accuracy, but only `0.542` determination accuracy, with zero recall on
+several minority determination classes. The architecture therefore treats
+binary winner accuracy as a compatibility metric for this domain, not the
+product or thesis headline.
 
 ---
 

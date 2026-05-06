@@ -582,6 +582,49 @@ and calibration without weakening citation integrity.
 
 ---
 
+## D-027 — Use determination accuracy, not binary winner accuracy, as the Housing Ombudsman headline
+
+**Linear:** SHA-68 / Housing Ombudsman Task 18
+**Decision:** For `housing.repairs_social.v1`, report the seven-class
+`determination.accuracy` and per-class recall as the primary outcome metrics.
+Keep binary `accuracy` / `covered_accuracy` in `summary.json` for compatibility,
+but do not use them as the thesis headline for Housing Ombudsman results.
+
+**Why:** The Task 18 `v2_valid48` / `par40` live run recovered high legacy
+binary accuracy (`hybrid=0.833`, `rag_only=0.812`), but the corpus was heavily
+tenant-leaning: the always-tenant baseline was `0.979`. On the same run, the
+more honest seven-class determination scores were `hybrid=0.542` and
+`rag_only=0.500`. Hybrid recall was concentrated in the majority class
+(`maladministration=24/31`) and missed the smaller classes entirely:
+`reasonable_redress=0/4`, `severe_maladministration=0/3`, and
+`resolved_with_intervention=0/2`.
+
+`covered_accuracy` is also susceptible to selection effects. RAG-only scored
+`0.951` covered accuracy vs hybrid `0.930` because it abstained on 7/48 rows
+instead of hybrid's 5/48; its answered subset was easier. This is useful
+diagnostically, but it is not a standalone product-quality claim.
+
+**Rejected alternatives:**
+- **Report hybrid's 0.833 binary accuracy as success.** Rejected because a
+  `0.979` always-tenant baseline shows the binary axis is dominated by class
+  skew on this slice.
+- **Use covered accuracy as the ranking metric.** Rejected because it rewards
+  abstaining on hard cases unless read beside abstention and coverage-adjusted
+  accuracy.
+- **Collapse the seven Ombudsman classes back into tenant/landlord.** Rejected
+  because the earlier RCA showed that `reasonable_redress`,
+  `outside_jurisdiction`, and `resolved_with_intervention` are not clean
+  substantive merits wins.
+
+**Trigger to revisit:** once the minority-class eval slice has enough examples
+to estimate recall reliably and the model improves recall on
+`reasonable_redress`, `service_failure`, `severe_maladministration`, and
+`resolved_with_intervention` without weakening citation validity. The recorded
+Task 18 result note is
+[`housing-ombudsman-task18-determination-live-eval-2026-05-06.md`](housing-ombudsman-task18-determination-live-eval-2026-05-06.md).
+
+---
+
 ## How this log relates to the Codex sparring record
 
 `.sisyphus/codex/sha-28-schema-2026-04-27.md` records Codex's findings and our triage. This log records the *implemented* decisions. Some decisions don't appear in Codex (e.g. D-001 Pydantic vs JSON Schema, D-009 pair-vs-issue bootstrap) — those are pure design choices with no Codex input. Conversely, every Codex HIGH that we accepted produced a decision entry here (D-005 through D-008, D-011, D-014, D-015, D-021).
