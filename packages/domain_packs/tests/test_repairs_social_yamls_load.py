@@ -774,3 +774,54 @@ def test_cross_reference_factor_outcomes_subset_of_outcomes_yaml():
     assert not violations, (
         f"Cross-reference failures ({len(violations)}):\n" + "\n".join(violations)
     )
+
+
+# ===========================================================================
+# B3 tests: per-factor annotation rubric
+# ===========================================================================
+
+
+def test_annotation_rubric_file_exists_and_nontrivial():
+    """B3: annotation_rubric.md must exist and have substantial content."""
+    rubric_path = (
+        Path(__file__).resolve().parents[2]
+        / "domain_packs"
+        / "housing"
+        / "repairs_social"
+        / "annotation_rubric.md"
+    )
+    assert rubric_path.exists(), f"annotation_rubric.md not found at {rubric_path}"
+    text = rubric_path.read_text(encoding="utf-8")
+    assert len(text) > 2000, (
+        f"rubric is suspiciously short: {len(text)} chars"
+    )
+
+
+def test_annotation_rubric_covers_every_factor():
+    """The rubric markdown must have a heading for every factor in factors.yaml.
+
+    Heading set (h2 only) must equal the factor ID set exactly — no extras,
+    none missing.
+    """
+    import re
+
+    rubric_path = (
+        Path(__file__).resolve().parents[2]
+        / "domain_packs"
+        / "housing"
+        / "repairs_social"
+        / "annotation_rubric.md"
+    )
+    text = rubric_path.read_text(encoding="utf-8")
+    # H2 headings only; factor IDs are bare (no prefix).
+    headings = set(re.findall(r"^## (\S+)$", text, re.MULTILINE))
+
+    catalog = FactorCatalog.from_yaml(FACTORS_YAML)
+    factor_ids = {f.id for f in catalog.factors}
+
+    missing = factor_ids - headings
+    extra = headings - factor_ids
+    assert not missing and not extra, (
+        f"Rubric heading set must equal factor ID set. "
+        f"Missing: {sorted(missing)}. Extra: {sorted(extra)}."
+    )
