@@ -1,6 +1,14 @@
 # Housing Repairs Social v1 — Gold Inter-Annotator Agreement Report
 
-> **Stream B / Task B12** — Per-factor IAA report for the 30-case × 15-factor gold annotation run.
+> ⚠️ **SUPERSEDED by the comparative report — read [`housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md`](housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md) for the canonical analysis.**
+>
+> This v1 report covers the **mini-mini run only** (gpt-4o-mini + gpt-4.1-mini, ~£1, mean α=0.37) and reaches the pessimistic conclusion that only 1 of 15 factors is gate-countable. A subsequent run with frontier annotators (gpt-5 + gpt-5-mini, ~£6) found 13 of 15 factors gate-countable. The v2 comparative report supersedes this one's recommendations and reframes the architectural defensibility question.
+>
+> This report is preserved as a historical record because the methodology and disagreement examples are still valid and the model-quality contrast it sets up with v2 is itself a finding.
+>
+> ---
+>
+> **Stream B / Task B12 (v1)** — Per-factor IAA report for the 30-case × 15-factor gold annotation run with mini-class annotators.
 >
 > Spec: `docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md` §17.6 (gate-countability), §17.7 (rubric quality bar), §19 PR 3a (extractor strategy).
 
