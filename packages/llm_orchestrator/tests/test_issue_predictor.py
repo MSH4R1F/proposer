@@ -265,13 +265,21 @@ async def test_repairs_no_rag_empty_context_short_circuits_uncertain() -> None:
     predictions = await predictor.predict_no_rag([issue], prompt_mode="kg_only")
 
     assert llm.calls == []
-    assert predictions[0].outcome == IssueOutcome.UNCERTAIN
-    assert predictions[0].raw_confidence == 0.2
+    # Stream C recovery T4 (default STREAM_C_FORCE_ANSWER=1): the
+    # short-circuit's UNCERTAIN is remapped to SPLIT by _apply_forced_answer
+    # so the prediction is a measurable label. The diagnostic facts
+    # (raw_confidence cap, no predicted_amount, INSUFFICIENT evidence,
+    # "Empty no-RAG context" reasoning) are preserved.
+    assert predictions[0].outcome == IssueOutcome.SPLIT
+    assert predictions[0].raw_confidence == pytest.approx(0.2)
     assert predictions[0].predicted_amount is None
     assert predictions[0].amount_band is None
     assert predictions[0].supporting_cases == []
     assert predictions[0].evidence_strength == EvidenceStrength.INSUFFICIENT
     assert "Empty no-RAG context" in predictions[0].data_completeness_impact
+    # The remap leaves an audit marker in reasoning so post-hoc analysis
+    # can spot the synthetic SPLIT.
+    assert predictions[0].reasoning.startswith("[forced-answer fallback")
 
 
 def test_parse_prediction_response_maps_ombudsman_outcome_language() -> None:

@@ -24,6 +24,7 @@ from ..prompts.prediction_v2 import (
     IRAC_JSON_SCHEMA,
     IRAC_SYSTEM_PROMPT,
     IRAC_USER_PROMPT,
+    build_irac_json_schema,
 )
 
 # Stream C PR 4 (Task 4.4) — domain-pack-routed factor card rendering.
@@ -70,24 +71,31 @@ Critical constraints:
 Safety: legal information, not legal advice. Hedge and explain uncertainty.
 """
 
-_NO_RAG_JSON_SCHEMA = (
-    IRAC_JSON_SCHEMA.replace(
-        '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>"',
-        '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, citing only provided user facts/KG facts, with no case citations>"',
+def _build_no_rag_json_schema() -> str:
+    """Apply the no-RAG transformations to the (flag-aware) IRAC schema.
+
+    Reads STREAM_C_FORCE_ANSWER via build_irac_json_schema() so the
+    no-RAG ablation paths share the forced-answer behaviour.
+    """
+    return (
+        build_irac_json_schema()
+        .replace(
+            '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>"',
+            '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, citing only provided user facts/KG facts, with no case citations>"',
+        )
+        .replace(
+            '    "supporting_cases": [\n        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}\n    ],',
+            '    "supporting_cases": [],',
+        )
+        .replace(
+            "- Include at least 1 supporting case citation",
+            "- In no-RAG ablation modes, supporting_cases MUST be an empty list",
+        )
+        .replace(
+            "- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation",
+            "- No retrieved cases are available in no-RAG ablation modes, so do not include proposition_id values",
+        )
     )
-    .replace(
-        '    "supporting_cases": [\n        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}\n    ],',
-        '    "supporting_cases": [],',
-    )
-    .replace(
-        "- Include at least 1 supporting case citation",
-        "- In no-RAG ablation modes, supporting_cases MUST be an empty list",
-    )
-    .replace(
-        "- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation",
-        "- No retrieved cases are available in no-RAG ablation modes, so do not include proposition_id values",
-    )
-)
 
 
 def _gate_failure_reasons(score: GraphQualityScore, gate: Any) -> List[str]:
@@ -209,14 +217,18 @@ class IssuePredictor:
 
     @property
     def _prediction_system_prompt(self) -> str:
+        # Stream C recovery T4: build_irac_json_schema() is flag-aware. Under
+        # STREAM_C_FORCE_ANSWER=1 (default) it omits "uncertain" from the
+        # allowed outcome enum.
+        schema = build_irac_json_schema()
         if self._prompt_pack is not None and getattr(
             self._prompt_pack, "prediction_system", None
         ):
-            return f"{self._prompt_pack.prediction_system}\n\n{IRAC_JSON_SCHEMA}"
-        return f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+            return f"{self._prompt_pack.prediction_system}\n\n{schema}"
+        return f"{IRAC_SYSTEM_PROMPT}\n\n{schema}"
 
     def _repairs_no_rag_system_prompt(self) -> str:
-        return f"{_REPAIRS_NO_RAG_SYSTEM_PROMPT}\n\n{_NO_RAG_JSON_SCHEMA}"
+        return f"{_REPAIRS_NO_RAG_SYSTEM_PROMPT}\n\n{_build_no_rag_json_schema()}"
 
     async def predict_no_rag(
         self,
@@ -372,7 +384,9 @@ class IssuePredictor:
                 tenant_claim=tenant_claim_text,
                 landlord_claim=landlord_claim_text,
             )
-            system_prompt = f"{LLM_ONLY_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+            system_prompt = (
+                f"{LLM_ONLY_SYSTEM_PROMPT}\n\n{build_irac_json_schema()}"
+            )
         else:  # kg_only — IRAC prompt with empty retrieved_cases + fact card
             case_graph = (
                 self._case_graph_by_issue.get(issue.issue_type)
@@ -428,7 +442,7 @@ class IssuePredictor:
             prediction.issue_type = issue.issue_type
             if not prediction.issue_description:
                 prediction.issue_description = issue.issue_description
-            return prediction
+            return self._apply_forced_answer(prediction)
         except Exception as exc:
             logger.error(
                 "no_rag_prediction_llm_error",
@@ -460,14 +474,16 @@ class IssuePredictor:
                 sufficient_issues.append(issue)
                 continue
 
-            uncertain_by_issue[issue.issue_type] = IssuePrediction(
-                issue_type=issue.issue_type,
-                issue_description=issue.issue_description,
-                outcome=IssueOutcome.UNCERTAIN,
-                raw_confidence=0.0,
-                reasoning="Insufficient similar cases found for this issue.",
-                evidence_strength=EvidenceStrength.INSUFFICIENT,
-                data_completeness_impact="Cannot predict due to lack of precedent cases.",
+            uncertain_by_issue[issue.issue_type] = self._apply_forced_answer(
+                IssuePrediction(
+                    issue_type=issue.issue_type,
+                    issue_description=issue.issue_description,
+                    outcome=IssueOutcome.UNCERTAIN,
+                    raw_confidence=0.0,
+                    reasoning="Insufficient similar cases found for this issue.",
+                    evidence_strength=EvidenceStrength.INSUFFICIENT,
+                    data_completeness_impact="Cannot predict due to lack of precedent cases.",
+                )
             )
 
         if sufficient_issues:
@@ -762,7 +778,7 @@ class IssuePredictor:
                         prediction.evidence_strength = self._assess_evidence_strength(
                             issue
                         )
-                    return prediction
+                    return self._apply_forced_answer(prediction)
             except Exception as exc:
                 logger.error(
                     "issue_prediction_llm_error",
@@ -1055,15 +1071,48 @@ class IssuePredictor:
         data_impact: str,
         raw_confidence: float = 0.0,
     ) -> IssuePrediction:
-        return IssuePrediction(
-            issue_type=issue.issue_type,
-            issue_description=issue.issue_description,
-            outcome=IssueOutcome.UNCERTAIN,
-            raw_confidence=raw_confidence,
-            reasoning=reason,
-            evidence_strength=evidence_strength,
-            data_completeness_impact=data_impact,
+        return self._apply_forced_answer(
+            IssuePrediction(
+                issue_type=issue.issue_type,
+                issue_description=issue.issue_description,
+                outcome=IssueOutcome.UNCERTAIN,
+                raw_confidence=raw_confidence,
+                reasoning=reason,
+                evidence_strength=evidence_strength,
+                data_completeness_impact=data_impact,
+            )
         )
+
+    @staticmethod
+    def _apply_forced_answer(prediction: IssuePrediction) -> IssuePrediction:
+        """Stream C recovery plan Task 4: when STREAM_C_FORCE_ANSWER=1
+        (default on), no IssuePrediction may have outcome=UNCERTAIN. Remap
+        UNCERTAIN to SPLIT with raw_confidence capped at 0.50 and
+        evidence_strength=INSUFFICIENT. The reasoning is prefixed with
+        "[forced-answer fallback: ...]" so post-hoc analysis can spot the
+        remap in artifact rows.
+
+        Concrete outcomes (TENANT_WINS / LANDLORD_WINS / SPLIT) are
+        returned unchanged. When the flag is "0", UNCERTAIN is also
+        returned unchanged (legacy behaviour).
+        """
+        if os.getenv("STREAM_C_FORCE_ANSWER", "1") != "1":
+            return prediction
+        if prediction.outcome != IssueOutcome.UNCERTAIN:
+            return prediction
+        # IssuePrediction is mutable Pydantic; mutate in place to preserve
+        # the object identity (some callers attach attributes via
+        # object.__setattr__).
+        prediction.outcome = IssueOutcome.SPLIT
+        if prediction.raw_confidence > 0.50:
+            prediction.raw_confidence = 0.50
+        prediction.evidence_strength = EvidenceStrength.INSUFFICIENT
+        existing_reasoning = prediction.reasoning or ""
+        prediction.reasoning = (
+            "[forced-answer fallback: LLM returned uncertain] "
+            + existing_reasoning
+        )
+        return prediction
 
     def _format_evidence_summary(self, issue: IssueContext) -> str:
         if not issue.supporting_evidence:
