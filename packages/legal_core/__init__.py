@@ -8,6 +8,7 @@ This package MUST remain a leaf dependency. It must not import from
 Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md
 """
 
+from legal_core.graph.evidence_span import EvidenceSourceKind, EvidenceSpan
 from legal_core.graph.factor_assertion import (
     ExtractionMethod,
     FactorAssertion,
@@ -17,6 +18,8 @@ from legal_core.graph.factor_value import FactorValue, FactorValueType
 from legal_core.graph.graph_quality import GraphQualityScore
 
 __all__ = [
+    "EvidenceSourceKind",
+    "EvidenceSpan",
     "ExtractionMethod",
     "FactorAssertion",
     "FactorPolarity",
