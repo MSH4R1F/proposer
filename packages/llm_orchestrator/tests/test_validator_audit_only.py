@@ -1,5 +1,12 @@
-"""Tests wiring EvidencePathValidator into output_assembler.assemble()
-(Stream C PR 6 Task 6.2 / Cross-PR Contract C5)."""
+"""Tests that the evidence-path validator audits without vetoing the
+prediction's outcome (Stream C recovery plan Task 3).
+
+The previous behaviour under STREAM_C_EVIDENCE_PATH_STRICT=1 was to set
+issue_pred.outcome = IssueOutcome.UNCERTAIN whenever
+EvidencePathResult.abstention_required=True. The recovery plan reverses
+this: the validator is now AUDIT-ONLY and never changes outcome. Strict
+mode caps raw_confidence at 0.60 instead.
+"""
 
 from __future__ import annotations
 
@@ -32,7 +39,7 @@ from llm_orchestrator.pipeline.output_assembler import OutputAssembler
 
 
 # ---------------------------------------------------------------------------
-# Fixtures (mirroring test_output_assembler_matter_split.py)
+# Fixtures (mirror test_output_assembler_validator_wiring.py)
 # ---------------------------------------------------------------------------
 
 
@@ -62,15 +69,17 @@ def _make_issue(
 
 
 def _make_prediction(
+    *,
     issue_type: IssueType = IssueType.CLEANING,
     outcome: IssueOutcome = IssueOutcome.TENANT_WINS,
     amount: float | None = 200.0,
+    raw_confidence: float = 0.85,
 ) -> IssuePrediction:
     return IssuePrediction(
         issue_type=issue_type,
         issue_description=issue_type.value,
         outcome=outcome,
-        raw_confidence=0.7,
+        raw_confidence=raw_confidence,
         predicted_amount=amount,
         reasoning="...",
         evidence_strength=EvidenceStrength.MODERATE,
@@ -81,9 +90,6 @@ def _make_prediction(
 def _attach_outcome_components(
     pred: IssuePrediction, components: List[OutcomeComponent]
 ) -> None:
-    """IssuePrediction's pydantic model doesn't have an outcome_components
-    field yet; the validator reads it via getattr. Attach via
-    object.__setattr__ to bypass Pydantic's attribute guard."""
     object.__setattr__(pred, "outcome_components", components)
 
 
@@ -138,16 +144,18 @@ def _clean_strict_env(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# 1. Audit mode: results recorded but outcome unchanged
+# 1. Audit mode: validator records but does NOT veto
 # ---------------------------------------------------------------------------
 
 
-def test_audit_mode_records_results_no_outcome_change(monkeypatch):
+def test_audit_mode_does_not_veto_outcome(monkeypatch):
+    """STREAM_C_EVIDENCE_PATH_STRICT=0 (default): the validator records
+    rejected chains but the outcome stays as the LLM produced; raw
+    confidence is unchanged."""
     monkeypatch.setenv("STREAM_C_EVIDENCE_PATH_STRICT", "0")
     cf = _make_case_file()
     issues = [_make_issue()]
-    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS)
-    # OC references a factor that doesn't exist on any FA → rejected.
+    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS, raw_confidence=0.85)
     oc = _make_outcome_component(
         oc_id="oc_bad", supporting=["unknown_factor"], supported_props=["bad-prop"]
     )
@@ -168,78 +176,37 @@ def test_audit_mode_records_results_no_outcome_change(monkeypatch):
         case_graph=kg,
     )
 
-    # Validator results recorded.
-    epr = result.pipeline_metadata.evidence_path_results
-    assert len(epr) == 1
-    assert epr[0]["outcome_component_id"] == "oc_bad"
-    assert epr[0]["is_supported"] is False
-    assert epr[0]["abstention_required"] is False  # audit mode
-    # Outcome NOT forced uncertain.
+    # Outcome unchanged.
     assert result.issue_predictions[0].outcome == IssueOutcome.TENANT_WINS
-
-
-# ---------------------------------------------------------------------------
-# 2. Strict mode (recovery T3): caps confidence but does NOT force UNCERTAIN
-# ---------------------------------------------------------------------------
-
-
-def test_strict_mode_caps_confidence_does_not_change_outcome(monkeypatch):
-    """Stream C recovery plan Task 3: STREAM_C_EVIDENCE_PATH_STRICT=1 must
-    cap raw_confidence at 0.60 instead of forcing outcome=UNCERTAIN. The
-    validator records abstention_required=True at the validator-level (a
-    signal still exposed via evidence_path_results), but the assembler no
-    longer treats it as a veto."""
-    monkeypatch.setenv("STREAM_C_EVIDENCE_PATH_STRICT", "1")
-    cf = _make_case_file()
-    issues = [_make_issue()]
-    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS)
-    # Bump raw_confidence above 0.60 to verify the cap is applied.
-    pred.raw_confidence = 0.85
-    oc = _make_outcome_component(
-        oc_id="oc_bad", supporting=["unknown_factor"], supported_props=["bad-prop"]
-    )
-    _attach_outcome_components(pred, [oc])
-    kg = _FakeKG(
-        factor_assertions=[_make_factor_assertion("other_factor")],
-        propositions=[],
-        evidence_spans=["span_1"],
-    )
-
-    result = OutputAssembler().assemble(
-        case_file=cf,
-        issues=issues,
-        issue_predictions=[pred],
-        retrieval_results={},
-        verification=VerificationResult(),
-        pipeline_metadata=PipelineMetadata(mode="hybrid"),
-        case_graph=kg,
-    )
-
-    epr = result.pipeline_metadata.evidence_path_results
-    assert len(epr) == 1
-    assert epr[0]["abstention_required"] is True
-    # Outcome NOT forced; confidence capped at 0.60.
-    assert result.issue_predictions[0].outcome == IssueOutcome.TENANT_WINS
-    assert result.issue_predictions[0].raw_confidence == pytest.approx(0.60)
-    # Audit metadata recorded.
+    # Confidence unchanged in audit mode.
+    assert result.issue_predictions[0].raw_confidence == pytest.approx(0.85)
+    # Audit metadata still recorded.
     assert result.pipeline_metadata.evidence_support == "weak"
     assert result.pipeline_metadata.unsupported_claim_count == 1
 
 
 # ---------------------------------------------------------------------------
-# 3. No case_graph → validator skipped, empty list emitted
+# 2. Strict mode: caps confidence but does NOT veto
 # ---------------------------------------------------------------------------
 
 
-def test_no_case_graph_skips_validator_emits_empty_list():
+def test_strict_mode_caps_confidence_but_does_not_veto(monkeypatch):
+    """STREAM_C_EVIDENCE_PATH_STRICT=1: the validator caps raw_confidence at
+    0.60 on rejected chains and emits "weak" support metadata, but never
+    flips outcome to UNCERTAIN."""
+    monkeypatch.setenv("STREAM_C_EVIDENCE_PATH_STRICT", "1")
     cf = _make_case_file()
     issues = [_make_issue()]
-    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS)
-    # Even with outcome_components attached, no case_graph → validator skipped.
+    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS, raw_confidence=0.85)
     oc = _make_outcome_component(
-        oc_id="oc_x", supporting=["f"], supported_props=["p"]
+        oc_id="oc_bad", supporting=["unknown_factor"], supported_props=["bad-prop"]
     )
     _attach_outcome_components(pred, [oc])
+    kg = _FakeKG(
+        factor_assertions=[_make_factor_assertion("other_factor")],
+        propositions=[],
+        evidence_spans=["span_1"],
+    )
 
     result = OutputAssembler().assemble(
         case_file=cf,
@@ -248,24 +215,62 @@ def test_no_case_graph_skips_validator_emits_empty_list():
         retrieval_results={},
         verification=VerificationResult(),
         pipeline_metadata=PipelineMetadata(mode="hybrid"),
-        # case_graph not passed
+        case_graph=kg,
     )
 
-    assert result.pipeline_metadata.evidence_path_results == []
     assert result.issue_predictions[0].outcome == IssueOutcome.TENANT_WINS
+    assert result.issue_predictions[0].raw_confidence == pytest.approx(0.60)
+    assert result.pipeline_metadata.evidence_support == "weak"
+    assert result.pipeline_metadata.unsupported_claim_count == 1
 
 
 # ---------------------------------------------------------------------------
-# 4. Round-trip: evidence_path_results survives PredictionResult → dict
+# 3. Strict mode + low confidence: cap is a ceiling, not a floor
 # ---------------------------------------------------------------------------
 
 
-def test_evidence_path_results_round_trip_in_artifact(monkeypatch):
+def test_strict_mode_leaves_low_confidence_alone(monkeypatch):
+    """The 0.60 cap must not raise low confidence values."""
+    monkeypatch.setenv("STREAM_C_EVIDENCE_PATH_STRICT", "1")
+    cf = _make_case_file()
+    issues = [_make_issue()]
+    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS, raw_confidence=0.40)
+    oc = _make_outcome_component(
+        oc_id="oc_bad", supporting=["unknown_factor"], supported_props=["bad-prop"]
+    )
+    _attach_outcome_components(pred, [oc])
+    kg = _FakeKG(
+        factor_assertions=[_make_factor_assertion("other_factor")],
+        propositions=[],
+        evidence_spans=["span_1"],
+    )
+
+    result = OutputAssembler().assemble(
+        case_file=cf,
+        issues=issues,
+        issue_predictions=[pred],
+        retrieval_results={},
+        verification=VerificationResult(),
+        pipeline_metadata=PipelineMetadata(mode="hybrid"),
+        case_graph=kg,
+    )
+
+    assert result.issue_predictions[0].raw_confidence == pytest.approx(0.40)
+    assert result.pipeline_metadata.evidence_support == "weak"
+
+
+# ---------------------------------------------------------------------------
+# 4. All chains supported → evidence_support="strong"
+# ---------------------------------------------------------------------------
+
+
+def test_no_unsupported_chains_emits_strong_support(monkeypatch):
+    """When every validated outcome_component closes its chain, metadata
+    must record evidence_support="strong" and unsupported_claim_count=0."""
     monkeypatch.setenv("STREAM_C_EVIDENCE_PATH_STRICT", "0")
     cf = _make_case_file()
     issues = [_make_issue()]
-    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS)
-    # Wire a fully-supported OC so the recorded result is is_supported=True.
+    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS, raw_confidence=0.85)
     fa = _make_factor_assertion("f_1")
     prop = _make_proposition(["f_1"])
     oc = _make_outcome_component(
@@ -290,16 +295,37 @@ def test_evidence_path_results_round_trip_in_artifact(monkeypatch):
         case_graph=kg,
     )
 
-    # Direct access.
-    epr = result.pipeline_metadata.evidence_path_results
-    assert len(epr) == 1
-    assert epr[0]["outcome_component_id"] == "oc_ok"
-    assert epr[0]["is_supported"] is True
+    assert result.pipeline_metadata.evidence_support == "strong"
+    assert result.pipeline_metadata.unsupported_claim_count == 0
+    assert result.issue_predictions[0].outcome == IssueOutcome.TENANT_WINS
+    assert result.issue_predictions[0].raw_confidence == pytest.approx(0.85)
 
-    # JSON round-trip preserves the field.
-    payload = result.model_dump(mode="json")
-    pmeta = payload["pipeline_metadata"]
-    assert "evidence_path_results" in pmeta
-    assert len(pmeta["evidence_path_results"]) == 1
-    assert pmeta["evidence_path_results"][0]["is_supported"] is True
-    assert pmeta["evidence_path_results"][0]["outcome_component_id"] == "oc_ok"
+
+# ---------------------------------------------------------------------------
+# 5. No outcome_components → evidence_support left as None
+# ---------------------------------------------------------------------------
+
+
+def test_no_evidence_path_results_leaves_support_none():
+    """When no outcome_components are attached (or no case_graph), the
+    validator emits an empty list and evidence_support must remain None."""
+    cf = _make_case_file()
+    issues = [_make_issue()]
+    pred = _make_prediction(outcome=IssueOutcome.TENANT_WINS, raw_confidence=0.85)
+    # Intentionally NO _attach_outcome_components call.
+    kg = _FakeKG()
+
+    result = OutputAssembler().assemble(
+        case_file=cf,
+        issues=issues,
+        issue_predictions=[pred],
+        retrieval_results={},
+        verification=VerificationResult(),
+        pipeline_metadata=PipelineMetadata(mode="hybrid"),
+        case_graph=kg,
+    )
+
+    assert result.pipeline_metadata.evidence_path_results == []
+    assert result.pipeline_metadata.evidence_support is None
+    assert result.pipeline_metadata.unsupported_claim_count == 0
+    assert result.issue_predictions[0].outcome == IssueOutcome.TENANT_WINS

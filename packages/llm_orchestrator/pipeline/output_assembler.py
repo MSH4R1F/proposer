@@ -1,3 +1,4 @@
+import os
 import structlog
 from typing import Any, Dict, List, Optional
 
@@ -259,10 +260,11 @@ class OutputAssembler:
 
         # Stream C PR 6 Tasks 6.1 + 6.2 / Cross-PR Contracts C4 + C5:
         # walk EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent
-        # for each claimed outcome component. In strict mode
-        # (STREAM_C_EVIDENCE_PATH_STRICT=1), rejected components force the
-        # owning IssuePrediction's outcome to UNCERTAIN. In audit mode
-        # (default), results are recorded only.
+        # for each claimed outcome component. Per Stream C recovery plan
+        # Task 3, the validator is now AUDIT-ONLY: it records evidence-path
+        # results + evidence_support metadata but never changes outcome.
+        # Strict mode (STREAM_C_EVIDENCE_PATH_STRICT=1) caps raw_confidence
+        # at 0.60 on rejected chains instead of vetoing the prediction.
         evidence_path_results: List[Dict[str, Any]] = []
         if case_graph is not None:
             validator = EvidencePathValidator(case_graph=case_graph)
@@ -271,12 +273,31 @@ class OutputAssembler:
                 for oc in outcome_components:
                     result = validator.validate_outcome_component(oc)
                     evidence_path_results.append(result.model_dump())
-                    if result.abstention_required:
-                        try:
-                            issue_pred.outcome = IssueOutcome.UNCERTAIN
-                        except Exception:  # pragma: no cover — frozen-model guard
-                            pass
         pipeline_metadata.evidence_path_results = evidence_path_results
+
+        # Stream C recovery T3: derive evidence_support + apply confidence cap
+        # under strict mode without touching outcome.
+        strict_validator = (
+            os.getenv("STREAM_C_EVIDENCE_PATH_STRICT", "0") == "1"
+        )
+        unsupported_results = [
+            r for r in evidence_path_results if not r.get("is_supported", False)
+        ]
+        if not evidence_path_results:
+            # No outcome_components were validated — leave evidence_support
+            # as None (the model default).
+            pass
+        elif unsupported_results:
+            pipeline_metadata.unsupported_claim_count = len(unsupported_results)
+            pipeline_metadata.evidence_support = "weak"
+            if strict_validator:
+                # Cap confidence on every issue prediction; do NOT change
+                # outcome. The audit metadata above already records WHY.
+                for issue_pred in issue_predictions:
+                    if issue_pred.raw_confidence > 0.60:
+                        issue_pred.raw_confidence = 0.60
+        else:
+            pipeline_metadata.evidence_support = "strong"
 
         prediction = PredictionResult(
             case_id=case_file.case_id,

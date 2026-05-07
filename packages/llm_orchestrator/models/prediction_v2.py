@@ -284,6 +284,15 @@ class PipelineMetadata(BaseModel):
     # Empty list when validator is bypassed or no outcome_components exist.
     evidence_path_results: List[Dict[str, Any]] = Field(default_factory=list)
 
+    # Stream C recovery plan Task 3 — evidence-path audit fields.
+    # ``evidence_support`` is one of {"strong", "weak", None}. Set "strong"
+    # when every validated outcome_component had a closed chain; "weak" when
+    # any chain was rejected; None when no validation occurred (no
+    # case_graph or no outcome_components). ``unsupported_claim_count`` is
+    # the count of rejected EvidencePathResult entries.
+    evidence_support: Optional[str] = None
+    unsupported_claim_count: int = 0
+
 
 class PredictionResult(BaseModel):
     case_id: str
