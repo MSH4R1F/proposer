@@ -8,6 +8,10 @@ from typing import List
 
 import pytest
 
+from domain_packs.housing.repairs_social.renderer import (
+    _duration_bucket_label,
+    _money_bucket_label,
+)
 from domain_packs.registry import get_domain_pack
 from legal_core.graph.factor_assertion import (
     ExtractionMethod,
@@ -76,35 +80,23 @@ def test_renderer_renders_single_boolean_factor_with_evidence():
     assert "confidence: 0.92" in card
 
 
-def test_renderer_renders_numeric_factor_with_bucket_label():
-    """inspection_delay_days=90 with edges [1,7,30,90,365] should land in '90-365d' bucket
-    because edge_lo=90 <= 90 < edge_hi=365."""
-    pack = get_domain_pack("housing.repairs_social.v1")
-    fa = _make_fa(
-        "inspection_delay_days",
-        FactorValue(value_type=FactorValueType.NUMBER, number=90.0),
-    )
-    kg = _FakeKG(factor_assertions=[fa])
-    card = pack.render_factor_card(kg)
-    # Note: value_type==number doesn't get bucket label — only "duration" does.
-    # This test only checks the value renders cleanly.
-    assert "inspection_delay_days: 90" in card
-
-
 def test_renderer_renders_duration_factor_with_bucket_label():
+    """Duration factor (days) renders with bucket label drawn from
+    retrieval_profile.bucket_definitions.duration."""
     pack = get_domain_pack("housing.repairs_social.v1")
+    duration_factors = [
+        f for f in pack.factors.factors if f.value_type == FactorValueType.DURATION
+    ]
+    assert duration_factors, "housing.repairs_social.v1 must have duration factors"
     fa = _make_fa(
-        "inspection_delay_days",  # if catalog has it as value_type=duration; else find one that is
+        duration_factors[0].id,
         FactorValue(value_type=FactorValueType.DURATION, duration_days=45),
     )
     kg = _FakeKG(factor_assertions=[fa])
     card = pack.render_factor_card(kg)
-    # 45 lands in 30-90d bucket
-    if "duration" in str(pack.factors.factors[0].value_type) or any(
-        f.value_type == FactorValueType.DURATION for f in pack.factors.factors
-    ):
-        # Only assert if the catalog actually has duration factors
-        assert "days" in card or "bucket" in card
+    # 45 days lands in 30-90d bucket per [1, 7, 30, 90, 365] edges
+    assert "45 days" in card
+    assert "30-90d" in card
 
 
 def test_renderer_renders_money_factor_with_pence_to_pounds():
@@ -261,3 +253,44 @@ def test_kill_switch_returns_empty_card(monkeypatch):
     )
     monkeypatch.setenv("STREAM_C_PR4_REPAIRS", "0")
     assert pack.render_factor_card(_FakeKG([fa])) == ""
+
+
+@pytest.mark.parametrize(
+    "pence,expected",
+    [
+        (0, "£0-£100"),
+        (5000, "£0-£100"),       # 50p < £100
+        (10000, "£100-£500"),    # exactly £100 → 100-500 bucket
+        (49999, "£100-£500"),    # just under £500
+        (50000, "£500-£2000"),   # exactly £500
+        (199999, "£500-£2000"),
+        (200000, "£2000-£10000"),
+        (999999, "£2000-£10000"),
+        (1000000, ">£10000"),    # exactly £10000 (the last edge) → > bucket
+        (5000000, ">£10000"),    # well above
+    ],
+)
+def test_money_bucket_label_edges(pence: int, expected: str):
+    edges = [0, 10000, 50000, 200000, 1000000]
+    assert _money_bucket_label(pence, edges) == expected
+
+
+@pytest.mark.parametrize(
+    "days,expected",
+    [
+        (0, "<1d"),               # below the first edge
+        (1, "1-7d"),
+        (6, "1-7d"),
+        (7, "7-30d"),
+        (29, "7-30d"),
+        (30, "30-90d"),
+        (89, "30-90d"),
+        (90, "90-365d"),
+        (364, "90-365d"),
+        (365, ">365d"),           # exactly the last edge → >
+        (1000, ">365d"),
+    ],
+)
+def test_duration_bucket_label_edges(days: int, expected: str):
+    edges = [1, 7, 30, 90, 365]
+    assert _duration_bucket_label(days, edges) == expected

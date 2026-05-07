@@ -44,6 +44,19 @@ def render_factor_card(case_graph: Any, pack: Any) -> str:
     Returns markdown-friendly string for the {kg_fact_card} prompt slot.
     Returns empty string for any of: kill switch, missing graph, no
     renderable factor assertions.
+
+    NOTE on the `factor_assertions` attribute:
+    This renderer reads `case_graph.factor_assertions` -- a list of
+    `legal_core.graph.factor_assertion.FactorAssertion`. The current
+    `KnowledgeGraph` (`packages/kg_builder/models/graph.py`) does NOT yet
+    expose this attribute; it stores nodes in flat `nodes`/`edges` lists.
+    A later Stream C task (4.5 -- case_graph threading) introduces an
+    adapter that surfaces `factor_assertions` for the prediction path.
+    Until that lands, callers must construct an object with this attribute
+    explicitly (the test suite uses `_FakeKG` for this purpose).
+    If the eventual canonical name diverges from `factor_assertions`,
+    update the `getattr(case_graph, "factor_assertions", ...)` call below
+    and the test fixture name accordingly.
     """
     # Kill switch
     if os.getenv("STREAM_C_PR4_REPAIRS", "1") == "0":
@@ -114,7 +127,8 @@ def render_factor_card(case_graph: Any, pack: Any) -> str:
 
 
 def _render_value(fa: Any, bucket_defs: Any) -> str:
-    """Dispatch on value_type. Numeric/money/duration include bucket label."""
+    """Dispatch on value_type. Money and duration include bucket label;
+    number is plain `{:g}` formatted."""
     vt = fa.value_type
     val = fa.value  # FactorValue from legal_core
 
