@@ -252,6 +252,17 @@ class PipelineMetadata(BaseModel):
     # §3.4 (OpenTelemetry GenAI semantic-convention aligned).
     agent_traces: List[Dict[str, Any]] = Field(default_factory=list)
 
+    # Stream C PR 4 Task 4.5: KG-side metadata for the prediction artifact.
+    # Populated by ``PredictionEngineV2.predict()`` from
+    # ``IssuePredictor._last_kg_metadata`` after prediction completes. The
+    # latter reflects the LAST issue's render (single shared field on the
+    # predictor); PR 5 may upgrade this to per-issue metadata.
+    # See spec §17.6 + Cross-PR Contract C5.
+    graph_quality_score: Optional[float] = None
+    kg_used_for_prediction: Optional[bool] = None
+    kg_fallback_mode: Optional[str] = None
+    kg_gate_failure_reasons: List[str] = Field(default_factory=list)
+
 
 class PredictionResult(BaseModel):
     case_id: str

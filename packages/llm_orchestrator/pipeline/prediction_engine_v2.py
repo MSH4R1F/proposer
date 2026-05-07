@@ -151,15 +151,37 @@ class PredictionEngineV2:
                     knowledge_graph, issue.issue_type
                 )
 
+        # Stream C PR 4 Task 4.5: build the per-issue case_graph map. For
+        # housing.deposit.v1, the deposit pack's render_factor_card accepts
+        # the legacy ``KGFacts`` adapter directly, so we reuse it. For
+        # repairs (and future domains), the pack reads FactorAssertion
+        # nodes off the full KnowledgeGraph. CaseFile may not carry a
+        # domain_id on legacy fixtures — default to deposit in that case.
+        case_graph_by_issue: Dict[Any, Any] = {}
+        if knowledge_graph is not None and mode in (
+            PredictionMode.HYBRID,
+            PredictionMode.KG_ONLY,
+        ):
+            domain_id = getattr(case_file, "domain_id", None) or "housing.deposit.v1"
+            for issue in issues:
+                if domain_id == "housing.deposit.v1":
+                    case_graph_by_issue[issue.issue_type] = kg_facts_by_issue.get(
+                        issue.issue_type
+                    )
+                else:
+                    case_graph_by_issue[issue.issue_type] = knowledge_graph
+
         # ── Modes that skip retrieval entirely (LLM_ONLY, KG_ONLY) ──
         if mode in (PredictionMode.LLM_ONLY, PredictionMode.KG_ONLY):
             self.issue_predictor._case_file = case_file
             self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
+            self.issue_predictor._case_graph_by_issue = case_graph_by_issue
             prompt_mode = "llm_only" if mode == PredictionMode.LLM_ONLY else "kg_only"
             metadata.steps_executed.append(f"{prompt_mode}_path")
             issue_predictions = await self.issue_predictor.predict_no_rag(
                 issues, prompt_mode=prompt_mode,
             )
+            self._copy_kg_metadata_to_pipeline(metadata)
             metadata.total_llm_calls = sum(
                 1 for ip in issue_predictions
                 if ip.outcome != IssueOutcome.UNCERTAIN
@@ -253,9 +275,23 @@ class PredictionEngineV2:
         # ── Step 3: Per-Issue Prediction (parallel LLM calls) ──
         self.issue_predictor._case_file = case_file
         self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
-        issue_predictions = await self.issue_predictor.predict_all(
-            issues, retrieval_results, case_file=case_file
+        self.issue_predictor._case_graph_by_issue = case_graph_by_issue
+        # Thread the prompt mode so the rag_only gate inside _predict_issue
+        # actually fires in production (it short-circuits the factor card).
+        prompt_mode_str = (
+            "rag_only" if mode == PredictionMode.RAG_ONLY else "hybrid"
         )
+        issue_predictions = await self.issue_predictor.predict_all(
+            issues,
+            retrieval_results,
+            case_file=case_file,
+            prompt_mode=prompt_mode_str,
+        )
+        # Surface KG gate metadata into the artifact (§17.6 / Cross-PR C5).
+        # NOTE: ``_last_kg_metadata`` reflects the LAST issue's render, since
+        # IssuePredictor mutates a single shared field. PR 5 may upgrade this
+        # to per-issue metadata once factor extraction lands.
+        self._copy_kg_metadata_to_pipeline(metadata)
         predicted_count = sum(
             1 for ip in issue_predictions if ip.outcome != IssueOutcome.UNCERTAIN
         )
@@ -422,6 +458,28 @@ class PredictionEngineV2:
         # prompt already says "case summary <=400 words"; this is the
         # belt-and-braces enforcement.
         return summary[:2400]
+
+    def _copy_kg_metadata_to_pipeline(self, metadata: PipelineMetadata) -> None:
+        """Copy ``IssuePredictor._last_kg_metadata`` into ``PipelineMetadata``.
+
+        The §17.6 / Cross-PR Contract C5 fields (graph_quality_score,
+        kg_used_for_prediction, kg_fallback_mode, kg_gate_failure_reasons)
+        are populated by ``_render_factor_card_via_pack`` (and the rag_only
+        short-circuit) per issue. Because the predictor mutates a single
+        shared field, this captures the LAST issue's render only — fine for
+        single-issue deposit cases, and acceptable for PR 4 multi-issue
+        cases since all issues route through the same domain pack and gate.
+        PR 5 may upgrade to per-issue metadata.
+        """
+        last = getattr(self.issue_predictor, "_last_kg_metadata", None) or {}
+        if not last:
+            return
+        metadata.graph_quality_score = last.get("graph_quality_score")
+        metadata.kg_used_for_prediction = last.get("kg_used_for_prediction")
+        metadata.kg_fallback_mode = last.get("kg_fallback_mode")
+        metadata.kg_gate_failure_reasons = list(
+            last.get("kg_gate_failure_reasons") or []
+        )
 
     @staticmethod
     def _serialise_agent_state(state: Any) -> Dict[str, Any]:
