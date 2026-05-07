@@ -23,13 +23,6 @@ from typing import Any
 # a constant so the contract is visible.
 _UNKNOWN = "unknown"
 
-# The three v1 deposit-pack enum factor attributes the renderer reads.
-_REQUIRED_ATTRS = (
-    "deposit_protection_status",
-    "prescribed_information_status",
-    "check_in_inventory_baseline",
-)
-
 
 def render_factor_card(case_graph: Any, pack: Any) -> str:
     """Render the deposit factor card for the IRAC prompt.
@@ -51,6 +44,13 @@ def render_factor_card(case_graph: Any, pack: Any) -> str:
         byte-equivalent to the legacy ``IssuePredictor._format_kg_fact_card``
         for the same input — i.e. with a single leading ``"\\n"`` and a
         single trailing ``"\\n"``.
+
+    Notes
+    -----
+    If ``case_graph`` has ``is_empty()`` but is missing the deposit attrs
+    (e.g. is not a real ``KGFacts``), ``AttributeError`` will propagate —
+    matching legacy ``_format_kg_fact_card`` behavior, which uses direct
+    attribute access for the required fields.
     """
     del pack  # unused — kept for registry call-shape
 
@@ -63,11 +63,6 @@ def render_factor_card(case_graph: Any, pack: Any) -> str:
         if case_graph.is_empty():
             return ""
     except AttributeError:
-        return ""
-
-    # Defence in depth: if the object passes is_empty() but lacks the v1
-    # deposit attributes, treat as wrong shape and abstain.
-    if not all(hasattr(case_graph, attr) for attr in _REQUIRED_ATTRS):
         return ""
 
     # Match legacy: start with empty leading element so the joined output
