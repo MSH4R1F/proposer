@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
@@ -90,62 +91,94 @@ class _FixtureKG:
 
 
 # ---------------------------------------------------------------------------
-# Tests
+# Module-scoped fixtures + shared helpers
 # ---------------------------------------------------------------------------
 
 
-def test_fixture_loads_via_pydantic_models():
-    """Sanity: every fixture JSON validates against its Pydantic model."""
-    fas = _load_factor_assertions()
-    spans = _load_evidence_spans()
-    props = _load_propositions()
-    ocs = _load_outcome_components()
-    assert len(fas) >= 5
-    assert len(spans) >= 4
-    assert len(props) >= 6
-    assert len(ocs) >= 1
+@pytest.fixture(scope="module")
+def fixture_data():
+    """Load every fixture JSON exactly once per module run.
+
+    With 5 tests each calling 4 loaders inline, the previous shape did 20
+    disk reads per run. This fixture reduces it to 4 (plus one for
+    ``expected_outcome.json``).
+    """
+    return SimpleNamespace(
+        fas=_load_factor_assertions(),
+        spans=_load_evidence_spans(),
+        props=_load_propositions(),
+        ocs=_load_outcome_components(),
+        expected=_load_expected(),
+    )
 
 
-@pytest.mark.asyncio
-async def test_positive_control_factor_retriever_returns_nonempty_pack():
-    """When fed the fixture's factor assertions and a repository that
-    surfaces the fixture's propositions, ``FactorRetriever.build_comparator_pack``
-    must return at least one comparator and at least one counterexample."""
-    pack = get_domain_pack("housing.repairs_social.v1")
-    fixture_props = _load_propositions()
-    fixture_fas = _load_factor_assertions()
+def _make_control(
+    asserted_factors,
+    target_outcomes: list[str],
+) -> RetrievalControlInput:
+    """Construct a ``RetrievalControlInput`` for the housing-repairs fixture.
 
-    repo = AsyncMock()
-    # The fixture propositions all carry issue_tags including
-    # "housing.repairs_social.v1" so the same-domain gating accepts them.
-    repo.search_by_issue_tags = AsyncMock(return_value=fixture_props)
-
-    retriever = FactorRetriever(repository=repo, pack=pack)
-
-    expected = _load_expected()
-    primary_outcome = expected.get("outcome", "fault_finding")
-
-    control = RetrievalControlInput(
+    All fields except ``asserted_factors`` and ``target_outcomes`` are
+    invariant across the tests in this module; centralising them here keeps
+    the call sites readable and prevents drift between near-identical
+    blocks.
+    """
+    return RetrievalControlInput(
         domain_id="housing.repairs_social.v1",
         claim_head_id="repairs_damp_mould",
         issue_ids=["repairs_damp_mould"],
-        asserted_factors=fixture_fas,
-        target_outcomes=[primary_outcome],
+        asserted_factors=asserted_factors,
+        target_outcomes=target_outcomes,
         target_remedies=[],
         forum="ombudsman",
         authority_policy=AuthorityPolicy(),
         retrieval_profile_id="housing.repairs_social.v1",
     )
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+
+def test_fixture_loads_via_pydantic_models(fixture_data):
+    """Sanity: every fixture JSON validates against its Pydantic model."""
+    assert len(fixture_data.fas) >= 5
+    assert len(fixture_data.spans) >= 4
+    assert len(fixture_data.props) >= 6
+    assert len(fixture_data.ocs) >= 1
+
+
+@pytest.mark.asyncio
+async def test_positive_control_factor_retriever_returns_nonempty_pack(fixture_data):
+    """When fed the fixture's factor assertions and a repository that
+    surfaces the fixture's propositions, ``FactorRetriever.build_comparator_pack``
+    must return at least one comparator and at least one counterexample."""
+    pack = get_domain_pack("housing.repairs_social.v1")
+
+    repo = AsyncMock()
+    # The fixture propositions all carry issue_tags including
+    # "housing.repairs_social.v1" so the same-domain gating accepts them.
+    repo.search_by_issue_tags = AsyncMock(return_value=fixture_data.props)
+
+    retriever = FactorRetriever(repository=repo, pack=pack)
+
+    primary_outcome = fixture_data.expected.get("outcome", "fault_finding")
+
+    control = _make_control(
+        asserted_factors=fixture_data.fas,
+        target_outcomes=[primary_outcome],
+    )
     pack_result = await retriever.build_comparator_pack(
         control, primary_outcome=primary_outcome
     )
     assert isinstance(pack_result, ComparatorPack)
-    assert len(pack_result.comparators) >= expected.get(
+    assert len(pack_result.comparators) >= fixture_data.expected.get(
         "expected_comparator_pack_min_size", 1
     ), (
         f"comparator pack empty: {pack_result.comparator_pass_metadata}"
     )
-    assert len(pack_result.counterexamples) >= expected.get(
+    assert len(pack_result.counterexamples) >= fixture_data.expected.get(
         "expected_counterexample_pack_min_size", 1
     ), (
         f"counterexample pack empty: {pack_result.counterexample_pass_metadata}"
@@ -155,108 +188,96 @@ async def test_positive_control_factor_retriever_returns_nonempty_pack():
     )
 
 
-def test_positive_control_evidence_path_closes():
+def test_positive_control_evidence_path_closes(fixture_data):
     """When given the fixture's KG, the validator must return ``is_supported=True``
     for at least one ``OutcomeComponent`` and the chain must have the expected
-    shape (EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent)."""
-    fas = _load_factor_assertions()
-    spans = _load_evidence_spans()
-    props = _load_propositions()
-    ocs = _load_outcome_components()
+    shape (EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent).
 
-    kg = _FixtureKG(factor_assertions=fas, propositions=props, evidence_spans=spans)
+    This is the *positive* control fixture — its whole purpose is to prove the
+    path lights up. The assertions below are unconditional: if a future edit
+    ever breaks the wiring (or repurposes the fixture to be negative), this
+    test must fail loudly rather than silently skip.
+    """
+    kg = _FixtureKG(
+        factor_assertions=fixture_data.fas,
+        propositions=fixture_data.props,
+        evidence_spans=fixture_data.spans,
+    )
     validator = EvidencePathValidator(case_graph=kg)
 
-    expected = _load_expected()
-    if expected.get("expected_evidence_path_supported", True):
-        any_supported = False
-        for oc in ocs:
-            result = validator.validate_outcome_component(oc)
-            if result.is_supported:
-                any_supported = True
-                # Chain must be 4 nodes:
-                # EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent
-                assert len(result.chain) == 4, (
-                    f"unexpected chain length {len(result.chain)}: {result.chain}"
-                )
-                # First node should be an evidence_span_id
-                span_ids = {s.evidence_span_id for s in spans}
-                assert result.chain[0] in span_ids, (
-                    f"chain[0]={result.chain[0]} not in evidence span ids"
-                )
-                # Last node is the OC id
-                assert result.chain[-1] == oc.outcome_component_id
-                break
-        assert any_supported, (
-            "no OutcomeComponent's chain closed — validator could not reach "
-            "EvidenceSpan via FactorAssertion + Proposition. Fixture wiring "
-            "is broken."
-        )
+    any_supported = False
+    for oc in fixture_data.ocs:
+        result = validator.validate_outcome_component(oc)
+        if result.is_supported:
+            any_supported = True
+            # Chain must be 4 nodes:
+            # EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent
+            assert len(result.chain) == 4, (
+                f"unexpected chain length {len(result.chain)}: {result.chain}"
+            )
+            # First node should be an evidence_span_id
+            span_ids = {s.evidence_span_id for s in fixture_data.spans}
+            assert result.chain[0] in span_ids, (
+                f"chain[0]={result.chain[0]} not in evidence span ids"
+            )
+            # Last node is the OC id
+            assert result.chain[-1] == oc.outcome_component_id
+            break
+    assert any_supported, (
+        "no OutcomeComponent's chain closed — validator could not reach "
+        "EvidenceSpan via FactorAssertion + Proposition. Fixture wiring "
+        "is broken."
+    )
 
 
-def test_validator_audit_only_records_strong_when_chain_closes():
+def test_validator_audit_only_records_strong_when_chain_closes(fixture_data):
     """When the chain closes for at least one component, downstream metadata
     surfaces a supported result (i.e. the validator did not silently reject
     every OutcomeComponent)."""
-    fas = _load_factor_assertions()
-    spans = _load_evidence_spans()
-    props = _load_propositions()
-    ocs = _load_outcome_components()
-
-    kg = _FixtureKG(factor_assertions=fas, propositions=props, evidence_spans=spans)
+    kg = _FixtureKG(
+        factor_assertions=fixture_data.fas,
+        propositions=fixture_data.props,
+        evidence_spans=fixture_data.spans,
+    )
     validator = EvidencePathValidator(case_graph=kg)
 
-    results = [validator.validate_outcome_component(oc) for oc in ocs]
+    results = [validator.validate_outcome_component(oc) for oc in fixture_data.ocs]
     supported_count = sum(1 for r in results if r.is_supported)
     assert supported_count >= 1, "no OutcomeComponent supported"
 
 
-def test_authority_policy_default_does_not_disqualify_fixture_propositions():
+def test_authority_policy_default_does_not_disqualify_fixture_propositions(
+    fixture_data,
+):
     """The default ``AuthorityPolicy`` must not zero out scoring for the
     fixture's propositions. Sanity check: ``retrieve_comparators`` non-empty."""
     pack = get_domain_pack("housing.repairs_social.v1")
-    fixture_props = _load_propositions()
-    fixture_fas = _load_factor_assertions()
 
     repo = AsyncMock()
-    repo.search_by_issue_tags = AsyncMock(return_value=fixture_props)
+    repo.search_by_issue_tags = AsyncMock(return_value=fixture_data.props)
 
     retriever = FactorRetriever(repository=repo, pack=pack)
-    control = RetrievalControlInput(
-        domain_id="housing.repairs_social.v1",
-        claim_head_id="repairs_damp_mould",
-        issue_ids=["repairs_damp_mould"],
-        asserted_factors=fixture_fas,
+    control = _make_control(
+        asserted_factors=fixture_data.fas,
         target_outcomes=["fault_finding"],
-        target_remedies=[],
-        forum="ombudsman",
-        authority_policy=AuthorityPolicy(),
-        retrieval_profile_id="housing.repairs_social.v1",
     )
     out = asyncio.run(retriever.retrieve_comparators(control))
     assert len(out) >= 1, "retrieve_comparators returned empty"
 
 
-def test_factor_retriever_metadata_records_real_weights_when_factors_present():
+def test_factor_retriever_metadata_records_real_weights_when_factors_present(
+    fixture_data,
+):
     """The ``ComparatorPack`` metadata must record the real comparator weights
     from the pack's ``retrieval_profile`` (NOT empty / fallback)."""
     pack = get_domain_pack("housing.repairs_social.v1")
-    fixture_props = _load_propositions()
-    fixture_fas = _load_factor_assertions()
 
     repo = AsyncMock()
-    repo.search_by_issue_tags = AsyncMock(return_value=fixture_props)
+    repo.search_by_issue_tags = AsyncMock(return_value=fixture_data.props)
     retriever = FactorRetriever(repository=repo, pack=pack)
-    control = RetrievalControlInput(
-        domain_id="housing.repairs_social.v1",
-        claim_head_id="repairs_damp_mould",
-        issue_ids=["repairs_damp_mould"],
-        asserted_factors=fixture_fas,
+    control = _make_control(
+        asserted_factors=fixture_data.fas,
         target_outcomes=["fault_finding"],
-        target_remedies=[],
-        forum="ombudsman",
-        authority_policy=AuthorityPolicy(),
-        retrieval_profile_id="housing.repairs_social.v1",
     )
     pack_result = asyncio.run(
         retriever.build_comparator_pack(control, primary_outcome="fault_finding")
@@ -354,7 +375,9 @@ def _make_repairs_case_file_for_e2e(case_id: str = "positive-control-001"):
 
 
 @pytest.mark.asyncio
-async def test_positive_control_engine_e2e_metadata_shows_kg_used(monkeypatch):
+async def test_positive_control_engine_e2e_metadata_shows_kg_used(
+    monkeypatch, fixture_data
+):
     """End-to-end: with ``STREAM_C_FACTOR_RETRIEVAL=1`` and the fixture's
     propositions surfaced via a stub repository, ``PredictionEngineV2.predict``
     must produce a ``PipelineMetadata`` recording:
@@ -382,10 +405,6 @@ async def test_positive_control_engine_e2e_metadata_shows_kg_used(monkeypatch):
     monkeypatch.setenv("STREAM_C_FACTOR_RETRIEVAL", "1")
     monkeypatch.setenv("STREAM_C_PR4", "1")
     monkeypatch.setenv("STREAM_C_PR4_REPAIRS", "1")
-
-    fixture_fas = _load_factor_assertions()
-    fixture_props = _load_propositions()
-    fixture_spans = _load_evidence_spans()
 
     captured_prompts: list[str] = []
 
@@ -415,7 +434,7 @@ async def test_positive_control_engine_e2e_metadata_shows_kg_used(monkeypatch):
 
     proposition_retriever = MagicMock()
     repo = AsyncMock()
-    repo.search_by_issue_tags = AsyncMock(return_value=fixture_props)
+    repo.search_by_issue_tags = AsyncMock(return_value=fixture_data.props)
     proposition_retriever.repository = repo
 
     engine = PredictionEngineV2(
@@ -440,9 +459,9 @@ async def test_positive_control_engine_e2e_metadata_shows_kg_used(monkeypatch):
     engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
 
     kg = _FixtureRepairsKG(
-        factor_assertions=fixture_fas,
-        propositions=fixture_props,
-        evidence_spans=fixture_spans,
+        factor_assertions=fixture_data.fas,
+        propositions=fixture_data.props,
+        evidence_spans=fixture_data.spans,
     )
     case_file = _make_repairs_case_file_for_e2e()
 
