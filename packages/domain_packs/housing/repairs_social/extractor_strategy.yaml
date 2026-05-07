@@ -1,0 +1,162 @@
+# housing.repairs_social.v1 per-factor extractor strategy
+#
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §19 PR 3a
+# Version: v1 (draft; panel review B5/B6 deferred)
+#
+# Strategy vocabulary:
+#   deterministic  — value derived from structured CaseFile date/flag fields; no LLM call needed
+#   llm_extracted  — LLM extracts value from narrative; no verifier; blocks gate by default
+#   llm_verified   — LLM extracts AND a second LLM pass verifies; verifier_required=true
+#
+# gate_counted convention:
+#   true  — extraction result counts toward GraphQualityGate thresholds (default)
+#   false — result is informational only; does not block gate passage
+#           (spec §4.1: llm_extracted blocks gate by default → gate_counted: false)
+#
+# min_confidence_threshold: float in [0, 1]; default 0.5
+#   Extraction results below this threshold are treated as abstentions.
+
+domain_id: housing.repairs_social.v1
+
+entries:
+
+  # --------------------------------------------------------------------------
+  # Date-derivable from existing CaseFile fields → deterministic
+  # --------------------------------------------------------------------------
+
+  - factor_id: inspection_delay_days
+    strategy: deterministic
+    calculator_id: inspection_delay_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: computed as (first_inspection_date - report_date).days; both dates are structured CaseFile fields
+
+  - factor_id: repair_delay_days
+    strategy: deterministic
+    calculator_id: repair_delay_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: computed as (repair_completion_date - notice_date).days; both dates are structured CaseFile fields
+
+  - factor_id: complaint_response_delay_days
+    strategy: deterministic
+    calculator_id: complaint_response_delay_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: computed as (landlord_response_date - formal_complaint_date).days; both dates are structured CaseFile fields
+
+  - factor_id: communication_gap_days
+    strategy: deterministic
+    calculator_id: communication_gap_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: computed as max gap between consecutive communication events in the structured timeline
+
+  # --------------------------------------------------------------------------
+  # Rule-derived → deterministic
+  # --------------------------------------------------------------------------
+
+  - factor_id: issue_outside_jurisdiction
+    strategy: deterministic
+    calculator_id: jurisdiction_check
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: binary rule applied against a closed list of excluded complaint categories; no narrative needed
+
+  # --------------------------------------------------------------------------
+  # Yes/No factual presence factors requiring narrative reading → llm_verified
+  # Verifier reduces false-positives; confidence threshold kept at default 0.5
+  # --------------------------------------------------------------------------
+
+  - factor_id: hazard_or_disrepair_reported
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: boolean presence in free-text report narrative; LLM extraction + verifier pass required for reliability
+
+  - factor_id: landlord_notice_established
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: provability of notice requires reading acknowledgement language; verifier guards against over-extraction
+
+  - factor_id: inspection_offered
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: offer vs. actual inspection distinction is subtle; verifier reduces conflation errors
+
+  - factor_id: repair_attempted
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: "attempted" vs. "completed" requires careful narrative reading; verifier improves precision
+
+  - factor_id: temporary_decant_or_alternative_offered
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: offer language is domain-specific and easily confused with completed decant; verifier required
+
+  - factor_id: prior_compensation_or_apology_offered
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: distinguishing goodwill gestures from formal compensation offers requires verifier confirmation
+
+  - factor_id: vulnerability_known
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: "should have known" inference is judgment-adjacent; verifier provides a second opinion on implicit signals
+
+  # --------------------------------------------------------------------------
+  # Judgment-adjacent factual factors → llm_verified (high abstention rate likely)
+  # --------------------------------------------------------------------------
+
+  - factor_id: records_inadequate
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.6
+    # why: gap identification in records is inherently interpretive; raised threshold + verifier reduces false positives
+
+  - factor_id: repair_responsibility_established
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.6
+    # why: statutory vs. contractual basis requires legal-text reading; raised threshold guards against over-attribution
+
+  # --------------------------------------------------------------------------
+  # Resident-reported enum → llm_verified
+  # --------------------------------------------------------------------------
+
+  - factor_id: impact_severity_reported
+    strategy: llm_verified
+    calculator_id: null
+    verifier_required: true
+    gate_counted: true
+    min_confidence_threshold: 0.5
+    # why: resident-reported enum extracted from narrative; verifier reduces hallucinated severity escalation

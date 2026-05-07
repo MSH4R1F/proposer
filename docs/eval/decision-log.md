@@ -625,6 +625,47 @@ Task 18 result note is
 
 ---
 
+## D-028 — Gate-countable factor set determined by frontier-model IAA, not catalog quality alone
+
+**Linear:** Stream B / B12 v2 (this PR)
+**Decision:** For `housing.repairs_social.v1`, factor `gate_counted` status in
+`extractor_strategy.yaml` is set per the frontier-model gold annotation run
+(gpt-5 + gpt-5-mini, n=30, ~£6) — not the cheap-model run. Result: 13 of 15
+factors are gate-countable; only `inspection_offered` (α=0.00) and
+`impact_severity_reported` (α=0.65) are deferred to v2 rubric work.
+
+**Why:** The two runs disagree dramatically. The mini-mini run (gpt-4o-mini +
+gpt-4.1-mini, ~£1) reports mean α=0.37 with only 1 of 15 factors clearing the
+spec §17.6 gate-countability threshold of 0.7. The frontier run reports
+effective mean α≈0.85, with 7 factors at perfect agreement (α undefined due
+to zero variance) and 6 more above 0.65. Annotator model quality is the
+dominant variable in measured IAA, not catalog/rubric quality. Using the
+cheap-model run as the canonical gate would mark the architecture
+prematurely as broken; using the frontier run reflects what the architecture
+can actually do at production model quality.
+
+**Rejected alternatives:**
+- **Use the mini-mini run as canonical** because it's cheaper. Rejected
+  because §17.6's threshold is a *catalog/rubric* quality bar, not an
+  annotator-quality bar; using cheap annotators conflates the two.
+- **Average across both runs** (mean of both α tables). Rejected because the
+  underlying signals are qualitatively different (one model can extract
+  reliably, one cannot) — averaging hides which is which.
+- **Demand a third multi-provider run** (Anthropic + OpenAI mix) before
+  deciding. Rejected for v1 because Anthropic credits were exhausted; queued
+  as future work in [`housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md`](extractor_f1_reports/housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md) §9.
+
+**Trigger to revisit:** (a) when the catalog grows past v1's 15 factors, re-run
+gold IAA on the new set; (b) when Anthropic credits restored, do a
+cross-provider re-run to test for OpenAI-family bias on the perfect-agreement
+factors; (c) before claim of "architecture viable" in any thesis-facing
+result, re-run with at least one human annotator on a 5-10 case subset to
+validate that LLM-LLM perfect agreement isn't shared model bias. Reports:
+[`housing.repairs_social.v1-2026-05-06-gold-iaa.md`](extractor_f1_reports/housing.repairs_social.v1-2026-05-06-gold-iaa.md) (mini-mini, superseded) and
+[`housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md`](extractor_f1_reports/housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md) (canonical).
+
+---
+
 ## How this log relates to the Codex sparring record
 
 `.sisyphus/codex/sha-28-schema-2026-04-27.md` records Codex's findings and our triage. This log records the *implemented* decisions. Some decisions don't appear in Codex (e.g. D-001 Pydantic vs JSON Schema, D-009 pair-vs-issue bootstrap) — those are pure design choices with no Codex input. Conversely, every Codex HIGH that we accepted produced a decision entry here (D-005 through D-008, D-011, D-014, D-015, D-021).

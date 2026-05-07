@@ -1,0 +1,18 @@
+# housing.repairs_social.v1 — Closed outcome ID list
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §12
+domain_id: housing.repairs_social.v1
+outcomes:
+  - id: no_maladministration
+    description: "Landlord acted reasonably and complied with obligations."
+  - id: service_failure
+    description: "Identified failing in service that does not amount to maladministration."
+  - id: maladministration
+    description: "Landlord failed to meet its obligations in a way that caused injustice."
+  - id: severe_maladministration
+    description: "Serious, repeated, or deliberately obstructive failure causing significant injustice."
+  - id: reasonable_redress
+    description: "Landlord has already offered reasonable redress before the Ombudsman's determination."
+  - id: outside_jurisdiction
+    description: "The complaint falls outside the Ombudsman's jurisdiction and cannot be investigated."
+  - id: resolved_with_intervention
+    description: "Complaint resolved satisfactorily following Ombudsman intervention during investigation."
