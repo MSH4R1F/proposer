@@ -3,11 +3,11 @@
   "metric_alias": "brier",
   "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
   "predictions_path": "eval/predictions/stream_c_recovery_2026_05_07/kg_only.jsonl",
-  "point": 0.3539208333333333,
-  "lower_95": 0.3308733333333333,
-  "upper_95": 0.3734439583333333,
+  "point": 0.3354249999999999,
+  "lower_95": 0.3088464583333333,
+  "upper_95": 0.35979999999999995,
   "n": 48,
   "n_resamples": 1000,
   "seed": 42,
-  "computed_at": "2026-05-07T17:38:55.916694+00:00"
+  "computed_at": "2026-05-07T22:56:45.288601+00:00"
 }

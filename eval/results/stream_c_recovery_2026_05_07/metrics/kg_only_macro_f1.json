@@ -3,11 +3,11 @@
   "metric_alias": "macro_f1",
   "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
   "predictions_path": "eval/predictions/stream_c_recovery_2026_05_07/kg_only.jsonl",
-  "point": 0.6444444444444445,
-  "lower_95": 0.4606741573033708,
-  "upper_95": 0.9233470477174464,
+  "point": 0.5708812260536399,
+  "lower_95": 0.43529411764705883,
+  "upper_95": 0.768860353130016,
   "n": 48,
   "n_resamples": 1000,
   "seed": 42,
-  "computed_at": "2026-05-07T17:38:55.343712+00:00"
+  "computed_at": "2026-05-07T22:56:44.706742+00:00"
 }
