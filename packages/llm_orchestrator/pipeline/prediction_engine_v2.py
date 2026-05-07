@@ -248,6 +248,7 @@ class PredictionEngineV2:
                 verification=CitationVerifier.empty_verification(),
                 pipeline_metadata=metadata,
                 matter_type=matter_type,
+                case_graph=knowledge_graph,
             )
 
         # ── Step 2: Per-Issue Retrieval (parallel retriever calls) ──
@@ -398,6 +399,7 @@ class PredictionEngineV2:
             verification=verification,
             pipeline_metadata=metadata,
             matter_type=matter_type,
+            case_graph=knowledge_graph,
         )
 
         logger.info(

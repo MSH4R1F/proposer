@@ -280,6 +280,10 @@ class PipelineMetadata(BaseModel):
     domain_pack: Optional[str] = None
     factor_catalog_version: Optional[str] = None
 
+    # Stream C PR 6 / Cross-PR Contract C5 — evidence-path validation results.
+    # Empty list when validator is bypassed or no outcome_components exist.
+    evidence_path_results: List[Dict[str, Any]] = Field(default_factory=list)
+
 
 class PredictionResult(BaseModel):
     case_id: str

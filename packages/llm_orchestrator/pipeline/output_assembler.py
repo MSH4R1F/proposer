@@ -17,6 +17,7 @@ from ..models.prediction_v2 import (
     ReasoningStep,
     VerificationResult,
 )
+from .evidence_path_validator import EvidencePathValidator
 
 logger = structlog.get_logger()
 
@@ -73,6 +74,7 @@ class OutputAssembler:
         pipeline_metadata: PipelineMetadata,
         *,
         matter_type: Optional[str] = None,
+        case_graph: Optional[Any] = None,
     ) -> PredictionResult:
         # SHA-20 Phase 6 (audit D3): resolve the matter_type so the
         # deposit_protection penalty branch (1x-3x) only fires for the
@@ -254,6 +256,27 @@ class OutputAssembler:
             total_issues=len(issue_predictions),
             amounts_known=has_explicit_recovery_amount,
         )
+
+        # Stream C PR 6 Tasks 6.1 + 6.2 / Cross-PR Contracts C4 + C5:
+        # walk EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent
+        # for each claimed outcome component. In strict mode
+        # (STREAM_C_EVIDENCE_PATH_STRICT=1), rejected components force the
+        # owning IssuePrediction's outcome to UNCERTAIN. In audit mode
+        # (default), results are recorded only.
+        evidence_path_results: List[Dict[str, Any]] = []
+        if case_graph is not None:
+            validator = EvidencePathValidator(case_graph=case_graph)
+            for issue_pred in issue_predictions:
+                outcome_components = getattr(issue_pred, "outcome_components", []) or []
+                for oc in outcome_components:
+                    result = validator.validate_outcome_component(oc)
+                    evidence_path_results.append(result.model_dump())
+                    if result.abstention_required:
+                        try:
+                            issue_pred.outcome = IssueOutcome.UNCERTAIN
+                        except Exception:  # pragma: no cover — frozen-model guard
+                            pass
+        pipeline_metadata.evidence_path_results = evidence_path_results
 
         prediction = PredictionResult(
             case_id=case_file.case_id,
