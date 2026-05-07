@@ -565,6 +565,16 @@ def _serialise_prediction(pred, raw_result: Any = None) -> dict:
         )
         out["rag_confidence"] = float(getattr(raw_result, "rag_confidence", 0.0) or 0.0)
         out["retrieval_quality"] = getattr(raw_result, "retrieval_quality", None)
+        # Stream C: surface pipeline_metadata so artifacts carry the full
+        # §17.6 / Cross-PR Contract C5 schema (kg_used_for_prediction,
+        # graph_quality_score, kg_fallback_mode, kg_gate_failure_reasons,
+        # core_schema, domain_pack, factor_catalog_version,
+        # evidence_path_results). Without this, downstream metrics like
+        # gate_pass_rate / two_slice_report run against empty metadata.
+        pipeline_meta = getattr(raw_result, "pipeline_metadata", None)
+        out["pipeline_metadata"] = (
+            _serialise_model(pipeline_meta) if pipeline_meta is not None else {}
+        )
     return out
 
 
