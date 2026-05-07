@@ -883,3 +883,85 @@ def test_pipeline_metadata_has_kg_fields_with_safe_defaults():
     assert m.kg_used_for_prediction is None
     assert m.kg_fallback_mode is None
     assert m.kg_gate_failure_reasons == []
+
+
+@pytest.mark.asyncio
+async def test_engine_resets_kg_metadata_between_runs(monkeypatch):
+    """Reusing an engine across runs (e.g. batch eval / multi-mode ablation)
+    must not leak ``kg_used_for_prediction`` from a prior call into the
+    next artifact.
+
+    The LLM_ONLY branch of ``_predict_issue_no_rag`` does NOT touch
+    ``IssuePredictor._last_kg_metadata``, so without an explicit reset at
+    the top of ``predict()``, a prior KG_ONLY/HYBRID call's gate metadata
+    would leak into a subsequent LLM_ONLY artifact's ``pipeline_metadata``.
+    Critical for the post-PR-6 4-mode ablation (Task R.2).
+    """
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,"reasoning":"r",'
+            '"supporting_cases":[],'
+            '"counterfactuals":[{"condition":"c","alternative_outcome":"o","confidence_shift":-0.1}],'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+
+    llm = MagicMock()
+    llm.generate = fake_generate
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock()  # spy: never invoked in KG_ONLY / LLM_ONLY paths
+
+    # One engine instance reused across both calls (mirrors PredictionService).
+    engine = PredictionEngineV2(llm_client=llm, rag_pipeline=rag)
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    # ── Run 1: KG_ONLY with a populated KG → kg_used_for_prediction=True ──
+    kg_1 = _build_late_protection_kg_for_engine()
+    case_file_1 = _make_deposit_case_file_for_engine("case_run1_kg_only")
+    result_1 = await engine.predict(
+        case_file=case_file_1,
+        knowledge_graph=kg_1,
+        mode=PredictionMode.KG_ONLY,
+    )
+    assert result_1.pipeline_metadata is not None
+    assert result_1.pipeline_metadata.kg_used_for_prediction is True, (
+        "Run 1 (KG_ONLY) should mark kg_used_for_prediction=True"
+    )
+
+    # ── Run 2: LLM_ONLY on the same engine instance ──
+    # The LLM_ONLY branch doesn't touch _last_kg_metadata, so without the
+    # reset added at the top of predict(), kg_used_for_prediction would
+    # leak from Run 1 (=True) into Run 2's artifact. With the reset, the
+    # safe default (None) is preserved.
+    kg_2 = _build_late_protection_kg_for_engine()
+    case_file_2 = _make_deposit_case_file_for_engine("case_run2_llm_only")
+    result_2 = await engine.predict(
+        case_file=case_file_2,
+        knowledge_graph=kg_2,
+        mode=PredictionMode.LLM_ONLY,
+    )
+    assert result_2.pipeline_metadata is not None
+    meta_2 = result_2.pipeline_metadata
+    assert meta_2.kg_used_for_prediction is None, (
+        "Run 2 (LLM_ONLY) must NOT inherit kg_used_for_prediction from Run 1"
+    )
+    assert meta_2.graph_quality_score is None
+    assert meta_2.kg_fallback_mode is None
+    assert meta_2.kg_gate_failure_reasons == []

@@ -101,6 +101,13 @@ class PredictionEngineV2:
     ) -> PredictionResult:
         start_time = time.time()
         strategy = retrieval_strategy or self.retrieval_strategy
+        # Reset stale KG metadata from any prior call on this engine instance.
+        # Critical for batch / multi-mode runs that reuse the same predictor:
+        # the LLM_ONLY branch of ``_predict_issue_no_rag`` does not touch
+        # ``_last_kg_metadata``, so without this reset a prior HYBRID/KG_ONLY
+        # call could leak ``kg_used_for_prediction`` into a subsequent
+        # LLM_ONLY artifact's ``pipeline_metadata``.
+        self.issue_predictor._last_kg_metadata = {}
         metadata = PipelineMetadata(
             mode=mode.value,
             retrieval_strategy=strategy.value,
