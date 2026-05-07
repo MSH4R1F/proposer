@@ -1,0 +1,12 @@
+# housing.deposit.v1 — Closed remedy ID list
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §19 PR 4
+domain_id: housing.deposit.v1
+remedies:
+  - id: deposit_return_full
+    description: "Full deposit returned to the tenant."
+  - id: deposit_return_partial
+    description: "Partial deposit returned to the tenant, partial retention by landlord."
+  - id: deposit_retained_landlord
+    description: "Landlord retains the disputed portion (or all) of the deposit."
+  - id: tdp_penalty_award
+    description: "Statutory 1x-3x deposit penalty awarded to the tenant under Housing Act 2004 s214."

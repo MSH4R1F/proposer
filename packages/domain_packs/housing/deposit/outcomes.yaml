@@ -1,0 +1,12 @@
+# housing.deposit.v1 — Closed outcome ID list
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §19 PR 4
+domain_id: housing.deposit.v1
+outcomes:
+  - id: tenant_wins_protection_breach
+    description: "Tenant wins on TDP protection / prescribed-information breach grounds."
+  - id: tenant_wins_damages
+    description: "Tenant wins on the damage / cleaning deductions limb of the claim."
+  - id: landlord_wins
+    description: "Landlord successfully defends the deposit deduction claim."
+  - id: split
+    description: "Mixed outcome with partial recovery for both parties."
