@@ -17,12 +17,13 @@ from domain_core.registry import (
 from domain_core.spec import DomainSpec, Forum, LaunchStage
 
 
-def test_load_domain_specs_loads_all_four_fixtures():
+def test_load_domain_specs_loads_all_five_fixtures():
     specs = load_domain_specs()
     assert set(specs.keys()) == {
         "housing.deposit.v1",
         "housing.repairs_social.v1",
         "housing.property_chamber.rro.v1",
+        "housing.rent_determination.v1",
         "employment.unfair_dismissal.v1",
     }
     for spec in specs.values():
@@ -69,7 +70,7 @@ def test_get_domain_spec_unknown_id_raises():
 def test_list_domain_specs_filters_by_stage():
     reset_cache()
     research = list_domain_specs(stage="research")
-    assert len(research) >= 4
+    assert len(research) >= 5
     for spec in research:
         assert spec.stage == LaunchStage.RESEARCH
 

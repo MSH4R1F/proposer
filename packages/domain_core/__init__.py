@@ -15,6 +15,7 @@ from domain_core.errors import (
 from domain_core.gates import GateArtifact
 from domain_core.hashing import hash_domain_spec
 from domain_core.ids import DomainFamily, DomainId
+from domain_core.pack_refs import PackReferenceSet, warn_if_missing
 from domain_core.registry import (
     get_domain_spec,
     list_domain_specs,
@@ -50,6 +51,7 @@ __all__ = [
     "ForumProfile",
     "GateArtifact",
     "LaunchStage",
+    "PackReferenceSet",
     "RetrievalNamespace",
     "SourceKind",
     "SourcePublisher",
@@ -57,4 +59,5 @@ __all__ = [
     "hash_domain_spec",
     "list_domain_specs",
     "load_domain_specs",
+    "warn_if_missing",
 ]

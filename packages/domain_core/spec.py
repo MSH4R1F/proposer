@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from domain_core.ids import DomainFamily, DomainId
+from domain_core.pack_refs import PackReferenceSet
 
 
 # ---------------------------------------------------------------------------
@@ -258,6 +259,7 @@ class DomainSpec(BaseModel):
     eval_gate: EvalGate
     safety_notes: List[str] = Field(default_factory=list)
     temporal_law_markers: List[TemporalLawMarker] = Field(default_factory=list)
+    pack_refs: Optional[PackReferenceSet] = None
 
     # ---- ref:// validators ----
 
