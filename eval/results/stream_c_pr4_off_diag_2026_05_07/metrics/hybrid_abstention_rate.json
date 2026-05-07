@@ -1,0 +1,13 @@
+{
+  "metric": "abstention_rate",
+  "metric_alias": "abstention_rate",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_pr4_off_diag_2026_05_07/hybrid.jsonl",
+  "point": 0.3125,
+  "lower_95": 0.1875,
+  "upper_95": 0.4583333333333333,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-07T16:37:39.041715+00:00"
+}
