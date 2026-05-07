@@ -502,9 +502,14 @@ class AnnotationDispatcher:
             if isinstance(result, BaseException):
                 # Substitute a placeholder annotation flagged for human review
                 # so one failure doesn't lose the other 899 successful results.
-                # The factor's value_type is preserved for downstream encoding.
-                vtype = (self._factors.get(fid).value_type
-                         if fid in self._factors else "boolean")
+                # self._factors holds dicts (see __init__), not FactorEntry
+                # objects — access via subscript. Default boolean if unknown.
+                factor_dict = self._factors.get(fid)
+                vtype = (
+                    factor_dict.get("value_type", "boolean")
+                    if isinstance(factor_dict, dict)
+                    else "boolean"
+                )
                 placeholder = Annotation(
                     case_id=case_id,
                     factor_id=fid,

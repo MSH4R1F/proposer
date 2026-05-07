@@ -1209,12 +1209,23 @@ class TestCLIExitCodes:
 
 
 class TestErrorPaths:
-    def test_raising_annotator_exits_nonzero(self, tmp_path, capsys, write_corpus):
+    def test_raising_annotator_substitutes_placeholder(
+        self, tmp_path, capsys, write_corpus
+    ):
+        """Per-call failures must NOT abort the run.
+
+        annotate_all should substitute a placeholder annotation flagged for
+        human review and continue, so one bad call doesn't lose the other
+        N-1 successful results. Verified post-2ec6668 graceful-failure fix.
+        """
+        import json
+
         mod = _load_cli()
         corpus_path = write_corpus(tmp_path)
         ok_client = FakeLLMClient(canned_value=True, annotator_id="ann-0")
         bad_client = RaisingClient(canned_value=True, annotator_id="ann-1")
 
+        out_path = tmp_path / "out.jsonl"
         exit_code = mod.cli_main(
             argv=[
                 "--domain", "housing.repairs_social.v1",
@@ -1223,20 +1234,40 @@ class TestErrorPaths:
                 "--factors", "repair_responsibility_established",
                 "--corpus-path", str(corpus_path),
                 "--annotators", "ann-0,ann-1",
+                "--output", str(out_path),
+                "--progress-every", "0",
             ],
             injected_clients=[ok_client, bad_client],
             repo_root=_REPO_ROOT,
         )
-        assert exit_code != 0
+        assert exit_code == 0
         captured = capsys.readouterr()
-        assert "Error" in captured.err or "error" in captured.err.lower()
+        # Stderr WARNING summarises the failure count and a sample.
+        assert "WARNING" in captured.err
+        assert "annotator calls failed" in captured.err
+        # Output JSONL has 6 rows (3 cases × 1 factor × 2 annotators); the
+        # 3 from the bad client are placeholders flagged for review.
+        rows = [json.loads(l) for l in out_path.read_text().splitlines()]
+        assert len(rows) == 6
+        flagged = [r for r in rows if r["requires_human_review"]]
+        assert len(flagged) == 3
+        for r in flagged:
+            assert r["annotator_id"] == "ann-1"
+            assert r["value"]["is_null"] is True
+            assert r["reasoning"].startswith("extraction_failed:")
 
-    def test_malformed_pydantic_exits_nonzero(self, tmp_path, capsys, write_corpus):
+    def test_malformed_pydantic_substitutes_placeholder(
+        self, tmp_path, capsys, write_corpus
+    ):
+        """Validation errors are also gracefully handled per task 2ec6668."""
+        import json
+
         mod = _load_cli()
         corpus_path = write_corpus(tmp_path)
         bad_client = MalformedClient(canned_value=True, annotator_id="ann-0")
         ok_client = FakeLLMClient(canned_value=True, annotator_id="ann-1")
 
+        out_path = tmp_path / "out.jsonl"
         exit_code = mod.cli_main(
             argv=[
                 "--domain", "housing.repairs_social.v1",
@@ -1245,11 +1276,20 @@ class TestErrorPaths:
                 "--factors", "repair_responsibility_established",
                 "--corpus-path", str(corpus_path),
                 "--annotators", "ann-0,ann-1",
+                "--output", str(out_path),
+                "--progress-every", "0",
             ],
             injected_clients=[bad_client, ok_client],
             repo_root=_REPO_ROOT,
         )
-        assert exit_code != 0
+        assert exit_code == 0
+        rows = [json.loads(l) for l in out_path.read_text().splitlines()]
+        assert len(rows) == 6
+        # Three of the six (the malformed-client annotations) are placeholders.
+        flagged = [r for r in rows if r["requires_human_review"]]
+        assert len(flagged) == 3
+        for r in flagged:
+            assert r["annotator_id"] == "ann-0"
 
     def test_wrong_injected_client_count_exits_1(self, tmp_path, capsys, write_corpus):
         mod = _load_cli()
