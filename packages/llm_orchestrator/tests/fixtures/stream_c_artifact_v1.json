@@ -1,0 +1,28 @@
+{
+  "case_id": "fixture_pr4_deposit_v1",
+  "prediction_id": "fixture_pred_v1",
+  "timestamp": "2026-05-07T00:00:00",
+  "overall_outcome": "tenant_wins",
+  "overall_confidence": 0.72,
+  "outcome_summary": "Late deposit protection (90 days) — TDP penalty likely.",
+  "pipeline_metadata": {
+    "total_llm_calls": 1,
+    "total_tokens_used": 3200,
+    "estimated_cost_gbp": 0.08,
+    "total_latency_ms": 4200,
+    "steps_executed": ["kg_only_path"],
+    "issues_decomposed": 1,
+    "issues_with_sufficient_cases": 1,
+    "fallbacks_used": [],
+    "mode": "kg_only",
+    "retrieval_strategy": "chunk_rag",
+    "agent_traces": [],
+    "graph_quality_score": 0.67,
+    "kg_used_for_prediction": true,
+    "kg_fallback_mode": null,
+    "kg_gate_failure_reasons": [],
+    "core_schema": "legal.core.v1",
+    "domain_pack": "housing.deposit.v1",
+    "factor_catalog_version": "d2cb333d4cc0c009"
+  }
+}

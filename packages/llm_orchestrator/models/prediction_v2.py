@@ -263,6 +263,17 @@ class PipelineMetadata(BaseModel):
     kg_fallback_mode: Optional[str] = None
     kg_gate_failure_reasons: List[str] = Field(default_factory=list)
 
+    # Stream C PR 4 Task 4.6b / Cross-PR Contract C5: schema and pack
+    # identifiers stamped onto every prediction artifact. ``core_schema``
+    # is a constant tracking the major version of the legal_core models;
+    # ``domain_pack`` records which pack was active for this prediction;
+    # ``factor_catalog_version`` is a SHA-256 prefix of the pack's
+    # factors.yaml so eval pipelines can detect silent ontology drift.
+    # See spec §17.6 + Cross-PR Contract C5.
+    core_schema: str = "legal.core.v1"
+    domain_pack: Optional[str] = None
+    factor_catalog_version: Optional[str] = None
+
 
 class PredictionResult(BaseModel):
     case_id: str

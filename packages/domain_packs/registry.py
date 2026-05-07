@@ -12,6 +12,7 @@ Usage:
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -32,6 +33,26 @@ from domain_packs.loaders import (
 
 
 _PACK_ROOT = Path(__file__).resolve().parent
+
+# Stream C PR 4 / Cross-PR Contract C5: cache the SHA-256 prefix of each
+# pack's factors.yaml. Computed once at first lookup since the file rarely
+# changes within a process lifetime, and the pack itself is already
+# memoized via lru_cache below.
+_FACTOR_CATALOG_VERSION_CACHE: dict[str, str] = {}
+
+
+def _factor_catalog_version_for(domain_id: str, pack_dir: Path) -> str:
+    """Return a stable 16-char hex prefix of SHA-256(factors.yaml).
+
+    Exposed to PipelineMetadata.factor_catalog_version so eval pipelines
+    can detect silent drift in the factor ontology between predictions.
+    """
+    if domain_id not in _FACTOR_CATALOG_VERSION_CACHE:
+        path = pack_dir / "factors.yaml"
+        _FACTOR_CATALOG_VERSION_CACHE[domain_id] = hashlib.sha256(
+            path.read_bytes()
+        ).hexdigest()[:16]
+    return _FACTOR_CATALOG_VERSION_CACHE[domain_id]
 
 
 class DomainPackNotFoundError(Exception):
@@ -59,6 +80,10 @@ class DomainPack:
     graph_quality_gate: GraphQualityGate
     extractor_strategy: ExtractorStrategy
     annotation_rubric: str
+    # Stream C PR 4 / Cross-PR Contract C5: 16-char hex prefix of
+    # SHA-256(factors.yaml). Surfaced by PipelineMetadata.factor_catalog_version
+    # so the eval pipeline can detect silent drift in the ontology.
+    factor_catalog_version: str = ""
 
     def render_factor_card(self, case_graph: Any) -> str:
         """Delegate to the per-pack renderer.py module.
@@ -140,4 +165,5 @@ def get_domain_pack(domain_id: str) -> DomainPack:
         graph_quality_gate=graph_quality_gate,
         extractor_strategy=extractor_strategy,
         annotation_rubric=annotation_rubric,
+        factor_catalog_version=_factor_catalog_version_for(domain_id, pack_dir),
     )

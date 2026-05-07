@@ -113,6 +113,32 @@ class PredictionEngineV2:
             retrieval_strategy=strategy.value,
         )
 
+        # Stream C PR 4 Task 4.6b / Cross-PR Contract C5: stamp the schema
+        # and pack identifiers onto the artifact. ``core_schema`` defaults
+        # to "legal.core.v1"; ``domain_pack`` is the active pack id; the
+        # version hash captures the pack's factors.yaml content so eval
+        # pipelines can spot ontology drift.
+        domain_id = getattr(case_file, "domain_id", None)
+        if domain_id:
+            metadata.domain_pack = domain_id
+            try:
+                from domain_packs.registry import (
+                    DomainPackNotFoundError,
+                    get_domain_pack,
+                )
+
+                pack = get_domain_pack(domain_id)
+                metadata.factor_catalog_version = pack.factor_catalog_version
+            except DomainPackNotFoundError:
+                # Unknown / unregistered pack: leave version None so the
+                # eval harness can flag it. Don't raise — the engine has
+                # historically tolerated legacy domain ids.
+                pass
+            except Exception:
+                # Defensive: any other lookup failure should not block a
+                # prediction. The artifact will simply lack the version.
+                pass
+
         logger.info(
             "prediction_v2_starting",
             case_id=case_file.case_id,
