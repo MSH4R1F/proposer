@@ -1,0 +1,13 @@
+{
+  "metric": "covered_accuracy",
+  "metric_alias": "covered_accuracy",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_post_merge_2026_05_07/hybrid.jsonl",
+  "point": 0.9375,
+  "lower_95": 0.84375,
+  "upper_95": 1.0,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-07T15:18:40.249112+00:00"
+}
