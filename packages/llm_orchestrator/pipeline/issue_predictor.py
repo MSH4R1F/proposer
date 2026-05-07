@@ -591,6 +591,7 @@ class IssuePredictor:
                 # rag_only is intentional, not a fallback from a KG attempt.
                 "kg_fallback_mode": None,
                 "kg_gate_failure_reasons": [],
+                "graph_quality_score": None,
             }
         else:
             case_graph = (
@@ -1329,6 +1330,7 @@ class IssuePredictor:
                 and bool(legacy_card),
                 "kg_fallback_mode": None,
                 "kg_gate_failure_reasons": [],
+                "graph_quality_score": None,
             }
 
         domain_id = getattr(case_file, "domain_id", None)
@@ -1338,6 +1340,7 @@ class IssuePredictor:
                 "kg_used_for_prediction": False,
                 "kg_fallback_mode": "legacy_no_domain_id",
                 "kg_gate_failure_reasons": ["case_file.domain_id is None"],
+                "graph_quality_score": None,
             }
 
         try:
@@ -1354,6 +1357,7 @@ class IssuePredictor:
                 "kg_gate_failure_reasons": [
                     f"unknown domain pack: {domain_id}"
                 ],
+                "graph_quality_score": None,
             }
 
         score = self._compute_graph_quality_score(case_file, case_graph)
@@ -1428,6 +1432,10 @@ class IssuePredictor:
             ]
             populated = sum(principal) + sum(detail)
             primary_known = sum(principal)
+            # HEURISTIC_PR4_ONLY: PR 5's real factor extractor replaces this.
+            # Single populated principal enum is counted as 2 evidence-backed factors
+            # to preserve deposit byte-equivalence — see Task 4.4 review.
+            #
             # Pre-PR-5 heuristic: any populated KGFacts that the legacy
             # renderer would have surfaced as a card MUST pass the gate, to
             # preserve byte-equivalence (Hard Constraint #2). Legacy emits
