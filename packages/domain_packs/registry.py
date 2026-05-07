@@ -65,15 +65,21 @@ class DomainPack:
 
         Per spec §19 PR 4: returns markdown string for the kg_fact_card
         slot in IRAC_USER_PROMPT and _format_repairs_user_prompt.
+
+        Raises DomainPackNotFoundError if the renderer module for this
+        domain has not been implemented yet (Tasks 4.2 / 4.3).
         """
-        # Lazy import to avoid circular deps at module load
         import importlib
 
-        # Map domain_id to the renderer module path.
-        # housing.repairs_social.v1 -> domain_packs.housing.repairs_social.renderer
         family, sub_family, _version = self.domain_id.split(".")
         module_path = f"domain_packs.{family}.{sub_family}.renderer"
-        renderer = importlib.import_module(module_path)
+        try:
+            renderer = importlib.import_module(module_path)
+        except ModuleNotFoundError as exc:
+            raise DomainPackNotFoundError(
+                f"Renderer module {module_path!r} not found for domain "
+                f"{self.domain_id!r}; this pack has no renderer.py yet."
+            ) from exc
         return renderer.render_factor_card(case_graph, self)
 
     def is_kg_usable(self, score: GraphQualityScore) -> bool:

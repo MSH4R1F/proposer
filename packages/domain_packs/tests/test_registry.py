@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
 
 from domain_packs.registry import (
     DomainPack,
@@ -22,6 +21,14 @@ def test_get_domain_pack_returns_pack_for_known_id():
 def test_get_domain_pack_unknown_id_raises():
     with pytest.raises(DomainPackNotFoundError):
         get_domain_pack("nonexistent.domain.v99")
+
+
+def test_get_domain_pack_registered_but_missing_dir_raises():
+    """housing.deposit.v1 is registered but its directory has not yet been scaffolded
+    (Task 4.2 lands it). The 'directory missing' branch must raise distinctly from
+    'unknown id'."""
+    with pytest.raises(DomainPackNotFoundError, match="directory missing"):
+        get_domain_pack("housing.deposit.v1")
 
 
 def test_domain_pack_is_frozen():
