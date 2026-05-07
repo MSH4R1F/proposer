@@ -139,6 +139,21 @@ def _gate_failure_reasons(score: GraphQualityScore, gate: Any) -> List[str]:
     return reasons
 
 
+def _suppress_empty_factor_card(prompt: str) -> str:
+    """Strip orphan blank lines that appear when {kg_fact_card} or
+    {abstention_warning} resolved to empty string.
+
+    Per Stream C recovery plan Task 2: empty KG sections damage the LLM's
+    interpretation of the prompt. When STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD=1
+    (default on), collapse runs of 3+ newlines to 2.
+    """
+    if os.getenv("STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD", "1") != "1":
+        return prompt
+    while "\n\n\n" in prompt:
+        prompt = prompt.replace("\n\n\n", "\n\n")
+    return prompt
+
+
 class IssuePredictor:
     def __init__(
         self,
@@ -315,30 +330,32 @@ class IssuePredictor:
                     ),
                     raw_confidence=0.2,
                 )
-            user_prompt = self._format_repairs_user_prompt(
-                issue=issue,
-                case_file=cf,
-                claimed_amount=claimed_amount,
-                tenant_claim_text=tenant_claim_text,
-                landlord_claim_text=landlord_claim_text,
-                evidence_summary=self._format_evidence_summary(issue),
-                evidence_conflicts=self._format_evidence_conflicts(issue),
-                timeline_summary=self._format_timeline(issue),
-                kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
-                if issue.kg_constraints
-                else "None identified",
-                kg_fact_card=kg_fact_card,
-                retrieved_cases=(
-                    f"No retrieved cases in {prompt_mode} mode. Leave "
-                    "supporting_cases empty. Do not include comparator awards, "
-                    "proposition IDs, paragraph references, or determination "
-                    "citations."
-                ),
-                num_retrieved_cases=0,
-                no_rag_mode=True,
-                abstention_warning=self._abstention_warning_for_issue(
-                    issue.issue_type
-                ),
+            user_prompt = _suppress_empty_factor_card(
+                self._format_repairs_user_prompt(
+                    issue=issue,
+                    case_file=cf,
+                    claimed_amount=claimed_amount,
+                    tenant_claim_text=tenant_claim_text,
+                    landlord_claim_text=landlord_claim_text,
+                    evidence_summary=self._format_evidence_summary(issue),
+                    evidence_conflicts=self._format_evidence_conflicts(issue),
+                    timeline_summary=self._format_timeline(issue),
+                    kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
+                    if issue.kg_constraints
+                    else "None identified",
+                    kg_fact_card=kg_fact_card,
+                    retrieved_cases=(
+                        f"No retrieved cases in {prompt_mode} mode. Leave "
+                        "supporting_cases empty. Do not include comparator awards, "
+                        "proposition IDs, paragraph references, or determination "
+                        "citations."
+                    ),
+                    num_retrieved_cases=0,
+                    no_rag_mode=True,
+                    abstention_warning=self._abstention_warning_for_issue(
+                        issue.issue_type
+                    ),
+                )
             )
             system_prompt = self._repairs_no_rag_system_prompt()
         elif prompt_mode == "llm_only":
@@ -365,34 +382,36 @@ class IssuePredictor:
                 cf, case_graph
             )
             self._last_kg_metadata = kg_meta
-            user_prompt = IRAC_USER_PROMPT.format(
-                issue_type=issue.issue_type.value,
-                issue_description=issue.issue_description,
-                deposit_amount=deposit_amount,
-                claimed_amount=f"{claimed_amount:.2f}"
-                if claimed_amount is not None
-                else "unknown",
-                tenancy_duration=tenancy_duration,
-                tenancy_type=tenancy_type,
-                region=region,
-                data_completeness=issue.data_completeness,
-                deposit_protection_summary="See KG fact card below."
-                if kg_fact_card
-                else "No deposit protection details available.",
-                kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
-                if issue.kg_constraints
-                else "None identified",
-                kg_fact_card=kg_fact_card,
-                abstention_warning=self._abstention_warning_for_issue(
-                    issue.issue_type
-                ),
-                evidence_summary=self._format_evidence_summary(issue),
-                evidence_conflicts=self._format_evidence_conflicts(issue),
-                timeline_summary=self._format_timeline(issue),
-                retrieved_cases="No retrieved cases in KG_ONLY mode.",
-                num_retrieved_cases=0,
-                tenant_claim=tenant_claim_text,
-                landlord_claim=landlord_claim_text,
+            user_prompt = _suppress_empty_factor_card(
+                IRAC_USER_PROMPT.format(
+                    issue_type=issue.issue_type.value,
+                    issue_description=issue.issue_description,
+                    deposit_amount=deposit_amount,
+                    claimed_amount=f"{claimed_amount:.2f}"
+                    if claimed_amount is not None
+                    else "unknown",
+                    tenancy_duration=tenancy_duration,
+                    tenancy_type=tenancy_type,
+                    region=region,
+                    data_completeness=issue.data_completeness,
+                    deposit_protection_summary="See KG fact card below."
+                    if kg_fact_card
+                    else "No deposit protection details available.",
+                    kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
+                    if issue.kg_constraints
+                    else "None identified",
+                    kg_fact_card=kg_fact_card,
+                    abstention_warning=self._abstention_warning_for_issue(
+                        issue.issue_type
+                    ),
+                    evidence_summary=self._format_evidence_summary(issue),
+                    evidence_conflicts=self._format_evidence_conflicts(issue),
+                    timeline_summary=self._format_timeline(issue),
+                    retrieved_cases="No retrieved cases in KG_ONLY mode.",
+                    num_retrieved_cases=0,
+                    tenant_claim=tenant_claim_text,
+                    landlord_claim=landlord_claim_text,
+                )
             )
             system_prompt = self._prediction_system_prompt
 
@@ -669,7 +688,9 @@ class IssuePredictor:
             "landlord_claim": landlord_claim_text,
         }
         try:
-            user_prompt = IRAC_USER_PROMPT.format(**prompt_kwargs)
+            user_prompt = _suppress_empty_factor_card(
+                IRAC_USER_PROMPT.format(**prompt_kwargs)
+            )
         except KeyError:
             user_prompt = (
                 f"Issue Type: {issue.issue_type.value}\n"
@@ -688,20 +709,22 @@ class IssuePredictor:
                 f"Retrieved Cases ({len(retrieval.results)}):\n{retrieved_cases_str}\n"
             )
         if self._is_repairs_case(cf, issue):
-            user_prompt = self._format_repairs_user_prompt(
-                issue=issue,
-                case_file=cf,
-                claimed_amount=claimed_amount,
-                tenant_claim_text=tenant_claim_text,
-                landlord_claim_text=landlord_claim_text,
-                evidence_summary=evidence_summary,
-                evidence_conflicts=evidence_conflicts,
-                timeline_summary=timeline_summary,
-                kg_constraints=prompt_kwargs["kg_constraints"],
-                kg_fact_card=kg_fact_card,
-                retrieved_cases=retrieved_cases_str,
-                num_retrieved_cases=len(retrieval.results),
-                abstention_warning=abstention_warning,
+            user_prompt = _suppress_empty_factor_card(
+                self._format_repairs_user_prompt(
+                    issue=issue,
+                    case_file=cf,
+                    claimed_amount=claimed_amount,
+                    tenant_claim_text=tenant_claim_text,
+                    landlord_claim_text=landlord_claim_text,
+                    evidence_summary=evidence_summary,
+                    evidence_conflicts=evidence_conflicts,
+                    timeline_summary=timeline_summary,
+                    kg_constraints=prompt_kwargs["kg_constraints"],
+                    kg_fact_card=kg_fact_card,
+                    retrieved_cases=retrieved_cases_str,
+                    num_retrieved_cases=len(retrieval.results),
+                    abstention_warning=abstention_warning,
+                )
             )
 
         system_prompt = self._prediction_system_prompt
