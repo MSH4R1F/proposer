@@ -16,6 +16,7 @@ from legal_core.graph.factor_assertion import (
 )
 from legal_core.graph.factor_value import FactorValue, FactorValueType
 from legal_core.graph.graph_quality import GraphQualityScore
+from legal_core.graph.outcome_component import OutcomeComponent, RemedyComponent
 
 __all__ = [
     "EvidenceSourceKind",
@@ -26,4 +27,6 @@ __all__ = [
     "FactorValue",
     "FactorValueType",
     "GraphQualityScore",
+    "OutcomeComponent",
+    "RemedyComponent",
 ]
