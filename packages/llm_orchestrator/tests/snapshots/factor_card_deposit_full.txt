@@ -1,0 +1,5 @@
+
+KEY KG FACTS (typed):
+- deposit_protection_status: protected_late (scheme: MyDeposits) (late by 14 days)
+- prescribed_information_status: provided_late (late by 30 days)
+- check_in_inventory_baseline: present
