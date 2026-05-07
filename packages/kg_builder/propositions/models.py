@@ -15,7 +15,7 @@ import re
 import unicodedata
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from uuid import NAMESPACE_OID, UUID, uuid4, uuid5
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -210,6 +210,27 @@ class Proposition(BaseModel):
     entities: list[str] = Field(default_factory=list)
     confidence: float = Field(ge=0.0, le=1.0)
     created_at: Optional[datetime] = None
+
+    # Stream C PR 5 — factor-constrained retrieval support (spec §10).
+    # All optional with safe defaults so existing data loads unchanged.
+    factor_ids: list[str] = Field(default_factory=list)
+    outcome_component_ids: list[str] = Field(default_factory=list)
+    remedy_component_ids: list[str] = Field(default_factory=list)
+    claim_head_ids: list[str] = Field(default_factory=list)
+    authority_level: Literal[
+        "statute",
+        "regulation",
+        "official_guidance",
+        "binding_precedent",
+        "persuasive",
+        "comparator",
+    ] = "comparator"
+    proposition_role: Literal[
+        "legal_test",
+        "factual_finding",
+        "fact_comparator",
+        "remedy_rationale",
+    ] = "fact_comparator"
 
     @model_validator(mode="after")
     def _check_spans(self) -> "Proposition":

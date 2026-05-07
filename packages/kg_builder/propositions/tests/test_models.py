@@ -276,3 +276,100 @@ def test_normalize_for_matching_collapses_whitespace():
 
 def test_normalize_for_matching_preserves_punctuation_and_case():
     assert normalize_for_matching("Section 213(3).") == "Section 213(3)."
+
+
+# ---------------------------------------------------------------------------
+# Stream C PR 5 — factor-constrained retrieval fields (Task 5.4)
+# ---------------------------------------------------------------------------
+
+
+def test_proposition_loads_existing_data_with_default_authority_level():
+    """Existing Proposition payloads (no PR 5 fields) load with safe defaults."""
+    prop = Proposition(**_valid_proposition_kwargs())
+    assert prop.factor_ids == []
+    assert prop.outcome_component_ids == []
+    assert prop.remedy_component_ids == []
+    assert prop.claim_head_ids == []
+    assert prop.authority_level == "comparator"
+    assert prop.proposition_role == "fact_comparator"
+
+
+def test_proposition_populates_new_fields_when_provided():
+    prop = Proposition(
+        **_valid_proposition_kwargs(
+            factor_ids=["repair_responsibility_established", "inspection_offered"],
+            outcome_component_ids=["oc_1"],
+            remedy_component_ids=["rc_1"],
+            claim_head_ids=["ch_1"],
+            authority_level="binding_precedent",
+            proposition_role="legal_test",
+        )
+    )
+    assert prop.factor_ids == [
+        "repair_responsibility_established",
+        "inspection_offered",
+    ]
+    assert prop.outcome_component_ids == ["oc_1"]
+    assert prop.remedy_component_ids == ["rc_1"]
+    assert prop.claim_head_ids == ["ch_1"]
+    assert prop.authority_level == "binding_precedent"
+    assert prop.proposition_role == "legal_test"
+
+
+def test_proposition_authority_level_closed_literal():
+    """Invalid authority_level values must raise ValidationError."""
+    with pytest.raises(ValidationError):
+        Proposition(
+            **_valid_proposition_kwargs(authority_level="not_a_valid_level")
+        )
+
+
+def test_proposition_authority_level_accepts_all_allowed_values():
+    allowed = [
+        "statute",
+        "regulation",
+        "official_guidance",
+        "binding_precedent",
+        "persuasive",
+        "comparator",
+    ]
+    for value in allowed:
+        prop = Proposition(**_valid_proposition_kwargs(authority_level=value))
+        assert prop.authority_level == value
+
+
+def test_proposition_role_closed_literal():
+    """Invalid proposition_role values must raise ValidationError."""
+    with pytest.raises(ValidationError):
+        Proposition(**_valid_proposition_kwargs(proposition_role="invalid_role"))
+
+
+def test_proposition_role_accepts_all_allowed_values():
+    allowed = [
+        "legal_test",
+        "factual_finding",
+        "fact_comparator",
+        "remedy_rationale",
+    ]
+    for value in allowed:
+        prop = Proposition(**_valid_proposition_kwargs(proposition_role=value))
+        assert prop.proposition_role == value
+
+
+def test_proposition_round_trip_with_new_fields_via_json():
+    """Full JSON round-trip including the new fields preserves equality."""
+    original = Proposition(
+        **_valid_proposition_kwargs(
+            factor_ids=["repair_responsibility_established"],
+            outcome_component_ids=["oc_alpha"],
+            remedy_component_ids=["rc_beta"],
+            claim_head_ids=["ch_gamma"],
+            authority_level="statute",
+            proposition_role="legal_test",
+        )
+    )
+    restored = Proposition.model_validate_json(original.model_dump_json())
+    assert original == restored
+    assert restored.factor_ids == ["repair_responsibility_established"]
+    assert restored.authority_level == "statute"
+    assert restored.proposition_role == "legal_test"
