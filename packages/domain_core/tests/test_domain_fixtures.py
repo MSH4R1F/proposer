@@ -9,10 +9,12 @@ stub placeholders; see the README there for re-enablement instructions.
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
 
 import pytest
 
+from domain_core.pack_refs import warn_if_missing
 from domain_core.registry import load_domain_specs
 from domain_core.spec import DomainSpec, Forum, LaunchStage
 
@@ -24,11 +26,12 @@ def specs() -> dict:
     return load_domain_specs()
 
 
-def test_all_four_specs_present(specs: dict):
+def test_all_five_specs_present(specs: dict):
     assert set(specs.keys()) == {
         "housing.deposit.v1",
         "housing.repairs_social.v1",
         "housing.property_chamber.rro.v1",
+        "housing.rent_determination.v1",
         "employment.unfair_dismissal.v1",
     }
 
@@ -114,6 +117,30 @@ def test_each_spec_has_aligned_forum_profiles(specs: dict):
         assert forum_set == profile_set, (
             f"{spec.id}: forums {forum_set} != profiles {profile_set}"
         )
+
+
+def test_all_existing_yamls_load_with_pack_refs_none(specs: dict):
+    """PR 2 backward-compat: every YAML loads, pack_refs defaults to None."""
+    for spec_id, spec in specs.items():
+        assert spec.pack_refs is None, (
+            f"{spec_id}: pack_refs should default to None during transition; "
+            f"got {spec.pack_refs!r}"
+        )
+
+
+def test_all_existing_yamls_warn_not_error_on_missing_pack_refs(specs: dict):
+    """Missing pack refs are a transition warning, not a load-time error."""
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        for spec_id, spec in specs.items():
+            warn_if_missing(spec_id=spec_id, pack_refs=spec.pack_refs)
+
+    matches = [
+        w
+        for w in caught
+        if issubclass(w.category, UserWarning) and "pack_refs" in str(w.message)
+    ]
+    assert len(matches) == len(specs)
 
 
 def test_frozen_deposit_parity_skipped_until_engine_snapshot():
