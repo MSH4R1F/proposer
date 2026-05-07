@@ -19,6 +19,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 
 _FIXTURE_PATH = Path(__file__).parent / "fixtures" / "stream_c_artifact_v1.json"
 
@@ -35,17 +37,6 @@ PR4_REQUIRED_KEYS = {
     "kg_used_for_prediction",
     "kg_fallback_mode",
     "kg_gate_failure_reasons",
-}
-
-PR5_REQUIRED_KEYS = PR4_REQUIRED_KEYS | {
-    "retrieval_profile",
-    "comparator_pass_n_retrieved",
-    "counterexample_pass_n_retrieved",
-    "abstention_recommended",
-}
-
-PR6_REQUIRED_KEYS = PR5_REQUIRED_KEYS | {
-    "evidence_path_results",
 }
 
 
@@ -132,3 +123,37 @@ def test_factor_catalog_version_matches_live_yaml():
         f"live={live_hash}. Either regenerate the fixture (factors.yaml "
         f"content changed) or revert the factors.yaml edit if unintended."
     )
+
+
+@pytest.mark.skip(reason="Enabled by Stream C PR 5 — extends with retrieval_profile, comparator/counterexample counts, abstention_recommended.")
+def test_pr5_metadata_keys_present():
+    """When PR 5 lands, regenerate fixtures/stream_c_artifact_v1.json with
+    the PR-5 metadata fields populated (or commit a separate
+    stream_c_artifact_v2.json) and remove the skip marker."""
+    pr5_required = PR4_REQUIRED_KEYS | {
+        "retrieval_profile",
+        "comparator_pass_n_retrieved",
+        "counterexample_pass_n_retrieved",
+        "abstention_recommended",
+    }
+    artifact = _load_fixture()
+    meta = artifact["pipeline_metadata"]
+    missing = pr5_required - set(meta)
+    assert not missing, f"PR 5 keys missing from artifact: {missing}"
+
+
+@pytest.mark.skip(reason="Enabled by Stream C PR 6 — extends with evidence_path_results.")
+def test_pr6_metadata_keys_present():
+    """When PR 6 lands, regenerate the fixture with evidence_path_results
+    populated and remove the skip marker."""
+    pr6_required = PR4_REQUIRED_KEYS | {
+        "retrieval_profile",
+        "comparator_pass_n_retrieved",
+        "counterexample_pass_n_retrieved",
+        "abstention_recommended",
+        "evidence_path_results",
+    }
+    artifact = _load_fixture()
+    meta = artifact["pipeline_metadata"]
+    missing = pr6_required - set(meta)
+    assert not missing, f"PR 6 keys missing from artifact: {missing}"

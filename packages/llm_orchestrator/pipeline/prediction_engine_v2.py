@@ -129,15 +129,19 @@ class PredictionEngineV2:
 
                 pack = get_domain_pack(domain_id)
                 metadata.factor_catalog_version = pack.factor_catalog_version
-            except DomainPackNotFoundError:
+            except DomainPackNotFoundError as exc:
                 # Unknown / unregistered pack: leave version None so the
                 # eval harness can flag it. Don't raise — the engine has
-                # historically tolerated legacy domain ids.
-                pass
-            except Exception:
-                # Defensive: any other lookup failure should not block a
-                # prediction. The artifact will simply lack the version.
-                pass
+                # historically tolerated legacy domain ids. Surface the
+                # miss as a structured warning so silent degradation is
+                # observable in logs (instead of a bare ``except: pass``
+                # that would also swallow real bugs like typos / FS errors).
+                logger.warning(
+                    "factor_catalog_version_lookup_failed",
+                    domain_id=domain_id,
+                    error=str(exc),
+                )
+                # Leave metadata.factor_catalog_version as the model default (None).
 
         logger.info(
             "prediction_v2_starting",
