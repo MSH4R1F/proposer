@@ -5,9 +5,9 @@
 **Date:** 2026-05-07 (updated with recovery results, same day)
 **Branch:** `codex/stream-c-prediction-path-plan` ([GitHub](https://github.com/MSH4R1F/proposer/tree/codex/stream-c-prediction-path-plan))
 **Reading time:** ~12 min
-**Headline (jump to bottom for the update):** the original 21pp `rag_only > hybrid` deficit **flipped to a +2.1pp surplus** after a same-day recovery sprint. **Hybrid now wins at 93.8% vs 91.7%.**
+**Headline (jump to §15 for the update):** the original 21pp `rag_only > hybrid` deficit **flipped to a +2.1pp surplus** after a same-day recovery sprint — hybrid now leads at 0.917 vs 0.896, but the lead is **exactly 1 case** out of 48 and the gain comes from routing-layer retrieval-payload size rather than from KG content reaching the prompt (see §15.3).
 
-> **Update note:** Sections 1–14 below are the original briefing as I wrote it. **Section 15 ("Recovery sprint — same-day update")** is the new headline result. If you're time-constrained, skim §15 first.
+> **Update note:** Sections 1–14 below are the original briefing as I wrote it. **Section 15 ("Recovery sprint — same-day update")** is the new headline result with three follow-up investigations that temper the original update's claims. If you're time-constrained, skim §15 first.
 
 ---
 
@@ -226,9 +226,9 @@ Combined: ~£100 + ~18 hours wall time. This is a planned PR series (PR 7 in the
 
 After writing the briefing above, I worked through a recovery plan that addresses the questions raised in §1 (TL;DR diagnosis) without waiting for the multi-week data backfill. The plan, the patches, and a re-ablation all landed on the same branch on 2026-05-07.
 
-**The 21pp deficit reversed to a +2.1pp surplus. Hybrid now wins.**
+**The 21pp deficit reversed to a +2.1pp surplus**, but the lead is one case out of 48 and **the win does not come from the knowledge graph** — `kg_used_for_prediction=False` on every hybrid row. Three follow-up investigations (§15.3) sharpen what the result actually shows.
 
-## What I changed (4 patches, 4 commits)
+## 15.1 What I changed (4 patches, 4 commits)
 
 The original ablation had two pathologies that masked the architecture's contribution:
 
@@ -244,48 +244,94 @@ The recovery sprint added four feature-flagged behaviour changes:
 | `STREAM_C_FORCE_ANSWER=1` | [`c8b839e`](https://github.com/MSH4R1F/proposer/commit/c8b839e) | Removes "uncertain" from the IRAC schema; post-processes any `outcome=uncertain` to `split` with capped confidence and an `[forced-answer fallback]` reasoning marker |
 | Metadata serialisation regression test | [`6264a93`](https://github.com/MSH4R1F/proposer/commit/6264a93) | Regression test for the `_serialise_prediction` bug found mid-ablation |
 
-Plus a one-case positive-control KG fixture ([`9352517`](https://github.com/MSH4R1F/proposer/commit/9352517)) and 6 smoke tests ([`e8f32fb`](https://github.com/MSH4R1F/proposer/commit/e8f32fb)) that **prove the FactorRetriever and EvidencePathValidator both light up correctly when given real factor data** — a 4-node chain `EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent` closes, the comparator pack returns ≥1 comparator + ≥1 counterexample, and `kg_used_for_prediction=True` reaches the artifact metadata. This is a critical positive result: the architecture's wiring is correct; the original ablation's `kg_used_for_prediction=False` everywhere was a data problem (no propositions tagged with `factor_ids`), not a wiring bug.
+Plus a one-case positive-control KG fixture ([`9352517`](https://github.com/MSH4R1F/proposer/commit/9352517)) and seven smoke tests across two commits ([`b01de8f`](https://github.com/MSH4R1F/proposer/commit/b01de8f), [`3ee4d49`](https://github.com/MSH4R1F/proposer/commit/3ee4d49)) that **prove the FactorRetriever and EvidencePathValidator both light up correctly when given real factor data** — a 4-node chain `EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent` closes, the comparator pack returns ≥1 comparator + ≥1 counterexample, and `kg_used_for_prediction=True` reaches the artifact metadata. **This is the critical positive result of the recovery sprint:** the architecture's wiring is correct; the original ablation's `kg_used_for_prediction=False` everywhere was a data problem (no propositions tagged with `factor_ids`), not a wiring bug.
 
-## Recovery ablation results
+## 15.2 Recovery ablation results (re-run, single clean launch)
 
-Same 48 cases, all four modes, recovery flags on (`STREAM_C_PR4=1`, `STREAM_C_FACTOR_RETRIEVAL=1`, `STREAM_C_EVIDENCE_PATH_STRICT=0`, `STREAM_C_FORCE_ANSWER=1`, `STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD=1`). ~£8.
+Same 48 cases, all four modes, recovery flags on (`STREAM_C_PR4=1`, `STREAM_C_FACTOR_RETRIEVAL=1`, `STREAM_C_EVIDENCE_PATH_STRICT=0`, `STREAM_C_FORCE_ANSWER=1`, `STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD=1`). ~£8. 2h20 wall time, 192 prediction sessions.
 
-| Mode | Acc (original) | Acc (recovery) | Δ | Macro F1 (recovery) | Bal. Acc (recovery) | Abstention (recovery) |
-|---|---|---|---|---|---|---|
-| **hybrid** | 0.625 [0.479, 0.771] | **0.938** [0.875, 1.000] | **+0.313** | 0.489 | 0.968 | 0.000 |
-| rag_only | 0.833 [0.729, 0.938] | 0.917 [0.833, 0.979] | +0.084 | **0.644** | 0.957 | 0.000 |
-| kg_only | 0.312 [0.188, 0.458] | 0.917 [0.833, 0.979] | +0.605 | 0.644 | 0.957 | 0.000 |
-| llm_only | 0.333 [0.208, 0.479] | 0.896 [0.792, 0.979] | +0.563 | 0.615 | 0.947 | 0.000 |
+| Mode | Acc (original) | Acc (recovery) | Δ | Macro F1 | Bal. Acc | ECE | Brier | Abstention |
+|---|---|---|---|---|---|---|---|---|
+| **hybrid** | 0.625 [0.479, 0.771] | **0.917** [0.833, 0.979] | **+0.292** | **0.644** | **0.957** | 0.466 | 0.241 | 0.000 |
+| rag_only | 0.833 [0.729, 0.938] | 0.896 [0.812, 0.979] | +0.063 | 0.615 | 0.947 | **0.456** | **0.234** | 0.000 |
+| kg_only | 0.312 [0.188, 0.458] | 0.854 [0.750, 0.938] | +0.542 | 0.571 | 0.926 | 0.545 | 0.335 | 0.000 |
+| llm_only | 0.333 [0.208, 0.479] | 0.875 [0.771, 0.958] | +0.542 | 0.591 | 0.936 | 0.561 | 0.342 | 0.000 |
+| _baseline_ `always_tenant` | _0.979_ | _0.979_ | _—_ | _0.495_ | _0.500_ | _0.021_ | _0.021_ | 0.000 |
 
-Multi-axis read:
-- **Hybrid wins on accuracy and balanced accuracy.** The thesis's headline empirical claim is now defensible.
-- **`rag_only` wins on macro F1.** Hybrid's higher accuracy comes partly from predicting the dominant class more often. Reviewers may push back on this — needs to be discussed honestly in the empirical chapter.
-- **All modes at 0% abstention** — the system always answers, with confidence capped/marked when evidence is weak.
-- **`kg_only` and `llm_only` jumped 60pp.** The original ablation's terrible numbers there were ENTIRELY abstention-driven; with forced-answer they're competitive.
+**Multi-axis read:**
+- **Hybrid wins on accuracy, balanced accuracy, and macro F1** (all by ~1–3pp).
+- **rag_only wins on ECE and Brier** by ~1pp. See §15.3.B for why.
+- **All modes at 0% abstention** — the system always answers; uncertainty is reported separately via confidence, evidence_support, evidence_strength.
+- **kg_only and llm_only jumped 50–55pp** — the original ablation's terrible numbers there were ENTIRELY abstention-driven; with forced-answer they're competitive.
+- **`always_tenant` constant baseline gets 0.979** (47/48 gold cases are tenant-wins). Raw accuracy is dominated by class imbalance on this corpus; balanced accuracy + macro F1 are the meaningful headlines.
 
-Full report: [`docs/eval/stream-c-recovery-ablation-2026-05-07.md`](stream-c-recovery-ablation-2026-05-07.md). Diagnostic note for the PR4=0 sanity test: [`docs/eval/stream-c-pr4-off-diagnostic-2026-05-07.md`](stream-c-pr4-off-diagnostic-2026-05-07.md). Recovery plan: [`docs/superpowers/plans/2026-05-07-stream-c-recovery-sprint.md`](../superpowers/plans/2026-05-07-stream-c-recovery-sprint.md).
+## 15.3 Three investigations the original update didn't address
 
-## How this changes the answers to your questions
+The §15.2 table is encouraging but each headline metric needs more scrutiny. I dug into three:
 
-- **Q1 (Is "architecture works but needs data backfill" enough?)** — Mostly moot now. Hybrid wins at 93.8% even *without* the data backfill, because the original deficit was patchable behaviour, not a missing feature. The data backfill becomes a "future work to widen the lead" item rather than "thesis-blocker."
+### A. The +2.1pp hybrid > rag_only delta is exactly 1 case
+
+Gold class distribution: tenant=47, landlord=1, split=0, n=48. Smallest measurable accuracy delta = 1/48 = 2.08pp. Hybrid's lead is exactly that. Confusion matrices:
+
+| Mode | tenant→landlord errors | total correct |
+|---|---|---|
+| hybrid | 4 | 44/48 |
+| rag_only | 5 | 43/48 |
+| kg_only | 7 | 41/48 |
+| llm_only | 6 | 42/48 |
+
+Both modes get the 1 gold-landlord case right; they differ on how many tenant cases they over-call landlord on. CIs overlap fully. **Multi-axis claims need a balanced or ≥150-case corpus to separate signal from noise.** Today's lead is real but at the resolution limit of this corpus.
+
+### B. Hybrid loses ECE/Brier because it's *more accurate* at the same confidence
+
+Confidence-bucket histograms (raw confidence binned 0–.2, .2–.4, .4–.6, .6–.8, .8–1):
+
+| Mode | [.4–.6] count | [.4–.6] accuracy | calibration gap |
+|---|---|---|---|
+| hybrid | 43 cases | **0.977** | predicted ~0.50, actual 0.98 → gap = **0.477** |
+| rag_only | 44 cases | 0.932 | predicted ~0.50, actual 0.93 → gap = 0.432 |
+
+Both modes commit at ~0.5 confidence on cases that are 93–98% correct. **All four modes are massively under-confident** — that's why ECE is ~0.46 across the board. Hybrid's ECE is *slightly worse* because it's more accurate at the same confidence (the calibration gap widens when you get more correct calls into the same low-confidence bucket). This is a "good model, bad confidence" pattern; the fix is calibration (temperature scaling, isotonic regression, or revising confidence-elicitation language in the prompt), not architectural change. The 1pp ECE gap between modes is within noise on n=48.
+
+### C. The KG never lit up — hybrid's lead is from routing, not graph content
+
+Pipeline-metadata audit:
+
+| Mode | `kg_used_for_prediction` | `retrieval_strategy` | `evidence_support` | mean retrieved cases | mean cases analysed |
+|---|---|---|---|---|---|
+| hybrid | `False` × 48 | `factor_constrained` × 48 | `None` × 48 | **2.9** | **6.8** |
+| rag_only | `False` × 48 | `chunk_rag` × 48 | `None` × 48 | 2.7 | 4.1 |
+| kg_only | `False` × 48 | `chunk_rag` × 48 | `None` × 48 | 0.0 | 0.0 |
+
+`kg_used_for_prediction=False` on every hybrid row — the KG never reaches the prompt. The architecture's hybrid path falls back to chunk-RAG content because the gold corpus has no factor data populated. **Hybrid's lead over rag_only is therefore NOT a graph-augmentation win.** It's a routing-layer effect: even when both modes call `_retrieve_chunk_rag` under the hood, the FACTOR_CONSTRAINED routing produces a richer downstream payload (mean 6.8 vs 4.1 cases analysed per prediction). The single disagreement case where hybrid was right and rag_only was wrong (`housing-ombudsman-202441018`, gold=tenant) shows hybrid had 5 retrieved cases vs rag_only's 2.
+
+This is uncomfortable for the thesis claim. The recovery-sprint headline of "hybrid wins" is technically true but the win is from a routing improvement that has nothing to do with the knowledge-graph architecture. **Hybrid's accuracy advantage on this corpus would survive deleting the KG entirely.** The Task 7 positive-control smoke test confirms the KG architecture activates correctly _when given real factor data_ — but on real gold, no factor data means no KG content reaches the prompt, means no graph-augmentation effect to measure.
+
+## 15.4 How this changes the answers to your questions
+
+- **Q1 (Is "architecture works but needs data backfill" enough?)** — Sharpened, not moot. The recovery sprint shows the architecture *doesn't harm accuracy* on real data and *activates correctly* on a hand-built positive control. But the §15.3.C finding means **the data backfill is still the rate-limiter for any "graph-augmented RAG lifts prediction" empirical claim.** The thesis empirical chapter can defensibly claim "fallback parity plus routing improvement" today; "hybrid > RAG-only because the KG helped" needs the backfill.
 - **Q2 (Is the £2 PR4=0 sanity check worth running?)** — Done. Result: empty card was a partial cause (~4pp). Worth the £2 to learn that empty placeholders DO matter but weren't dominant.
-- **Q3 (Lean into rag_only as the headline?)** — No longer needed. The factor-proposition KG-controlled architecture **wins** on the headline accuracy metric, even before the data backfill.
-- **Q4 (How to handle abstention rates?)** — Solved by forced-answer mode. Every case answers; uncertainty is reported separately via `confidence`, `evidence_support`, `evidence_strength`, `[forced-answer fallback]` markers in reasoning.
-- **Q5 (Open the PR now or wait?)** — Now strongly favours opening. The branch carries 39 commits including a full recovery sprint, a vindication ablation, a positive-control fixture, and 1,830+ unit tests. Splitting into PR 4 / PR 5 / PR 6 / Recovery is reasonable but adds review overhead — one big "Stream C + recovery" PR is also defensible given each piece's tests are independent.
+- **Q3 (Lean into rag_only as the headline?)** — No longer needed *if* you're comfortable with the §15.3.C caveat. The architecture wins by 1 case but the win is from the routing layer, not the KG. A reviewer reading the multi-axis section will see this honestly. If you'd prefer a cleaner thesis claim, the rag_only-as-headline option is still on the table.
+- **Q4 (How to handle abstention rates?)** — Solved by forced-answer mode. Every case answers; uncertainty is reported separately via `confidence`, `evidence_support`, `evidence_strength`, `[forced-answer fallback]` markers in reasoning. Empirically the forced-answer post-process never engaged (zero `[forced-answer fallback]` markers across 192 sessions) — the schema-side change alone was sufficient.
+- **Q5 (Open the PR now or wait?)** — Still favours opening, but with eyes open. The branch carries 41 commits including a full recovery sprint, a re-run ablation, a positive-control fixture, and 1,830+ unit tests. The honest framing for the PR description is "fallback-parity-plus + positive-control wiring confirmed; full graph-augmentation evaluation gated on factor-data backfill" — which is still a substantial shipped result.
 
-## Honest caveats (still applicable)
+## 15.5 Honest caveats
 
-1. **n=48, single domain, single corpus.** The +2.1pp hybrid > rag_only delta has overlapping CIs. The +60pp kg_only / llm_only jumps are decisive but dominated by the abstention fix, not by hybrid-specific architecture.
-2. **Macro F1 gap is real.** Hybrid's accuracy advantage may partly be class-prior bias. The discussion chapter should engage with this honestly rather than glossing over it.
-3. **Factor data still empty.** The factor-constrained retrieval and evidence-path validator still gracefully fall back. The next experiment (oracle-factor 20-case subset, or full factor-data backfill) tests whether populated factor data widens the hybrid > rag_only gap further.
-4. **Calibration is mediocre across all modes** (ECE 0.45–0.57). Stream C didn't fix calibration; that's a follow-up.
+1. **n=48, single domain, single corpus.** The +2.1pp hybrid > rag_only delta is one case; CIs overlap fully. The +50–55pp kg_only / llm_only jumps are decisive but dominated by the abstention fix, not by hybrid-specific architecture.
+2. **Class-imbalanced corpus.** 47/48 tenant-wins. `always_tenant` baseline scores 0.979. Balanced accuracy and macro F1 are the meaningful headlines, not raw accuracy.
+3. **The KG never actually fires on real data.** Hybrid's lead is from FACTOR_CONSTRAINED routing producing a larger retrieval payload than direct chunk-RAG, not from KG content reaching the prompt. The graph-augmentation claim is unevaluable until factor data is backfilled.
+4. **Macro F1 gap reverses prior framing.** Hybrid actually wins macro F1 (0.644 vs rag_only 0.615), not loses as the original same-day update stated. The earlier number came from a slightly different earlier run; my fresh re-run confirms hybrid leads on all winner-level metrics.
+5. **Calibration is mediocre across all modes** (ECE 0.45–0.56). Stream C didn't fix calibration; that's a follow-up.
+6. **Determination accuracy reverses the winner-level ranking.** rag_only beats hybrid on `predicted_determination` (0.500 vs 0.438) and on `maladministration` recall (0.677 vs 0.581). The retrieval payload appears to bias determination prediction toward the modal class. Worth investigating.
 
-## What I'd recommend doing next
+## 15.6 What I'd recommend doing next
 
-1. **Open the branch as a PR to main** — the architecture + recovery is now thesis-defensible.
-2. **Write the empirical chapter** with this dataset and the multi-axis framing.
-3. **Optional: oracle-factor 20-case experiment** to test whether populated factor data widens the hybrid lead further. ~£4 + 1–2 hours of manual factor annotation. Would be the strongest possible empirical result.
-4. **Optional: deposit pack ablation** to test cross-domain generalisation. Needs a deposit gold set first.
-5. **Long-run: full factor-data backfill** (~£100, ~18 hours) — now justified as "widen the lead" rather than "save the thesis."
+1. **Open the branch as a PR to main** — the architecture + recovery is shippable; the empirical claim is "fallback-parity-plus" rather than "graph-augmentation lift", but it's defensible.
+2. **Factor-data backfill, scoped to ~50 cases** — this is now the rate-limiter for a real graph-augmentation evaluation. Estimate: ~10 days of careful manual annotation by an annotator who knows the factor catalogue, or a hybrid LLM-extractor + manual-review approach (Stream B IAA suggests 13/15 factors are gate-countable with frontier models). Until this lands, "hybrid > rag_only because the KG helped" is unsupported.
+3. **Counterfactual-factor sensitivity harness** (recovery plan §3 axis) — for each case, flip one legally-relevant factor and re-run. Measure how often the prediction changes appropriately. The positive-control fixture is the seed case for this.
+4. **Calibration revision** — ECE 0.466 is poor. Either prompt-side (revise confidence-elicitation language) or post-hoc (temperature scaling on a held-out set).
+5. **Routing-layer attribution study** — understand why FACTOR_CONSTRAINED routing produces 2× more cases than direct chunk-RAG. If it's a useful side-effect of the seed-pass-then-fallback pattern, that's a contribution worth documenting separately.
 
-The thesis is in much better shape than this morning. Happy to discuss any of this on a call.
+The thesis is in better shape than this morning, but the original §15 update over-claimed. The defensible claim today is **fallback-parity-plus**: "we built the architecture, it doesn't harm accuracy when KG data is absent, the routing layer measurably enriches retrieval, and a positive-control test confirms the pipeline activates correctly when factor data is real. Quantifying the KG's contribution to prediction quality is gated on factor-data backfill into the gold corpus."
+
+Happy to discuss any of this on a call.
