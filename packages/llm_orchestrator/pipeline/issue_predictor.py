@@ -1499,6 +1499,15 @@ class IssuePredictor:
 
         Returns empty string when kg_facts is None or all-unknown so the
         prompt is byte-identical to today's for cases without KG signal.
+
+        DEPRECATED (Stream C PR 4): this is the legacy deposit-only renderer.
+        Production callers go through ``_render_factor_card_via_pack`` which
+        dispatches to ``DomainPack.render_factor_card`` when ``STREAM_C_PR4=1``
+        (default). This method is kept as the fallback path under
+        ``STREAM_C_PR4=0`` and as the byte-equivalence reference for
+        ``housing.deposit.v1``'s pack renderer. A post-Stream-C cleanup PR
+        will delete it once the deposit pack has shipped to one release
+        cycle.
         """
         if kg_facts is None:
             return ""
