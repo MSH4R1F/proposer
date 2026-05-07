@@ -87,6 +87,12 @@ class RetrievalStrategy(str, Enum):
     # See packages/llm_orchestrator/pipeline/retrieval_agent_loop.py
     # and docs/research/hybrid-rag-agentic-retrieval-plan-2026-05-05.md.
     AGENTIC = "agentic"
+    # Stream C PR 5 Task 5.5: factor-constrained two-pass retrieval
+    # (comparators + counterexamples) controlled by the active domain
+    # pack's retrieval_profile. See
+    # docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md
+    # §9 and packages/llm_orchestrator/pipeline/factor_retrieval.py.
+    FACTOR_CONSTRAINED = "factor_constrained"
 
 
 IssueType = DisputeIssue

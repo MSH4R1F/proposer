@@ -99,8 +99,23 @@ class PredictionEngineV2:
         *,
         matter_type: Optional[str] = None,
     ) -> PredictionResult:
+        import os
+
         start_time = time.time()
         strategy = retrieval_strategy or self.retrieval_strategy
+        # Stream C PR 5 Task 5.5: opt into factor-constrained retrieval at
+        # call time when STREAM_C_FACTOR_RETRIEVAL=1 and the prediction
+        # mode actually uses retrieval (HYBRID; KG_ONLY skips retrieval
+        # entirely below). Only override CHUNK_RAG / explicit defaults —
+        # callers picking PROPOSITION_PAGERANK or AGENTIC keep their
+        # selection (Hard Constraint #11: PageRank stays optional).
+        use_factor_retrieval = os.getenv("STREAM_C_FACTOR_RETRIEVAL", "0") == "1"
+        if (
+            use_factor_retrieval
+            and mode == PredictionMode.HYBRID
+            and strategy == RetrievalStrategy.CHUNK_RAG
+        ):
+            strategy = RetrievalStrategy.FACTOR_CONSTRAINED
         # Reset stale KG metadata from any prior call on this engine instance.
         # Critical for batch / multi-mode runs that reuse the same predictor:
         # the LLM_ONLY branch of ``_predict_issue_no_rag`` does not touch
@@ -239,6 +254,10 @@ class PredictionEngineV2:
         needs_chunk_rag = strategy in (
             RetrievalStrategy.CHUNK_RAG,
             RetrievalStrategy.HYBRID_CHUNK_PROPOSITION,
+            # FACTOR_CONSTRAINED falls back to CHUNK_RAG when prerequisites
+            # (asserted_factors, pack, repository) are missing, so a RAG
+            # pipeline must still be available for the fallback path.
+            RetrievalStrategy.FACTOR_CONSTRAINED,
         )
         needs_propositions = strategy in (
             RetrievalStrategy.PROPOSITION_DIRECT,
@@ -274,6 +293,11 @@ class PredictionEngineV2:
             )
             if repairs_hybrid:
                 metadata.steps_executed.append("retrieval_planning")
+            # Stream C PR 5 Task 5.5: mirror the per-issue case graph onto
+            # the retriever so FACTOR_CONSTRAINED can read factor_assertions
+            # off it. Mirrored unconditionally so legacy strategies are
+            # unaffected (the attribute is only consulted by the new branch).
+            self.issue_retriever._case_graph_by_issue = case_graph_by_issue
             retrieval_results = await self.issue_retriever.retrieve_all(
                 issues, case_file, top_k,
                 kg_facts_by_issue=kg_facts_by_issue,
