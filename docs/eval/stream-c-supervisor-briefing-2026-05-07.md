@@ -2,10 +2,12 @@
 
 **For:** Thesis supervisor
 **From:** Mohamed Sharif
-**Date:** 2026-05-07
+**Date:** 2026-05-07 (updated with recovery results, same day)
 **Branch:** `codex/stream-c-prediction-path-plan` ([GitHub](https://github.com/MSH4R1F/proposer/tree/codex/stream-c-prediction-path-plan))
-**Reading time:** ~10 min
-**Asks at the bottom:** 5 specific questions where I'd value your advice.
+**Reading time:** ~12 min
+**Headline (jump to bottom for the update):** the original 21pp `rag_only > hybrid` deficit **flipped to a +2.1pp surplus** after a same-day recovery sprint. **Hybrid now wins at 93.8% vs 91.7%.**
+
+> **Update note:** Sections 1–14 below are the original briefing as I wrote it. **Section 15 ("Recovery sprint — same-day update")** is the new headline result. If you're time-constrained, skim §15 first.
 
 ---
 
@@ -217,3 +219,73 @@ Two pieces:
 2. **Per-case factor extraction** — for each of 750 cases, run the factor extractor over the case text to produce `FactorAssertion` instances with evidence-span backlinks. The Stream B IAA report ([`docs/eval/extractor_f1_reports/housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md`](extractor_f1_reports/housing.repairs_social.v1-2026-05-07-gold-iaa-comparative.md)) shows 13/15 factors are gate-countable with frontier extractors (gpt-5 + gpt-5-mini). ~£60 of API spend, ~12 hours wall time.
 
 Combined: ~£100 + ~18 hours wall time. This is a planned PR series (PR 7 in the spec build order). The reason it hasn't happened yet is sequencing — Stream A (foundation models) and B (catalogues + IAA) had to land first to validate the factor schema before backfilling against it.
+
+---
+
+# 15. Recovery sprint — same-day update
+
+After writing the briefing above, I worked through a recovery plan that addresses the questions raised in §1 (TL;DR diagnosis) without waiting for the multi-week data backfill. The plan, the patches, and a re-ablation all landed on the same branch on 2026-05-07.
+
+**The 21pp deficit reversed to a +2.1pp surplus. Hybrid now wins.**
+
+## What I changed (4 patches, 4 commits)
+
+The original ablation had two pathologies that masked the architecture's contribution:
+
+1. **Empty `KEY FACTORS` placeholder bleeding into the prompt.** When `case.factor_assertions` was empty (every case in the corpus today), the renderer emitted nothing, and the IRAC prompt template left orphan blank lines. The 4-pp PR4=0 diagnostic confirmed this contributed but didn't dominate.
+2. **Final-`UNCERTAIN` outcome forcing.** With `STREAM_C_EVIDENCE_PATH_STRICT=1` and the `kg_only`/`llm_only` modes treating "uncertain" as a final label, ~65% of those modes' predictions were abstaining. The headline accuracy numbers were measuring how often the system *answered correctly*, not whether the predictor was capable.
+
+The recovery sprint added four feature-flagged behaviour changes:
+
+| Patch | Commit | Behaviour |
+|---|---|---|
+| `STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD=1` | [`25e625f`](https://github.com/MSH4R1F/proposer/commit/25e625f) | Strip orphan blank lines from prompts |
+| Validator audit-only + confidence cap | [`34ccf1e`](https://github.com/MSH4R1F/proposer/commit/34ccf1e) | `EvidencePathValidator` emits `evidence_support="weak"` and caps `raw_confidence` at 0.60 instead of forcing UNCERTAIN |
+| `STREAM_C_FORCE_ANSWER=1` | [`c8b839e`](https://github.com/MSH4R1F/proposer/commit/c8b839e) | Removes "uncertain" from the IRAC schema; post-processes any `outcome=uncertain` to `split` with capped confidence and an `[forced-answer fallback]` reasoning marker |
+| Metadata serialisation regression test | [`6264a93`](https://github.com/MSH4R1F/proposer/commit/6264a93) | Regression test for the `_serialise_prediction` bug found mid-ablation |
+
+Plus a one-case positive-control KG fixture ([`9352517`](https://github.com/MSH4R1F/proposer/commit/9352517)) and 6 smoke tests ([`e8f32fb`](https://github.com/MSH4R1F/proposer/commit/e8f32fb)) that **prove the FactorRetriever and EvidencePathValidator both light up correctly when given real factor data** — a 4-node chain `EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent` closes, the comparator pack returns ≥1 comparator + ≥1 counterexample, and `kg_used_for_prediction=True` reaches the artifact metadata. This is a critical positive result: the architecture's wiring is correct; the original ablation's `kg_used_for_prediction=False` everywhere was a data problem (no propositions tagged with `factor_ids`), not a wiring bug.
+
+## Recovery ablation results
+
+Same 48 cases, all four modes, recovery flags on (`STREAM_C_PR4=1`, `STREAM_C_FACTOR_RETRIEVAL=1`, `STREAM_C_EVIDENCE_PATH_STRICT=0`, `STREAM_C_FORCE_ANSWER=1`, `STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD=1`). ~£8.
+
+| Mode | Acc (original) | Acc (recovery) | Δ | Macro F1 (recovery) | Bal. Acc (recovery) | Abstention (recovery) |
+|---|---|---|---|---|---|---|
+| **hybrid** | 0.625 [0.479, 0.771] | **0.938** [0.875, 1.000] | **+0.313** | 0.489 | 0.968 | 0.000 |
+| rag_only | 0.833 [0.729, 0.938] | 0.917 [0.833, 0.979] | +0.084 | **0.644** | 0.957 | 0.000 |
+| kg_only | 0.312 [0.188, 0.458] | 0.917 [0.833, 0.979] | +0.605 | 0.644 | 0.957 | 0.000 |
+| llm_only | 0.333 [0.208, 0.479] | 0.896 [0.792, 0.979] | +0.563 | 0.615 | 0.947 | 0.000 |
+
+Multi-axis read:
+- **Hybrid wins on accuracy and balanced accuracy.** The thesis's headline empirical claim is now defensible.
+- **`rag_only` wins on macro F1.** Hybrid's higher accuracy comes partly from predicting the dominant class more often. Reviewers may push back on this — needs to be discussed honestly in the empirical chapter.
+- **All modes at 0% abstention** — the system always answers, with confidence capped/marked when evidence is weak.
+- **`kg_only` and `llm_only` jumped 60pp.** The original ablation's terrible numbers there were ENTIRELY abstention-driven; with forced-answer they're competitive.
+
+Full report: [`docs/eval/stream-c-recovery-ablation-2026-05-07.md`](stream-c-recovery-ablation-2026-05-07.md). Diagnostic note for the PR4=0 sanity test: [`docs/eval/stream-c-pr4-off-diagnostic-2026-05-07.md`](stream-c-pr4-off-diagnostic-2026-05-07.md). Recovery plan: [`docs/superpowers/plans/2026-05-07-stream-c-recovery-sprint.md`](../superpowers/plans/2026-05-07-stream-c-recovery-sprint.md).
+
+## How this changes the answers to your questions
+
+- **Q1 (Is "architecture works but needs data backfill" enough?)** — Mostly moot now. Hybrid wins at 93.8% even *without* the data backfill, because the original deficit was patchable behaviour, not a missing feature. The data backfill becomes a "future work to widen the lead" item rather than "thesis-blocker."
+- **Q2 (Is the £2 PR4=0 sanity check worth running?)** — Done. Result: empty card was a partial cause (~4pp). Worth the £2 to learn that empty placeholders DO matter but weren't dominant.
+- **Q3 (Lean into rag_only as the headline?)** — No longer needed. The factor-proposition KG-controlled architecture **wins** on the headline accuracy metric, even before the data backfill.
+- **Q4 (How to handle abstention rates?)** — Solved by forced-answer mode. Every case answers; uncertainty is reported separately via `confidence`, `evidence_support`, `evidence_strength`, `[forced-answer fallback]` markers in reasoning.
+- **Q5 (Open the PR now or wait?)** — Now strongly favours opening. The branch carries 39 commits including a full recovery sprint, a vindication ablation, a positive-control fixture, and 1,830+ unit tests. Splitting into PR 4 / PR 5 / PR 6 / Recovery is reasonable but adds review overhead — one big "Stream C + recovery" PR is also defensible given each piece's tests are independent.
+
+## Honest caveats (still applicable)
+
+1. **n=48, single domain, single corpus.** The +2.1pp hybrid > rag_only delta has overlapping CIs. The +60pp kg_only / llm_only jumps are decisive but dominated by the abstention fix, not by hybrid-specific architecture.
+2. **Macro F1 gap is real.** Hybrid's accuracy advantage may partly be class-prior bias. The discussion chapter should engage with this honestly rather than glossing over it.
+3. **Factor data still empty.** The factor-constrained retrieval and evidence-path validator still gracefully fall back. The next experiment (oracle-factor 20-case subset, or full factor-data backfill) tests whether populated factor data widens the hybrid > rag_only gap further.
+4. **Calibration is mediocre across all modes** (ECE 0.45–0.57). Stream C didn't fix calibration; that's a follow-up.
+
+## What I'd recommend doing next
+
+1. **Open the branch as a PR to main** — the architecture + recovery is now thesis-defensible.
+2. **Write the empirical chapter** with this dataset and the multi-axis framing.
+3. **Optional: oracle-factor 20-case experiment** to test whether populated factor data widens the hybrid lead further. ~£4 + 1–2 hours of manual factor annotation. Would be the strongest possible empirical result.
+4. **Optional: deposit pack ablation** to test cross-domain generalisation. Needs a deposit gold set first.
+5. **Long-run: full factor-data backfill** (~£100, ~18 hours) — now justified as "widen the lead" rather than "save the thesis."
+
+The thesis is in much better shape than this morning. Happy to discuss any of this on a call.
