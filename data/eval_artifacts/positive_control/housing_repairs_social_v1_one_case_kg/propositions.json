@@ -1,0 +1,180 @@
+[
+  {
+    "proposition_id": "b854d148-ed62-5c5c-a854-6a1f6bb3a9d7",
+    "document_id": "7bc00300-54a1-5cd2-ac5b-012eb6fef37c",
+    "case_reference": "positive-control-comparator-001",
+    "text": "Landlord's failure to inspect a reported damp and mould hazard for over 90 days, where statutory repair responsibility was established, was found to amount to maladministration.",
+    "source_passage": "The landlord did not attend or offer an inspection of the reported damp and mould for more than 90 days after the resident's initial report, despite the repair falling within its statutory and tenancy obligations. The Ombudsman finds maladministration in the landlord's handling of the repair report.",
+    "paragraph_ref": "P12",
+    "proposition_type": "outcome",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.9,
+    "factor_ids": [
+      "repair_responsibility_established",
+      "hazard_or_disrepair_reported",
+      "landlord_notice_established",
+      "inspection_delay_days"
+    ],
+    "outcome_component_ids": ["fault_finding"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "2336e4f8-10e0-58e4-be76-35483dbb2849",
+    "document_id": "869e449e-5315-57de-bbef-25639590bc14",
+    "case_reference": "positive-control-comparator-002",
+    "text": "A 180-day delay in completing damp and mould repairs after the landlord had notice of the disrepair was held to be maladministration, particularly where the resident's vulnerabilities were known.",
+    "source_passage": "The landlord did not complete the substantive damp and mould repair works for 180 days after notice of the disrepair, during which time the resident's known asthma worsened. The Ombudsman finds maladministration in the landlord's handling of the disrepair.",
+    "paragraph_ref": "P14",
+    "proposition_type": "outcome",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.92,
+    "factor_ids": [
+      "repair_responsibility_established",
+      "landlord_notice_established",
+      "repair_delay_days",
+      "vulnerability_known"
+    ],
+    "outcome_component_ids": ["fault_finding"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "741f7b64-a1bc-5011-b98e-050ed639ef6c",
+    "document_id": "205df9bd-9ce6-527a-820d-27a14e558f2a",
+    "case_reference": "positive-control-comparator-003",
+    "text": "Where the landlord did not offer an inspection within its own published target and the disrepair was a category 1 hazard, the Ombudsman found service failure progressing to maladministration on the inspection limb.",
+    "source_passage": "The landlord did not offer an inspection within its 28-day published target for the reported damp and mould, which constitutes a category 1 hazard. The Ombudsman finds maladministration in the inspection limb of the complaint.",
+    "paragraph_ref": "P10",
+    "proposition_type": "outcome",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.88,
+    "factor_ids": [
+      "inspection_offered",
+      "inspection_delay_days",
+      "hazard_or_disrepair_reported"
+    ],
+    "outcome_component_ids": ["fault_finding"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "21738950-869e-5046-a65d-3f4937bea4c1",
+    "document_id": "44c7afce-5f29-5c68-9856-65b31e450c93",
+    "case_reference": "positive-control-comparator-004",
+    "text": "A repair delay of more than 90 days where statutory repair responsibility is undisputed contributed to a maladministration finding for damp and mould.",
+    "source_passage": "Where the landlord's statutory repair responsibility was undisputed and the substantive damp and mould repair was not completed for more than 90 days, the Ombudsman determined that this delay supported a finding of maladministration.",
+    "paragraph_ref": "P22",
+    "proposition_type": "fact",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.86,
+    "factor_ids": [
+      "repair_responsibility_established",
+      "repair_delay_days"
+    ],
+    "outcome_component_ids": ["fault_finding"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "0969d9a7-37a8-5109-83e7-28a8051045dd",
+    "document_id": "4a4e1af4-d2fd-5af1-b3d2-6325b1a344ae",
+    "case_reference": "positive-control-comparator-005",
+    "text": "Resident-reported moderate impact from damp and mould — including aggravation of a known respiratory condition — supported a finding of maladministration when paired with extended repair delay.",
+    "source_passage": "The resident reported moderate impact from the damp and mould, including aggravation of her diagnosed asthma, while the repair was outstanding for an extended period. The Ombudsman took these factors together as supporting maladministration.",
+    "paragraph_ref": "P18",
+    "proposition_type": "fact",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.84,
+    "factor_ids": [
+      "impact_severity_reported",
+      "repair_delay_days",
+      "vulnerability_known"
+    ],
+    "outcome_component_ids": ["fault_finding"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "1e313884-5eac-5af4-85d0-a55889d6b7f2",
+    "document_id": "b42803df-b662-5ecc-8cb6-524484cc09e4",
+    "case_reference": "positive-control-comparator-006",
+    "text": "Failure to offer an inspection coupled with established notice of disrepair contributed to a maladministration finding on the landlord's response limb.",
+    "source_passage": "The landlord had clear notice of the reported disrepair from the resident's email and call log, yet did not offer or attempt an inspection. The Ombudsman finds maladministration in the landlord's response to the report.",
+    "paragraph_ref": "P9",
+    "proposition_type": "fact",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.85,
+    "factor_ids": [
+      "landlord_notice_established",
+      "inspection_offered",
+      "hazard_or_disrepair_reported"
+    ],
+    "outcome_component_ids": ["fault_finding"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "e926d2b6-866c-577f-838d-6ab805779d70",
+    "document_id": "7ad815ad-7421-579a-854a-7888854eb2d7",
+    "case_reference": "positive-control-counterexample-001",
+    "text": "Where the landlord offered and attempted an inspection within its published target and completed the repair promptly, the Ombudsman found no maladministration despite the resident's report.",
+    "source_passage": "The landlord offered an inspection within seven days of the resident's report and completed the substantive repair within 21 days. The Ombudsman finds no maladministration in the landlord's handling of the report.",
+    "paragraph_ref": "P11",
+    "proposition_type": "outcome",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.88,
+    "factor_ids": [
+      "repair_responsibility_established",
+      "hazard_or_disrepair_reported",
+      "inspection_offered",
+      "repair_attempted"
+    ],
+    "outcome_component_ids": ["no_fault"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  },
+  {
+    "proposition_id": "aac32f10-ad54-5633-adf1-33e8a7796a0d",
+    "document_id": "2bfa3aec-9fc7-5dff-b2ca-082c711b2d03",
+    "case_reference": "positive-control-counterexample-002",
+    "text": "A short inspection delay coupled with a documented compensation and apology offer prior to determination supported a finding of reasonable redress rather than maladministration.",
+    "source_passage": "The landlord delayed inspection by only 14 days and had already offered the resident a written apology and compensation prior to the Ombudsman's determination. The Ombudsman finds the landlord's pre-decision offer constitutes reasonable redress and there is no maladministration.",
+    "paragraph_ref": "P15",
+    "proposition_type": "outcome",
+    "issue_tags": ["housing.repairs_social.v1"],
+    "entities": [],
+    "confidence": 0.85,
+    "factor_ids": [
+      "inspection_offered",
+      "inspection_delay_days",
+      "prior_compensation_or_apology_offered"
+    ],
+    "outcome_component_ids": ["no_fault"],
+    "remedy_component_ids": [],
+    "claim_head_ids": ["repairs_damp_mould"],
+    "authority_level": "comparator",
+    "proposition_role": "fact_comparator"
+  }
+]

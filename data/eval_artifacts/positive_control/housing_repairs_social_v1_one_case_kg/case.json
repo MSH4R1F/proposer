@@ -1,0 +1,65 @@
+{
+  "schema_version": "v1",
+  "case_id": "positive-control-001",
+  "decision_date": "2025-04-15",
+  "region": "london",
+  "region_source": "Synthetic Borough Council (positive-control fixture; not a real determination)",
+  "case_size": "unknown",
+  "claim_types": ["disrepair"],
+  "source_pdf_sha256": "edb883877689f4c1348f6fe9526b8575c3c501c65f63533be3e02154a2a4a776",
+  "ocr_confidence": null,
+  "parties": [
+    {"role": "tenant", "represented": false},
+    {"role": "landlord", "represented": false}
+  ],
+  "facts": "The resident, a single parent with diagnosed asthma and a young child, lives in a one-bedroom social housing flat let by the landlord. On 12 December 2024 the resident reported persistent damp and visible black mould in the bedroom and bathroom to the landlord by phone and follow-up email. The landlord acknowledged receipt the same day and added the report to its repairs log. No inspection was offered or attempted within the landlord's published 28-day target. The first surveyor inspection took place on 11 April 2025 — 120 days after the initial report. Substantive repair works (mould treatment, replastering, ventilation upgrade) were not completed until 10 June 2025, 180 days after notice. During this period the landlord's correspondence with the resident contained two gaps of more than six weeks. The landlord's records do not show any contemporaneous risk assessment despite knowing of the resident's asthma and the child's age. The resident reported that her asthma worsened materially during the period and that she had to keep the child out of the bedroom. No interim alternative accommodation was offered. No apology or compensation was offered before the resident escalated to the Ombudsman.",
+  "evidence": [
+    {
+      "kind": "user_narrative",
+      "description": "Synthetic resident statement describing the damp and mould reports, the inspection delay, repair delay, and impact on the resident's asthma and her child.",
+      "provenance": {"page": 1, "paragraph": 1, "text_span": [0, 1200]}
+    },
+    {
+      "kind": "ombudsman_record",
+      "description": "Synthetic landlord repairs log and complaint correspondence demonstrating the report acknowledgement, inspection delay, and repair delay timestamps.",
+      "provenance": {"page": 2, "paragraph": 1, "text_span": [0, 800]}
+    }
+  ],
+  "evidence_unavailable_reason": null,
+  "statutory_basis": [],
+  "statutory_basis_unavailable_reason": "Positive-control fixture: statutory basis is intentionally omitted because this is a synthetic case used solely to exercise the FactorRetriever and EvidencePathValidator KG path; statutory citations would be fabricated.",
+  "cited_authorities": [],
+  "claimed_amounts": [],
+  "ground_truth_outcome": {
+    "overall_winner": "tenant",
+    "total_awarded_gbp": "0",
+    "per_issue": [],
+    "unapportioned_reason": "Positive-control fixture: synthetic case fixed at maladministration with no amount apportioned, because the smoke test only checks KG path activation, not award reconstruction.",
+    "determination": "maladministration",
+    "overall_winner_legacy": "tenant"
+  },
+  "key_reasoning_quotes": [
+    {
+      "text": "The landlord failed to inspect the reported damp and mould for 120 days and did not complete substantive repairs for 180 days, despite knowing the resident had asthma. This delay constitutes maladministration in the landlord's handling of the repair report.",
+      "provenance": {"page": 3, "paragraph": 4, "text_span": [10, 280]}
+    }
+  ],
+  "domain_id": "housing.repairs_social.v1",
+  "forum": "housing_ombudsman",
+  "source_url": null,
+  "source_license": "synthetic_fixture_internal_use",
+  "retrieval_namespace_id": "housing_repairs_social_v1",
+  "target_source_id": "positive-control-001",
+  "excluded_source_ids": [],
+  "law_effective_date": "2025-04-15",
+  "train_test_split": "test",
+  "source_publisher": "housing_ombudsman",
+  "source_kind": "ombudsman_determination",
+  "corpus_version": "positive_control_2026_05_07",
+  "matter_type": "repairs_damp_mould",
+  "negative_kind": null,
+  "expected_outcome": null,
+  "expected_redactions": [],
+  "expected_redacted_text": null,
+  "labeling_provenance": null
+}

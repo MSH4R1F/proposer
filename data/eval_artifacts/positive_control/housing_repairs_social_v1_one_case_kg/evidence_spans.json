@@ -1,0 +1,37 @@
+[
+  {
+    "evidence_span_id": "es_pc001_report",
+    "source_kind": "user_narrative",
+    "source_reference": "positive-control-001/resident_statement.txt",
+    "quote_text": "On 12 December 2024 I reported persistent damp and visible black mould in the bedroom and bathroom to the landlord by phone and follow-up email; the landlord acknowledged receipt the same day and added the report to its repairs log.",
+    "paragraph_range": "P1"
+  },
+  {
+    "evidence_span_id": "es_pc001_inspection_delay",
+    "source_kind": "ombudsman_determination",
+    "source_reference": "positive-control-001/landlord_repairs_log.txt",
+    "quote_text": "The landlord's first surveyor inspection of the reported damp and mould took place on 11 April 2025, 120 days after the initial report dated 12 December 2024. No earlier inspection was offered or attempted within the landlord's published 28-day target.",
+    "paragraph_range": "P3"
+  },
+  {
+    "evidence_span_id": "es_pc001_repair_delay",
+    "source_kind": "ombudsman_determination",
+    "source_reference": "positive-control-001/landlord_repairs_log.txt",
+    "quote_text": "Substantive repair works (mould treatment, replastering, ventilation upgrade) were completed on 10 June 2025, 180 days after the resident's initial notice of disrepair on 12 December 2024.",
+    "paragraph_range": "P4"
+  },
+  {
+    "evidence_span_id": "es_pc001_vulnerability",
+    "source_kind": "user_narrative",
+    "source_reference": "positive-control-001/resident_statement.txt",
+    "quote_text": "I have diagnosed asthma and a young child living with me; the landlord has been told this on the tenancy file and in correspondence, and the landlord's records show no contemporaneous risk assessment was carried out for the damp and mould report.",
+    "paragraph_range": "P5"
+  },
+  {
+    "evidence_span_id": "es_pc001_impact",
+    "source_kind": "user_narrative",
+    "source_reference": "positive-control-001/resident_statement.txt",
+    "quote_text": "My asthma worsened materially during the period the damp and mould was outstanding, and I had to keep my child out of the affected bedroom; the landlord did not offer any alternative accommodation.",
+    "paragraph_range": "P6"
+  }
+]

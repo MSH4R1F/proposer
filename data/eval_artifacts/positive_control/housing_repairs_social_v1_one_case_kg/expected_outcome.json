@@ -1,0 +1,11 @@
+{
+  "outcome": "fault_finding",
+  "determination": "maladministration",
+  "claim_head_id": "repairs_damp_mould",
+  "domain_id": "housing.repairs_social.v1",
+  "expected_kg_used_for_prediction": true,
+  "expected_retrieval_strategy": "factor_constrained",
+  "expected_evidence_path_supported": true,
+  "expected_comparator_pack_min_size": 1,
+  "expected_counterexample_pack_min_size": 1
+}
