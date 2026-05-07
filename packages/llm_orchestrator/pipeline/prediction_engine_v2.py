@@ -337,6 +337,13 @@ class PredictionEngineV2:
         self.issue_predictor._case_file = case_file
         self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
         self.issue_predictor._case_graph_by_issue = case_graph_by_issue
+        # Stream C PR 5 Task 5.6: mirror per-issue ComparatorPacks (only
+        # populated by the FACTOR_CONSTRAINED branch) onto the predictor so
+        # IRAC prompts can read counterexample_pass_metadata.
+        # abstention_recommended and emit a low-confidence warning.
+        self.issue_predictor._comparator_pack_by_issue = (
+            getattr(self.issue_retriever, "_comparator_pack_by_issue", {}) or {}
+        )
         # Thread the prompt mode so the rag_only gate inside _predict_issue
         # actually fires in production (it short-circuits the factor card).
         prompt_mode_str = (

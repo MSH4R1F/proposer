@@ -464,3 +464,173 @@ async def test_factor_constrained_falls_back_when_no_domain_id():
     # Fell through to chunk-RAG.
     assert len(rag.calls) >= 1
     assert isinstance(result, IssueRetrievalResult)
+
+
+# ---------------------------------------------------------------------------
+# 5. Task 5.6 — abstention warning surfaces in IRAC prompt when recommended
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_abstention_warning_in_prompt_when_recommended():
+    """When ``ComparatorPack.counterexample_pass_metadata.abstention_recommended``
+    is True, the IRAC user prompt contains the low-confidence warning.
+
+    Spec §9.3 / Task 5.6: the predictor reads
+    ``self._comparator_pack_by_issue`` (populated by the engine after
+    retrieval) and emits a warning string into the prompt whenever the
+    counterexample pass found no differential cases.
+    """
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext,
+        IssueRetrievalResult,
+        IssueType,
+    )
+    from llm_orchestrator.pipeline.comparator_pack import (
+        ComparatorPack,
+        ComparatorPassMetadata,
+        CounterexamplePassMetadata,
+    )
+    from llm_orchestrator.pipeline.issue_predictor import IssuePredictor
+
+    class _DummyLLM:
+        async def generate(self, messages, system_prompt, max_tokens, temperature):
+            raise AssertionError("LLM.generate must not be invoked here")
+
+    predictor = IssuePredictor(_DummyLLM())
+
+    # Pack with abstention_recommended=True for our issue.
+    pack = ComparatorPack(
+        comparators=[],
+        counterexamples=[],
+        comparator_pass_metadata=ComparatorPassMetadata(
+            n_retrieved=0,
+            weights_used={},
+        ),
+        counterexample_pass_metadata=CounterexamplePassMetadata(
+            n_retrieved=0,
+            k_overlap_min=2,
+            abstention_recommended=True,
+        ),
+    )
+    predictor._comparator_pack_by_issue = {IssueType.DEPOSIT_PROTECTION: pack}
+
+    # Capture the IRAC prompt.
+    captured: list[str] = []
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        captured.append(messages[0]["content"])
+        # Return a definite (non-uncertain) outcome so the predictor does
+        # not retry — we only want to assert against a single prompt.
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.4,"reasoning":"r",'
+            '"supporting_cases":[{"case_reference":"P1","year":2023,"quote":"q","relevance":"r"}],'
+            '"counterfactuals":[],'
+            '"evidence_strength":"weak","data_completeness_impact":"ok"}'
+        )
+
+    predictor.llm.generate = fake_generate  # type: ignore[assignment]
+
+    issue = IssueContext(
+        issue_type=IssueType.DEPOSIT_PROTECTION,
+        issue_description="late deposit protection",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    retrieval = IssueRetrievalResult(
+        issue_type=IssueType.DEPOSIT_PROTECTION,
+        results=[
+            {
+                "case_reference": "P1",
+                "year": 2023,
+                "chunk_text": "x",
+                "combined_score": 0.8,
+            }
+        ],
+        is_sufficient=True,
+        confidence=0.8,
+    )
+
+    await predictor._predict_issue(issue, retrieval, prompt_mode="hybrid")
+
+    assert len(captured) == 1
+    prompt = captured[0]
+    assert "Counterexample retrieval found no differential cases" in prompt
+    assert "low-confidence" in prompt
+
+
+@pytest.mark.asyncio
+async def test_no_abstention_warning_when_flag_false():
+    """Sanity check: when abstention_recommended=False, the warning string
+    is absent from the IRAC prompt (placeholder resolves to '')."""
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext,
+        IssueRetrievalResult,
+        IssueType,
+    )
+    from llm_orchestrator.pipeline.comparator_pack import (
+        ComparatorPack,
+        ComparatorPassMetadata,
+        CounterexamplePassMetadata,
+    )
+    from llm_orchestrator.pipeline.issue_predictor import IssuePredictor
+
+    class _DummyLLM:
+        async def generate(self, messages, system_prompt, max_tokens, temperature):
+            raise AssertionError("LLM.generate must not be invoked here")
+
+    predictor = IssuePredictor(_DummyLLM())
+
+    pack = ComparatorPack(
+        comparators=[],
+        counterexamples=[],
+        comparator_pass_metadata=ComparatorPassMetadata(
+            n_retrieved=0,
+            weights_used={},
+        ),
+        counterexample_pass_metadata=CounterexamplePassMetadata(
+            n_retrieved=2,
+            k_overlap_min=2,
+            abstention_recommended=False,
+        ),
+    )
+    predictor._comparator_pack_by_issue = {IssueType.DEPOSIT_PROTECTION: pack}
+
+    captured: list[str] = []
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        captured.append(messages[0]["content"])
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,"reasoning":"r",'
+            '"supporting_cases":[{"case_reference":"P1","year":2023,"quote":"q","relevance":"r"}],'
+            '"counterfactuals":[],"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+
+    predictor.llm.generate = fake_generate  # type: ignore[assignment]
+
+    issue = IssueContext(
+        issue_type=IssueType.DEPOSIT_PROTECTION,
+        issue_description="late deposit protection",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    retrieval = IssueRetrievalResult(
+        issue_type=IssueType.DEPOSIT_PROTECTION,
+        results=[
+            {
+                "case_reference": "P1",
+                "year": 2023,
+                "chunk_text": "x",
+                "combined_score": 0.8,
+            }
+        ],
+        is_sufficient=True,
+        confidence=0.8,
+    )
+
+    await predictor._predict_issue(issue, retrieval, prompt_mode="hybrid")
+
+    assert len(captured) == 1
+    prompt = captured[0]
+    assert "Counterexample retrieval found no differential cases" not in prompt
+    assert "low-confidence" not in prompt

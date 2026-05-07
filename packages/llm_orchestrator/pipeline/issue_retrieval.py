@@ -123,6 +123,10 @@ class IssueRetriever:
         # ``retrieve_all`` is called. Default empty so non-factor strategies
         # are unaffected.
         self._case_graph_by_issue: Dict[Any, Any] = {}
+        # Stream C PR 5 Task 5.6: stash the produced ComparatorPack per
+        # issue so the engine can copy abstention metadata onto the
+        # IssuePredictor before prompting. Empty for non-factor strategies.
+        self._comparator_pack_by_issue: Dict[Any, Any] = {}
 
     async def retrieve_all(
         self,
@@ -359,6 +363,9 @@ class IssueRetriever:
             control,
             primary_outcome="fault_finding",
         )
+        # Task 5.6: stash the pack so the engine can mirror it onto the
+        # IssuePredictor for abstention-warning rendering.
+        self._comparator_pack_by_issue[issue.issue_type] = pack_result
         return self._comparator_pack_to_issue_result(issue, pack_result)
 
     def _resolve_proposition_repository(self) -> Optional[Any]:

@@ -163,6 +163,34 @@ class IssuePredictor:
         # this run. The legacy IRAC text remains in use when no pack is
         # injected so existing deposit predictions stay schema-compatible.
         self._prompt_pack = prompt_pack
+        # Stream C PR 5 Task 5.6: per-issue ComparatorPack so the predictor
+        # can read ``counterexample_pass_metadata.abstention_recommended``
+        # and emit a low-confidence warning into the IRAC user prompt.
+        # Populated by ``prediction_engine_v2.predict()`` after retrieval.
+        # Default empty so non-factor strategies are unaffected.
+        self._last_comparator_pack: Optional[Any] = None
+        self._comparator_pack_by_issue: Dict[Any, Any] = {}
+
+    def _abstention_warning_for_issue(self, issue_type: Any) -> str:
+        """Return the IRAC abstention notice when the comparator pack for
+        ``issue_type`` flags ``abstention_recommended=True``.
+
+        Empty string when no pack is registered or the flag is False so the
+        ``{abstention_warning}`` placeholder resolves to "" and existing
+        snapshots stay byte-stable.
+        """
+        pack = self._comparator_pack_by_issue.get(issue_type)
+        if pack is None:
+            return ""
+        meta = getattr(pack, "counterexample_pass_metadata", None)
+        if meta is None:
+            return ""
+        if not getattr(meta, "abstention_recommended", False):
+            return ""
+        return (
+            "NOTE: Counterexample retrieval found no differential cases. "
+            "Treat any prediction as low-confidence."
+        )
 
     @property
     def _prediction_system_prompt(self) -> str:
@@ -308,6 +336,9 @@ class IssuePredictor:
                 ),
                 num_retrieved_cases=0,
                 no_rag_mode=True,
+                abstention_warning=self._abstention_warning_for_issue(
+                    issue.issue_type
+                ),
             )
             system_prompt = self._repairs_no_rag_system_prompt()
         elif prompt_mode == "llm_only":
@@ -352,6 +383,9 @@ class IssuePredictor:
                 if issue.kg_constraints
                 else "None identified",
                 kg_fact_card=kg_fact_card,
+                abstention_warning=self._abstention_warning_for_issue(
+                    issue.issue_type
+                ),
                 evidence_summary=self._format_evidence_summary(issue),
                 evidence_conflicts=self._format_evidence_conflicts(issue),
                 timeline_summary=self._format_timeline(issue),
@@ -604,6 +638,11 @@ class IssuePredictor:
             )
             self._last_kg_metadata = kg_meta
 
+        # Stream C PR 5 Task 5.6: emit a low-confidence notice into the IRAC
+        # prompt when the FactorRetriever's counterexample pass flagged
+        # abstention. Empty string otherwise → byte-stable for legacy paths.
+        abstention_warning = self._abstention_warning_for_issue(issue.issue_type)
+
         prompt_kwargs = {
             "issue_type": issue.issue_type.value,
             "issue_description": issue.issue_description,
@@ -620,6 +659,7 @@ class IssuePredictor:
             if issue.kg_constraints
             else "None identified",
             "kg_fact_card": kg_fact_card,
+            "abstention_warning": abstention_warning,
             "evidence_summary": evidence_summary,
             "evidence_conflicts": evidence_conflicts,
             "timeline_summary": timeline_summary,
@@ -661,6 +701,7 @@ class IssuePredictor:
                 kg_fact_card=kg_fact_card,
                 retrieved_cases=retrieved_cases_str,
                 num_retrieved_cases=len(retrieval.results),
+                abstention_warning=abstention_warning,
             )
 
         system_prompt = self._prediction_system_prompt
@@ -1059,6 +1100,7 @@ class IssuePredictor:
         retrieved_cases: str,
         num_retrieved_cases: int,
         no_rag_mode: bool = False,
+        abstention_warning: str = "",
     ) -> str:
         metadata = getattr(case_file, "metadata", None) if case_file is not None else None
         metadata = metadata if isinstance(metadata, dict) else {}
@@ -1070,6 +1112,9 @@ class IssuePredictor:
         amount = f"£{claimed_amount:.2f}" if claimed_amount is not None else "unknown"
 
         kg_section = kg_fact_card or "No structured KG fact card available."
+        abstention_section = (
+            f"{abstention_warning}\n\n" if abstention_warning else ""
+        )
         task_line = (
             "Task: Predict the likely Ombudsman complaint outcome from the "
             "pre-decision resident/landlord facts only. No retrieved "
@@ -1119,6 +1164,7 @@ class IssuePredictor:
             f"Evidence conflicts:\n{evidence_conflicts}\n\n"
             f"Timeline:\n{timeline_summary}\n\n"
             f"Structured fact card:\n{kg_section}\n\n"
+            f"{abstention_section}"
             f"KG constraints:\n{kg_constraints}\n\n"
             f"Retrieved Ombudsman determinations ({num_retrieved_cases}):\n"
             f"{retrieved_cases}\n\n"
