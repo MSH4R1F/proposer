@@ -1,0 +1,13 @@
+{
+  "metric": "balanced_accuracy",
+  "metric_alias": "balanced_accuracy",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_case_backfill_2026_05_09/hybrid.jsonl",
+  "point": 0.9361702127659575,
+  "lower_95": 0.8125,
+  "upper_95": 0.9787234042553192,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-09T12:39:35.981241+00:00"
+}

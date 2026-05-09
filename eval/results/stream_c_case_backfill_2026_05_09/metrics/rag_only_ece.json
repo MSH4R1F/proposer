@@ -1,0 +1,13 @@
+{
+  "metric": "expected_calibration_error",
+  "metric_alias": "ece",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_case_backfill_2026_05_09/rag_only.jsonl",
+  "point": 0.45187499999999997,
+  "lower_95": 0.40435937499999997,
+  "upper_95": 0.48792187499999984,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-09T12:39:38.251451+00:00"
+}
