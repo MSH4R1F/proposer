@@ -64,6 +64,17 @@ class KnowledgeGraph(BaseModel):
     # Metadata
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+    # Stream C case-side backfill (2026-05-08): factor assertions hydrated
+    # from a sidecar JSON file by the eval runner so the FactorRetriever
+    # KG path has a non-empty ``asserted_factors`` input. Typed as
+    # ``List[Any]`` to keep ``kg_builder`` free of a hard dependency on
+    # ``legal_core`` (the runtime values are
+    # ``legal_core.graph.factor_assertion.FactorAssertion`` instances).
+    # The IssueRetriever / EvidencePathValidator both read this attribute
+    # via ``getattr(..., "factor_assertions", []) or []`` so unset graphs
+    # behave exactly as before.
+    factor_assertions: List[Any] = Field(default_factory=list)
+
     # ------------------------------------------------------------------ #
     # SHA-61 / SHA-119: ontology + domain helpers
     # ------------------------------------------------------------------ #

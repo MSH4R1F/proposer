@@ -334,18 +334,39 @@ def _call_predict_fn(
     return predict_fn(case_file, mode)
 
 
-def _build_eval_knowledge_graph(case_file: Any, domain_id: str | None) -> Any:
+def _build_eval_knowledge_graph(
+    case_file: Any,
+    domain_id: str | None,
+    *,
+    factor_assertion_sidecar: Optional[dict] = None,
+) -> Any:
     """Build the same structured KG used by the product prediction service.
 
     Live eval should not call a mode "hybrid" while passing ``None`` for the
     knowledge graph. Building the graph here keeps the eval runner aligned
     with ``PredictionService`` and makes KG construction failures visible
     instead of silently degrading the ablation.
+
+    *factor_assertion_sidecar*, when provided, is a ``case_id -> List[FactorAssertion]``
+    map (output of :func:`eval.factor_assertion_sidecar.load_sidecar`). Stream C
+    case-side backfill: this hydrates the KG's ``factor_assertions`` field
+    so the FactorRetriever / EvidencePathValidator path actually fires
+    instead of falling back to chunk-RAG with an empty pack.
     """
     from kg_builder.builders.graph_builder import GraphBuilder
 
     builder = GraphBuilder(validate=False, domain_id=domain_id)
-    return builder.build(case_file)
+    kg = builder.build(case_file)
+
+    if factor_assertion_sidecar:
+        from eval.factor_assertion_sidecar import hydrate_knowledge_graph
+
+        kg = hydrate_knowledge_graph(
+            kg,
+            case_id=getattr(case_file, "case_id", "") or "",
+            sidecar=factor_assertion_sidecar,
+        )
+    return kg
 
 
 def _live_predict_fn_factory(
@@ -354,6 +375,7 @@ def _live_predict_fn_factory(
     rag_index_root: Optional[Path] = None,
     temporal_filters: bool = True,
     top_k: int = 10,
+    factor_assertion_sidecar: Optional[dict] = None,
 ) -> Callable:
     """Return a callable matching ``predict_fn(case_file, mode) -> PredictionResult``
     for the chosen LLM client. ``--client stub`` returns a deterministic
@@ -361,6 +383,10 @@ def _live_predict_fn_factory(
 
     The returned callable closes over the heavy imports, so the stub /
     test paths never pay the orchestrator import cost.
+
+    *factor_assertion_sidecar*, when provided, is a ``case_id -> List[FactorAssertion]``
+    map that hydrates the per-case KnowledgeGraph so the FactorRetriever's
+    ``asserted_factors`` input is populated (Stream C case-side backfill).
     """
     if client_name == "stub":
         return _stub_predict_fn
@@ -461,7 +487,11 @@ def _live_predict_fn_factory(
             )
         knowledge_graph = None
         if mode in (PredictionMode.HYBRID, PredictionMode.KG_ONLY):
-            knowledge_graph = _build_eval_knowledge_graph(case_file, domain_id)
+            knowledge_graph = _build_eval_knowledge_graph(
+                case_file,
+                domain_id,
+                factor_assertion_sidecar=factor_assertion_sidecar,
+            )
         engine = PredictionEngineV2(
             llm_client=llm, rag_pipeline=rag_pipeline, prompt_pack=prompt_pack
         )
@@ -486,6 +516,7 @@ def _resolve_predict_fn(
     rag_index_root: Optional[Path] = None,
     temporal_filters: bool = True,
     top_k: int = 10,
+    factor_assertion_sidecar: Optional[dict] = None,
 ) -> Callable:
     if engine == "stub":
         return _stub_predict_fn
@@ -501,6 +532,7 @@ def _resolve_predict_fn(
             rag_index_root=rag_index_root,
             temporal_filters=temporal_filters,
             top_k=top_k,
+            factor_assertion_sidecar=factor_assertion_sidecar,
         )
     raise ValueError(f"Unknown --engine {engine!r}; expected 'stub' or 'live'")
 
@@ -864,6 +896,19 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
             "legacy runner behavior at 10."
         ),
     )
+    parser.add_argument(
+        "--factor-assertion-sidecar",
+        type=Path,
+        default=None,
+        help=(
+            "Optional path to a Stream-C factor-assertion sidecar JSON "
+            "(see eval.factor_assertion_sidecar). When omitted, the runner "
+            "auto-resolves the canonical path "
+            "data/eval_artifacts/factor_assertions/<gold-stem>.factor_assertions.json. "
+            "If neither path exists, hybrid/kg_only modes run with empty "
+            "asserted_factors (legacy fallback)."
+        ),
+    )
     args = parser.parse_args(argv)
 
     modes = [m.strip() for m in args.modes.split(",") if m.strip()]
@@ -872,6 +917,28 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"Unknown mode(s): {invalid}; valid: {_VALID_MODES}", file=sys.stderr)
         return 2
 
+    # Stream C: load the case-side factor-assertion sidecar (if present).
+    # Default location is canonical; explicit --factor-assertion-sidecar
+    # overrides. A missing sidecar is NOT an error — eval still runs with
+    # the legacy empty-pack fallback so old eval scripts keep working.
+    from eval.factor_assertion_sidecar import (  # noqa: PLC0415
+        load_sidecar,
+        resolve_sidecar_for_gold_path,
+    )
+
+    sidecar_path = args.factor_assertion_sidecar
+    if sidecar_path is None:
+        sidecar_path = resolve_sidecar_for_gold_path(args.gold.resolve())
+    factor_assertion_sidecar: Optional[dict] = None
+    if sidecar_path.exists():
+        factor_assertion_sidecar = load_sidecar(sidecar_path)
+        n_cases = len(factor_assertion_sidecar)
+        n_assertions = sum(len(v) for v in factor_assertion_sidecar.values())
+        print(
+            f"Loaded factor-assertion sidecar from {sidecar_path}: "
+            f"{n_cases} cases, {n_assertions} assertions"
+        )
+
     try:
         predict_fn = _resolve_predict_fn(
             args.engine,
@@ -879,6 +946,7 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
             rag_index_root=args.rag_index_root,
             temporal_filters=not args.no_temporal_filter,
             top_k=args.top_k,
+            factor_assertion_sidecar=factor_assertion_sidecar,
         )
     except LiveClientNotConfigured as e:
         print(str(e), file=sys.stderr)
