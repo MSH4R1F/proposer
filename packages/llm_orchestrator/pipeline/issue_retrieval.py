@@ -116,6 +116,17 @@ class IssueRetriever:
         self.rag = rag_pipeline
         self.min_cases_required = min_cases_required
         self.proposition_retriever = proposition_retriever
+        # Stream C PR 5 Task 5.5: factor-constrained retrieval needs the
+        # per-issue case graph (which carries factor_assertions) to build
+        # its RetrievalControlInput. The engine mirrors its own
+        # ``case_graph_by_issue`` map onto the retriever before
+        # ``retrieve_all`` is called. Default empty so non-factor strategies
+        # are unaffected.
+        self._case_graph_by_issue: Dict[Any, Any] = {}
+        # Stream C PR 5 Task 5.6: stash the produced ComparatorPack per
+        # issue so the engine can copy abstention metadata onto the
+        # IssuePredictor before prompting. Empty for non-factor strategies.
+        self._comparator_pack_by_issue: Dict[Any, Any] = {}
 
     async def retrieve_all(
         self,
@@ -207,6 +218,27 @@ class IssueRetriever:
                 return prop_result
             return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
 
+        if retrieval_strategy == RetrievalStrategy.FACTOR_CONSTRAINED:
+            try:
+                factor_result = await self._retrieve_via_factor_retriever(
+                    issue=issue,
+                    case_file=case_file,
+                    top_k=top_k,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "factor_constrained_retrieval_failed",
+                    issue_type=issue.issue_type.value,
+                    error=str(exc),
+                )
+                factor_result = None
+            if factor_result is not None:
+                return factor_result
+            # D5 fallback: empty asserted_factors / unknown pack / no
+            # repository → fall through to the chunk-RAG default so the
+            # engine still yields a usable IssueRetrievalResult.
+            return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
+
         if retrieval_strategy == RetrievalStrategy.HYBRID_CHUNK_PROPOSITION:
             chunk_task = self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
             prop_task = self._retrieve_propositions(
@@ -248,6 +280,156 @@ class IssueRetriever:
             )
 
         return await self._retrieve_chunk_rag(issue, case_file, top_k, kg_facts, mode)
+
+    async def _retrieve_via_factor_retriever(
+        self,
+        *,
+        issue: IssueContext,
+        case_file: CaseFile,
+        top_k: int,
+    ) -> Optional[IssueRetrievalResult]:
+        """Construct a ``RetrievalControlInput`` from issue + case_file +
+        case_graph, then delegate to ``FactorRetriever.build_comparator_pack``.
+
+        Returns ``None`` when prerequisites are missing (no domain id, no
+        factor_assertions, unknown pack, or no proposition repository) so
+        the caller can fall back to chunk-RAG. Lazy imports keep the
+        dependency surface narrow when the strategy isn't selected.
+        """
+        domain_id = getattr(case_file, "domain_id", None)
+        if not domain_id:
+            return None
+
+        case_graph = self._case_graph_by_issue.get(issue.issue_type)
+        # The legacy ``KGFacts`` adapter does not expose ``factor_assertions``,
+        # so we simply read the attribute defensively. PR 5 case_graphs for
+        # repairs/etc. surface a ``factor_assertions`` list directly.
+        asserted_factors = list(getattr(case_graph, "factor_assertions", []) or [])
+        if not asserted_factors:
+            # D5 fallback: empty pack, fall through.
+            return None
+
+        # Resolve the DomainPack lazily so the retriever doesn't pay the
+        # registry cost for non-factor strategies.
+        try:
+            from domain_packs.registry import (  # type: ignore
+                DomainPackNotFoundError,
+                get_domain_pack,
+            )
+
+            pack = get_domain_pack(domain_id)
+        except Exception as exc:
+            logger.warning(
+                "factor_constrained_pack_lookup_failed",
+                domain_id=domain_id,
+                error=str(exc),
+            )
+            return None
+
+        # Pull a PropositionGraphRepository from the proposition_retriever
+        # so factor-constrained retrieval shares the exact data path.
+        repo = self._resolve_proposition_repository()
+        if repo is None:
+            logger.warning(
+                "factor_constrained_repository_unavailable",
+                issue_type=issue.issue_type.value,
+            )
+            return None
+
+        from llm_orchestrator.pipeline.factor_retrieval import (  # type: ignore
+            AuthorityPolicy,
+            FactorRetriever,
+            RetrievalControlInput,
+        )
+
+        control = RetrievalControlInput(
+            domain_id=domain_id,
+            claim_head_id=getattr(case_file, "case_id", None) or "unknown",
+            issue_ids=[str(issue.issue_type.value)],
+            asserted_factors=asserted_factors,
+            target_outcomes=[],
+            target_remedies=[],
+            forum=getattr(case_file, "forum", "ombudsman"),
+            authority_policy=AuthorityPolicy(),
+            retrieval_profile_id=domain_id,
+        )
+
+        retriever = FactorRetriever(repository=repo, pack=pack)
+        # Primary outcome is domain-aware in PR 5+. Until the engine
+        # threads a target outcome, default to ``fault_finding`` — the
+        # housing-repairs primary outcome — which the spec calls out as
+        # the canonical comparator anchor for that pack.
+        pack_result = await retriever.build_comparator_pack(
+            control,
+            primary_outcome="fault_finding",
+        )
+        # Task 5.6: stash the pack so the engine can mirror it onto the
+        # IssuePredictor for abstention-warning rendering.
+        self._comparator_pack_by_issue[issue.issue_type] = pack_result
+        return self._comparator_pack_to_issue_result(issue, pack_result)
+
+    def _resolve_proposition_repository(self) -> Optional[Any]:
+        """Pull a ``PropositionGraphRepository`` from the proposition_retriever.
+
+        ``PropositionRetriever`` wraps a repository on ``self.repository``;
+        we expose it here so factor-constrained retrieval shares the same
+        data path. Returns ``None`` when the attribute is absent so the
+        caller can fall back gracefully.
+        """
+        if self.proposition_retriever is None:
+            return None
+        return getattr(self.proposition_retriever, "repository", None)
+
+    def _comparator_pack_to_issue_result(
+        self,
+        issue: IssueContext,
+        pack: Any,
+    ) -> IssueRetrievalResult:
+        """Flatten a ComparatorPack into IssueRetrievalResult-style rows.
+
+        The downstream IRAC predictor accesses retrieval rows via
+        ``_get_value`` against either dicts or objects; we emit dicts with
+        both legacy keys (``case_reference``, ``chunk_text``,
+        ``combined_score``) and factor-pack-native annotations
+        (``proposition_role``, ``retrieval_purpose``) so the predictor
+        sees everything it expects without changes.
+        """
+        rows: List[Dict[str, Any]] = []
+        for ranked in getattr(pack, "comparators", []) or []:
+            rows.append(
+                {
+                    "case_reference": ranked.case_reference,
+                    "year": None,  # RankedProposition does not carry a year
+                    "chunk_text": ranked.text,
+                    "text": ranked.text,
+                    "combined_score": ranked.score,
+                    "rerank_score": ranked.score,
+                    "retrieval_purpose": "comparator",
+                    "proposition_role": ranked.proposition_role,
+                    "proposition_id": ranked.proposition_id,
+                }
+            )
+        for ranked in getattr(pack, "counterexamples", []) or []:
+            rows.append(
+                {
+                    "case_reference": ranked.case_reference,
+                    "year": None,
+                    "chunk_text": ranked.text,
+                    "text": ranked.text,
+                    "combined_score": ranked.score,
+                    "rerank_score": ranked.score,
+                    "retrieval_purpose": "counterexample",
+                    "proposition_role": ranked.proposition_role,
+                    "proposition_id": ranked.proposition_id,
+                }
+            )
+        comparator_count = len(getattr(pack, "comparators", []) or [])
+        return IssueRetrievalResult(
+            issue_type=issue.issue_type,
+            results=rows,
+            is_sufficient=comparator_count >= self.min_cases_required,
+            rag_confidence=0.8 if rows else 0.0,
+        )
 
     async def _retrieve_chunk_rag(
         self,

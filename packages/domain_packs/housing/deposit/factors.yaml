@@ -1,0 +1,66 @@
+# housing.deposit.v1 — minimal v1 catalog
+#
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §19 PR 4
+# Mirrors the three typed facts in packages/llm_orchestrator/pipeline/kg_facts.py
+# so the legacy IssuePredictor.render path can be replaced without behaviour change.
+#
+# Polarity convention (matches housing.repairs_social.v1):
+#   pro_claimant   — when present, pushes toward tenant-favourable findings
+#   pro_respondent — when present, pushes toward landlord-favourable findings
+#   neutral        — jurisdictional or routing factor; does not favour either party
+
+factors:
+
+  - id: deposit_protection_status
+    value_type: enum
+    polarity: pro_claimant
+    requires_evidence: true
+    enum_values:
+      - not_protected
+      - protected_late
+      - protected_on_time
+      - unknown
+    maps_to_outcomes:
+      - tenant_wins_protection_breach
+      - landlord_wins
+      - split
+    description: >-
+      Whether the deposit was protected in a Tenancy Deposit Protection scheme
+      on time, late, or never. Derived from the lease's deposit_received_date
+      and the date the scheme registered the deposit (statutory window: 30 days
+      under Housing Act 2004 ss213-215).
+
+  - id: prescribed_information_status
+    value_type: enum
+    polarity: pro_claimant
+    requires_evidence: true
+    enum_values:
+      - not_provided
+      - provided_late
+      - provided_on_time
+      - unknown
+    maps_to_outcomes:
+      - tenant_wins_protection_breach
+      - landlord_wins
+      - split
+    description: >-
+      Whether the prescribed information (TDP scheme details, scheme contact,
+      dispute process) was given to the tenant on time, late, or never. Same
+      30-day statutory window as protection itself (Housing Act 2004 s213(6)).
+
+  - id: check_in_inventory_baseline
+    value_type: enum
+    polarity: pro_respondent
+    requires_evidence: true
+    enum_values:
+      - present
+      - absent
+      - unknown
+    maps_to_outcomes:
+      - tenant_wins_damages
+      - landlord_wins
+      - split
+    description: >-
+      Whether a check-in inventory exists as a baseline for damage / cleaning
+      claims. Without it, the landlord typically cannot prove condition at the
+      start of the tenancy and most damage deductions are refused.

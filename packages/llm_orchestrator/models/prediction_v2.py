@@ -87,6 +87,12 @@ class RetrievalStrategy(str, Enum):
     # See packages/llm_orchestrator/pipeline/retrieval_agent_loop.py
     # and docs/research/hybrid-rag-agentic-retrieval-plan-2026-05-05.md.
     AGENTIC = "agentic"
+    # Stream C PR 5 Task 5.5: factor-constrained two-pass retrieval
+    # (comparators + counterexamples) controlled by the active domain
+    # pack's retrieval_profile. See
+    # docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md
+    # §9 and packages/llm_orchestrator/pipeline/factor_retrieval.py.
+    FACTOR_CONSTRAINED = "factor_constrained"
 
 
 IssueType = DisputeIssue
@@ -251,6 +257,41 @@ class PipelineMetadata(BaseModel):
     # is documented in docs/research/agentic-retrieval-architecture-research-2026-05-05.md
     # §3.4 (OpenTelemetry GenAI semantic-convention aligned).
     agent_traces: List[Dict[str, Any]] = Field(default_factory=list)
+
+    # Stream C PR 4 Task 4.5: KG-side metadata for the prediction artifact.
+    # Populated by ``PredictionEngineV2.predict()`` from
+    # ``IssuePredictor._last_kg_metadata`` after prediction completes. The
+    # latter reflects the LAST issue's render (single shared field on the
+    # predictor); PR 5 may upgrade this to per-issue metadata.
+    # See spec §17.6 + Cross-PR Contract C5.
+    graph_quality_score: Optional[float] = None
+    kg_used_for_prediction: Optional[bool] = None
+    kg_fallback_mode: Optional[str] = None
+    kg_gate_failure_reasons: List[str] = Field(default_factory=list)
+
+    # Stream C PR 4 Task 4.6b / Cross-PR Contract C5: schema and pack
+    # identifiers stamped onto every prediction artifact. ``core_schema``
+    # is a constant tracking the major version of the legal_core models;
+    # ``domain_pack`` records which pack was active for this prediction;
+    # ``factor_catalog_version`` is a SHA-256 prefix of the pack's
+    # factors.yaml so eval pipelines can detect silent ontology drift.
+    # See spec §17.6 + Cross-PR Contract C5.
+    core_schema: str = "legal.core.v1"
+    domain_pack: Optional[str] = None
+    factor_catalog_version: Optional[str] = None
+
+    # Stream C PR 6 / Cross-PR Contract C5 — evidence-path validation results.
+    # Empty list when validator is bypassed or no outcome_components exist.
+    evidence_path_results: List[Dict[str, Any]] = Field(default_factory=list)
+
+    # Stream C recovery plan Task 3 — evidence-path audit fields.
+    # ``evidence_support`` is one of {"strong", "weak", None}. Set "strong"
+    # when every validated outcome_component had a closed chain; "weak" when
+    # any chain was rejected; None when no validation occurred (no
+    # case_graph or no outcome_components). ``unsupported_claim_count`` is
+    # the count of rejected EvidencePathResult entries.
+    evidence_support: Optional[str] = None
+    unsupported_claim_count: int = 0
 
 
 class PredictionResult(BaseModel):

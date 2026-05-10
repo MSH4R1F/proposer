@@ -1,0 +1,144 @@
+{
+  "domain_id": "housing.repairs_social.v1",
+  "n_cases": 50,
+  "factors": [
+    "hazard_or_disrepair_reported",
+    "landlord_notice_established",
+    "repair_attempted",
+    "temporary_decant_or_alternative_offered",
+    "prior_compensation_or_apology_offered",
+    "issue_outside_jurisdiction",
+    "vulnerability_known",
+    "repair_responsibility_established",
+    "records_inadequate",
+    "inspection_delay_days",
+    "communication_gap_days",
+    "repair_delay_days",
+    "complaint_response_delay_days"
+  ],
+  "annotators": [
+    "openai:gpt-5",
+    "openai:gpt-5-mini"
+  ],
+  "seed": 42,
+  "date": "2026-05-09",
+  "per_factor_alpha": [
+    {
+      "factor_id": "hazard_or_disrepair_reported",
+      "alpha": 1.0,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "landlord_notice_established",
+      "alpha": null,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": "all annotations have identical value — alpha undefined (trivial agreement)"
+    },
+    {
+      "factor_id": "repair_attempted",
+      "alpha": 1.0,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "temporary_decant_or_alternative_offered",
+      "alpha": null,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "prior_compensation_or_apology_offered",
+      "alpha": null,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "issue_outside_jurisdiction",
+      "alpha": -0.0789,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "vulnerability_known",
+      "alpha": null,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "repair_responsibility_established",
+      "alpha": 1.0,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "records_inadequate",
+      "alpha": 1.0,
+      "n_pairs": 50,
+      "level_of_measurement": "nominal",
+      "note": ""
+    },
+    {
+      "factor_id": "inspection_delay_days",
+      "alpha": 0.37,
+      "n_pairs": 50,
+      "level_of_measurement": "interval",
+      "note": ""
+    },
+    {
+      "factor_id": "communication_gap_days",
+      "alpha": 0.092,
+      "n_pairs": 50,
+      "level_of_measurement": "interval",
+      "note": ""
+    },
+    {
+      "factor_id": "repair_delay_days",
+      "alpha": 0.7806,
+      "n_pairs": 50,
+      "level_of_measurement": "interval",
+      "note": ""
+    },
+    {
+      "factor_id": "complaint_response_delay_days",
+      "alpha": 0.6788,
+      "n_pairs": 50,
+      "level_of_measurement": "interval",
+      "note": ""
+    }
+  ],
+  "cost_report": {
+    "total_tokens_in": 5862095,
+    "total_tokens_out": 1669043,
+    "estimated_cost_usd": 0.0,
+    "estimated_cost_gbp": 0.0,
+    "per_annotator": [
+      {
+        "annotator_id": "openai:gpt-5",
+        "model": "gpt-5",
+        "provider": "openai",
+        "tokens_in": 2930772,
+        "tokens_out": 1000148,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "annotator_id": "openai:gpt-5-mini",
+        "model": "gpt-5-mini",
+        "provider": "openai",
+        "tokens_in": 2931323,
+        "tokens_out": 668895,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "note": "Estimated costs approximate; exchange rate fixed 0.80 USD/GBP."
+  },
+  "catalog_sha": null
+}

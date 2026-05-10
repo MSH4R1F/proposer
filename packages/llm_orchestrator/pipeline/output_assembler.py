@@ -1,3 +1,4 @@
+import os
 import structlog
 from typing import Any, Dict, List, Optional
 
@@ -17,6 +18,7 @@ from ..models.prediction_v2 import (
     ReasoningStep,
     VerificationResult,
 )
+from .evidence_path_validator import EvidencePathValidator
 
 logger = structlog.get_logger()
 
@@ -73,6 +75,7 @@ class OutputAssembler:
         pipeline_metadata: PipelineMetadata,
         *,
         matter_type: Optional[str] = None,
+        case_graph: Optional[Any] = None,
     ) -> PredictionResult:
         # SHA-20 Phase 6 (audit D3): resolve the matter_type so the
         # deposit_protection penalty branch (1x-3x) only fires for the
@@ -254,6 +257,47 @@ class OutputAssembler:
             total_issues=len(issue_predictions),
             amounts_known=has_explicit_recovery_amount,
         )
+
+        # Stream C PR 6 Tasks 6.1 + 6.2 / Cross-PR Contracts C4 + C5:
+        # walk EvidenceSpan → FactorAssertion → Proposition → OutcomeComponent
+        # for each claimed outcome component. Per Stream C recovery plan
+        # Task 3, the validator is now AUDIT-ONLY: it records evidence-path
+        # results + evidence_support metadata but never changes outcome.
+        # Strict mode (STREAM_C_EVIDENCE_PATH_STRICT=1) caps raw_confidence
+        # at 0.60 on rejected chains instead of vetoing the prediction.
+        evidence_path_results: List[Dict[str, Any]] = []
+        if case_graph is not None:
+            validator = EvidencePathValidator(case_graph=case_graph)
+            for issue_pred in issue_predictions:
+                outcome_components = getattr(issue_pred, "outcome_components", []) or []
+                for oc in outcome_components:
+                    result = validator.validate_outcome_component(oc)
+                    evidence_path_results.append(result.model_dump())
+        pipeline_metadata.evidence_path_results = evidence_path_results
+
+        # Stream C recovery T3: derive evidence_support + apply confidence cap
+        # under strict mode without touching outcome.
+        strict_validator = (
+            os.getenv("STREAM_C_EVIDENCE_PATH_STRICT", "0") == "1"
+        )
+        unsupported_results = [
+            r for r in evidence_path_results if not r.get("is_supported", False)
+        ]
+        if not evidence_path_results:
+            # No outcome_components were validated — leave evidence_support
+            # as None (the model default).
+            pass
+        elif unsupported_results:
+            pipeline_metadata.unsupported_claim_count = len(unsupported_results)
+            pipeline_metadata.evidence_support = "weak"
+            if strict_validator:
+                # Cap confidence on every issue prediction; do NOT change
+                # outcome. The audit metadata above already records WHY.
+                for issue_pred in issue_predictions:
+                    if issue_pred.raw_confidence > 0.60:
+                        issue_pred.raw_confidence = 0.60
+        else:
+            pipeline_metadata.evidence_support = "strong"
 
         prediction = PredictionResult(
             case_id=case_file.case_id,

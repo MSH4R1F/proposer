@@ -99,12 +99,64 @@ class PredictionEngineV2:
         *,
         matter_type: Optional[str] = None,
     ) -> PredictionResult:
+        import os
+
         start_time = time.time()
         strategy = retrieval_strategy or self.retrieval_strategy
+        # Stream C PR 5 Task 5.5: opt into factor-constrained retrieval at
+        # call time when STREAM_C_FACTOR_RETRIEVAL=1 and the prediction
+        # mode actually uses retrieval (HYBRID; KG_ONLY skips retrieval
+        # entirely below). Only override CHUNK_RAG / explicit defaults —
+        # callers picking PROPOSITION_PAGERANK or AGENTIC keep their
+        # selection (Hard Constraint #11: PageRank stays optional).
+        use_factor_retrieval = os.getenv("STREAM_C_FACTOR_RETRIEVAL", "0") == "1"
+        if (
+            use_factor_retrieval
+            and mode == PredictionMode.HYBRID
+            and strategy == RetrievalStrategy.CHUNK_RAG
+        ):
+            strategy = RetrievalStrategy.FACTOR_CONSTRAINED
+        # Reset stale KG metadata from any prior call on this engine instance.
+        # Critical for batch / multi-mode runs that reuse the same predictor:
+        # the LLM_ONLY branch of ``_predict_issue_no_rag`` does not touch
+        # ``_last_kg_metadata``, so without this reset a prior HYBRID/KG_ONLY
+        # call could leak ``kg_used_for_prediction`` into a subsequent
+        # LLM_ONLY artifact's ``pipeline_metadata``.
+        self.issue_predictor._last_kg_metadata = {}
         metadata = PipelineMetadata(
             mode=mode.value,
             retrieval_strategy=strategy.value,
         )
+
+        # Stream C PR 4 Task 4.6b / Cross-PR Contract C5: stamp the schema
+        # and pack identifiers onto the artifact. ``core_schema`` defaults
+        # to "legal.core.v1"; ``domain_pack`` is the active pack id; the
+        # version hash captures the pack's factors.yaml content so eval
+        # pipelines can spot ontology drift.
+        domain_id = getattr(case_file, "domain_id", None)
+        if domain_id:
+            metadata.domain_pack = domain_id
+            try:
+                from domain_packs.registry import (
+                    DomainPackNotFoundError,
+                    get_domain_pack,
+                )
+
+                pack = get_domain_pack(domain_id)
+                metadata.factor_catalog_version = pack.factor_catalog_version
+            except DomainPackNotFoundError as exc:
+                # Unknown / unregistered pack: leave version None so the
+                # eval harness can flag it. Don't raise — the engine has
+                # historically tolerated legacy domain ids. Surface the
+                # miss as a structured warning so silent degradation is
+                # observable in logs (instead of a bare ``except: pass``
+                # that would also swallow real bugs like typos / FS errors).
+                logger.warning(
+                    "factor_catalog_version_lookup_failed",
+                    domain_id=domain_id,
+                    error=str(exc),
+                )
+                # Leave metadata.factor_catalog_version as the model default (None).
 
         logger.info(
             "prediction_v2_starting",
@@ -151,15 +203,37 @@ class PredictionEngineV2:
                     knowledge_graph, issue.issue_type
                 )
 
+        # Stream C PR 4 Task 4.5: build the per-issue case_graph map. For
+        # housing.deposit.v1, the deposit pack's render_factor_card accepts
+        # the legacy ``KGFacts`` adapter directly, so we reuse it. For
+        # repairs (and future domains), the pack reads FactorAssertion
+        # nodes off the full KnowledgeGraph. CaseFile may not carry a
+        # domain_id on legacy fixtures — default to deposit in that case.
+        case_graph_by_issue: Dict[Any, Any] = {}
+        if knowledge_graph is not None and mode in (
+            PredictionMode.HYBRID,
+            PredictionMode.KG_ONLY,
+        ):
+            domain_id = getattr(case_file, "domain_id", None) or "housing.deposit.v1"
+            for issue in issues:
+                if domain_id == "housing.deposit.v1":
+                    case_graph_by_issue[issue.issue_type] = kg_facts_by_issue.get(
+                        issue.issue_type
+                    )
+                else:
+                    case_graph_by_issue[issue.issue_type] = knowledge_graph
+
         # ── Modes that skip retrieval entirely (LLM_ONLY, KG_ONLY) ──
         if mode in (PredictionMode.LLM_ONLY, PredictionMode.KG_ONLY):
             self.issue_predictor._case_file = case_file
             self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
+            self.issue_predictor._case_graph_by_issue = case_graph_by_issue
             prompt_mode = "llm_only" if mode == PredictionMode.LLM_ONLY else "kg_only"
             metadata.steps_executed.append(f"{prompt_mode}_path")
             issue_predictions = await self.issue_predictor.predict_no_rag(
                 issues, prompt_mode=prompt_mode,
             )
+            self._copy_kg_metadata_to_pipeline(metadata)
             metadata.total_llm_calls = sum(
                 1 for ip in issue_predictions
                 if ip.outcome != IssueOutcome.UNCERTAIN
@@ -174,12 +248,17 @@ class PredictionEngineV2:
                 verification=CitationVerifier.empty_verification(),
                 pipeline_metadata=metadata,
                 matter_type=matter_type,
+                case_graph=knowledge_graph,
             )
 
         # ── Step 2: Per-Issue Retrieval (parallel retriever calls) ──
         needs_chunk_rag = strategy in (
             RetrievalStrategy.CHUNK_RAG,
             RetrievalStrategy.HYBRID_CHUNK_PROPOSITION,
+            # FACTOR_CONSTRAINED falls back to CHUNK_RAG when prerequisites
+            # (asserted_factors, pack, repository) are missing, so a RAG
+            # pipeline must still be available for the fallback path.
+            RetrievalStrategy.FACTOR_CONSTRAINED,
         )
         needs_propositions = strategy in (
             RetrievalStrategy.PROPOSITION_DIRECT,
@@ -215,6 +294,11 @@ class PredictionEngineV2:
             )
             if repairs_hybrid:
                 metadata.steps_executed.append("retrieval_planning")
+            # Stream C PR 5 Task 5.5: mirror the per-issue case graph onto
+            # the retriever so FACTOR_CONSTRAINED can read factor_assertions
+            # off it. Mirrored unconditionally so legacy strategies are
+            # unaffected (the attribute is only consulted by the new branch).
+            self.issue_retriever._case_graph_by_issue = case_graph_by_issue
             retrieval_results = await self.issue_retriever.retrieve_all(
                 issues, case_file, top_k,
                 kg_facts_by_issue=kg_facts_by_issue,
@@ -253,9 +337,30 @@ class PredictionEngineV2:
         # ── Step 3: Per-Issue Prediction (parallel LLM calls) ──
         self.issue_predictor._case_file = case_file
         self.issue_predictor._kg_facts_by_issue = kg_facts_by_issue
-        issue_predictions = await self.issue_predictor.predict_all(
-            issues, retrieval_results, case_file=case_file
+        self.issue_predictor._case_graph_by_issue = case_graph_by_issue
+        # Stream C PR 5 Task 5.6: mirror per-issue ComparatorPacks (only
+        # populated by the FACTOR_CONSTRAINED branch) onto the predictor so
+        # IRAC prompts can read counterexample_pass_metadata.
+        # abstention_recommended and emit a low-confidence warning.
+        self.issue_predictor._comparator_pack_by_issue = (
+            getattr(self.issue_retriever, "_comparator_pack_by_issue", {}) or {}
         )
+        # Thread the prompt mode so the rag_only gate inside _predict_issue
+        # actually fires in production (it short-circuits the factor card).
+        prompt_mode_str = (
+            "rag_only" if mode == PredictionMode.RAG_ONLY else "hybrid"
+        )
+        issue_predictions = await self.issue_predictor.predict_all(
+            issues,
+            retrieval_results,
+            case_file=case_file,
+            prompt_mode=prompt_mode_str,
+        )
+        # Surface KG gate metadata into the artifact (§17.6 / Cross-PR C5).
+        # NOTE: ``_last_kg_metadata`` reflects the LAST issue's render, since
+        # IssuePredictor mutates a single shared field. PR 5 may upgrade this
+        # to per-issue metadata once factor extraction lands.
+        self._copy_kg_metadata_to_pipeline(metadata)
         predicted_count = sum(
             1 for ip in issue_predictions if ip.outcome != IssueOutcome.UNCERTAIN
         )
@@ -294,6 +399,7 @@ class PredictionEngineV2:
             verification=verification,
             pipeline_metadata=metadata,
             matter_type=matter_type,
+            case_graph=knowledge_graph,
         )
 
         logger.info(
@@ -422,6 +528,28 @@ class PredictionEngineV2:
         # prompt already says "case summary <=400 words"; this is the
         # belt-and-braces enforcement.
         return summary[:2400]
+
+    def _copy_kg_metadata_to_pipeline(self, metadata: PipelineMetadata) -> None:
+        """Copy ``IssuePredictor._last_kg_metadata`` into ``PipelineMetadata``.
+
+        The §17.6 / Cross-PR Contract C5 fields (graph_quality_score,
+        kg_used_for_prediction, kg_fallback_mode, kg_gate_failure_reasons)
+        are populated by ``_render_factor_card_via_pack`` (and the rag_only
+        short-circuit) per issue. Because the predictor mutates a single
+        shared field, this captures the LAST issue's render only — fine for
+        single-issue deposit cases, and acceptable for PR 4 multi-issue
+        cases since all issues route through the same domain pack and gate.
+        PR 5 may upgrade to per-issue metadata.
+        """
+        last = getattr(self.issue_predictor, "_last_kg_metadata", None) or {}
+        if not last:
+            return
+        metadata.graph_quality_score = last.get("graph_quality_score")
+        metadata.kg_used_for_prediction = last.get("kg_used_for_prediction")
+        metadata.kg_fallback_mode = last.get("kg_fallback_mode")
+        metadata.kg_gate_failure_reasons = list(
+            last.get("kg_gate_failure_reasons") or []
+        )
 
     @staticmethod
     def _serialise_agent_state(state: Any) -> Dict[str, Any]:

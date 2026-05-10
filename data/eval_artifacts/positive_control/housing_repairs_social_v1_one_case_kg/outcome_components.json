@@ -1,0 +1,28 @@
+[
+  {
+    "outcome_component_id": "oc_pc001_fault_finding",
+    "outcome_id": "fault_finding",
+    "domain_id": "housing.repairs_social.v1",
+    "claim_head_id": "repairs_damp_mould",
+    "confidence": 0.9,
+    "supporting_factor_ids": [
+      "repair_responsibility_established",
+      "hazard_or_disrepair_reported",
+      "landlord_notice_established",
+      "inspection_delay_days",
+      "repair_delay_days",
+      "impact_severity_reported"
+    ],
+    "mitigating_factor_ids": [
+      "inspection_offered"
+    ],
+    "supported_by_propositions": [
+      "b854d148-ed62-5c5c-a854-6a1f6bb3a9d7",
+      "2336e4f8-10e0-58e4-be76-35483dbb2849",
+      "741f7b64-a1bc-5011-b98e-050ed639ef6c",
+      "21738950-869e-5046-a65d-3f4937bea4c1",
+      "0969d9a7-37a8-5109-83e7-28a8051045dd",
+      "1e313884-5eac-5af4-85d0-a55889d6b7f2"
+    ]
+  }
+]

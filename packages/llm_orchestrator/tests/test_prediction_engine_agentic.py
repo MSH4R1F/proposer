@@ -447,3 +447,521 @@ class TestEngineBranching:
     def test_agent_traces_field_default_empty(self):
         m = PipelineMetadata()
         assert m.agent_traces == []
+
+
+# ---------------------------------------------------------------------------
+# Stream C PR 4 Task 4.5: KG metadata flow + prompt_mode threading
+# ---------------------------------------------------------------------------
+
+
+def _build_late_protection_kg_for_engine():
+    """Build a small KG with deliberately-late deposit protection."""
+    from datetime import date as _date
+
+    from kg_builder.models.graph import KnowledgeGraph
+    from kg_builder.models.nodes import IssueNode, LeaseNode, PartyNode
+
+    kg = KnowledgeGraph(case_id="case_late_pr45")
+    kg.add_node(PartyNode(node_id="party_tenant", role="tenant"))
+    kg.add_node(PartyNode(node_id="party_landlord", role="landlord"))
+    kg.add_node(
+        LeaseNode(
+            node_id="lease_main",
+            start_date=_date(2023, 1, 1),
+            end_date=_date(2024, 1, 1),
+            deposit_amount=1500.0,
+            deposit_protected=True,
+            deposit_scheme="DPS",
+            protection_date=_date(2023, 4, 1),  # late
+        )
+    )
+    kg.add_node(
+        IssueNode(
+            node_id="issue_deposit_protection",
+            issue_type="deposit_protection",
+            description="Deposit protection compliance issue",
+        )
+    )
+    return kg
+
+
+def _make_deposit_case_file_for_engine(case_id: str = "case_pr45"):
+    """SimpleNamespace stub mirroring test_kg_in_prompt_golden.py."""
+    from datetime import date as _date
+    from types import SimpleNamespace as _SN
+
+    return _SN(
+        case_id=case_id,
+        domain_id="housing.deposit.v1",
+        tenancy=_SN(
+            deposit_amount=1500.0,
+            start_date=_date(2023, 1, 1),
+            end_date=_date(2024, 1, 1),
+            tenancy_type="AST",
+            deposit_protected=None,
+            deposit_scheme=None,
+            protection_date=None,
+            prescribed_info_provided=None,
+            prescribed_info_date=None,
+        ),
+        property=_SN(region="London", postcode=None),
+    )
+
+
+@pytest.mark.asyncio
+async def test_artifact_records_kg_metadata_for_kg_only_deposit(monkeypatch):
+    """KG_ONLY deposit case with STREAM_C_PR4=1: artifact metadata records
+    kg_used_for_prediction, graph_quality_score, kg_fallback_mode."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,"reasoning":"r",'
+            '"supporting_cases":[],'
+            '"counterfactuals":[{"condition":"c","alternative_outcome":"o","confidence_shift":-0.1}],'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+
+    llm = MagicMock()
+    llm.generate = fake_generate
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock()  # spy: must not be called in KG_ONLY
+
+    engine = PredictionEngineV2(llm_client=llm, rag_pipeline=rag)
+
+    kg = _build_late_protection_kg_for_engine()
+    case_file = _make_deposit_case_file_for_engine("case_kg_only_pr45")
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    result = await engine.predict(
+        case_file=case_file,
+        knowledge_graph=kg,
+        mode=PredictionMode.KG_ONLY,
+    )
+
+    rag.retrieve.assert_not_called()
+    assert result.pipeline_metadata is not None
+    meta = result.pipeline_metadata
+    # When the KG is populated and the pack accepts it, kg_used_for_prediction=True.
+    assert meta.kg_used_for_prediction is True
+    # graph_quality_score is a float between 0 and 1 (or None if pack disabled).
+    assert meta.graph_quality_score is None or (0.0 <= meta.graph_quality_score <= 1.0)
+    # No fallback when the KG path completes happily.
+    assert meta.kg_fallback_mode is None
+    assert meta.kg_gate_failure_reasons == []
+
+
+@pytest.mark.asyncio
+async def test_artifact_records_kg_metadata_for_rag_only_mode(monkeypatch):
+    """RAG_ONLY mode: kg_used_for_prediction=False (the prompt does NOT
+    include the factor card, even with a populated KG)."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    captured_prompts: list = []
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        captured_prompts.append(messages[0]["content"])
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,"reasoning":"r",'
+            '"supporting_cases":[{"case_reference":"P1","year":2023,"quote":"q","relevance":"r"}],'
+            '"counterfactuals":[{"condition":"c","alternative_outcome":"o","confidence_shift":-0.1}],'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+
+    llm = MagicMock()
+    llm.generate = fake_generate
+
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": [
+                {
+                    "case_reference": "P1",
+                    "year": 2023,
+                    "semantic_score": 0.8,
+                    "bm25_score": 0.0,
+                    "text": "x",
+                    "chunk_text": "x",
+                }
+            ]
+            * 3,
+            "confidence": 0.8,
+        }
+    )
+
+    engine = PredictionEngineV2(
+        llm_client=llm, rag_pipeline=rag, min_cases_required=3
+    )
+
+    kg = _build_late_protection_kg_for_engine()
+    case_file = _make_deposit_case_file_for_engine("case_rag_only_pr45")
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    result = await engine.predict(
+        case_file=case_file,
+        knowledge_graph=kg,
+        mode=PredictionMode.RAG_ONLY,
+    )
+
+    # Prompt must NOT contain the factor card.
+    assert len(captured_prompts) == 1
+    assert "KEY KG FACTS (typed):" not in captured_prompts[0]
+
+    assert result.pipeline_metadata is not None
+    meta = result.pipeline_metadata
+    # RAG_ONLY hides the KG; metadata must reflect that.
+    assert meta.kg_used_for_prediction is False
+
+
+@pytest.mark.asyncio
+async def test_predict_all_threads_prompt_mode_to_predict_issue(monkeypatch):
+    """Engine must thread prompt_mode='rag_only' to predict_all when
+    mode=RAG_ONLY, so the rag_only gate fires in production (not just in
+    unit tests of the predictor)."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    captured_modes: list = []
+
+    real_predict_all_holder: dict = {}
+
+    engine_holder: dict = {}
+
+    async def spy_predict_all(
+        issues, retrieval_results, *, case_file=None, prompt_mode="hybrid"
+    ):
+        captured_modes.append(prompt_mode)
+        # Delegate to real predict_all so behaviour is preserved.
+        return await real_predict_all_holder["fn"](
+            issues, retrieval_results, case_file=case_file, prompt_mode=prompt_mode
+        )
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,"reasoning":"r",'
+            '"supporting_cases":[{"case_reference":"P1","year":2023,"quote":"q","relevance":"r"}],'
+            '"counterfactuals":[{"condition":"c","alternative_outcome":"o","confidence_shift":-0.1}],'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+
+    llm = MagicMock()
+    llm.generate = fake_generate
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": [
+                {
+                    "case_reference": "P1",
+                    "year": 2023,
+                    "semantic_score": 0.8,
+                    "bm25_score": 0.0,
+                    "text": "x",
+                    "chunk_text": "x",
+                }
+            ]
+            * 3,
+            "confidence": 0.8,
+        }
+    )
+
+    engine = PredictionEngineV2(
+        llm_client=llm, rag_pipeline=rag, min_cases_required=3
+    )
+    engine_holder["engine"] = engine
+    real_predict_all_holder["fn"] = engine.issue_predictor.predict_all
+    engine.issue_predictor.predict_all = spy_predict_all  # type: ignore[assignment]
+
+    kg = _build_late_protection_kg_for_engine()
+    case_file = _make_deposit_case_file_for_engine("case_thread_pr45")
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    await engine.predict(
+        case_file=case_file,
+        knowledge_graph=kg,
+        mode=PredictionMode.RAG_ONLY,
+    )
+
+    assert captured_modes == ["rag_only"], (
+        "RAG_ONLY mode must thread prompt_mode='rag_only' to predict_all"
+    )
+
+
+@pytest.mark.asyncio
+async def test_predict_all_threads_hybrid_prompt_mode(monkeypatch):
+    """Engine must pass prompt_mode='hybrid' to predict_all when mode=HYBRID."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    captured_modes: list = []
+
+    async def spy_predict_all(
+        issues, retrieval_results, *, case_file=None, prompt_mode="hybrid"
+    ):
+        captured_modes.append(prompt_mode)
+        return []
+
+    llm = MagicMock()
+    llm.generate = AsyncMock()
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": [
+                {
+                    "case_reference": "P1",
+                    "year": 2023,
+                    "semantic_score": 0.8,
+                    "bm25_score": 0.0,
+                    "text": "x",
+                    "chunk_text": "x",
+                }
+            ]
+            * 3,
+            "confidence": 0.8,
+        }
+    )
+
+    engine = PredictionEngineV2(
+        llm_client=llm, rag_pipeline=rag, min_cases_required=3
+    )
+    engine.issue_predictor.predict_all = spy_predict_all  # type: ignore[assignment]
+
+    kg = _build_late_protection_kg_for_engine()
+    case_file = _make_deposit_case_file_for_engine("case_hybrid_thread_pr45")
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    await engine.predict(
+        case_file=case_file,
+        knowledge_graph=kg,
+        mode=PredictionMode.HYBRID,
+    )
+
+    assert captured_modes == ["hybrid"]
+
+
+@pytest.mark.asyncio
+async def test_engine_populates_case_graph_by_issue_for_deposit(monkeypatch):
+    """Engine must populate _case_graph_by_issue (deposit: KGFacts adapter)
+    so the issue_predictor renderer can read from it."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.kg_facts import KGFacts
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    captured_graph_by_issue: dict = {}
+
+    async def spy_predict_all(
+        issues, retrieval_results, *, case_file=None, prompt_mode="hybrid"
+    ):
+        captured_graph_by_issue["snapshot"] = dict(
+            engine.issue_predictor._case_graph_by_issue
+        )
+        return []
+
+    llm = MagicMock()
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock(
+        return_value={
+            "results": [
+                {
+                    "case_reference": "P1",
+                    "year": 2023,
+                    "semantic_score": 0.8,
+                    "bm25_score": 0.0,
+                    "text": "x",
+                    "chunk_text": "x",
+                }
+            ]
+            * 3,
+            "confidence": 0.8,
+        }
+    )
+
+    engine = PredictionEngineV2(
+        llm_client=llm, rag_pipeline=rag, min_cases_required=3
+    )
+    engine.issue_predictor.predict_all = spy_predict_all  # type: ignore[assignment]
+
+    kg = _build_late_protection_kg_for_engine()
+    case_file = _make_deposit_case_file_for_engine("case_graph_pr45")
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    await engine.predict(
+        case_file=case_file,
+        knowledge_graph=kg,
+        mode=PredictionMode.HYBRID,
+    )
+
+    snapshot = captured_graph_by_issue.get("snapshot", {})
+    assert _IssueType.DEPOSIT_PROTECTION in snapshot
+    # For deposit, _case_graph_by_issue carries the KGFacts adapter (the
+    # deposit pack's render_factor_card accepts KGFacts directly).
+    val = snapshot[_IssueType.DEPOSIT_PROTECTION]
+    assert isinstance(val, KGFacts), f"expected KGFacts adapter, got {type(val)}"
+
+
+def test_pipeline_metadata_has_kg_fields_with_safe_defaults():
+    """PipelineMetadata's new KG fields default to safe values so any
+    existing constructor still works without changes."""
+    m = PipelineMetadata()
+    assert m.graph_quality_score is None
+    assert m.kg_used_for_prediction is None
+    assert m.kg_fallback_mode is None
+    assert m.kg_gate_failure_reasons == []
+
+
+@pytest.mark.asyncio
+async def test_engine_resets_kg_metadata_between_runs(monkeypatch):
+    """Reusing an engine across runs (e.g. batch eval / multi-mode ablation)
+    must not leak ``kg_used_for_prediction`` from a prior call into the
+    next artifact.
+
+    The LLM_ONLY branch of ``_predict_issue_no_rag`` does NOT touch
+    ``IssuePredictor._last_kg_metadata``, so without an explicit reset at
+    the top of ``predict()``, a prior KG_ONLY/HYBRID call's gate metadata
+    would leak into a subsequent LLM_ONLY artifact's ``pipeline_metadata``.
+    Critical for the post-PR-6 4-mode ablation (Task R.2).
+    """
+    from unittest.mock import AsyncMock, MagicMock
+
+    from llm_orchestrator.models.prediction_v2 import (
+        IssueContext as _IssueContext,
+        IssueType as _IssueType,
+        PredictionMode,
+    )
+    from llm_orchestrator.pipeline.prediction_engine_v2 import PredictionEngineV2
+
+    monkeypatch.setenv("STREAM_C_PR4", "1")
+
+    async def fake_generate(messages, system_prompt, max_tokens, temperature):
+        return (
+            '{"outcome":"tenant_wins","raw_confidence":0.7,"reasoning":"r",'
+            '"supporting_cases":[],'
+            '"counterfactuals":[{"condition":"c","alternative_outcome":"o","confidence_shift":-0.1}],'
+            '"evidence_strength":"moderate","data_completeness_impact":"ok"}'
+        )
+
+    llm = MagicMock()
+    llm.generate = fake_generate
+    rag = AsyncMock()
+    rag.retrieve = AsyncMock()  # spy: never invoked in KG_ONLY / LLM_ONLY paths
+
+    # One engine instance reused across both calls (mirrors PredictionService).
+    engine = PredictionEngineV2(llm_client=llm, rag_pipeline=rag)
+
+    fake_issue = _IssueContext(
+        issue_type=_IssueType.DEPOSIT_PROTECTION,
+        issue_description="dp",
+        kg_constraints=[],
+        data_completeness=0.5,
+    )
+    engine.issue_decomposer.decompose = lambda cf, kg=None: [fake_issue]
+
+    # ── Run 1: KG_ONLY with a populated KG → kg_used_for_prediction=True ──
+    kg_1 = _build_late_protection_kg_for_engine()
+    case_file_1 = _make_deposit_case_file_for_engine("case_run1_kg_only")
+    result_1 = await engine.predict(
+        case_file=case_file_1,
+        knowledge_graph=kg_1,
+        mode=PredictionMode.KG_ONLY,
+    )
+    assert result_1.pipeline_metadata is not None
+    assert result_1.pipeline_metadata.kg_used_for_prediction is True, (
+        "Run 1 (KG_ONLY) should mark kg_used_for_prediction=True"
+    )
+
+    # ── Run 2: LLM_ONLY on the same engine instance ──
+    # The LLM_ONLY branch doesn't touch _last_kg_metadata, so without the
+    # reset added at the top of predict(), kg_used_for_prediction would
+    # leak from Run 1 (=True) into Run 2's artifact. With the reset, the
+    # safe default (None) is preserved.
+    kg_2 = _build_late_protection_kg_for_engine()
+    case_file_2 = _make_deposit_case_file_for_engine("case_run2_llm_only")
+    result_2 = await engine.predict(
+        case_file=case_file_2,
+        knowledge_graph=kg_2,
+        mode=PredictionMode.LLM_ONLY,
+    )
+    assert result_2.pipeline_metadata is not None
+    meta_2 = result_2.pipeline_metadata
+    assert meta_2.kg_used_for_prediction is None, (
+        "Run 2 (LLM_ONLY) must NOT inherit kg_used_for_prediction from Run 1"
+    )
+    assert meta_2.graph_quality_score is None
+    assert meta_2.kg_fallback_mode is None
+    assert meta_2.kg_gate_failure_reasons == []

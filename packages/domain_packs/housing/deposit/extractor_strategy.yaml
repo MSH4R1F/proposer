@@ -1,0 +1,35 @@
+# housing.deposit.v1 per-factor extractor strategy
+#
+# Spec: docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md §19 PR 4
+#
+# All three v1 factors are deterministic: the values are computed from
+# structured CaseFile / lease-graph date and evidence-type fields without an
+# LLM call (mirrors the legacy derive_kg_facts logic in kg_facts.py).
+
+domain_id: housing.deposit.v1
+
+entries:
+
+  - factor_id: deposit_protection_status
+    strategy: deterministic
+    calculator_id: deposit_protection_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: derived from (deposit_protection_date - deposit_received_date).days against the 30-day statutory window.
+
+  - factor_id: prescribed_information_status
+    strategy: deterministic
+    calculator_id: prescribed_information_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: derived from (prescribed_information_date - deposit_received_date).days against the 30-day window.
+
+  - factor_id: check_in_inventory_baseline
+    strategy: deterministic
+    calculator_id: inventory_baseline_calculator
+    verifier_required: false
+    gate_counted: true
+    min_confidence_threshold: 1.0
+    # why: derived from EvidenceNode types in the KG; presence of a CHECK_IN_INVENTORY node is the test.

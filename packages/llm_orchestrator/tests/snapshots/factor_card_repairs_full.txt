@@ -1,0 +1,11 @@
+KEY FACTORS (factor-graph derived):
+- repair_responsibility_established: True (favours resident) [confidence: 0.95, evidence: span_1]
+- hazard_or_disrepair_reported: True (favours resident) [confidence: 0.93, evidence: span_2]
+- landlord_notice_established: True (favours resident) [confidence: 0.90, evidence: span_3]
+- inspection_offered: False (favours landlord) [confidence: 0.85, evidence: span_4]
+- repair_attempted: False (favours landlord) [confidence: 0.88, evidence: span_5]
+- inspection_delay_days: 45 days (bucket: 30-90d) (favours resident) [confidence: 0.97, evidence: span_6, span_7]
+- repair_delay_days: 120 days (bucket: 90-365d) (favours resident) [confidence: 0.96, evidence: span_8]
+
+Uncertain (excluded from gate):
+- communication_gap_days: 21 days (bucket: 7-30d) (favours resident) [confidence: 0.80, evidence: span_9]

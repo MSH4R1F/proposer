@@ -1,5 +1,7 @@
 """IRAC prompts and legislative context for Prediction Engine V2."""
 
+import os
+
 DEPOSIT_LEGISLATIVE_BREAKS = {
     2007: "Housing Act 2004 s213-215 deposit protection came into force",
     2012: "Localism Act 2011 s.184 changed deadline from 14 to 30 days (6 April 2012)",
@@ -63,6 +65,7 @@ EVIDENCE CONFLICTS:
 KEY FACTS FROM CASE ANALYSIS:
 {kg_constraints}
 {kg_fact_card}
+{abstention_warning}
 EVIDENCE AVAILABLE:
 {evidence_summary}
 
@@ -74,7 +77,7 @@ RETRIEVED SIMILAR CASES ({num_retrieved_cases} cases):
 """
 
 
-IRAC_JSON_SCHEMA = """Output your prediction as a single JSON object with this exact structure. Do NOT wrap in markdown fences:
+_IRAC_JSON_SCHEMA_LEGACY = """Output your prediction as a single JSON object with this exact structure. Do NOT wrap in markdown fences:
 {
     "issue_type": "the issue type exactly as given above",
     "issue_description": "brief description of the issue",
@@ -109,3 +112,64 @@ Rules for the JSON:
 - If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation
 - Include at least 1 counterfactual scenario
 """
+
+
+_IRAC_JSON_SCHEMA_FORCED = """Output your prediction as a single JSON object with this exact structure. Do NOT wrap in markdown fences:
+{
+    "issue_type": "the issue type exactly as given above",
+    "issue_description": "brief description of the issue",
+    "outcome": "tenant_wins" or "landlord_wins" or "split",
+    "raw_confidence": <number between 0.0 and 1.0>,
+    "predicted_amount": <number in pounds or null if uncertain>,
+    "amount_band": "0" or "1-100" or "101-250" or "251-600" or "601-1000" or "1000+" or null,
+    "amount_construct": "ordered_now" or "previously_offered" or "global_unapportioned" or null,
+    "predicted_determination": "maladministration" or "severe_maladministration" or "service_failure" or "reasonable_redress" or "no_maladministration" or "resolved_with_intervention" or "outside_jurisdiction" or null,
+    "reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>",
+    "key_factors": ["factor1", "factor2", "factor3"],
+    "supporting_cases": [
+        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}
+    ],
+    "counterfactuals": [
+        {"condition": "If X were different", "alternative_outcome": "outcome would be Y", "confidence_shift": -0.2}
+    ],
+    "evidence_strength": "strong" or "moderate" or "weak" or "insufficient",
+    "data_completeness_impact": "explanation of how missing data affects this prediction"
+}
+
+Rules for the JSON:
+- You must choose exactly one outcome label. Do not answer uncertain. If the evidence is weak, still choose the most likely outcome and report uncertainty separately in confidence, evidence_strength, and reasoning fields.
+- "outcome" MUST be exactly one of: "tenant_wins", "landlord_wins", "split"
+- "raw_confidence" MUST be a number between 0.0 and 1.0
+- "evidence_strength" MUST be exactly one of: "strong", "moderate", "weak", "insufficient"
+- "predicted_amount" should be a positive number (the amount the winning party recovers for this issue) or null
+- "amount_band" is optional; when used, it MUST be one of: "0", "1-100", "101-250", "251-600", "601-1000", "1000+"
+- "amount_construct" identifies the legal source of the predicted amount: "ordered_now" for a fresh Ombudsman compensation order, "previously_offered" for a landlord pre-existing offer accepted as proportionate, "global_unapportioned" for settlement-style totals, null otherwise. Required for housing.repairs_social.v1; optional elsewhere.
+- "predicted_determination" is the Housing Ombudsman finding class. Set null on non-Ombudsman matters.
+- For deposit_protection penalty issues, "predicted_amount" should be the penalty amount (1x-3x deposit)
+- Include at least 1 supporting case citation
+- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation
+- Include at least 1 counterfactual scenario
+"""
+
+
+def build_irac_json_schema() -> str:
+    """Return the IRAC JSON-schema rule block.
+
+    Per Stream C recovery plan Task 4: when STREAM_C_FORCE_ANSWER=1 (default
+    on), emit a schema variant that omits "uncertain" from the allowed
+    outcome enum and instructs the LLM to pick a label even when evidence
+    is weak. When the flag is "0", emit the legacy schema (uncertain
+    allowed). Eliminates the UNCERTAIN-as-final-label pathology that
+    pushed kg_only abstention to 67% and llm_only to 65% in the
+    2026-05-07 ablation.
+    """
+    if os.getenv("STREAM_C_FORCE_ANSWER", "1") == "1":
+        return _IRAC_JSON_SCHEMA_FORCED
+    return _IRAC_JSON_SCHEMA_LEGACY
+
+
+# Backwards-compatible module-level constant. Tests and downstream packs
+# (housing_deposit_v1) import this name. The value is the legacy schema
+# captured at import time; runtime code paths that need flag-aware
+# behaviour MUST call build_irac_json_schema() instead.
+IRAC_JSON_SCHEMA = _IRAC_JSON_SCHEMA_LEGACY

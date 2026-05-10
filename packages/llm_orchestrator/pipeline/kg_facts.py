@@ -9,6 +9,22 @@ These are the only facts promoted to typed-enum first-class status. All other
 KG content stays in its existing free-text form (kg_constraints,
 timeline_summary, evidence_summary) to preserve cite-or-abstain integrity
 and avoid escalating user-input-derived strings into the prompt.
+
+DEPRECATED (Stream C PR 4): the rendering responsibility for this module's
+KGFacts has moved to ``packages/domain_packs/housing/deposit/renderer.py``
+(invoked via ``DomainPack.render_factor_card``). This module is kept for
+two reasons:
+
+1. ``derive_kg_facts(kg, issue_type) -> KGFacts`` remains the deposit fact
+   extractor consumed by ``prediction_engine_v2.py`` to populate
+   ``kg_facts_by_issue`` (and via Task 4.5 also ``case_graph_by_issue``).
+2. ``KGFacts`` is the input type for the deposit pack renderer (typed
+   facade); the pack accepts it via duck-typing.
+
+A post-Stream-C cleanup PR (out of scope here) will eventually delete this
+module entirely once the deposit pack has a more general extractor and the
+deposit byte-equivalence reference at
+``IssuePredictor._format_kg_fact_card`` is no longer needed.
 """
 
 from __future__ import annotations

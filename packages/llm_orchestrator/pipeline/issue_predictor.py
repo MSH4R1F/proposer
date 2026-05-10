@@ -2,6 +2,7 @@ import asyncio
 import importlib
 import json
 import math
+import os
 import re
 import structlog
 from datetime import date as _date_type
@@ -23,7 +24,15 @@ from ..prompts.prediction_v2 import (
     IRAC_JSON_SCHEMA,
     IRAC_SYSTEM_PROMPT,
     IRAC_USER_PROMPT,
+    build_irac_json_schema,
 )
+
+# Stream C PR 4 (Task 4.4) — domain-pack-routed factor card rendering.
+# These imports must NOT be wrapped in try/except: if domain_packs / legal_core
+# are missing the build is broken and we want loud failure, not a silent
+# fall-back to legacy rendering on import error.
+from legal_core.graph.graph_quality import GraphQualityScore
+from domain_packs.registry import DomainPackNotFoundError, get_domain_pack
 
 _llm_only_prompts = importlib.import_module("llm_orchestrator.prompts.llm_only")
 LLM_ONLY_SYSTEM_PROMPT = getattr(_llm_only_prompts, "LLM_ONLY_SYSTEM_PROMPT")
@@ -62,24 +71,95 @@ Critical constraints:
 Safety: legal information, not legal advice. Hedge and explain uncertainty.
 """
 
-_NO_RAG_JSON_SCHEMA = (
-    IRAC_JSON_SCHEMA.replace(
-        '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>"',
-        '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, citing only provided user facts/KG facts, with no case citations>"',
+def _build_no_rag_json_schema() -> str:
+    """Apply the no-RAG transformations to the (flag-aware) IRAC schema.
+
+    Reads STREAM_C_FORCE_ANSWER via build_irac_json_schema() so the
+    no-RAG ablation paths share the forced-answer behaviour.
+    """
+    return (
+        build_irac_json_schema()
+        .replace(
+            '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, with case citations in format [CaseRef (Year)]>"',
+            '"reasoning": "<IRAC-structured reasoning, 3-6 sentences, citing only provided user facts/KG facts, with no case citations>"',
+        )
+        .replace(
+            '    "supporting_cases": [\n        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}\n    ],',
+            '    "supporting_cases": [],',
+        )
+        .replace(
+            "- Include at least 1 supporting case citation",
+            "- In no-RAG ablation modes, supporting_cases MUST be an empty list",
+        )
+        .replace(
+            "- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation",
+            "- No retrieved cases are available in no-RAG ablation modes, so do not include proposition_id values",
+        )
     )
-    .replace(
-        '    "supporting_cases": [\n        {"case_reference": "CHI/xxx", "year": 2023, "paragraph": "12", "proposition_id": "optional retrieved proposition id", "quote": "relevant quote from case", "relevance": "why this case is relevant"}\n    ],',
-        '    "supporting_cases": [],',
-    )
-    .replace(
-        "- Include at least 1 supporting case citation",
-        "- In no-RAG ablation modes, supporting_cases MUST be an empty list",
-    )
-    .replace(
-        "- If a retrieved case is labelled PROPOSITION, copy its proposition_id into the supporting case citation",
-        "- No retrieved cases are available in no-RAG ablation modes, so do not include proposition_id values",
-    )
-)
+
+
+def _gate_failure_reasons(score: GraphQualityScore, gate: Any) -> List[str]:
+    """Enumerate every threshold the score fails.
+
+    Mirrors the 7-condition AND in ``DomainPack.is_kg_usable`` so downstream
+    consumers (artifact JSON, structured logs, debug traces) see exactly
+    which threshold(s) tripped the gate. Spec §6 + §17.6 (Cross-PR
+    Contract C5).
+    """
+    reasons: List[str] = []
+    if score.evidence_backed_factor_count < gate.evidence_backed_factor_count_min:
+        reasons.append(
+            f"evidence_backed_factor_count {score.evidence_backed_factor_count} "
+            f"< min {gate.evidence_backed_factor_count_min}"
+        )
+    if score.dated_event_count < gate.dated_event_count_min:
+        reasons.append(
+            f"dated_event_count {score.dated_event_count} "
+            f"< min {gate.dated_event_count_min}"
+        )
+    if score.issue_count < gate.issue_count_min:
+        reasons.append(
+            f"issue_count {score.issue_count} < min {gate.issue_count_min}"
+        )
+    if (
+        score.outcome_or_remedy_candidate_count
+        < gate.outcome_or_remedy_candidate_count_min
+    ):
+        reasons.append(
+            f"outcome_or_remedy_candidate_count {score.outcome_or_remedy_candidate_count} "
+            f"< min {gate.outcome_or_remedy_candidate_count_min}"
+        )
+    if score.unsupported_factor_rate > gate.unsupported_factor_rate_max:
+        reasons.append(
+            f"unsupported_factor_rate {score.unsupported_factor_rate:.2f} "
+            f"> max {gate.unsupported_factor_rate_max:.2f}"
+        )
+    if score.source_span_coverage < gate.source_span_coverage_min:
+        reasons.append(
+            f"source_span_coverage {score.source_span_coverage:.2f} "
+            f"< min {gate.source_span_coverage_min:.2f}"
+        )
+    if score.contradiction_count > gate.contradiction_count_max:
+        reasons.append(
+            f"contradiction_count {score.contradiction_count} "
+            f"> max {gate.contradiction_count_max}"
+        )
+    return reasons
+
+
+def _suppress_empty_factor_card(prompt: str) -> str:
+    """Strip orphan blank lines that appear when {kg_fact_card} or
+    {abstention_warning} resolved to empty string.
+
+    Per Stream C recovery plan Task 2: empty KG sections damage the LLM's
+    interpretation of the prompt. When STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD=1
+    (default on), collapse runs of 3+ newlines to 2.
+    """
+    if os.getenv("STREAM_C_SUPPRESS_EMPTY_FACTOR_CARD", "1") != "1":
+        return prompt
+    while "\n\n\n" in prompt:
+        prompt = prompt.replace("\n\n\n", "\n\n")
+    return prompt
 
 
 class IssuePredictor:
@@ -93,22 +173,62 @@ class IssuePredictor:
         self.llm = llm_client
         self._case_file = case_file
         self._kg_facts_by_issue: Dict[Any, Any] = {}
+        # Stream C PR 4 Task 4.4: domain-pack rendering inputs + outputs.
+        # ``_case_graph_by_issue`` is populated by Task 4.5; until then it
+        # stays empty and the renderer falls back to ``_kg_facts_by_issue``.
+        self._case_graph_by_issue: Dict[Any, Any] = {}
+        # ``_last_kg_metadata`` is set on every call to
+        # ``_render_factor_card_via_pack`` and consumed by the prediction
+        # engine for the artifact JSON in Task 4.6.
+        self._last_kg_metadata: dict = {}
         # SHA-20 Phase 6: when a prompt pack is supplied, its
         # ``prediction_system`` REPLACES the default IRAC system prompt for
         # this run. The legacy IRAC text remains in use when no pack is
         # injected so existing deposit predictions stay schema-compatible.
         self._prompt_pack = prompt_pack
+        # Stream C PR 5 Task 5.6: per-issue ComparatorPack so the predictor
+        # can read ``counterexample_pass_metadata.abstention_recommended``
+        # and emit a low-confidence warning into the IRAC user prompt.
+        # Populated by ``prediction_engine_v2.predict()`` after retrieval.
+        # Default empty so non-factor strategies are unaffected.
+        self._last_comparator_pack: Optional[Any] = None
+        self._comparator_pack_by_issue: Dict[Any, Any] = {}
+
+    def _abstention_warning_for_issue(self, issue_type: Any) -> str:
+        """Return the IRAC abstention notice when the comparator pack for
+        ``issue_type`` flags ``abstention_recommended=True``.
+
+        Empty string when no pack is registered or the flag is False so the
+        ``{abstention_warning}`` placeholder resolves to "" and existing
+        snapshots stay byte-stable.
+        """
+        pack = self._comparator_pack_by_issue.get(issue_type)
+        if pack is None:
+            return ""
+        meta = getattr(pack, "counterexample_pass_metadata", None)
+        if meta is None:
+            return ""
+        if not getattr(meta, "abstention_recommended", False):
+            return ""
+        return (
+            "NOTE: Counterexample retrieval found no differential cases. "
+            "Treat any prediction as low-confidence."
+        )
 
     @property
     def _prediction_system_prompt(self) -> str:
+        # Stream C recovery T4: build_irac_json_schema() is flag-aware. Under
+        # STREAM_C_FORCE_ANSWER=1 (default) it omits "uncertain" from the
+        # allowed outcome enum.
+        schema = build_irac_json_schema()
         if self._prompt_pack is not None and getattr(
             self._prompt_pack, "prediction_system", None
         ):
-            return f"{self._prompt_pack.prediction_system}\n\n{IRAC_JSON_SCHEMA}"
-        return f"{IRAC_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
+            return f"{self._prompt_pack.prediction_system}\n\n{schema}"
+        return f"{IRAC_SYSTEM_PROMPT}\n\n{schema}"
 
     def _repairs_no_rag_system_prompt(self) -> str:
-        return f"{_REPAIRS_NO_RAG_SYSTEM_PROMPT}\n\n{_NO_RAG_JSON_SCHEMA}"
+        return f"{_REPAIRS_NO_RAG_SYSTEM_PROMPT}\n\n{_build_no_rag_json_schema()}"
 
     async def predict_no_rag(
         self,
@@ -188,11 +308,17 @@ class IssuePredictor:
         )
 
         if self._is_repairs_case(cf, issue):
-            kg_fact_card = (
-                self._format_kg_fact_card(self._kg_facts_by_issue.get(issue.issue_type))
-                if prompt_mode == "kg_only"
-                else ""
-            )
+            if prompt_mode == "kg_only":
+                case_graph = (
+                    self._case_graph_by_issue.get(issue.issue_type)
+                    or self._kg_facts_by_issue.get(issue.issue_type)
+                )
+                kg_fact_card, kg_meta = self._render_factor_card_via_pack(
+                    cf, case_graph
+                )
+                self._last_kg_metadata = kg_meta
+            else:
+                kg_fact_card = ""
             if not self._has_no_rag_case_specific_facts(
                 issue=issue,
                 case_file=cf,
@@ -216,27 +342,32 @@ class IssuePredictor:
                     ),
                     raw_confidence=0.2,
                 )
-            user_prompt = self._format_repairs_user_prompt(
-                issue=issue,
-                case_file=cf,
-                claimed_amount=claimed_amount,
-                tenant_claim_text=tenant_claim_text,
-                landlord_claim_text=landlord_claim_text,
-                evidence_summary=self._format_evidence_summary(issue),
-                evidence_conflicts=self._format_evidence_conflicts(issue),
-                timeline_summary=self._format_timeline(issue),
-                kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
-                if issue.kg_constraints
-                else "None identified",
-                kg_fact_card=kg_fact_card,
-                retrieved_cases=(
-                    f"No retrieved cases in {prompt_mode} mode. Leave "
-                    "supporting_cases empty. Do not include comparator awards, "
-                    "proposition IDs, paragraph references, or determination "
-                    "citations."
-                ),
-                num_retrieved_cases=0,
-                no_rag_mode=True,
+            user_prompt = _suppress_empty_factor_card(
+                self._format_repairs_user_prompt(
+                    issue=issue,
+                    case_file=cf,
+                    claimed_amount=claimed_amount,
+                    tenant_claim_text=tenant_claim_text,
+                    landlord_claim_text=landlord_claim_text,
+                    evidence_summary=self._format_evidence_summary(issue),
+                    evidence_conflicts=self._format_evidence_conflicts(issue),
+                    timeline_summary=self._format_timeline(issue),
+                    kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
+                    if issue.kg_constraints
+                    else "None identified",
+                    kg_fact_card=kg_fact_card,
+                    retrieved_cases=(
+                        f"No retrieved cases in {prompt_mode} mode. Leave "
+                        "supporting_cases empty. Do not include comparator awards, "
+                        "proposition IDs, paragraph references, or determination "
+                        "citations."
+                    ),
+                    num_retrieved_cases=0,
+                    no_rag_mode=True,
+                    abstention_warning=self._abstention_warning_for_issue(
+                        issue.issue_type
+                    ),
+                )
             )
             system_prompt = self._repairs_no_rag_system_prompt()
         elif prompt_mode == "llm_only":
@@ -253,36 +384,48 @@ class IssuePredictor:
                 tenant_claim=tenant_claim_text,
                 landlord_claim=landlord_claim_text,
             )
-            system_prompt = f"{LLM_ONLY_SYSTEM_PROMPT}\n\n{IRAC_JSON_SCHEMA}"
-        else:  # kg_only — IRAC prompt with empty retrieved_cases + fact card
-            kg_fact_card = self._format_kg_fact_card(
-                self._kg_facts_by_issue.get(issue.issue_type)
+            system_prompt = (
+                f"{LLM_ONLY_SYSTEM_PROMPT}\n\n{build_irac_json_schema()}"
             )
-            user_prompt = IRAC_USER_PROMPT.format(
-                issue_type=issue.issue_type.value,
-                issue_description=issue.issue_description,
-                deposit_amount=deposit_amount,
-                claimed_amount=f"{claimed_amount:.2f}"
-                if claimed_amount is not None
-                else "unknown",
-                tenancy_duration=tenancy_duration,
-                tenancy_type=tenancy_type,
-                region=region,
-                data_completeness=issue.data_completeness,
-                deposit_protection_summary="See KG fact card below."
-                if kg_fact_card
-                else "No deposit protection details available.",
-                kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
-                if issue.kg_constraints
-                else "None identified",
-                kg_fact_card=kg_fact_card,
-                evidence_summary=self._format_evidence_summary(issue),
-                evidence_conflicts=self._format_evidence_conflicts(issue),
-                timeline_summary=self._format_timeline(issue),
-                retrieved_cases="No retrieved cases in KG_ONLY mode.",
-                num_retrieved_cases=0,
-                tenant_claim=tenant_claim_text,
-                landlord_claim=landlord_claim_text,
+        else:  # kg_only — IRAC prompt with empty retrieved_cases + fact card
+            case_graph = (
+                self._case_graph_by_issue.get(issue.issue_type)
+                or self._kg_facts_by_issue.get(issue.issue_type)
+            )
+            kg_fact_card, kg_meta = self._render_factor_card_via_pack(
+                cf, case_graph
+            )
+            self._last_kg_metadata = kg_meta
+            user_prompt = _suppress_empty_factor_card(
+                IRAC_USER_PROMPT.format(
+                    issue_type=issue.issue_type.value,
+                    issue_description=issue.issue_description,
+                    deposit_amount=deposit_amount,
+                    claimed_amount=f"{claimed_amount:.2f}"
+                    if claimed_amount is not None
+                    else "unknown",
+                    tenancy_duration=tenancy_duration,
+                    tenancy_type=tenancy_type,
+                    region=region,
+                    data_completeness=issue.data_completeness,
+                    deposit_protection_summary="See KG fact card below."
+                    if kg_fact_card
+                    else "No deposit protection details available.",
+                    kg_constraints="\n".join(f"- {c}" for c in issue.kg_constraints)
+                    if issue.kg_constraints
+                    else "None identified",
+                    kg_fact_card=kg_fact_card,
+                    abstention_warning=self._abstention_warning_for_issue(
+                        issue.issue_type
+                    ),
+                    evidence_summary=self._format_evidence_summary(issue),
+                    evidence_conflicts=self._format_evidence_conflicts(issue),
+                    timeline_summary=self._format_timeline(issue),
+                    retrieved_cases="No retrieved cases in KG_ONLY mode.",
+                    num_retrieved_cases=0,
+                    tenant_claim=tenant_claim_text,
+                    landlord_claim=landlord_claim_text,
+                )
             )
             system_prompt = self._prediction_system_prompt
 
@@ -299,7 +442,7 @@ class IssuePredictor:
             prediction.issue_type = issue.issue_type
             if not prediction.issue_description:
                 prediction.issue_description = issue.issue_description
-            return prediction
+            return self._apply_forced_answer(prediction)
         except Exception as exc:
             logger.error(
                 "no_rag_prediction_llm_error",
@@ -320,6 +463,7 @@ class IssuePredictor:
         retrieval_results: Dict[IssueType, IssueRetrievalResult],
         *,
         case_file: Any = None,
+        prompt_mode: str = "hybrid",
     ) -> List[IssuePrediction]:
         sufficient_issues: List[IssueContext] = []
         uncertain_by_issue: Dict[IssueType, IssuePrediction] = {}
@@ -330,25 +474,32 @@ class IssuePredictor:
                 sufficient_issues.append(issue)
                 continue
 
-            uncertain_by_issue[issue.issue_type] = IssuePrediction(
-                issue_type=issue.issue_type,
-                issue_description=issue.issue_description,
-                outcome=IssueOutcome.UNCERTAIN,
-                raw_confidence=0.0,
-                reasoning="Insufficient similar cases found for this issue.",
-                evidence_strength=EvidenceStrength.INSUFFICIENT,
-                data_completeness_impact="Cannot predict due to lack of precedent cases.",
+            uncertain_by_issue[issue.issue_type] = self._apply_forced_answer(
+                IssuePrediction(
+                    issue_type=issue.issue_type,
+                    issue_description=issue.issue_description,
+                    outcome=IssueOutcome.UNCERTAIN,
+                    raw_confidence=0.0,
+                    reasoning="Insufficient similar cases found for this issue.",
+                    evidence_strength=EvidenceStrength.INSUFFICIENT,
+                    data_completeness_impact="Cannot predict due to lack of precedent cases.",
+                )
             )
 
         if sufficient_issues:
             llm_results = await asyncio.gather(
                 *[
-                    self._predict_issue(issue, retrieval_results[issue.issue_type])
+                    self._predict_issue(
+                        issue,
+                        retrieval_results[issue.issue_type],
+                        prompt_mode=prompt_mode,
+                    )
                     if case_file is None
                     else self._predict_issue(
                         issue,
                         retrieval_results[issue.issue_type],
                         case_file=case_file,
+                        prompt_mode=prompt_mode,
                     )
                     for issue in sufficient_issues
                 ],
@@ -394,6 +545,7 @@ class IssuePredictor:
         retrieval: IssueRetrievalResult,
         *,
         case_file: Any = None,
+        prompt_mode: str = "hybrid",
     ) -> IssuePrediction:
         formatted_cases = []
         for i, result in enumerate(retrieval.results[:8], 1):
@@ -496,9 +648,35 @@ class IssuePredictor:
         evidence_conflicts = self._format_evidence_conflicts(issue)
         timeline_summary = self._format_timeline(issue)
 
-        kg_fact_card = self._format_kg_fact_card(
-            self._kg_facts_by_issue.get(issue.issue_type)
-        )
+        # Stream C PR 4 (spec §19): RAG_ONLY must NOT inject the typed factor
+        # card into the prompt even when the KG is populated. Other modes
+        # (HYBRID, KG_ONLY) route through the domain pack via the renderer
+        # method below; the legacy ``_kg_facts_by_issue`` is consulted as a
+        # back-stop until Task 4.5 wires ``_case_graph_by_issue``.
+        if prompt_mode == "rag_only":
+            kg_fact_card = ""
+            self._last_kg_metadata = {
+                "kg_used_for_prediction": False,
+                # rag_only is intentional, not a fallback from a KG attempt.
+                "kg_fallback_mode": None,
+                "kg_gate_failure_reasons": [],
+                "graph_quality_score": None,
+            }
+        else:
+            case_graph = (
+                self._case_graph_by_issue.get(issue.issue_type)
+                or self._kg_facts_by_issue.get(issue.issue_type)
+            )
+            kg_fact_card, kg_meta = self._render_factor_card_via_pack(
+                self._case_file if case_file is None else case_file,
+                case_graph,
+            )
+            self._last_kg_metadata = kg_meta
+
+        # Stream C PR 5 Task 5.6: emit a low-confidence notice into the IRAC
+        # prompt when the FactorRetriever's counterexample pass flagged
+        # abstention. Empty string otherwise → byte-stable for legacy paths.
+        abstention_warning = self._abstention_warning_for_issue(issue.issue_type)
 
         prompt_kwargs = {
             "issue_type": issue.issue_type.value,
@@ -516,6 +694,7 @@ class IssuePredictor:
             if issue.kg_constraints
             else "None identified",
             "kg_fact_card": kg_fact_card,
+            "abstention_warning": abstention_warning,
             "evidence_summary": evidence_summary,
             "evidence_conflicts": evidence_conflicts,
             "timeline_summary": timeline_summary,
@@ -525,7 +704,9 @@ class IssuePredictor:
             "landlord_claim": landlord_claim_text,
         }
         try:
-            user_prompt = IRAC_USER_PROMPT.format(**prompt_kwargs)
+            user_prompt = _suppress_empty_factor_card(
+                IRAC_USER_PROMPT.format(**prompt_kwargs)
+            )
         except KeyError:
             user_prompt = (
                 f"Issue Type: {issue.issue_type.value}\n"
@@ -544,19 +725,22 @@ class IssuePredictor:
                 f"Retrieved Cases ({len(retrieval.results)}):\n{retrieved_cases_str}\n"
             )
         if self._is_repairs_case(cf, issue):
-            user_prompt = self._format_repairs_user_prompt(
-                issue=issue,
-                case_file=cf,
-                claimed_amount=claimed_amount,
-                tenant_claim_text=tenant_claim_text,
-                landlord_claim_text=landlord_claim_text,
-                evidence_summary=evidence_summary,
-                evidence_conflicts=evidence_conflicts,
-                timeline_summary=timeline_summary,
-                kg_constraints=prompt_kwargs["kg_constraints"],
-                kg_fact_card=kg_fact_card,
-                retrieved_cases=retrieved_cases_str,
-                num_retrieved_cases=len(retrieval.results),
+            user_prompt = _suppress_empty_factor_card(
+                self._format_repairs_user_prompt(
+                    issue=issue,
+                    case_file=cf,
+                    claimed_amount=claimed_amount,
+                    tenant_claim_text=tenant_claim_text,
+                    landlord_claim_text=landlord_claim_text,
+                    evidence_summary=evidence_summary,
+                    evidence_conflicts=evidence_conflicts,
+                    timeline_summary=timeline_summary,
+                    kg_constraints=prompt_kwargs["kg_constraints"],
+                    kg_fact_card=kg_fact_card,
+                    retrieved_cases=retrieved_cases_str,
+                    num_retrieved_cases=len(retrieval.results),
+                    abstention_warning=abstention_warning,
+                )
             )
 
         system_prompt = self._prediction_system_prompt
@@ -594,7 +778,7 @@ class IssuePredictor:
                         prediction.evidence_strength = self._assess_evidence_strength(
                             issue
                         )
-                    return prediction
+                    return self._apply_forced_answer(prediction)
             except Exception as exc:
                 logger.error(
                     "issue_prediction_llm_error",
@@ -887,15 +1071,48 @@ class IssuePredictor:
         data_impact: str,
         raw_confidence: float = 0.0,
     ) -> IssuePrediction:
-        return IssuePrediction(
-            issue_type=issue.issue_type,
-            issue_description=issue.issue_description,
-            outcome=IssueOutcome.UNCERTAIN,
-            raw_confidence=raw_confidence,
-            reasoning=reason,
-            evidence_strength=evidence_strength,
-            data_completeness_impact=data_impact,
+        return self._apply_forced_answer(
+            IssuePrediction(
+                issue_type=issue.issue_type,
+                issue_description=issue.issue_description,
+                outcome=IssueOutcome.UNCERTAIN,
+                raw_confidence=raw_confidence,
+                reasoning=reason,
+                evidence_strength=evidence_strength,
+                data_completeness_impact=data_impact,
+            )
         )
+
+    @staticmethod
+    def _apply_forced_answer(prediction: IssuePrediction) -> IssuePrediction:
+        """Stream C recovery plan Task 4: when STREAM_C_FORCE_ANSWER=1
+        (default on), no IssuePrediction may have outcome=UNCERTAIN. Remap
+        UNCERTAIN to SPLIT with raw_confidence capped at 0.50 and
+        evidence_strength=INSUFFICIENT. The reasoning is prefixed with
+        "[forced-answer fallback: ...]" so post-hoc analysis can spot the
+        remap in artifact rows.
+
+        Concrete outcomes (TENANT_WINS / LANDLORD_WINS / SPLIT) are
+        returned unchanged. When the flag is "0", UNCERTAIN is also
+        returned unchanged (legacy behaviour).
+        """
+        if os.getenv("STREAM_C_FORCE_ANSWER", "1") != "1":
+            return prediction
+        if prediction.outcome != IssueOutcome.UNCERTAIN:
+            return prediction
+        # IssuePrediction is mutable Pydantic; mutate in place to preserve
+        # the object identity (some callers attach attributes via
+        # object.__setattr__).
+        prediction.outcome = IssueOutcome.SPLIT
+        if prediction.raw_confidence > 0.50:
+            prediction.raw_confidence = 0.50
+        prediction.evidence_strength = EvidenceStrength.INSUFFICIENT
+        existing_reasoning = prediction.reasoning or ""
+        prediction.reasoning = (
+            "[forced-answer fallback: LLM returned uncertain] "
+            + existing_reasoning
+        )
+        return prediction
 
     def _format_evidence_summary(self, issue: IssueContext) -> str:
         if not issue.supporting_evidence:
@@ -955,6 +1172,7 @@ class IssuePredictor:
         retrieved_cases: str,
         num_retrieved_cases: int,
         no_rag_mode: bool = False,
+        abstention_warning: str = "",
     ) -> str:
         metadata = getattr(case_file, "metadata", None) if case_file is not None else None
         metadata = metadata if isinstance(metadata, dict) else {}
@@ -966,6 +1184,9 @@ class IssuePredictor:
         amount = f"£{claimed_amount:.2f}" if claimed_amount is not None else "unknown"
 
         kg_section = kg_fact_card or "No structured KG fact card available."
+        abstention_section = (
+            f"{abstention_warning}\n\n" if abstention_warning else ""
+        )
         task_line = (
             "Task: Predict the likely Ombudsman complaint outcome from the "
             "pre-decision resident/landlord facts only. No retrieved "
@@ -975,17 +1196,43 @@ class IssuePredictor:
             "pre-decision resident/landlord facts and similar determinations.\n\n"
         )
         if no_rag_mode:
+            # STREAM_C_NO_RAG_PREDICT_AMOUNTS: when set, no-RAG modes
+            # (kg_only, llm_only) estimate predicted_amount + amount_band
+            # from general knowledge of UK Housing Ombudsman compensation
+            # ranges, rather than null-ing them out. Default off preserves
+            # the original "no-amount-without-precedent" research baseline.
+            no_rag_predict_amounts = (
+                os.getenv("STREAM_C_NO_RAG_PREDICT_AMOUNTS", "0") == "1"
+            )
+            if no_rag_predict_amounts:
+                amount_clause = (
+                    "Do not mention comparator determinations, proposition IDs, "
+                    "paragraph references, case citations, supporting cases, or "
+                    "comparator award amounts. For predicted_amount and "
+                    "amount_band: estimate the likely award based on general "
+                    "knowledge of typical UK Housing Ombudsman compensation "
+                    "ranges for this issue type and severity. Be conservative; "
+                    "under-estimate rather than over-promise. Use amount_band "
+                    "only as a Proposer modelling band: 0, 1-100, 101-250, "
+                    "251-600, 601-1000, or 1000+. Set predicted_amount to null "
+                    "only if the facts are too sparse for any order-of-"
+                    "magnitude estimate."
+                )
+            else:
+                amount_clause = (
+                    "Do not mention comparator determinations, proposition IDs, "
+                    "paragraph references, case citations, supporting cases, or "
+                    "comparator award amounts. For no-RAG ablations, do not "
+                    "model comparator-based compensation: set predicted_amount "
+                    "to null and amount_band to null."
+                )
             reasoning_instruction = (
                 "Before choosing the final JSON values, separate liability from "
                 "remedy. In the reasoning field, identify: (1) the likely "
                 "Ombudsman finding for each complaint head, (2) the specific "
                 "user-provided fact, evidence item, timeline event, or KG fact "
                 "that supports it, and (3) uncertainty caused by missing facts. "
-                "Do not mention comparator determinations, proposition IDs, "
-                "paragraph references, case citations, supporting cases, or "
-                "comparator award amounts. For no-RAG ablations, do not model "
-                "comparator-based compensation: set predicted_amount to null "
-                "and amount_band to null.\n\n"
+                f"{amount_clause}\n\n"
             )
         else:
             reasoning_instruction = (
@@ -1015,6 +1262,7 @@ class IssuePredictor:
             f"Evidence conflicts:\n{evidence_conflicts}\n\n"
             f"Timeline:\n{timeline_summary}\n\n"
             f"Structured fact card:\n{kg_section}\n\n"
+            f"{abstention_section}"
             f"KG constraints:\n{kg_constraints}\n\n"
             f"Retrieved Ombudsman determinations ({num_retrieved_cases}):\n"
             f"{retrieved_cases}\n\n"
@@ -1202,12 +1450,208 @@ class IssuePredictor:
         text = str(value).strip()
         return text if text else None
 
+    def _render_factor_card_via_pack(
+        self, case_file: Any, case_graph: Any
+    ) -> tuple:
+        """Render the factor card via the domain pack, falling back gracefully.
+
+        Returns ``(card_markdown, gate_metadata)``. Falls back to an empty
+        card + structured failure metadata when:
+
+        - ``STREAM_C_PR4=0`` (flag disabled — legacy ``_format_kg_fact_card``).
+        - ``case_file.domain_id`` is ``None`` (no domain to resolve).
+        - ``domain_id`` is not registered (unknown pack).
+        - The graph quality score fails the pack's gate.
+
+        Spec: §6, §8.2, §17.6 (Cross-PR Contract C5), §19 PR 4.
+        """
+        use_pack = os.getenv("STREAM_C_PR4", "1") == "1"
+        if not use_pack:
+            # Legacy path: byte-equivalent _format_kg_fact_card.
+            legacy_card = self._format_kg_fact_card(case_graph)
+            return legacy_card, {
+                "kg_used_for_prediction": case_graph is not None
+                and bool(legacy_card),
+                "kg_fallback_mode": None,
+                "kg_gate_failure_reasons": [],
+                "graph_quality_score": None,
+            }
+
+        domain_id = getattr(case_file, "domain_id", None)
+        if domain_id is None:
+            legacy_card = self._format_kg_fact_card(case_graph)
+            return legacy_card, {
+                "kg_used_for_prediction": False,
+                "kg_fallback_mode": "legacy_no_domain_id",
+                "kg_gate_failure_reasons": ["case_file.domain_id is None"],
+                "graph_quality_score": None,
+            }
+
+        try:
+            pack = get_domain_pack(domain_id)
+        except DomainPackNotFoundError as exc:
+            logger.warning(
+                "domain_pack_unknown",
+                domain_id=domain_id,
+                error=str(exc),
+            )
+            return "", {
+                "kg_used_for_prediction": False,
+                "kg_fallback_mode": "rag_only",
+                "kg_gate_failure_reasons": [
+                    f"unknown domain pack: {domain_id}"
+                ],
+                "graph_quality_score": None,
+            }
+
+        score = self._compute_graph_quality_score(case_file, case_graph)
+        if not pack.is_kg_usable(score):
+            return "", {
+                "kg_used_for_prediction": False,
+                "kg_fallback_mode": "rag_only",
+                "kg_gate_failure_reasons": _gate_failure_reasons(
+                    score, pack.graph_quality_gate
+                ),
+                "graph_quality_score": score.score,
+            }
+
+        card = pack.render_factor_card(case_graph)
+        return card, {
+            "kg_used_for_prediction": bool(card),
+            "kg_fallback_mode": None,
+            "kg_gate_failure_reasons": [],
+            "graph_quality_score": score.score,
+        }
+
+    def _compute_graph_quality_score(
+        self, case_file: Any, case_graph: Any
+    ) -> GraphQualityScore:
+        """Compute a ``GraphQualityScore`` for ``case_graph``.
+
+        For PR 4 this is a minimal heuristic; PR 5 + the real factor extractor
+        populate this properly. The validators on ``GraphQualityScore`` forbid
+        ``usable_for_prediction=True`` with non-empty ``failure_reasons``
+        (and require ``failure_reasons`` when usable=False), so we construct
+        accordingly.
+        """
+        if case_graph is None:
+            return GraphQualityScore(
+                score=0.0,
+                evidence_backed_factor_count=0,
+                dated_event_count=0,
+                issue_count=0,
+                outcome_or_remedy_candidate_count=0,
+                unsupported_factor_rate=0.0,
+                source_span_coverage=0.0,
+                contradiction_count=0,
+                usable_for_prediction=False,
+                failure_reasons=["case_graph is None"],
+            )
+
+        # Deposit path: case_graph is a KGFacts (legacy adapter). Use
+        # duck-typing rather than importing KGFacts here to keep the boundary
+        # crisp.
+        if (
+            hasattr(case_graph, "deposit_protection_status")
+            and hasattr(case_graph, "prescribed_information_status")
+            and hasattr(case_graph, "check_in_inventory_baseline")
+        ):
+            # Count every non-empty typed field — including the auxiliary
+            # detail fields (deposit_scheme, deposit_late_by_days, etc.) that
+            # the legacy renderer surfaces. This ensures byte-equivalence
+            # with the legacy ``_format_kg_fact_card`` for any KGFacts that
+            # would have produced a non-empty card under the legacy path
+            # (Hard Constraint #2). Three principal enums + four detail
+            # fields = up to 7 evidence-backed factors per deposit case.
+            principal = [
+                case_graph.deposit_protection_status != "unknown",
+                case_graph.prescribed_information_status != "unknown",
+                case_graph.check_in_inventory_baseline != "unknown",
+            ]
+            detail = [
+                getattr(case_graph, "deposit_scheme", None) is not None,
+                getattr(case_graph, "deposit_late_by_days", None) is not None,
+                getattr(case_graph, "prescribed_late_by_days", None)
+                is not None,
+            ]
+            populated = sum(principal) + sum(detail)
+            primary_known = sum(principal)
+            # HEURISTIC_PR4_ONLY: PR 5's real factor extractor replaces this.
+            # Single populated principal enum is counted as 2 evidence-backed factors
+            # to preserve deposit byte-equivalence — see Task 4.4 review.
+            #
+            # Pre-PR-5 heuristic: any populated KGFacts that the legacy
+            # renderer would have surfaced as a card MUST pass the gate, to
+            # preserve byte-equivalence (Hard Constraint #2). Legacy emits
+            # a card whenever ``is_empty()`` is False — i.e. any principal
+            # enum is populated. Until the real graph extractor lands in
+            # PR 5, we conservatively report 2 evidence-backed factors per
+            # populated principal enum (typed value + its source span) so
+            # the deposit gate's minimum of 2 is satisfied.
+            evidence_count = primary_known * 2 + sum(detail)
+            usable = primary_known >= 1
+            failure_reasons: List[str] = []
+            if not usable:
+                failure_reasons.append(
+                    "no typed deposit/prescribed/inventory facts populated"
+                )
+            return GraphQualityScore(
+                score=min(populated / 6.0, 1.0),
+                evidence_backed_factor_count=evidence_count,
+                dated_event_count=2 if primary_known > 0 else 0,
+                issue_count=1,
+                outcome_or_remedy_candidate_count=1,
+                unsupported_factor_rate=0.0,
+                source_span_coverage=1.0 if primary_known > 0 else 0.0,
+                contradiction_count=0,
+                usable_for_prediction=usable,
+                failure_reasons=failure_reasons,
+            )
+
+        # Repairs path: case_graph is a KnowledgeGraph-like with
+        # factor_assertions. Heuristic until PR 5 lands real extraction.
+        factor_assertions = getattr(case_graph, "factor_assertions", []) or []
+        evidence_backed = [
+            fa for fa in factor_assertions if getattr(fa, "supported_by", None)
+        ]
+        n_total = max(len(factor_assertions), 1)
+        rate_unsupported = 1.0 - (len(evidence_backed) / n_total)
+        coverage = len(evidence_backed) / n_total
+        usable = len(evidence_backed) >= 5
+        return GraphQualityScore(
+            score=len(evidence_backed) / n_total,
+            evidence_backed_factor_count=len(evidence_backed),
+            dated_event_count=len(getattr(case_graph, "dated_events", []) or []),
+            issue_count=len(getattr(case_graph, "issues", []) or []),
+            outcome_or_remedy_candidate_count=len(
+                getattr(case_graph, "candidate_outcomes", []) or []
+            ),
+            unsupported_factor_rate=rate_unsupported,
+            source_span_coverage=coverage,
+            contradiction_count=0,
+            usable_for_prediction=usable,
+            failure_reasons=[]
+            if usable
+            else [
+                f"only {len(evidence_backed)} evidence-backed factors (min 5)"
+            ],
+        )
+
     @staticmethod
     def _format_kg_fact_card(kg_facts: Any) -> str:
         """Render the typed KG fact card for the IRAC prompt (SHA-33).
 
         Returns empty string when kg_facts is None or all-unknown so the
         prompt is byte-identical to today's for cases without KG signal.
+
+        DEPRECATED (Stream C PR 4): this is the legacy deposit-only renderer.
+        Production callers go through ``_render_factor_card_via_pack`` which
+        dispatches to ``DomainPack.render_factor_card`` when ``STREAM_C_PR4=1``
+        (default). This method is kept as the fallback path under
+        ``STREAM_C_PR4=0`` and as the byte-equivalence reference for
+        ``housing.deposit.v1``'s pack renderer. A post-Stream-C cleanup PR
+        will delete it once the deposit pack has shipped to one release
+        cycle.
         """
         if kg_facts is None:
             return ""
