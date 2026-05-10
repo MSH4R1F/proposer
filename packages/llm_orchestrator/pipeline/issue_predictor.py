@@ -1196,17 +1196,43 @@ class IssuePredictor:
             "pre-decision resident/landlord facts and similar determinations.\n\n"
         )
         if no_rag_mode:
+            # STREAM_C_NO_RAG_PREDICT_AMOUNTS: when set, no-RAG modes
+            # (kg_only, llm_only) estimate predicted_amount + amount_band
+            # from general knowledge of UK Housing Ombudsman compensation
+            # ranges, rather than null-ing them out. Default off preserves
+            # the original "no-amount-without-precedent" research baseline.
+            no_rag_predict_amounts = (
+                os.getenv("STREAM_C_NO_RAG_PREDICT_AMOUNTS", "0") == "1"
+            )
+            if no_rag_predict_amounts:
+                amount_clause = (
+                    "Do not mention comparator determinations, proposition IDs, "
+                    "paragraph references, case citations, supporting cases, or "
+                    "comparator award amounts. For predicted_amount and "
+                    "amount_band: estimate the likely award based on general "
+                    "knowledge of typical UK Housing Ombudsman compensation "
+                    "ranges for this issue type and severity. Be conservative; "
+                    "under-estimate rather than over-promise. Use amount_band "
+                    "only as a Proposer modelling band: 0, 1-100, 101-250, "
+                    "251-600, 601-1000, or 1000+. Set predicted_amount to null "
+                    "only if the facts are too sparse for any order-of-"
+                    "magnitude estimate."
+                )
+            else:
+                amount_clause = (
+                    "Do not mention comparator determinations, proposition IDs, "
+                    "paragraph references, case citations, supporting cases, or "
+                    "comparator award amounts. For no-RAG ablations, do not "
+                    "model comparator-based compensation: set predicted_amount "
+                    "to null and amount_band to null."
+                )
             reasoning_instruction = (
                 "Before choosing the final JSON values, separate liability from "
                 "remedy. In the reasoning field, identify: (1) the likely "
                 "Ombudsman finding for each complaint head, (2) the specific "
                 "user-provided fact, evidence item, timeline event, or KG fact "
                 "that supports it, and (3) uncertainty caused by missing facts. "
-                "Do not mention comparator determinations, proposition IDs, "
-                "paragraph references, case citations, supporting cases, or "
-                "comparator award amounts. For no-RAG ablations, do not model "
-                "comparator-based compensation: set predicted_amount to null "
-                "and amount_band to null.\n\n"
+                f"{amount_clause}\n\n"
             )
         else:
             reasoning_instruction = (
