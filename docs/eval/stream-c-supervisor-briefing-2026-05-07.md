@@ -335,3 +335,81 @@ This is uncomfortable for the thesis claim. The recovery-sprint headline of "hyb
 The thesis is in better shape than this morning, but the original §15 update over-claimed. The defensible claim today is **fallback-parity-plus**: "we built the architecture, it doesn't harm accuracy when KG data is absent, the routing layer measurably enriches retrieval, and a positive-control test confirms the pipeline activates correctly when factor data is real. Quantifying the KG's contribution to prediction quality is gated on factor-data backfill into the gold corpus."
 
 Happy to discuss any of this on a call.
+
+---
+
+# 16. Case-side factor backfill — 2026-05-09 update
+
+After §15, the next test was: does populating `Case.factor_assertions` lift hybrid? We extracted factor data for all 48 strict-clean cases via `factor_gold_annotation.py` (gpt-5 + gpt-5-mini, 13 gate-countable factors per the IAA report). 486 FactorAssertions populated, mean 10.1 per case. Engineering: a sidecar JSON (`packages/eval/factor_assertion_sidecar.py`) plus a promoter (`scripts/eval/promote_factor_annotations_to_gold.py`) plus a `--factor-assertion-sidecar` flag in `predict_all`. ~£32 spend (£24 extraction + £8 ablation). Full report: [`docs/eval/stream-c-case-backfill-2026-05-09.md`](stream-c-case-backfill-2026-05-09.md).
+
+**Result:** hybrid REGRESSED 2 cases (0.917 → 0.875). rag_only unchanged at 0.896. kg_only and llm_only each lifted +1 case.
+
+**Why it didn't lift:** `kg_used_for_prediction=False` on every hybrid row even with case-side data populated. The FactorRetriever scores propositions by `factor_overlap`, and corpus propositions had no `factor_ids` populated, so all overlap scores were 0. The factor card content reached the IRAC prompt and `retrieval_strategy=factor_constrained`, but the architectural KG gate stayed closed.
+
+The hybrid regression itself is within stochastic LLM variance on n=48 — what's notable is the lack of any meaningful lift even with case-side data populated. Implication: full architectural activation needs both case-side AND proposition-side backfill.
+
+---
+
+# 17. Full factor + proposition backfill — 2026-05-10 update
+
+After §16 we built the missing piece: the proposition-side backfill. Postgres-backed proposition store wasn't running locally, so we sidestepped via JSONL: a `JsonlPropositionStore` (duck-types `PropositionGraphRepository`), a `dump_propositions_to_jsonl.py` wrapper around `ingest_propositions.py --dry-run`, a `tag_propositions_with_factors.py` CLI for factor-tagging propositions with gpt-5-mini, and a `--proposition-store-path` flag in `predict_all`. 2,895 LOC, 46 new tests. Extracted 510 propositions (mean 10.2 per case), tagged 295/510 (57.8%) with factor_ids. Re-ran 4-mode ablation. ~£11 spend (substantially under the £40-80 budget thanks to gpt-5-mini's cost-effectiveness on the proposition-tagging task). Full report: [`docs/eval/2026-05-10-stream-c-full-backfill.md`](2026-05-10-stream-c-full-backfill.md).
+
+**Result:** all three RAG-using modes converged at 0.917 (hybrid, rag_only, kg_only). llm_only at 0.875. Hybrid–rag_only delta is 0 cases.
+
+**The architectural finding** (this is the headline of the post-backfill picture): **`kg_used_for_prediction=False` on every hybrid row, with 6 distinct gate-failure reasons** triggered for 48/48 cases:
+
+| Gate criterion | Required | Observed |
+|---|---|---|
+| `evidence_backed_factor_count` | ≥ 5 | **0** |
+| `dated_event_count` | ≥ 2 | **0** |
+| `issue_count` | ≥ 1 | **0** |
+| `outcome_or_remedy_candidate_count` | ≥ 1 | **0** |
+| `unsupported_factor_rate` | ≤ 0.30 | **1.00** |
+| `source_span_coverage` | ≥ 0.80 | **0.00** |
+
+`graph_quality_score=0.0` everywhere. The architecture's quality gate refuses to fire because **factor + proposition tagging is necessary but not sufficient.** The full evidence-chain semantics (`EvidenceSpan` typed nodes, `Event` typed nodes, `IssueClaim`, `OutcomeCandidate`) must also be populated. Our extractors don't produce these — they would need a Stream D extractor series.
+
+## Three-round empirical journey: hybrid vs rag_only
+
+| Round | hybrid | rag_only | Δ | kg_used? |
+|---|---|---|---|---|
+| Recovery (no factor data) | 0.917 | 0.896 | +1 case | 0% |
+| Case-backfill (factor_assertions populated) | 0.875 | 0.896 | -1 case | 0% |
+| Full backfill (factors + propositions) | 0.917 | 0.917 | 0 cases | 0% |
+
+CIs overlap fully. The +1/-1/0 oscillation is stochastic LLM variance on n=48. The KG gate has been closed across all three runs for the same documented reasons.
+
+## What this means for the thesis
+
+Drop the "hybrid > rag_only on this corpus" claim entirely — three rounds of evaluation say it's noise. Pivot the empirical chapter to:
+
+> "We built and shipped a factor-proposition KG-controlled CBR-RAG architecture with cite-or-abstain validation. Three rounds of empirical evaluation under no factor data, partial backfill, and full factor + proposition backfill show that the architecture's design decision D5 (graceful fallback) is empirically robust under any data condition (zero abstention, no false predictions). The graph quality gate (§9.4) is the binding constraint on KG-path activation, requiring structured node types beyond the factor-and-proposition ontology this thesis implements (specifically EvidenceSpan, Event, IssueClaim, OutcomeCandidate). We characterise the architectural prerequisites and present them as scoped future work."
+
+This is **stronger than "we tried, it didn't lift"** because it (a) characterises the gate criteria honestly via documented failure reasons, (b) shows the architecture is correct via the positive-control fixture, and (c) gives a concrete next-experiments plan.
+
+## Decision required
+
+See [`docs/superpowers/plans/2026-05-10-stream-c-post-backfill-decision.md`](../superpowers/plans/2026-05-10-stream-c-post-backfill-decision.md) for the full plan with three branches:
+
+- **Branch A — Architectural Prerequisites Study** (~£0, ~6h). Write up the journey as the thesis empirical chapter. Defensible claim: graceful-fallback property, gate-criteria characterisation, future work for Stream D.
+- **Branch B — Stream D Evidence-Chain Extractors** (~£60-160, ~5-10 days). Build the 4 missing extractors (EvidenceSpan, Event, IssueClaim, OutcomeCandidate) so the gate fires. Re-run ablation.
+- **Branch C — Oracle-5 Hand-Curated Study** (~£1, ~14-20h, mostly your annotation). Hand-build 5 cases with all node types populated. Test if hybrid lifts under perfect data conditions. Cheapest disambiguation between A and B.
+
+**Recommendation:** Branch C first (cheap empirical answer in 1-2 days), then branch to A or B based on the result.
+
+## Cumulative spend
+
+| Phase | Approx |
+|---|---|
+| Original ablation + recovery sprint | ~£8 |
+| Case-side backfill | ~£32 |
+| Full factor + proposition backfill (this) | ~£11 |
+| **Total** | **~£51** |
+
+Within the cumulative authorised budget. Ready to discuss next steps on a call.
+
+---
+
+## Chronological index
+
+[`docs/eval/stream-c-timeline.md`](stream-c-timeline.md) — single-page index of every Stream C plan and report in chronological order, with one-line summaries.
