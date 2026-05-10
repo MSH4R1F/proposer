@@ -257,6 +257,28 @@ def _emit_jsonl(report_path: Optional[Path], record: dict) -> None:
         f.write(json.dumps(record, sort_keys=True) + "\n")
 
 
+def _emit_propositions_jsonl(
+    output_path: Optional[Path],
+    propositions,  # noqa: ANN001 — list[Proposition]
+) -> int:
+    """Append each Proposition's Pydantic JSON to the output file.
+
+    Returns the number of propositions written (0 if path is None or
+    the list is empty). Stream C: this is the JSONL capture point for
+    the factor-tagger pipeline — runs in --dry-run AND --commit modes
+    so callers can choose whether to persist to Postgres.
+    """
+    if output_path is None or not propositions:
+        return 0
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    written = 0
+    with output_path.open("a", encoding="utf-8") as f:
+        for prop in propositions:
+            f.write(prop.model_dump_json() + "\n")
+            written += 1
+    return written
+
+
 def _token_totals(llm) -> tuple[int, int]:  # noqa: ANN001 - duck-typed client
     """Return cumulative token totals exposed by the LLM client, if any."""
     stats = getattr(llm, "_stats", None)
@@ -482,6 +504,29 @@ async def _run_one_document(
         prop_rejected,
         edge_rejected,
     )
+
+    # 5b) Stream C: dump propositions to JSONL when --output-jsonl is set.
+    # Runs regardless of --dry-run / --commit so the same extraction can
+    # serve both Postgres AND the JSONL-backed proposition store. Failures
+    # here do NOT roll back the run — the JSONL is a sidecar artifact.
+    output_jsonl_path = (
+        Path(args.output_jsonl) if getattr(args, "output_jsonl", None) else None
+    )
+    try:
+        written = _emit_propositions_jsonl(
+            output_jsonl_path, prop_result.propositions
+        )
+        if written and output_jsonl_path is not None:
+            log.info(
+                "output-jsonl wrote %d propositions for case=%s to %s",
+                written,
+                case_ref,
+                output_jsonl_path,
+            )
+    except Exception:  # pragma: no cover - sidecar failures must not crash
+        log.exception(
+            "output-jsonl write failed for case=%s; continuing", case_ref
+        )
 
     # 6) Persist propositions + edges + finish_run (commit only).
     if args.commit:
@@ -734,6 +779,20 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="Max chars per LLM extraction chunk.")
     p.add_argument("--jsonl-report", type=str, default=None,
                    help="Append per-document JSON metrics to this path.")
+    p.add_argument(
+        "--output-jsonl",
+        type=str,
+        default=None,
+        help=(
+            "Append every successfully-extracted Proposition (one JSON "
+            "object per line, Pydantic-v2 model_dump_json) to this path. "
+            "Compatible with --dry-run AND --commit; in --dry-run mode "
+            "this is the canonical capture path for the Stream C "
+            "factor-tagger pipeline. The file is APPENDED to, so resuming "
+            "across multiple invocations is safe — but callers must "
+            "delete the file first to avoid duplicate rows."
+        ),
+    )
     p.add_argument("--mock-response", type=str, default=None,
                    help=(
                        "Path to a mock LLM fixture. Forces --dry-run; "

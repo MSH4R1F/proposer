@@ -369,6 +369,30 @@ def _build_eval_knowledge_graph(
     return kg
 
 
+class _PropositionRetrieverShim:
+    """Minimal duck-type that
+    :class:`llm_orchestrator.pipeline.issue_retrieval.IssueRetriever`
+    expects when only the FACTOR_CONSTRAINED retrieval strategy is
+    active.
+
+    ``IssueRetriever._resolve_proposition_repository`` reads
+    ``self.proposition_retriever.repository`` — that's all this shim
+    needs to expose. The full ``PropositionRetriever`` API is NOT
+    implemented; calling ``.retrieve(...)`` raises NotImplementedError
+    so any accidental wiring into a non-factor strategy fails loudly.
+    """
+
+    def __init__(self, repository: Any) -> None:
+        self.repository = repository
+
+    async def retrieve(self, *args: Any, **kwargs: Any) -> Any:  # noqa: D401
+        raise NotImplementedError(
+            "_PropositionRetrieverShim does not implement .retrieve(); the "
+            "FACTOR_CONSTRAINED strategy reads .repository directly. If a "
+            "non-factor strategy reached this shim, the wiring is wrong."
+        )
+
+
 def _live_predict_fn_factory(
     client_name: str,
     *,
@@ -376,6 +400,7 @@ def _live_predict_fn_factory(
     temporal_filters: bool = True,
     top_k: int = 10,
     factor_assertion_sidecar: Optional[dict] = None,
+    proposition_store: Any = None,
 ) -> Callable:
     """Return a callable matching ``predict_fn(case_file, mode) -> PredictionResult``
     for the chosen LLM client. ``--client stub`` returns a deterministic
@@ -387,6 +412,13 @@ def _live_predict_fn_factory(
     *factor_assertion_sidecar*, when provided, is a ``case_id -> List[FactorAssertion]``
     map that hydrates the per-case KnowledgeGraph so the FactorRetriever's
     ``asserted_factors`` input is populated (Stream C case-side backfill).
+
+    *proposition_store*, when provided, is a duck-typed
+    ``PropositionGraphRepository`` (e.g. ``JsonlPropositionStore``) that
+    serves the FactorRetriever's seed pass via ``search_by_issue_tags``.
+    Stream C proposition-side backfill — together with
+    *factor_assertion_sidecar* this is what flips
+    ``kg_used_for_prediction`` to True end-to-end.
     """
     if client_name == "stub":
         return _stub_predict_fn
@@ -492,8 +524,22 @@ def _live_predict_fn_factory(
                 domain_id,
                 factor_assertion_sidecar=factor_assertion_sidecar,
             )
+        # Stream C proposition-side backfill: when a JSONL proposition store
+        # was provided, expose it through the engine's proposition_retriever
+        # seam so ``IssueRetriever._resolve_proposition_repository`` can hand
+        # it to ``FactorRetriever`` for the seed pass. Without this, the
+        # FACTOR_CONSTRAINED strategy falls back to chunk-RAG even when
+        # asserted_factors are populated case-side.
+        proposition_retriever_shim = (
+            _PropositionRetrieverShim(proposition_store)
+            if proposition_store is not None
+            else None
+        )
         engine = PredictionEngineV2(
-            llm_client=llm, rag_pipeline=rag_pipeline, prompt_pack=prompt_pack
+            llm_client=llm,
+            rag_pipeline=rag_pipeline,
+            prompt_pack=prompt_pack,
+            proposition_retriever=proposition_retriever_shim,
         )
         # Run the async predict in an event loop.
         return asyncio.run(
@@ -517,6 +563,7 @@ def _resolve_predict_fn(
     temporal_filters: bool = True,
     top_k: int = 10,
     factor_assertion_sidecar: Optional[dict] = None,
+    proposition_store: Any = None,
 ) -> Callable:
     if engine == "stub":
         return _stub_predict_fn
@@ -533,6 +580,7 @@ def _resolve_predict_fn(
             temporal_filters=temporal_filters,
             top_k=top_k,
             factor_assertion_sidecar=factor_assertion_sidecar,
+            proposition_store=proposition_store,
         )
     raise ValueError(f"Unknown --engine {engine!r}; expected 'stub' or 'live'")
 
@@ -909,6 +957,20 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
             "asserted_factors (legacy fallback)."
         ),
     )
+    parser.add_argument(
+        "--proposition-store-path",
+        type=Path,
+        default=None,
+        help=(
+            "Optional path to a Stream-C proposition JSONL store "
+            "(see kg_builder.storage.jsonl_proposition_store). When the "
+            "file exists, the engine's FactorRetriever seed pass uses it "
+            "instead of the Postgres-backed PropositionGraphRepository. "
+            "When omitted, the runner auto-resolves "
+            "data/eval_artifacts/propositions/<domain>.propositions.tagged.jsonl "
+            "and falls back to the legacy path if neither file exists."
+        ),
+    )
     args = parser.parse_args(argv)
 
     modes = [m.strip() for m in args.modes.split(",") if m.strip()]
@@ -939,6 +1001,32 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
             f"{n_cases} cases, {n_assertions} assertions"
         )
 
+    # Stream C: load the JSONL proposition store (proposition-side backfill).
+    # Together with the factor-assertion sidecar this is what allows
+    # ``kg_used_for_prediction=True`` to flip end-to-end. Auto-resolves a
+    # canonical path when the flag is omitted; missing files are NOT an
+    # error — eval still runs with the legacy Postgres-or-empty fallback.
+    proposition_store: Optional[Any] = None
+    proposition_store_path: Optional[Path] = args.proposition_store_path
+    if proposition_store_path is None:
+        proposition_store_path = (
+            _REPO_ROOT
+            / "data"
+            / "eval_artifacts"
+            / "propositions"
+            / "housing_repairs_social_v1.propositions.tagged.jsonl"
+        )
+    if proposition_store_path.exists():
+        from kg_builder.storage.jsonl_proposition_store import (  # noqa: PLC0415
+            JsonlPropositionStore,
+        )
+
+        proposition_store = JsonlPropositionStore.from_path(proposition_store_path)
+        print(
+            f"Loaded proposition store from {proposition_store_path}: "
+            f"{len(proposition_store)} propositions"
+        )
+
     try:
         predict_fn = _resolve_predict_fn(
             args.engine,
@@ -947,6 +1035,7 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
             temporal_filters=not args.no_temporal_filter,
             top_k=args.top_k,
             factor_assertion_sidecar=factor_assertion_sidecar,
+            proposition_store=proposition_store,
         )
     except LiveClientNotConfigured as e:
         print(str(e), file=sys.stderr)
