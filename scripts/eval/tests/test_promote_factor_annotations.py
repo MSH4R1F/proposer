@@ -80,6 +80,7 @@ def _annotation(
     confidence: float = 0.9,
     value_type: str = "boolean",
     requires_human_review: bool = False,
+    source_span: str | None = None,
 ) -> Dict[str, Any]:
     return {
         "case_id": case_id,
@@ -94,7 +95,7 @@ def _annotation(
         },
         "value_type": value_type,
         "confidence": confidence,
-        "source_span": None,
+        "source_span": source_span,
         "requires_human_review": requires_human_review,
         "reasoning": "fixture",
     }
@@ -407,3 +408,75 @@ def test_canonical_value_is_null_skips_emission(promoter):
     # Either no entry for the case at all OR an empty list — both are
     # acceptable representations of "no signal".
     assert "case-null" not in out or out["case-null"] == []
+
+
+def test_source_span_promotes_to_evidence_span(promoter):
+    spans: Dict[str, List[Dict[str, Any]]] = {}
+    rows = [
+        _annotation(
+            case_id="case-span",
+            factor_id="hazard_or_disrepair_reported",
+            annotator_id="m1",
+            boolean=True,
+            confidence=0.9,
+            source_span="Resident reported damp and mould in the bedroom.",
+        ),
+        _annotation(
+            case_id="case-span",
+            factor_id="hazard_or_disrepair_reported",
+            annotator_id="m2",
+            boolean=True,
+            confidence=0.8,
+            source_span="Resident reported damp and mould in the bedroom.",
+        ),
+    ]
+
+    out = promoter.promote_annotations(
+        rows,
+        domain_id="housing.repairs_social.v1",
+        extractor_version="test",
+        min_confidence=0.5,
+        evidence_spans_by_case_id=spans,
+    )
+
+    fa = out["case-span"][0]
+    evidence = spans["case-span"][0]
+    assert evidence["evidence_span_id"] == fa["supported_by"][0]
+    assert evidence["evidence_span_id"] == fa["source_span_refs"][0]
+    assert evidence["source_kind"] == "ombudsman_determination"
+    assert evidence["source_reference"] == "case-span"
+    assert evidence["quote_text"] == "Resident reported damp and mould in the bedroom."
+
+
+def test_canonical_source_span_comes_from_selected_annotator(promoter):
+    spans: Dict[str, List[Dict[str, Any]]] = {}
+    rows = [
+        _annotation(
+            case_id="case-canonical-span",
+            factor_id="hazard_or_disrepair_reported",
+            annotator_id="m1",
+            boolean=True,
+            confidence=0.6,
+            source_span="Lower confidence quote.",
+        ),
+        _annotation(
+            case_id="case-canonical-span",
+            factor_id="hazard_or_disrepair_reported",
+            annotator_id="m2",
+            boolean=False,
+            confidence=0.95,
+            source_span="Higher confidence quote.",
+        ),
+    ]
+
+    out = promoter.promote_annotations(
+        rows,
+        domain_id="housing.repairs_social.v1",
+        extractor_version="test",
+        min_confidence=0.5,
+        evidence_spans_by_case_id=spans,
+    )
+
+    assert out["case-canonical-span"][0]["value"]["boolean"] is False
+    assert out["case-canonical-span"][0]["requires_human_review"] is True
+    assert spans["case-canonical-span"][0]["quote_text"] == "Higher confidence quote."

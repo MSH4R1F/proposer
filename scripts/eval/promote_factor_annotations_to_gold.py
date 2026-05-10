@@ -75,6 +75,14 @@ def _stable_evidence_span_id(case_id: str, factor_id: str, ord_: int = 0) -> str
     return f"es_promoted_{uuid.uuid5(_PROMOTER_UUID5_NAMESPACE, seed).hex}"
 
 
+def _normalise_source_span(value: Any) -> Optional[str]:
+    """Return non-empty annotator quote text, if present."""
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    return text or None
+
+
 def _value_signature(annotation: Dict[str, Any]) -> Tuple[Any, ...]:
     """Hashable signature of an Annotation's value for equality checks.
 
@@ -262,6 +270,7 @@ def promote_annotations(
     extractor_version: str,
     min_confidence: float,
     claim_head_id_for_case: Optional[Dict[str, str]] = None,
+    evidence_spans_by_case_id: Optional[Dict[str, List[Dict[str, Any]]]] = None,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Group → tie-break → translate. Returns ``case_id -> [FactorAssertion dicts]``.
 
@@ -319,6 +328,17 @@ def promote_annotations(
         # FactorAssertion validator's "must have at least one span" rule
         # for non-deterministic extractions is satisfied.
         span_id = _stable_evidence_span_id(case_id, factor_id)
+        source_span = _normalise_source_span(canonical.get("source_span"))
+        if source_span and evidence_spans_by_case_id is not None:
+            evidence_spans_by_case_id.setdefault(case_id, []).append(
+                {
+                    "evidence_span_id": span_id,
+                    "source_kind": "ombudsman_determination",
+                    "source_reference": case_id,
+                    "quote_text": source_span,
+                    "paragraph_range": None,
+                }
+            )
         annotator_ids = sorted(
             {str(r.get("annotator_id", "")) for r in rows if r.get("annotator_id")}
         )
@@ -385,6 +405,7 @@ def _summarise(factor_assertions_by_case_id: Dict[str, List[Dict[str, Any]]]) ->
 
 def _validate_against_pydantic(
     factor_assertions_by_case_id: Dict[str, List[Dict[str, Any]]],
+    evidence_spans_by_case_id: Optional[Dict[str, List[Dict[str, Any]]]] = None,
 ) -> None:
     """Round-trip every promoted dict through the FactorAssertion model.
 
@@ -392,6 +413,7 @@ def _validate_against_pydantic(
     bug in the promoter, not a user input problem.
     """
     from legal_core.graph.factor_assertion import FactorAssertion  # noqa: PLC0415
+    from legal_core.graph.evidence_span import EvidenceSpan  # noqa: PLC0415
 
     for case_id, rows in factor_assertions_by_case_id.items():
         for r in rows:
@@ -401,6 +423,16 @@ def _validate_against_pydantic(
                 raise RuntimeError(
                     f"promoter produced invalid FactorAssertion for case_id="
                     f"{case_id!r} factor_id={r.get('factor_id')!r}: {exc}"
+                ) from exc
+
+    for case_id, rows in (evidence_spans_by_case_id or {}).items():
+        for r in rows:
+            try:
+                EvidenceSpan.model_validate(r)
+            except Exception as exc:
+                raise RuntimeError(
+                    f"promoter produced invalid EvidenceSpan for case_id="
+                    f"{case_id!r} evidence_span_id={r.get('evidence_span_id')!r}: {exc}"
                 ) from exc
 
 
@@ -473,11 +505,13 @@ def _cli_main(argv: Optional[List[str]] = None) -> int:
         print(f"Error: annotations JSONL at {args.annotations} is empty", file=sys.stderr)
         return 1
 
+    evidence_spans_by_case_id: Dict[str, List[Dict[str, Any]]] = {}
     factor_assertions_by_case_id = promote_annotations(
         rows,
         domain_id=args.domain,
         extractor_version=args.extractor_version,
         min_confidence=args.min_confidence,
+        evidence_spans_by_case_id=evidence_spans_by_case_id,
     )
 
     # Optionally restrict to gold-corpus case_ids
@@ -506,11 +540,19 @@ def _cli_main(argv: Optional[List[str]] = None) -> int:
                 f"gold corpus: {dropped[:5]}{'...' if len(dropped) > 5 else ''}"
             )
         factor_assertions_by_case_id = kept
+        evidence_spans_by_case_id = {
+            cid: rows
+            for cid, rows in evidence_spans_by_case_id.items()
+            if cid in gold_case_ids
+        }
 
     print(f"Promotion summary: {_summarise(factor_assertions_by_case_id)}")
 
     # Sanity: every emitted dict must round-trip through Pydantic
-    _validate_against_pydantic(factor_assertions_by_case_id)
+    _validate_against_pydantic(
+        factor_assertions_by_case_id,
+        evidence_spans_by_case_id=evidence_spans_by_case_id,
+    )
 
     if args.dry_run:
         print("--dry-run set; sidecar NOT written.")
@@ -537,6 +579,7 @@ def _cli_main(argv: Optional[List[str]] = None) -> int:
         domain_id=args.domain,
         extractor_version=args.extractor_version,
         factor_assertions_by_case_id=factor_assertions_by_case_id,
+        evidence_spans_by_case_id=evidence_spans_by_case_id,
     )
     print(f"Wrote sidecar to {output_path}")
     return 0

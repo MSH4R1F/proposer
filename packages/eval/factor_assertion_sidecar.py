@@ -40,10 +40,17 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypedDict
 
 
 SIDECAR_SCHEMA_VERSION = "v1"
+
+
+class FactorAssertionSidecar(TypedDict):
+    """Validated Stream C sidecar payload."""
+
+    factor_assertions_by_case_id: Dict[str, List[Any]]
+    evidence_spans_by_case_id: Dict[str, List[Any]]
 
 
 def default_sidecar_path(repo_root: Path, gold_corpus_filename: str) -> Path:
@@ -78,6 +85,21 @@ def load_sidecar(path: Path) -> Dict[str, List[Any]]:
     if not path.exists():
         return {}
 
+    return load_full_sidecar(path)["factor_assertions_by_case_id"]
+
+
+def load_full_sidecar(path: Path) -> FactorAssertionSidecar:
+    """Load factor assertions plus optional evidence spans from *path*.
+
+    ``load_sidecar`` is intentionally preserved for older callers that expect
+    only ``case_id -> List[FactorAssertion]``.
+    """
+    if not path.exists():
+        return {
+            "factor_assertions_by_case_id": {},
+            "evidence_spans_by_case_id": {},
+        }
+
     payload = json.loads(path.read_text(encoding="utf-8"))
     schema_version = payload.get("schema_version")
     if schema_version != SIDECAR_SCHEMA_VERSION:
@@ -87,29 +109,49 @@ def load_sidecar(path: Path) -> Dict[str, List[Any]]:
             f"{SIDECAR_SCHEMA_VERSION!r}"
         )
 
-    raw_by_case: Dict[str, List[Dict[str, Any]]] = (
+    raw_factor_by_case: Dict[str, List[Dict[str, Any]]] = (
         payload.get("factor_assertions_by_case_id") or {}
     )
-    if not isinstance(raw_by_case, dict):
+    raw_spans_by_case: Dict[str, List[Dict[str, Any]]] = (
+        payload.get("evidence_spans_by_case_id") or {}
+    )
+    if not isinstance(raw_factor_by_case, dict):
         raise ValueError(
             f"factor-assertion sidecar at {path} has malformed "
             "factor_assertions_by_case_id (must be an object/dict)"
         )
+    if not isinstance(raw_spans_by_case, dict):
+        raise ValueError(
+            f"factor-assertion sidecar at {path} has malformed "
+            "evidence_spans_by_case_id (must be an object/dict)"
+        )
 
-    # Lazy import: the sidecar module sits in the eval package, but
-    # legal_core is what defines the FactorAssertion shape. Importing
-    # at function-call time keeps eval's package-level imports cheap.
+    # Lazy imports: eval remains cheap for non-Stream-C callers.
+    from legal_core.graph.evidence_span import EvidenceSpan  # noqa: PLC0415
     from legal_core.graph.factor_assertion import FactorAssertion  # noqa: PLC0415
 
-    out: Dict[str, List[Any]] = {}
-    for case_id, raw_list in raw_by_case.items():
+    factors: Dict[str, List[Any]] = {}
+    for case_id, raw_list in raw_factor_by_case.items():
         if not isinstance(raw_list, list):
             raise ValueError(
                 f"factor-assertion sidecar at {path}: case_id={case_id!r} "
                 f"value is not a list"
             )
-        out[case_id] = [FactorAssertion.model_validate(item) for item in raw_list]
-    return out
+        factors[case_id] = [FactorAssertion.model_validate(item) for item in raw_list]
+
+    spans: Dict[str, List[Any]] = {}
+    for case_id, raw_list in raw_spans_by_case.items():
+        if not isinstance(raw_list, list):
+            raise ValueError(
+                f"factor-assertion sidecar at {path}: evidence spans for "
+                f"case_id={case_id!r} are not a list"
+            )
+        spans[case_id] = [EvidenceSpan.model_validate(item) for item in raw_list]
+
+    return {
+        "factor_assertions_by_case_id": factors,
+        "evidence_spans_by_case_id": spans,
+    }
 
 
 def write_sidecar(
@@ -118,6 +160,7 @@ def write_sidecar(
     domain_id: str,
     extractor_version: str,
     factor_assertions_by_case_id: Dict[str, List[Any]],
+    evidence_spans_by_case_id: Optional[Dict[str, List[Any]]] = None,
 ) -> None:
     """Write the sidecar JSON atomically.
 
@@ -141,11 +184,27 @@ def write_sidecar(
                 )
         serialised[case_id] = rows
 
+    serialised_spans: Dict[str, List[Dict[str, Any]]] = {}
+    for case_id, entries in (evidence_spans_by_case_id or {}).items():
+        rows = []
+        for entry in entries:
+            if hasattr(entry, "model_dump"):
+                rows.append(entry.model_dump(mode="json"))
+            elif isinstance(entry, dict):
+                rows.append(entry)
+            else:
+                raise TypeError(
+                    f"evidence_span entry must be a Pydantic model or dict; "
+                    f"got {type(entry).__name__}"
+                )
+        serialised_spans[case_id] = rows
+
     payload = {
         "schema_version": SIDECAR_SCHEMA_VERSION,
         "domain_id": domain_id,
         "extractor_version": extractor_version,
         "factor_assertions_by_case_id": serialised,
+        "evidence_spans_by_case_id": serialised_spans,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     # sort_keys=True for byte-stable output (idempotency check downstream)
@@ -158,7 +217,7 @@ def write_sidecar(
 def hydrate_knowledge_graph(
     knowledge_graph: Any,
     case_id: str,
-    sidecar: Dict[str, List[Any]],
+    sidecar: Dict[str, List[Any]] | FactorAssertionSidecar,
 ) -> Any:
     """Attach factor assertions for *case_id* onto *knowledge_graph*.
 
@@ -171,16 +230,34 @@ def hydrate_knowledge_graph(
     we can attach the typed Pydantic instances directly without forcing
     kg_builder to depend on legal_core.
     """
-    entries = sidecar.get(case_id) or []
+    if (
+        isinstance(sidecar, dict)
+        and "factor_assertions_by_case_id" in sidecar
+    ):
+        factor_sidecar = sidecar.get("factor_assertions_by_case_id") or {}
+        evidence_sidecar = sidecar.get("evidence_spans_by_case_id") or {}
+    else:
+        factor_sidecar = sidecar
+        evidence_sidecar = {}
+
+    entries = factor_sidecar.get(case_id) or []
     if not entries:
-        return knowledge_graph
-    # KnowledgeGraph carries a typed ``factor_assertions: List[Any]`` field
-    # (added 2026-05-08). On legacy KGs that don't yet have it (e.g. mocks
-    # in tests), fall back to ``setattr`` so we don't crash the eval run.
-    try:
-        knowledge_graph.factor_assertions = list(entries)
-    except (ValueError, AttributeError):
-        setattr(knowledge_graph, "factor_assertions", list(entries))
+        span_entries = evidence_sidecar.get(case_id) or []
+    else:
+        span_entries = evidence_sidecar.get(case_id) or []
+        # KnowledgeGraph carries a typed ``factor_assertions: List[Any]`` field
+        # (added 2026-05-08). On legacy KGs that don't yet have it (e.g. mocks
+        # in tests), fall back to ``setattr`` so we don't crash the eval run.
+        try:
+            knowledge_graph.factor_assertions = list(entries)
+        except (ValueError, AttributeError):
+            setattr(knowledge_graph, "factor_assertions", list(entries))
+
+    if span_entries:
+        try:
+            knowledge_graph.evidence_spans = list(span_entries)
+        except (ValueError, AttributeError):
+            setattr(knowledge_graph, "evidence_spans", list(span_entries))
     return knowledge_graph
 
 

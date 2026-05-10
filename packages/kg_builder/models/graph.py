@@ -75,6 +75,11 @@ class KnowledgeGraph(BaseModel):
     # behave exactly as before.
     factor_assertions: List[Any] = Field(default_factory=list)
 
+    # Stream C evidence backfill (2026-05-10): optional typed EvidenceSpan
+    # instances hydrated from the same eval sidecar as factor assertions.
+    # Kept duck-typed for the same reason as ``factor_assertions``.
+    evidence_spans: List[Any] = Field(default_factory=list)
+
     # ------------------------------------------------------------------ #
     # SHA-61 / SHA-119: ontology + domain helpers
     # ------------------------------------------------------------------ #

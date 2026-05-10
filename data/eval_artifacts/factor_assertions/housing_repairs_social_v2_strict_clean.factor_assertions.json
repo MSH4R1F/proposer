@@ -1,5 +1,3505 @@
 {
   "domain_id": "housing.repairs_social.v1",
+  "evidence_spans_by_case_id": {
+    "housing-ombudsman-202306436": [
+      {
+        "evidence_span_id": "es_promoted_01d9808b14425b55bbd259f3ffb2816a",
+        "paragraph_range": null,
+        "quote_text": "The landlord told the resident it intended to demolish an extension at the rear of her property as it was unsafe and a fire hazard. The resident complained about this but the landlord would not change its position.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202306436"
+      },
+      {
+        "evidence_span_id": "es_promoted_413597a3b1f459bf87549db5a822491a",
+        "paragraph_range": null,
+        "quote_text": "We have found it is outside our jurisdiction to investigate the complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202306436"
+      },
+      {
+        "evidence_span_id": "es_promoted_ba3713cd8d29581d83acad6a74c731ab",
+        "paragraph_range": null,
+        "quote_text": "She complained about this but the landlord would not change its position.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202306436"
+      },
+      {
+        "evidence_span_id": "es_promoted_1868f7f62c995a6c99506e7b7f534878",
+        "paragraph_range": null,
+        "quote_text": "Following this, the landlord initiated court action seeking an injunction for access to demolish the extension.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202306436"
+      }
+    ],
+    "housing-ombudsman-202316658": [
+      {
+        "evidence_span_id": "es_promoted_1a8b85793a235c3cb0a9432f18268a5d",
+        "paragraph_range": null,
+        "quote_text": "2 March 2023 In her stage 1 complaint the resident said … 22 March 2023 The landlord gave a stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_71b0422f03d75c549d9405837790cdf4",
+        "paragraph_range": null,
+        "quote_text": "The resident asked the landlord to look at gaps in the fence and if it could fit security lights.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_3cc9cdce217e57a19bbf1cfd9b5ddcdc",
+        "paragraph_range": null,
+        "quote_text": "This Service cannot determine whether discrimination has taken place. These are legal terms which are better suited to a court to decide.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_eb984a89734b57f08d4b23e5796c424b",
+        "paragraph_range": null,
+        "quote_text": "\"it raised a complaint on 2 March 2023.\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_a43fcd3daf3752ea8c879b66420cb13a",
+        "paragraph_range": null,
+        "quote_text": "There is no evidence these minor repairs were completed or if the resident cancelled them, and this was a record keeping failure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_e47b058e4b335d839a72cdeffc040ed5",
+        "paragraph_range": null,
+        "quote_text": "The landlord inspected the fencing and said it would conduct minor repairs in its stage 2 response. There is no evidence these minor repairs were completed",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_43b5fb9c154b5a59855bb1bd09f63a48",
+        "paragraph_range": null,
+        "quote_text": "The landlord inspected the fencing and said it would conduct minor repairs in its stage 2 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      },
+      {
+        "evidence_span_id": "es_promoted_35edddf0a3a25313823a9e0dd13f9aec",
+        "paragraph_range": null,
+        "quote_text": "The landlord is aware the resident has mental health vulnerabilities and does not have digital access.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202316658"
+      }
+    ],
+    "housing-ombudsman-202318374": [
+      {
+        "evidence_span_id": "es_promoted_3e55d001158e5a55b0178f1dd405d825",
+        "paragraph_range": null,
+        "quote_text": "The landlord issued its stage 1 response on 22 November 2023, approximately 14 weeks (around 70 working days) after the complaint was logged.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_234b1a32f8fc5785b80f6387f7d511db",
+        "paragraph_range": null,
+        "quote_text": "On 2 August 2023 the landlord logged this as a stage 1 complaint and allocated a complaint handler. 22 November 2023 The landlord issued its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_06369a62252355b2bee20bd05dc4e9be",
+        "paragraph_range": null,
+        "quote_text": "The resident reported renewed leaking on 14 July 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_7976d8176b3f5aa9bdd188129b5a5f84",
+        "paragraph_range": null,
+        "quote_text": "The resident reported renewed leaking on 14 July 2023. The records show that plumbers and drainage contractors attended between 18 and 19 July 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_a139e7a4d43950fca992203702ac90f6",
+        "paragraph_range": null,
+        "quote_text": "Similar issues were raised in 2022; however, as the resident did not request a stage 2 review at that time, the landlord’s complaints process was not exhausted, and those matters fall outside the scope of this investigation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_f85fc34f36ca517b9ad4f383e8461777",
+        "paragraph_range": null,
+        "quote_text": "The resident reported renewed leaking on 14 July 2023. The landlord responded by arranging out-of-hours and follow-up electrical attendances to isolate and make the electrics safe.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_b196afcba73b5a268eb9d64b8329fdde",
+        "paragraph_range": null,
+        "quote_text": "The landlord issued its stage 2 response, revised its compensation offer to £500 for time and trouble and £300 for the impact of its poor complaint handling (£800 total).",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_0404e435d0315936b0737d416ac0d95d",
+        "paragraph_range": null,
+        "quote_text": "Contractor records confirm that the pipework was replaced and realigned on those dates and that the system was tested and left free-flowing.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_99033c97f2405012aa12da8fe90e30ad",
+        "paragraph_range": null,
+        "quote_text": "The resident reported renewed leaking on 14 July 2023. The evidence shows that the landlord did not formally conclude its position on the making-good works until a supervisory inspection on 21 November 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      },
+      {
+        "evidence_span_id": "es_promoted_d1e0c22a87e55f2ead7b02faab4f5220",
+        "paragraph_range": null,
+        "quote_text": "The landlord approved a back-to-back repair on 24 July 2023 and booked works for 3 and 4 August 2023. Contractor records confirm that the pipework was replaced and realigned on those dates",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202318374"
+      }
+    ],
+    "housing-ombudsman-202325309": [
+      {
+        "evidence_span_id": "es_promoted_cbaae89cb7f35ca183c61b29c1fe05b5",
+        "paragraph_range": null,
+        "quote_text": "The landlord sent its stage 1 complaint response to the resident on 31 October 2023. On 29 December 2023 the landlord sent its stage 2 complaint response to the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_599b70b7ace557178deeb6a26898eb3e",
+        "paragraph_range": null,
+        "quote_text": "The resident complained to the landlord on 6 October 2023. The landlord sent its stage 1 complaint response to the resident on 31 October 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_7d94978d748d593e853a95f42e71bb15",
+        "paragraph_range": null,
+        "quote_text": "The resident emailed the landlord on 1 June 2023. She said following the repairs to the drainage pipes the garden was left uneven, with cracks, mud patches and large weeds growing in it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_828913f2f6d05dd982af6edcb945309a",
+        "paragraph_range": null,
+        "quote_text": "The resident complained to the landlord on 6 October 2023. The landlord acknowledged it the same day.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_6e3d5890ee375503895657fa9e402434",
+        "paragraph_range": null,
+        "quote_text": "The landlord apologised and offered £50 compensation for the time it took to provide updates during its complaints process.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_ced4d5d6a8e85357abfa87c09649789f",
+        "paragraph_range": null,
+        "quote_text": "The landlord demonstrated sufficient record keeping in respect of the matters we have investigated in this case.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_7b6adffa1ebf518ab7cc73c2f26a780b",
+        "paragraph_range": null,
+        "quote_text": "On 15 December 2022 the developer repaired the drainage at the property. During the repairs the developer dug up the garden to access a pipe, then it filled the trench hole once they were completed.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_17bb3597730f511d9a52aa564df36689",
+        "paragraph_range": null,
+        "quote_text": "The resident emailed the landlord on 1 June 2023. During this investigation the landlord told us no further action was taken regarding the garden as the resident did not accept the proposed works.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      },
+      {
+        "evidence_span_id": "es_promoted_84b3d5e4953e5f00b861111f688f7f8a",
+        "paragraph_range": null,
+        "quote_text": "The landlord was not responsible to carry out remedial works in the resident’s garden.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202325309"
+      }
+    ],
+    "housing-ombudsman-202331162": [
+      {
+        "evidence_span_id": "es_promoted_4a23250e46ce5121b0536c1ee6f94426",
+        "paragraph_range": null,
+        "quote_text": "The resident reported a cracked kitchen window to the landlord on 26 January 2023. On 9 August 2023 she complained to the landlord because it had not repaired the window during that time.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_9bf0cb28826953b28a3180a7250c5041",
+        "paragraph_range": null,
+        "quote_text": "On 9 August 2023 the resident contacted the landlord to submit a formal complaint. On 13 September 2023 the landlord responded to the resident’s complaint at stage 1.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_8e39cef34d0858e9b1ad98fa3c84173c",
+        "paragraph_range": null,
+        "quote_text": "The resident reported a cracked kitchen window to the landlord on 26 January 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_8e9a536124805058b702bb69158eedc4",
+        "paragraph_range": null,
+        "quote_text": "The resident reported a cracked kitchen window to the landlord on 26 January 2023. On 15 August 2023 a surveyor attended and confirmed that a new window pane was required.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_1c2f3d2280a657d4aece01e7e4d3e54b",
+        "paragraph_range": null,
+        "quote_text": "The resident reported a cracked kitchen window to the landlord on 26 January 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_c356ac56ffc65ad08855db6814078f5b",
+        "paragraph_range": null,
+        "quote_text": "It acknowledged in its response that there was a delay in completing the repairs and apologised for the service failures. The landlord raised an appointment to address the issue and awarded £110 compensation for the inconvenience caused.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_68f4d8a22b87543888f58c2ba9c9781c",
+        "paragraph_range": null,
+        "quote_text": "The landlord has not provided the resident’s full repair history relating to the window repair. This demonstrates poor record keeping by the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_a15bdae5a1e751268193f3897c51239f",
+        "paragraph_range": null,
+        "quote_text": "The landlord confirmed that the reglaze was completed on 8 April 2024 after further delays caused by the glass delivery.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_e6fecd59b07b5632b9a3b111c65353df",
+        "paragraph_range": null,
+        "quote_text": "The landlord confirmed that the reglaze was completed on 8 April 2024... The resident reported a cracked kitchen window to the landlord on 26 January 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      },
+      {
+        "evidence_span_id": "es_promoted_f6f9e7da69dc556481604e311bfbfc58",
+        "paragraph_range": null,
+        "quote_text": "In its stage 1 response the landlord advised that an operative would attend on 14 September 2023 to carry out the repair.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202331162"
+      }
+    ],
+    "housing-ombudsman-202332678": [
+      {
+        "evidence_span_id": "es_promoted_e893b1e475fd5064a72eb7b2ba6406c6",
+        "paragraph_range": null,
+        "quote_text": "We have not seen any evidence of further reports by the resident relating to damp and mould until 4 months later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_ae600e33b8b3526e89aeb99a52e1567e",
+        "paragraph_range": null,
+        "quote_text": "17 August 2023 The resident complained about the landlord’s response to the flooring repair work. 19 September 2023 The landlord’s stage 1 response said it had completed repair work to the floor on 21 July 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_0a70fd47cb8a5a448cd22ecfa1940034",
+        "paragraph_range": null,
+        "quote_text": "4 July 2023 The resident told the landlord that the floorboards in her living room were damaged.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_ec67454d368c5ba289dbf69000621c49",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s initial response to the resident’s report of damaged floorboards on 14 July 2023 was timely and it attended on the same day to make the area safe.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_c288ae8868aa55ed90a9cede0671094c",
+        "paragraph_range": null,
+        "quote_text": "“It would be fairer, more reasonable and more effective for the resident to make a personal injury claim… The courts are best placed to deal with this type of dispute… We’ve not investigated this further.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_6343cf83f7e55e1c84dd64ac170f1dbd",
+        "paragraph_range": null,
+        "quote_text": "“The landlord’s initial response to the resident’s report of damaged floorboards on 14 July 2023 was timely and it attended on the same day to make the area safe.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_10e881e67b45599c8f0e0507b8a37292",
+        "paragraph_range": null,
+        "quote_text": "It apologised for its delay in responding and for the distress and inconvenience that the situation had caused the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_1f9dbd0a012e5ce984ed590453650b4e",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records do not clarify if the damp survey took place and there are no records of any further repair work addressing the issue.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_8dbd8b8bc0e7565eb518a62585acab83",
+        "paragraph_range": null,
+        "quote_text": "It completed repair work to the floor on 23 February 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_5ac34ad9af8d53abb0af2e931dd67b44",
+        "paragraph_range": null,
+        "quote_text": "its stage 2 response noted that it had done so on 23 February 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      },
+      {
+        "evidence_span_id": "es_promoted_7fabdae589b85e1bab80fc9dc337b277",
+        "paragraph_range": null,
+        "quote_text": "The landlord is aware she has respiratory health conditions.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332678"
+      }
+    ],
+    "housing-ombudsman-202332724": [
+      {
+        "evidence_span_id": "es_promoted_6ae89dee382d58248e77015a7b1b07ee",
+        "paragraph_range": null,
+        "quote_text": "The landlord attended on 30 November 2023 and explained that it would address any problems ... On 18 December 2023, the landlord inspected the loft and confirmed that insulation was present.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_db08f8f0b10254d38d5b49e08d82b1a4",
+        "paragraph_range": null,
+        "quote_text": "The landlord appropriately raised a complaint on 8 December 2023 for the resident following his expression of dissatisfaction. It acknowledged the complaint and responded at stage 1 on 22 December 2023 within its timescales of 10 working days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_c66ca9e130db505e8651c843dbc68a23",
+        "paragraph_range": null,
+        "quote_text": "The resident reported a leak coming from the loft on 31 October 2023 causing mould to form on the ceiling.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_083f320a07c551e39e6d7d143a3161b6",
+        "paragraph_range": null,
+        "quote_text": "On 31 October 2023 the resident raised concerns about damp and mould on the ceiling. The landlord booked the inspection for 30 November 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_b34381cc71ba510fb48f7acd6298f6f5",
+        "paragraph_range": null,
+        "quote_text": "The Ombudsman cannot determine negligence or liability in the same way as a court or order damages for these items; only a court can make a legally binding decision.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_d9387a76326f5170a95ecf48842a78b9",
+        "paragraph_range": null,
+        "quote_text": "On 31 October 2023 the resident reported a leak into the loft and mould on the ceiling. The landlord arranged a routine repair.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_8a7b45868de15e4c9656710869962f78",
+        "paragraph_range": null,
+        "quote_text": "It awarded £100 compensation as an apology for its service failure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_15747a0bda8857bea2faf344dc79e377",
+        "paragraph_range": null,
+        "quote_text": "On 3 January 2024 the landlord completed various repairs including to the gutters and roof. It also re-laid the loft insulation and treated the mould within the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_5b7ec605b43a5ddcbb0f547912f86d7d",
+        "paragraph_range": null,
+        "quote_text": "On 31 October 2023 the resident raised concerns about damp and mould on the ceiling.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_9d7627def3d35b78b547d31d7505e717",
+        "paragraph_range": null,
+        "quote_text": "The landlord attended the same day and repaired the roof tiles to rectify the leak.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      },
+      {
+        "evidence_span_id": "es_promoted_798d6ca2206152ab83e3204f7ba34198",
+        "paragraph_range": null,
+        "quote_text": "He told the landlord that the roof was still leaking and this was very disruptive and was impacting his mental health.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202332724"
+      }
+    ],
+    "housing-ombudsman-202334890": [
+      {
+        "evidence_span_id": "es_promoted_d4ed111a80d95f8b80593039c002a441",
+        "paragraph_range": null,
+        "quote_text": "“The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334890"
+      },
+      {
+        "evidence_span_id": "es_promoted_86e9f40cdb8c5322857b0e6aca9d4f66",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334890"
+      },
+      {
+        "evidence_span_id": "es_promoted_814d838ddb62552386c775df46003934",
+        "paragraph_range": null,
+        "quote_text": "The landlord apologised for the delays in taking action in its complaint responses and offered £980.57 compensation, which included £221.57 for the loss of use of the bedroom.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334890"
+      },
+      {
+        "evidence_span_id": "es_promoted_1d522dfc3b0c5a2da2d334ba77505700",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334890"
+      },
+      {
+        "evidence_span_id": "es_promoted_be661a6d1ded51c39b611b0e0df27183",
+        "paragraph_range": null,
+        "quote_text": "The landlord's records show it inspected the property and carried out some repairs to the damp bedroom wall after the resident had reported it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334890"
+      }
+    ],
+    "housing-ombudsman-202334994": [
+      {
+        "evidence_span_id": "es_promoted_9dca69484f0a5361a96b4c757ee549ac",
+        "paragraph_range": null,
+        "quote_text": "The landlord inspected the fence in November 2022 and February 2023. In August 2023, the landlord confirmed to the resident that the fence repairs were not its responsibility.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_a21c0e8f685e528ea071e161eed41f4e",
+        "paragraph_range": null,
+        "quote_text": "21 August 2023 The resident complained about the landlord’s handling of the fence repair. 6 September 2023 The landlord sent the resident its s tage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_47a99263f69451a48822f1670481a6c8",
+        "paragraph_range": null,
+        "quote_text": "In July 2022 the resident reported a broken fence in her back garden to the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_c8572b9019c754b29874fb2467e83991",
+        "paragraph_range": null,
+        "quote_text": "Following the resident’s report about the fence in July 2022, the landlord completed 2 inspections in November 2022 and February 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_ed23befd49755684b0a6945cddb5b88a",
+        "paragraph_range": null,
+        "quote_text": "The landlord apologised to the resident for the lack of clarity about the responsibility to repair when she first reported the matter.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_f5e68da61cb45938a9c451026c3e49e5",
+        "paragraph_range": null,
+        "quote_text": "The landlord provided sufficient records for us to investigate the resident’s complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_071fa995ba145e9da3c3bf40ec108d27",
+        "paragraph_range": null,
+        "quote_text": "Following her report the landlord attended to inspect, however, it did not complete repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_dd4afa93732852dcb9f1ac5278e07727",
+        "paragraph_range": null,
+        "quote_text": "Following the resident’s report about the fence in July 2022, the landlord completed 2 inspections in November 2022 and February 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      },
+      {
+        "evidence_span_id": "es_promoted_369ba30ca0ad56a79caad1084b811e8e",
+        "paragraph_range": null,
+        "quote_text": "It said the maintenance and repair of the fence was the resident’s responsibility.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202334994"
+      }
+    ],
+    "housing-ombudsman-202338295": [
+      {
+        "evidence_span_id": "es_promoted_ea21faa5eb2c5f61857638cb2fb665c7",
+        "paragraph_range": null,
+        "quote_text": "8 February 2024 The landlord issued a stage 2 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_a88e8180e0d1539a95df1ff6ecda2ff1",
+        "paragraph_range": null,
+        "quote_text": "7 to 8 December 2023 The resident complained that, while attending the property to decontaminate the loft and replace insulation following a rat infestation, a contractor put their foot through her children’s bedroom ceiling. She explained that this had caused large amounts of dirt, fibreglass, and rat droppings to fall into the bedroom and spread around the house.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_cc004a5421155c5f984a2428cb3a8495",
+        "paragraph_range": null,
+        "quote_text": "It attended the property on 8 December 2023 and cleaned the affected bedroom.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_009daf4721f75ae6a47ccbd0bf326909",
+        "paragraph_range": null,
+        "quote_text": "this investigation will not consider any potential impact of them on the resident’s or her family’s health. The courts are the most effective place for disputes about personal injury and illness.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_fefca96769f658e5bda6c0d2098a76df",
+        "paragraph_range": null,
+        "quote_text": "It attended the property on 8 December 2023 and cleaned the affected bedroom.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_c7a73ecca4825e43adb81374bde98612",
+        "paragraph_range": null,
+        "quote_text": "Offered her a further £150 in compensation for distress and inconvenience, and £50 for a delayed stage 2 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_a55f42aba9d657bc9d765ccdcb17fedc",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s record keeping was poor throughout the period in question. For instance, it failed to document the 8 December 2023 cleaning visit.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_303b0862c1565fc988acce1d918e39a8",
+        "paragraph_range": null,
+        "quote_text": "It also replastered the ceiling.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      },
+      {
+        "evidence_span_id": "es_promoted_7e45da98a65f51e0ba2c5b16b858d7e7",
+        "paragraph_range": null,
+        "quote_text": "It attended the property on 8 December 2023 and cleaned the affected bedroom. It also wiped all surfaces down. It also replastered the ceiling.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202338295"
+      }
+    ],
+    "housing-ombudsman-202339075": [
+      {
+        "evidence_span_id": "es_promoted_9e6fbe2030a2507b94d91bf8de9f65d6",
+        "paragraph_range": null,
+        "quote_text": "In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202339075"
+      },
+      {
+        "evidence_span_id": "es_promoted_c6e856ebc9305bef9b8c5e1de0d0714b",
+        "paragraph_range": null,
+        "quote_text": "The complaint was resolved with intervention.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202339075"
+      },
+      {
+        "evidence_span_id": "es_promoted_c77dabb697645d61aa570b41d43f4372",
+        "paragraph_range": null,
+        "quote_text": "In November 2021 the resident told the landlord she had concerns about the safety of the insulation in her loft.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202339075"
+      },
+      {
+        "evidence_span_id": "es_promoted_ebee613e5a295a23accf12e1722b7a57",
+        "paragraph_range": null,
+        "quote_text": "At the end of the complaints process the landlord apologised to the resident for its poor communication, the delays and inconvenience caused.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202339075"
+      },
+      {
+        "evidence_span_id": "es_promoted_14c4998dec725f1eaa7a05e911bda015",
+        "paragraph_range": null,
+        "quote_text": "completed the outstanding works",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202339075"
+      },
+      {
+        "evidence_span_id": "es_promoted_59d6b2259b87528d8dd1d1c213f7e579",
+        "paragraph_range": null,
+        "quote_text": "It awarded her £1,345 compensation and completed the outstanding works.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202339075"
+      }
+    ],
+    "housing-ombudsman-202345261": [
+      {
+        "evidence_span_id": "es_promoted_696b296ee6fc579c815cad8394e22c93",
+        "paragraph_range": null,
+        "quote_text": "The landlord visited on 14 March 2024 and said it would refer the matter to environmental health.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_7dd7d63321ed5374a864d5728c3d3371",
+        "paragraph_range": null,
+        "quote_text": "28 November 2023 The resident raised a complaint. 1 December 2023 The landlord issued its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_594d482b7d98555c94b38a89e6b81b21",
+        "paragraph_range": null,
+        "quote_text": "On 28 November 2023, the resident told the landlord she still had rats entering her home and she believed this was through the loft.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_0b025f276f935e86b7265f6e085cfbc9",
+        "paragraph_range": null,
+        "quote_text": "However, there is no evidence that the landlord contacted the resident by 9 August 2024 as agreed, and the inspection did not take place until 8 October 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_c16e13f9153b54f8af7ac89e611ccf48",
+        "paragraph_range": null,
+        "quote_text": "In its stage 1 response on 1 December 2023, the landlord acknowledged the resident’s ongoing problems with rats and said it would arrange for a contractor to inspect the property and, if needed, carry out pest treatments.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_5a9a8793d37e5b359e659f251249304b",
+        "paragraph_range": null,
+        "quote_text": "The landlord issued its stage 2 response and apologised for the ongoing rat issues.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_3c4be168dd255895ab0c98e57d0230c3",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s lack of records meant it could not fully demonstrate what actions it had taken or when.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_1df25a2955a550319d9e28777eb5091a",
+        "paragraph_range": null,
+        "quote_text": "the resident told this Service that the landlord blocked the entry points in the loft about 6 months ago.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      },
+      {
+        "evidence_span_id": "es_promoted_044cb3de0ea05b7191ce70a48341b0fe",
+        "paragraph_range": null,
+        "quote_text": "However, in 2021 it accepted responsibility because it believed the rats were coming from a neighbour’s garden.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202345261"
+      }
+    ],
+    "housing-ombudsman-202346688": [
+      {
+        "evidence_span_id": "es_promoted_0b3d75a29c6e5236a6c555695ec560e1",
+        "paragraph_range": null,
+        "quote_text": "11 January 2023 The resident complained to the landlord… 31 January 2023 The landlord issued its stage 1 complaint response",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_172b695284a051bfbbe631af785c5ba6",
+        "paragraph_range": null,
+        "quote_text": "The resident reported a blocked drainpipe from the flat below to the landlord several times.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_e4bff68a9ff75c32b4ecb1425a6c561c",
+        "paragraph_range": null,
+        "quote_text": "However, the landlord said she reported it on 15 November 2022.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_224a8fde09c35a449f8e85e843e5ffae",
+        "paragraph_range": null,
+        "quote_text": "it accepted that its communication had been poor and apologised",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_2054cb802676585093d63a424058990a",
+        "paragraph_range": null,
+        "quote_text": "The landlord was unable to locate its historical records of the contact it made to the leaseholder about gaining access. This shows a record keeping failing",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_2a2500373677584986a0c3d098c29880",
+        "paragraph_range": null,
+        "quote_text": "contractors had attended her property to try to fix the issue",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_3050d101b54d55d7af9134c528069148",
+        "paragraph_range": null,
+        "quote_text": "It took the landlord approximately 16 months to resolve the drainpipe issue, which was unreasonable.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      },
+      {
+        "evidence_span_id": "es_promoted_c87d98990be5535da56e5906d7b88735",
+        "paragraph_range": null,
+        "quote_text": "Despite this, the landlord was still responsible for repairs to avoid the issue causing further damage.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202346688"
+      }
+    ],
+    "housing-ombudsman-202348669": [
+      {
+        "evidence_span_id": "es_promoted_f19fc6ad49f85b9eb26fa46ace6ea53f",
+        "paragraph_range": null,
+        "quote_text": "The landlord did not respond to the resident’s reports for 4 months.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_9f1d84c74fdd5be2bb625832a91c4e48",
+        "paragraph_range": null,
+        "quote_text": "26 March 2024 The resident raised a complaint. 5 April 2024 The landlord issued a stage 1 acknowledgement and response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_64ff211344a758c2bfe4c054287fcb5b",
+        "paragraph_range": null,
+        "quote_text": "26 March 2024 The resident reported a mice infestation in the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_a8b5005fb9bc504589ef443c12424ab5",
+        "paragraph_range": null,
+        "quote_text": "10 April 2024 – 1 May 2024 Pest control contractors attended the property 3 times. On 10 and 17 April 2024 they confirmed there was a moderate level infestation",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_f7278ca731585004a2e5cd6bf11bdf07",
+        "paragraph_range": null,
+        "quote_text": "The resident said hers and her children’s health were impacted. It would be fairer, more reasonable and more effective for the resident to make a personal injury claim in relation to this, as the courts are best placed to deal with this type of dispute.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_a36c0634521b5a88885e5db36a6dc659",
+        "paragraph_range": null,
+        "quote_text": "The landlord issued a stage 1 acknowledgement and response. It said it had raised pest control works.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_20345bd4f8d750dc8ef6f53813db141f",
+        "paragraph_range": null,
+        "quote_text": "it apologised for a delay in repairs and offered £180 compensation for distress, inconvenience, time and effort.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_97e3efc14c3d5d88b2894f8e99e9fea8",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records mark the proofing works as ‘completed’ with ‘no action taken’ on 21 January 2025. It spoke to the resident on this day and noted that the holes were too big to proof and that it would request a carpenter to attend. It took no further action.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_e9cfca377a6351d0a4e873af64d6f431",
+        "paragraph_range": null,
+        "quote_text": "Pest control contractors attended the property 3 times. On 10 and 17 April 2024 they confirmed there was a moderate level infestation and laid bait in the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_6b07308f12fb5c50be100bae84ed968a",
+        "paragraph_range": null,
+        "quote_text": "26 March 2024 The resident reported a mice infestation in the property. The resident said that the infestation continued, and mice and droppings were in every room of the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_6324b5838cce5221bfc67adfe0529512",
+        "paragraph_range": null,
+        "quote_text": "it was reasonable for the landlord to take responsibility for it and raise pest works on 26 March 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      },
+      {
+        "evidence_span_id": "es_promoted_c23b1e0feecb525696859ffc290a6e65",
+        "paragraph_range": null,
+        "quote_text": "The resident reported to the landlord that she and her children had vulnerabilities.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202348669"
+      }
+    ],
+    "housing-ombudsman-202401431": [
+      {
+        "evidence_span_id": "es_promoted_6a6346f3c617583d9ec41c3b60641d07",
+        "paragraph_range": null,
+        "quote_text": "The landlord inspected the property on 6 November 2023, 9 working days later. The landlord acknowledged the complaint the same day it received it on 12 January 2024 and issued its stage 1 response on 24 January 2024, 8 working days later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_e149c5ef13c958e0a77cc6ae75c2e549",
+        "paragraph_range": null,
+        "quote_text": "The landlord acknowledged the complaint the same day it received it on 12 January 2024 and issued its stage 1 response on 24 January 2024, 8 working days later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_2572af591c9c5fb4bc88510c7d5f3642",
+        "paragraph_range": null,
+        "quote_text": "The resident said he contacted his landlord on 24 October 2023, asking for loft and wall insulation because he was struggling with high energy costs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_f4f120b326bb5173afb748410c500d20",
+        "paragraph_range": null,
+        "quote_text": "\"The resident asked for loft and wall insulation on 24 October 2023... The landlord inspected the property on 6 November 2023, 9 working days later.\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_f3b71541b6575c67a5ba97d6cd2ea317",
+        "paragraph_range": null,
+        "quote_text": "We have made orders for the landlord to put things right.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_b39e1a927df35eb18ced9d9c6df1fb63",
+        "paragraph_range": null,
+        "quote_text": "“said it inspected the property on 6 November 2023 after the resident requested insulation”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_b85630625aa15481879d7abfe4cd4205",
+        "paragraph_range": null,
+        "quote_text": "We do not have a copy of the inspection report, so we cannot confirm what checks were carried out or if the landlord’s actions after the inspection met its obligations under the Landlord and Tenant Act 1985 and the Decent Homes Standard.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_f5e5602ba1a85a3bb9f8dcdadd8db780",
+        "paragraph_range": null,
+        "quote_text": "“since his first complaint, the landlord had not done anything, except one visit before the complaint”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_45d0abaf51bf5f96bdee5251a2d0170f",
+        "paragraph_range": null,
+        "quote_text": "These requests were not part of the landlord’s repair duties as they were energy efficiency improvements.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_038c168ee56a52b2a2536228160361a5",
+        "paragraph_range": null,
+        "quote_text": "However, there is no evidence that the landlord satisfied itself that the property provided a reasonable level of thermal comfort or offered practical support to help the resident manage high energy costs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      },
+      {
+        "evidence_span_id": "es_promoted_65c6fc89109657ea83a6f60142bacaa7",
+        "paragraph_range": null,
+        "quote_text": "It also did not consider whether the resident’s wife might be more vulnerable to the cold because of her health conditions known to the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202401431"
+      }
+    ],
+    "housing-ombudsman-202404522": [
+      {
+        "evidence_span_id": "es_promoted_bb6998261dfa5223b8626e95acc52199",
+        "paragraph_range": null,
+        "quote_text": "The landlord conducted a damp and mould survey on 23 October 2023 but took no action. The resident chased on 13 December 2023, reporting worsening conditions.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_dddaa27d8b3b5b0e86348a2ee28e191a",
+        "paragraph_range": null,
+        "quote_text": "21 January 2024 The resident complained about worsening damp and mould in a bedroom over the past year.\n5 February 2024 The landlord sent its stage 1 complaint response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_b6ed8a581cf15b2f9d97fe93a8344aac",
+        "paragraph_range": null,
+        "quote_text": "The resident reported “rapidly spreading damp and mould” in a bedroom on 13 October 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_1aa9c5d4c32c5b5eb72dd024c7edf888",
+        "paragraph_range": null,
+        "quote_text": "The resident reported “rapidly spreading damp and mould” in a bedroom on 13 October 2023. She expressed concern for her family’s health and said she had to discard clothing. She suspected a leak in the downstairs flat might be the cause. The landlord conducted a damp and mould survey on 23 October 2023 but took no action.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_ae62edb98a825afdba998deee7c5563b",
+        "paragraph_range": null,
+        "quote_text": "It would be more reasonable and more effective for her to make a claim for this through the courts. The courts are best placed to deal with this type of dispute as they will have the benefit of independent medical advice. We have not investigated this further.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_715e72d7464e576882acb14668d97f4b",
+        "paragraph_range": null,
+        "quote_text": "The landlord conducted a damp and mould survey on 23 October 2023 but took no action.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_088db24c59d053858587324bd7b59314",
+        "paragraph_range": null,
+        "quote_text": "It acknowledged taking no action despite the resident’s follow-ups and apologised. It said it would conduct an urgent mould wash, install a kitchen extractor fan and instruct a surveyor to find the root cause. It offered £430 compensation for time and inconvenience.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_aec74bf582c85c329432d3a8d929be20",
+        "paragraph_range": null,
+        "quote_text": "This indicates poor record keeping and likely caused confusion.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_cb811af8deaa5b0c9036cf26834abdd7",
+        "paragraph_range": null,
+        "quote_text": "A mould wash took place on 1 May 2024, and a bonding solution was applied.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_a73c37be19d85d37ab70e3f790b88e6c",
+        "paragraph_range": null,
+        "quote_text": "The resident reported “rapidly spreading damp and mould” in a bedroom on 13 October 2023. A mould wash took place on 1 May 2024, and a bonding solution was applied.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_27695e4c46d25c6abea25416e5e2ffba",
+        "paragraph_range": null,
+        "quote_text": "It said it would conduct an urgent mould wash, install a kitchen extractor fan and instruct a surveyor to find the root cause.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      },
+      {
+        "evidence_span_id": "es_promoted_0954ccbd0d5c58d58c8b894d1ca459f8",
+        "paragraph_range": null,
+        "quote_text": "The landlord is aware that 1 of the children has asthma.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404522"
+      }
+    ],
+    "housing-ombudsman-202404949": [
+      {
+        "evidence_span_id": "es_promoted_7bec533729ca5deda7812ce570cc9cec",
+        "paragraph_range": null,
+        "quote_text": "He received a stage 2 response on 21 November 2024. This was 7 months after asking for his complaint to be escalated to stage 2.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_94f4a8a7d39f55ed92cb33136b6c01fd",
+        "paragraph_range": null,
+        "quote_text": "The resident raised his complaint on 30 October 2023. He received a stage 1 response from the landlord on 24 November 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_b00e1b5650435647b58cf479bdabf8f6",
+        "paragraph_range": null,
+        "quote_text": "The complaint is about the landlord’s handling of the resident’s reports of leaks.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_bffcaab20ac551d68b8726d938e57655",
+        "paragraph_range": null,
+        "quote_text": "We have found that there was reasonable redress in the landlord’s handling of the resident’s reports of leaks.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_174129c016a25936ab2bff40847a003d",
+        "paragraph_range": null,
+        "quote_text": "The first recorded attempt by the landlord to investigate the leak was on 31 October 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_906b1c0dd43658ab878e28af0b3085bc",
+        "paragraph_range": null,
+        "quote_text": "The landlord identified that it did not handle the resident’s reports of leaks appropriately and took steps to remedy this, including completing the repairs and paying compensation to the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_5863c264d01f558d9e005ad3ffff4efc",
+        "paragraph_range": null,
+        "quote_text": "The records provided to our service were incomplete and did not provide full details of the work carried out by the landlord and its contractors to resolve the issues.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_67dfd478084d564e8b206ca88aa911b9",
+        "paragraph_range": null,
+        "quote_text": "took steps to remedy this , including completing the repairs and paying compensation to the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_573cc5b9bbda524baa1f86288fd9e1d0",
+        "paragraph_range": null,
+        "quote_text": "Following on from this visit, the landlord and/or its contractors attended the property and the property above to identify and resolve the leak on at least 8 occasions between 31 October 2023 and 20 November 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      },
+      {
+        "evidence_span_id": "es_promoted_f835bf40a2d251ea826ddaaef70e26cd",
+        "paragraph_range": null,
+        "quote_text": "The landlord's repair guide says that non–urgent leaks will be repaired within 20 days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202404949"
+      }
+    ],
+    "housing-ombudsman-202407044": [
+      {
+        "evidence_span_id": "es_promoted_b8e94a84bd3953fbb7375fb202f15a3b",
+        "paragraph_range": null,
+        "quote_text": "The landlord provided a stage 1 response on 18 July 2024, 42 working days later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_15a6ce326bf956f08678ec1605fdcd36",
+        "paragraph_range": null,
+        "quote_text": "The resident complained to the landlord on 21 May 2024. The landlord provided a stage 1 response on 18 July 2024, 42 working days later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_a8d6a4aafb725624abb786479292c044",
+        "paragraph_range": null,
+        "quote_text": "20 August 2022 The resident reports her concerns about a retaining wall at the property to the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_f69876b6f6e65e299a92cdf763598e5b",
+        "paragraph_range": null,
+        "quote_text": "The complaint is about the landlord’s handling of the resident’s reports of repairs required to a retaining fence in the garden.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_b58df90a9a31539da7c81a63292a3f18",
+        "paragraph_range": null,
+        "quote_text": "The landlord inspected it and agreed that works needed to be done.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_f0e1fb19b8a55c50bb805afced3fa61c",
+        "paragraph_range": null,
+        "quote_text": "It apologised and paid her compensation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_0c34b40748a05cae868023e6e3ed0dc7",
+        "paragraph_range": null,
+        "quote_text": "The landlord seems not to have kept a record of its ownership of and responsibility to repair a garden fence at one of its properties.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_00a84a89181158288a3fd322d2d973e4",
+        "paragraph_range": null,
+        "quote_text": "The landlord carried out works on the fence in July 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_64e639dbe2bc560e87f4f09a60b7c986",
+        "paragraph_range": null,
+        "quote_text": "There had, however, been a delay in finding out who had the responsibility for maintaining the fencing. It had now verified that it was responsible.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      },
+      {
+        "evidence_span_id": "es_promoted_0caa817875ce5cb7b6fb22e19c80faee",
+        "paragraph_range": null,
+        "quote_text": "She pointed out that she was registered blind and so found the danger posed by the fence particularly worrying.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202407044"
+      }
+    ],
+    "housing-ombudsman-202408056": [
+      {
+        "evidence_span_id": "es_promoted_fe534b4701dc5df188a3c3d7d4aaac19",
+        "paragraph_range": null,
+        "quote_text": "it did not escalat e the complaint until 42 working days after she made it clear she remained unhappy (29 May to 26 July 2024)",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_43df21fc96fc5e679363e31d54572d2e",
+        "paragraph_range": null,
+        "quote_text": "13 March 2024 The resident raised a complaint to the landlord... 23 May 2024 The landlord sent its stage 1 response",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_2c6191144b695075af58a70f1c888315",
+        "paragraph_range": null,
+        "quote_text": "The resident raised a complaint to the landlord. She said she had damp in her hallway and her bedroom was cold due to a lack of heating in the hallway.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_20f6ca1271d159c4a33e858d24db6a51",
+        "paragraph_range": null,
+        "quote_text": "The landlord acknowledged the complaint 26 working days after the resident raised it (13 March to 19 April 2024) The landlord conducted a damp and mould inspection on 14 May 2024 which was not within its repairs policy timescale of 28 calendar days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_5061cb6a326959538c19622911d911fb",
+        "paragraph_range": null,
+        "quote_text": "19 April 2024 The landlord acknowledged the resident’s complaint and said it hoped to provide a response by 2 May 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_b47a5041ff42550298e28f4daeec8512",
+        "paragraph_range": null,
+        "quote_text": "it offered £175 compensation to recognise that not all required works were identified first time",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_f647c3753c795d0a97f6ff23d094142b",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records were adequate for it to make the correct assessment in relation to repairs. However, it failed to correctly interpret these records, impacting its decision making.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_2b18d9c0b6535df48756619a1688d326",
+        "paragraph_range": null,
+        "quote_text": "On 12 February 2025 the landlord wrote to the resident to say it had reviewed the situation and would be installing a radiator, which it subsequently did.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      },
+      {
+        "evidence_span_id": "es_promoted_160a47dbbc235818ab38383e9a62ae9e",
+        "paragraph_range": null,
+        "quote_text": "On 12 February 2025 the landlord wrote to the resident and said that as a goodwill gesture it would be installing a radiator in the hallway.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202408056"
+      }
+    ],
+    "housing-ombudsman-202409223": [
+      {
+        "evidence_span_id": "es_promoted_cb2698658b235007b9fb10e6dffed78a",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s inspection on 4 December 2023 identified that the front door was draughty and letting water in, and the 3 shed doors needed replacing. The landlord raised a job on 18 January 2024 for the overhaul of the doors, and a contractor attended to measure on 19 February 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_d112f07f6ed9551e918d8e2b850fc208",
+        "paragraph_range": null,
+        "quote_text": "the landlord responded to the roof complaint at stage 1 within 33 working days (25 April 2024 to 13 June 2024)",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_42acd238b27b579e813ae15c04c719df",
+        "paragraph_range": null,
+        "quote_text": "The resident raised 2 complaints to the landlord. The first was that she had reported a problem with her external doors in January 2024 and had heard nothing from the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_789473fed5bf56538103d6aa226bdb93",
+        "paragraph_range": null,
+        "quote_text": "The landlord raised a job on 18 January 2024 for the overhaul of the doors, and a contractor attended to measure on 19 February 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_9305dea932cb53ffa922ef0a028ccab1",
+        "paragraph_range": null,
+        "quote_text": "The landlord carried out an inspection on 4 December 2023 found that there was damp in the front bedrooms, possibly due to a roof leak. The landlord’s repairs records show it raised a job on 5 December 2023 for it to inspect the roof",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_8ddc36525107506d870a91d28837a36b",
+        "paragraph_range": null,
+        "quote_text": "It acknowledged these failings in its stage 1 response of 13 June 2024. It apologised for the 7-month delay and offered £200 compensation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_3b2fe2188838560ebd7a4150025f2a96",
+        "paragraph_range": null,
+        "quote_text": "it has no evidence it completed this. It noted that as it no longer works with the sub-contractor this job was allocated to, it was unable to obtain further records.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_38704c1f24b155209280c87b80b6bcfc",
+        "paragraph_range": null,
+        "quote_text": "it raised a job for the works on 16 August 2024, which it completed on 25 September 2024",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_c7bbfe0d9ea25541a2b83d30c03a1025",
+        "paragraph_range": null,
+        "quote_text": "\"The landlord’s repair records show that it raised a job for the works on 16 August 2024, which it completed on 25 September 2024, more than 9 months after the resident first raised the issue.\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      },
+      {
+        "evidence_span_id": "es_promoted_3fc7945760ec5751b3d0cad76c75a936",
+        "paragraph_range": null,
+        "quote_text": "The landlord did not carry out inspections and repairs in line with its repairs policy.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409223"
+      }
+    ],
+    "housing-ombudsman-202409957": [
+      {
+        "evidence_span_id": "es_promoted_a53123908664584890ce995cb7c9f9d9",
+        "paragraph_range": null,
+        "quote_text": "the resident did not move until July 2024, 6 months later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_cd54faf97e675a1a8bd72abd101a822f",
+        "paragraph_range": null,
+        "quote_text": "28 February 2024 The resident complained to the landlord. 21 March 2024 The landlord issued its stage 1 complaint response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_84867296eab958d8a1fc4152b670c9d6",
+        "paragraph_range": null,
+        "quote_text": "In 2022 she reported that she could not open her windows because they had moved out of alignment.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_61e5b97c574058c5a9de1d5389887901",
+        "paragraph_range": null,
+        "quote_text": "Its records show the resident first reported the issue in November 2022, but repairs were not completed until April 2023, 5 months later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_24950584572f5b77ba4c666cf8f314be",
+        "paragraph_range": null,
+        "quote_text": "It upheld her complaint and offered £650 compensation for distress and inconvenience and for its delay in responding to her complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_387017c369a7502cbe616f6c195ae46c",
+        "paragraph_range": null,
+        "quote_text": "an internal case note shows a staff member describing the repair records as unclear and trying to ‘make sense of them,’",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_a462ba5b8ba3579daa41e15ce5ac9160",
+        "paragraph_range": null,
+        "quote_text": "repairs were only completed in May 2024",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_a707ab8b5da953c6bbeecd64e959592e",
+        "paragraph_range": null,
+        "quote_text": "Repairs to infill the gaps and adjust the living room window were not completed until May 2024, 18 months after the issue was raised.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_3c38be5383ec5ed0b49c3cd8d2e11a73",
+        "paragraph_range": null,
+        "quote_text": "Under the tenancy agreement, the landlord is responsible for repairing external window frames and for keeping the structure and exterior in repair.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_549a06b606935ababbf11cfb8d180dd0",
+        "paragraph_range": null,
+        "quote_text": "The landlord arranged a temporary move for the resident in July 2024 and, as part of those decant arrangements, agreed to move her belongings into storage and cover the costs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      },
+      {
+        "evidence_span_id": "es_promoted_4254babed9705056949b0891fb1725ad",
+        "paragraph_range": null,
+        "quote_text": "even though it knew she had a medical condition that made her more sensitive to temperature changes.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202409957"
+      }
+    ],
+    "housing-ombudsman-202410423": [
+      {
+        "evidence_span_id": "es_promoted_1763f2bcae465709a2570051ad7d58aa",
+        "paragraph_range": null,
+        "quote_text": "It issued its stage 2 response 86 working days after the escalation request.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410423"
+      },
+      {
+        "evidence_span_id": "es_promoted_6af9c0480a94566995c8417e3d90aea3",
+        "paragraph_range": null,
+        "quote_text": "9 May 2023 The resident raised a complaint because she had not had a response to her query. 6 June 2023 The landlord issued its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410423"
+      },
+      {
+        "evidence_span_id": "es_promoted_277a0fbde690515bb0861243fd4353cb",
+        "paragraph_range": null,
+        "quote_text": "The resident queried the accuracy of the service charges for the TV aerial and door entry system. She said these services were not provided to the property. She asked this to be looked into.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410423"
+      },
+      {
+        "evidence_span_id": "es_promoted_213180003e265dbb872fb312bc29679e",
+        "paragraph_range": null,
+        "quote_text": "It said it had delayed in responding to her initial query because of a backlog. It apologised for its error and delay and offered £100 compensation to recognise this.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410423"
+      },
+      {
+        "evidence_span_id": "es_promoted_e29998fd8d585103978ec7cfe84ad855",
+        "paragraph_range": null,
+        "quote_text": "It apologised for its error and delay and offered £100 compensation to recognise this.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410423"
+      },
+      {
+        "evidence_span_id": "es_promoted_f640a39bfa085efaa9825c19bda5a51d",
+        "paragraph_range": null,
+        "quote_text": "we have not seen the original query or the response it sent on 26 May 2023",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410423"
+      }
+    ],
+    "housing-ombudsman-202410679": [
+      {
+        "evidence_span_id": "es_promoted_ff53a7f25aa157409493ba650aeba9d3",
+        "paragraph_range": null,
+        "quote_text": "However, it acknowledged the stage 2 complaint 55 days late and responded 65 days after escalation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_be3d96f6e87f5538bdfe04672333bf36",
+        "paragraph_range": null,
+        "quote_text": "7 May 2024 The resident complained about how the landlord handled repairs to his guttering and damp and mould in his property. 9 May 2024 The landlord said in its complaint response that a quote for scaffolding had been submitted for approval",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_6a56d33d04d75da1afb5ef31f2a75467",
+        "paragraph_range": null,
+        "quote_text": "He reported calling the landlord once or twice a week for three months to report the problem",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_d390f48198c358ea8d5e514000293fe3",
+        "paragraph_range": null,
+        "quote_text": "The Ombudsman can only consider complaints which have affected a resident in the occupation of their property. As the resident’s concern here centres on potential future issues which have not yet come to pass we cannot investigate them.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_8bf801e3d2ec56b2b132d2629261b210",
+        "paragraph_range": null,
+        "quote_text": "The landlord acknowledged and responded to the stage 1 complaint within 3 working days",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_6052ac80c228521e93971f00983b13b0",
+        "paragraph_range": null,
+        "quote_text": "In its stage 2 complaint response... The landlord apologised and offered the resident £320 compensation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_e99ca5989af2596f8828bc52f7af6581",
+        "paragraph_range": null,
+        "quote_text": "Nothing in the evidence explains why such a lengthy period was needed, or shows updates by the landlord to the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_44861e9360d85f26a034dca6d9beb451",
+        "paragraph_range": null,
+        "quote_text": "the landlord said the guttering had been partly cleared but scaffolding was required to complete the work.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_6f16b73ba19c5f3faae504ce0437bb81",
+        "paragraph_range": null,
+        "quote_text": "The resident told us the landlord did not repair the guttering until May 2025, which was 15 months after it was first reported.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      },
+      {
+        "evidence_span_id": "es_promoted_d1bcd5573241554aacc80d6240c7384f",
+        "paragraph_range": null,
+        "quote_text": "In its stage 2 complaint response, the landlord said the guttering had been partly cleared but scaffolding was required to complete the work.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202410679"
+      }
+    ],
+    "housing-ombudsman-202412991": [
+      {
+        "evidence_span_id": "es_promoted_3f17576f6590532fa2a268218f5fef69",
+        "paragraph_range": null,
+        "quote_text": "On 24 October 2023 the resident requested an update from the landlord but it did not call her back until 27 November 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_25acd2ca45e65caa9aaa1009cf85f6d1",
+        "paragraph_range": null,
+        "quote_text": "20 March 2024 The resident complained to the landlord as she felt it was not managing her ASB case correctly. 27 March 2024 The landlord sent its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_7127cedc290154478e5df2b70a572a7d",
+        "paragraph_range": null,
+        "quote_text": "The resident was unhappy the landlord did not respond to her reports of cracks in her ceiling plaster, which she said was noise related damage.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_d7be406f29ff5d7aa5d5426766139051",
+        "paragraph_range": null,
+        "quote_text": "On 24 August 2023 the resident reported ASB to the landlord. Following contact from the resident, the landlord visited her on 29 January 2024 and agreed an action plan.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_1a69427fb99350b5af3dc3727fdcf578",
+        "paragraph_range": null,
+        "quote_text": "It would be fairer, more reasonable and more effective for the resident to make a personal injury claim for any injury caused. The courts are best placed to deal with this type of dispute as they will have the benefit of independent medical advice to decide on the cause of any injury and how long it will last.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_3bf108df8e7a550285f664f9c17dc394",
+        "paragraph_range": null,
+        "quote_text": "On 24 August 2023 the resident reported ASB to the landlord. She said her neighbour shouted abuse at her and was racist. As part of its triage assessment, the landlord categorised this report as category ‘A’.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_5a4d7f06a6495d009fbf8e9397a2d2e5",
+        "paragraph_range": null,
+        "quote_text": "However, it accepted gaps in its communication and apologised for this.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_04be113067f75620b680a440a4e0c103",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s internal notes recorded several instances when it says it sent the resident diary sheets. We are unable to determine this point any further.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_8ec3b0d58cbc5a75aafaa0181a9ab495",
+        "paragraph_range": null,
+        "quote_text": "She was unhappy it raised work for these repairs on his behalf but did not for her when she reported damage to her property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      },
+      {
+        "evidence_span_id": "es_promoted_dbe055ca009f553bb2bd22d1035da102",
+        "paragraph_range": null,
+        "quote_text": "She said the noise was constant, her neighbour followed her above in his flat and it was affecting her sleep and impacting her health and work.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202412991"
+      }
+    ],
+    "housing-ombudsman-202413497": [
+      {
+        "evidence_span_id": "es_promoted_9f44fabdd35b5c7c876e006f9cb16deb",
+        "paragraph_range": null,
+        "quote_text": "20 June 2024 The landlord provided its stage 1 complaint response. 12 November 2024 The resident contacted the landlord because she had not received a response since its stage 1 complaint response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_380b9ca159275d61bf484afa2e12442e",
+        "paragraph_range": null,
+        "quote_text": "10 June 2024 The resident complained\n20 June 2024 The landlord provided its stage 1 complaint response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_adb10769ca775c2bb10726b2d1bdb9e9",
+        "paragraph_range": null,
+        "quote_text": "The resident has reported damp and mould in the property and has complained about the landlord’s approach to resolve it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_9b8fdab9643d5584a83a319b503ce7b3",
+        "paragraph_range": null,
+        "quote_text": "It was sorry it had not responded to her email",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_31ad073d42fe50e19ba4b6b58d03c2b5",
+        "paragraph_range": null,
+        "quote_text": "It offered £75 compensation for this.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_aae7d334247f578c9ca702c2cf01c214",
+        "paragraph_range": null,
+        "quote_text": "It is unclear what steps the landlord was taking to ensure works were completed as soon as possible.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_09192bf76b2b557387e09ee70ea105b3",
+        "paragraph_range": null,
+        "quote_text": "The landlord has attempted to carry out some repairs in the property while the resident is living in it. We can see that the landlord attended to complete a mould wash but this was declined by the resident because she was concerned her child was allergic to the chemicals.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_3d96f6293af854829a990855d241861f",
+        "paragraph_range": null,
+        "quote_text": "an email from her on 22 March 2024 which listed repairs ... it would be in touch by 31 January 2025",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_ecaf56d2fba85b75a9bb05c0732762b2",
+        "paragraph_range": null,
+        "quote_text": "We can see that the landlord offered the resident £500 per week to stay with friends and family, or to pay for a hotel or gym membership that the resident can use for bathroom facilities.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      },
+      {
+        "evidence_span_id": "es_promoted_3468250b4b97527c854bf6146666183d",
+        "paragraph_range": null,
+        "quote_text": "The resident reported that the damp and mould was impacting her children’s health.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413497"
+      }
+    ],
+    "housing-ombudsman-202413845": [
+      {
+        "evidence_span_id": "es_promoted_6e802f085424585d9103962fa466e85d",
+        "paragraph_range": null,
+        "quote_text": "He remained unhappy as the landlord stopped responding to the worktop issue. 22 January 2025 The landlord issued a further stage 2 response, repeating its earlier position that it was not responsible for repairing the worktop.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_d1fe202423fa537ab03bd8c550873a55",
+        "paragraph_range": null,
+        "quote_text": "The landlord acknowledged the stage 2 complaint on 6 June 2024 and issued a response on 10 July 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_671bcd325a915512bac8f2625e0e4fa8",
+        "paragraph_range": null,
+        "quote_text": "22 May 2024 The resident emailed the landlord with a photograph of the faulty worktop and asked for it to be repaired.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_1e3d4b9054075c25932a710f6c519dab",
+        "paragraph_range": null,
+        "quote_text": "We have found: There was service failure by the landlord in its response to reports of a damaged kitchen worktop.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_23b4b2b208ae534498d4b41885290982",
+        "paragraph_range": null,
+        "quote_text": "“The resident emailed the landlord with a photograph of the faulty worktop and asked for it to be repaired.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_c0634b8c69585437872be9793915d844",
+        "paragraph_range": null,
+        "quote_text": "The landlord apologised for the delay in responding and offered the resident £50 compensation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_0e306e927e185bfd98e3373adb6b966d",
+        "paragraph_range": null,
+        "quote_text": "However, there is no evidence that it issued a stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_ea863fb3619d521283d2733a95b4b754",
+        "paragraph_range": null,
+        "quote_text": "The landlord declined to address the issue, stating it was not responsible because the defect had not been raised at the time of the property handover.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      },
+      {
+        "evidence_span_id": "es_promoted_6fb6b0c366e75a609854b9289146967a",
+        "paragraph_range": null,
+        "quote_text": "22 May 2024 The resident emailed the landlord with a photograph of the faulty worktop and asked for it to be repaired; He remained unhappy as the landlord stopped responding to the worktop issue.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202413845"
+      }
+    ],
+    "housing-ombudsman-202421521": [
+      {
+        "evidence_span_id": "es_promoted_8ba7c524e7f95434856cbab3e1eb9a09",
+        "paragraph_range": null,
+        "quote_text": "1 March 2024 The landlord acknowledged the resident’s complaint. It asked him to allow 10 working days for a response. It confirmed it logged the shed repair at 17:16 on 24 January 2024. 20 May 2024 The landlord emailed the resident confirming it had sent an internal email asking someone to contact him urgently.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_fce7186e275a5fdb8a2fae91c5ba7a54",
+        "paragraph_range": null,
+        "quote_text": "The resident raised his complaint on 16 February 2024. The landlord logged it 10 working days later, on 1 March 2024. To be in line with the landlord’s complaints policy and our Code, it should have sent its stage 1 response by 18 March 2024. The landlord sent this on 3 June 2024, this was 52 working days late.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_569d9bf11f275d96a53336e1bad129d5",
+        "paragraph_range": null,
+        "quote_text": "It confirmed it logged the shed repair at 17:16 on 24 January 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_105e0e7eaab85795938e5b69aeb64701",
+        "paragraph_range": null,
+        "quote_text": "24-26 January 2024 The landlord refitted the shed door and put a new lock on it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_9c5524cbe76d5725995546f6b2df728e",
+        "paragraph_range": null,
+        "quote_text": "We note the resident would like the landlord to move him. We have discussed this with the resident and confirmed this is not a remedy we can make.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_9b214554bc1f5dd5adf2c9e2d779c7f5",
+        "paragraph_range": null,
+        "quote_text": "The landlord acknowledged the resident’s complaint. It asked him to allow 10 working days for a response. It confirmed it logged the shed repair at 17:16 on 24 January 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_2f62d5f3135f5137aacea1d3893a9427",
+        "paragraph_range": null,
+        "quote_text": "It awarded the resident a total of £120 for its failings.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_d5042cfe1a445702b726c23c375842df",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s repair notes (incorrectly) say it was the neighbour’s shed.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_92c2e6a0f4a45052a62d6dc99699747b",
+        "paragraph_range": null,
+        "quote_text": "The landlord refitted the shed door and put a new lock on it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_8c9e2f6a289d56d6a5d9c4b736c08472",
+        "paragraph_range": null,
+        "quote_text": "The resident was without the means to access his shed for a period of 3 weeks, with the landlord being aware of this for around half of the time.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      },
+      {
+        "evidence_span_id": "es_promoted_d88594b48c22516b9563a4fd0146f409",
+        "paragraph_range": null,
+        "quote_text": "The landlord refitted the shed door and put a new lock on it.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202421521"
+      }
+    ],
+    "housing-ombudsman-202426484": [
+      {
+        "evidence_span_id": "es_promoted_b1c2d0adf7eb5f4dbc9cafc40603a635",
+        "paragraph_range": null,
+        "quote_text": "On 13 November 2023 the resident reported that there was a recurring leak in one of the bedrooms. However, the information seen shows the landlord did not inspect the leak until 23January 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_85111289a99b53b9a42a6a936b8bbd33",
+        "paragraph_range": null,
+        "quote_text": "23 September 2024 The resident raised her complaint. ... 27 September 2024 The landlord issued its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_7346bc593f025e798ed3f84d4f439f66",
+        "paragraph_range": null,
+        "quote_text": "On 13 November 2023 the resident reported that there was a recurring leak in one of the bedrooms.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_f0426295168655a1901c7f79caa7718c",
+        "paragraph_range": null,
+        "quote_text": "However, the information seen shows the landlord did not inspect the leak until 23January 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_92ce727f1d0951b1a4ac4d22a469a3c8",
+        "paragraph_range": null,
+        "quote_text": "We have made orders for the landlord to put things right.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_e4f7bc58521a585f917ef29f293b35ec",
+        "paragraph_range": null,
+        "quote_text": "On 2 February 2024 the landlord responded to the resident’s first complaint about the leak and mould. It said that following the inspection on 23 January 2024 a contractor attended on 1 February 2024 to investigate and recommend a temporary repair to the leak.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_c748e789af19573b974cd34e518cfdaa",
+        "paragraph_range": null,
+        "quote_text": "In recognition of its service failure and the distress caused the landlord offered £200 compensation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_4cc2174304555852841a504e58513d83",
+        "paragraph_range": null,
+        "quote_text": "This indicates poor record keeping on the part of the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_dd8c784d201c5c908e47c7bdff031710",
+        "paragraph_range": null,
+        "quote_text": "From February to July 2024 the landlord carried out some repairs, but these did not resolve the leak.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_e83e39ea85595d17bc620c941a93e5d1",
+        "paragraph_range": null,
+        "quote_text": "On 13 November 2023 the resident reported that there was a recurring leak in one of the bedrooms. The resident confirmed to this Service on 24 October 2025 that she still experiences a leak in the bedroom whenever it rains.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      },
+      {
+        "evidence_span_id": "es_promoted_6c73eaf8e9975a9884797652e2f27488",
+        "paragraph_range": null,
+        "quote_text": "Under the terms of the lease the landlord is responsible for maintaining the structure and exterior of the building.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202426484"
+      }
+    ],
+    "housing-ombudsman-202427803": [
+      {
+        "evidence_span_id": "es_promoted_a9cc50ad1b545c4a87a13506729fd69b",
+        "paragraph_range": null,
+        "quote_text": "A further 117-day delay followed before the landlord raised a new repair order to rebuild the brick pillar.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_124e2ad609a05706be4a904590aca3dc",
+        "paragraph_range": null,
+        "quote_text": "31 July 2024 The resident complained about delays in repairs to the external render and a brick pillar. 3 September 2024 The landlord upheld the resident’s complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_c306225488045740bbeda91fb48f93ff",
+        "paragraph_range": null,
+        "quote_text": "In August 2023, they contacted the landlord to ask when it would complete repairs to the render at the rear of the property and to a brick pillar in the front garden.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_f9a50fbc87e856628aeb4fd0d76679bf",
+        "paragraph_range": null,
+        "quote_text": "There is no evidence that the resident raised a complaint specifically about the landlord’s handling of the damp and mould issues. Therefore, we have no power to investigate this matter.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_2b66cda4331a52d88c64fc2e698396f5",
+        "paragraph_range": null,
+        "quote_text": "On 7 August 2024 the landlord acknowledged the complaint and said it would respond within 10 working days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_832340c1fa1252d294df825e7210cccc",
+        "paragraph_range": null,
+        "quote_text": "The landlord accepted failings in its handling of the resident’s complaints. It apologised and offered compensation, which was sufficient to put things right during the complaints procedure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_7b3d4e16970251c09b6781ec98f1cc35",
+        "paragraph_range": null,
+        "quote_text": "the landlord’s records do not explain the reasons for the delays or show what steps were taken to progress the works during these periods.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_709cda075aaa586085c956e2738f6859",
+        "paragraph_range": null,
+        "quote_text": "The works were completed on 17 September 2024, within the landlord’s 28-day timescale for routine repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_1fcaaa30d8f654a5be5467c97fff2ca2",
+        "paragraph_range": null,
+        "quote_text": "The works were completed on 17 September 2024, within the landlord’s 28-day timescale for routine repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      },
+      {
+        "evidence_span_id": "es_promoted_44dbd88bef9d503f9aebe85a9424b8b8",
+        "paragraph_range": null,
+        "quote_text": "The landlord should have rebuilt the brick pillar without requiring further action from the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427803"
+      }
+    ],
+    "housing-ombudsman-202427949": [
+      {
+        "evidence_span_id": "es_promoted_4916433931495ec3a0817b576029e4d4",
+        "paragraph_range": null,
+        "quote_text": "The stage 2 response was provided by the landlord on 7 May 2024. The resident reported further concerns about damp and mould to their housing officer on 8 October 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_a50b8805c8df56dc8e27d661f16333ea",
+        "paragraph_range": null,
+        "quote_text": "The resident first raised their complaint with the landlord on 28 February 2024. The stage 1 response was provided to the resident on 14 March 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_1fc3e3ad39ae50e2ad0676bb5be93c0b",
+        "paragraph_range": null,
+        "quote_text": "The resident’s concerns about damp and mould were first reported to their housing officer on 26 January 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_3748d543179f5010b0ea13281e9da9ba",
+        "paragraph_range": null,
+        "quote_text": "The resident’s concerns about damp and mould were first reported to their housing officer on 26 January 2024. The stage 2 complaint response mentioned a damp and mould inspection that took place on 26 March.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_013184cf5b045607a744b05fbd6b63ae",
+        "paragraph_range": null,
+        "quote_text": "This is the time at which the landlord was put on notice about the issue.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_7dfce5d5b02252bf87f8ebf3d8ec155b",
+        "paragraph_range": null,
+        "quote_text": "The landlord apologised for the delays and provided compensation in line with its policy at stage 2 of the complaints process.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_064fa06c2ce254c997c672d388d7646a",
+        "paragraph_range": null,
+        "quote_text": "We have not been provided with evidence showing this inspection took place or what was found. That no evidence of this was provided points to a record keeping failure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_cda1970498775c1986a6fe8d8323031c",
+        "paragraph_range": null,
+        "quote_text": "The boiler was installed on 6 March 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_05c97a1177805535beab58f3400d907d",
+        "paragraph_range": null,
+        "quote_text": "The work identified by the surveyor took place over several visits but was completed on 6 December 2024. The resident has confirmed that this work appears to have solved the problem and there have been no further reports of damp and mould.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_2bc74dc1b43f5f57bf4a8e9277ff87bc",
+        "paragraph_range": null,
+        "quote_text": "The landlord's complaint policy has a payment banding where there is high impact on a resident and the responsibility is solely the landlord's.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      },
+      {
+        "evidence_span_id": "es_promoted_328920b75af052b197e47a8324eecd21",
+        "paragraph_range": null,
+        "quote_text": "The resident had explained to the landlord that there were members of the household who had long–term physical health conditions which could be affected by the damp and mould.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202427949"
+      }
+    ],
+    "housing-ombudsman-202428538": [
+      {
+        "evidence_span_id": "es_promoted_6bdef7303ef95efe85f54227c2bb0476",
+        "paragraph_range": null,
+        "quote_text": "Regardless, that it was 7 months after its stage 2 response before it first attempted to attend and lay the insulation is not in keeping with its repairs policy.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_2b842a023e0b5114a0771f63627fee6c",
+        "paragraph_range": null,
+        "quote_text": "10 July 2024 The resident complained to the landlord that when her tenancy began in August 2022, there were numerous outstanding repair issues that it took a long time to resolve or had not yet resolved.\n9 October 2024 The landlord issued its stage 1 response to the complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_52924fee0e415542a3c68e59f4effbdc",
+        "paragraph_range": null,
+        "quote_text": "She told it that in addition to the repairs mentioned in her complaint, she had also previously reported the following issues which remained unresolved:",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_66c02ef13093548ea5ba2fb5cd6e47b4",
+        "paragraph_range": null,
+        "quote_text": "10 October 2024 A Resident Liaison Officer (RLO) met with the resident in her home to discuss her complaint and review any outstanding repair issues.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_6f9175838d035f7392584c64d6305baf",
+        "paragraph_range": null,
+        "quote_text": "Shortly after the tenancy began in August 2022, the landlord recorded that the 'side and back fence needs repairing'.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_a1ae8a13db0856d599fc1912d5c19fbf",
+        "paragraph_range": null,
+        "quote_text": "Offered the resident £1,850 compensation for the delays in repairs (£1,350), its failure to repair the fence (£500), and the late complaint response (£100).",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_114f98a731e459e9bc23ec1983bef1f0",
+        "paragraph_range": null,
+        "quote_text": "We found it difficult to fully understand from the landlord’s records what repairs it had completed and when.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_7b0e42178501576ab916ed64411a8ca4",
+        "paragraph_range": null,
+        "quote_text": "In the months that followed its stage 2 response, the landlord completed some minor repairs, replaced the double glazing in some windows, and completed major drainage works.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_fcb092e7e0eb56fbae6c817fa3dcf98f",
+        "paragraph_range": null,
+        "quote_text": "Given that almost a year has passed since the landlord issued its stage 2 response and a number of repair issues remain unresolved",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_f9ad72636c925ed0a2fb8d75a7c77063",
+        "paragraph_range": null,
+        "quote_text": "While we acknowledge this may be the case, the landlord cannot rely on difficulties with gaining access as justification for not meeting its statutory repair obligations in relation to heating.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_ff5892cac590596f957502687abe886d",
+        "paragraph_range": null,
+        "quote_text": "During this time, it moved the resident into temporary accommodation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      },
+      {
+        "evidence_span_id": "es_promoted_06c234d414295ca7b427b0ca0bd169dc",
+        "paragraph_range": null,
+        "quote_text": "To assist her with managing the appointments going forward and to provide her with support, it assigned her a Resident Liaison Officer (RLO). This was good practice and demonstrated it recognised her vulnerabilities.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202428538"
+      }
+    ],
+    "housing-ombudsman-202429736": [
+      {
+        "evidence_span_id": "es_promoted_abe2cd536f035923983689d02fc04901",
+        "paragraph_range": null,
+        "quote_text": "20 May 2024 The resident asked to escalate her complaint. 21 June 2024 The landlord issued its stage 2 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_9638ca9da57a5bf78e95f2b0164bfcaf",
+        "paragraph_range": null,
+        "quote_text": "12 March 2024 The resident submitted a complaint form to the landlord\n29 April 2024 The landlord issued its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_a833c504d48d534c8127a8ec9ad2c508",
+        "paragraph_range": null,
+        "quote_text": "She also objected to paying for lift maintenance (as she lived on the ground floor), the communal laundry (which she did not use) and the heating system (which she said ran year-round due to poor maintenance).",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_eae3ffaedbf755b283f871534520b343",
+        "paragraph_range": null,
+        "quote_text": "The complaint about the landlord’s response to the resident’s reports of ASB is outside our jurisdiction.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_c405f3920f76591d85cbd863a04f9b49",
+        "paragraph_range": null,
+        "quote_text": "26 April 2024 The landlord acknowledged the complaint and said it had referred the resident’s ASB concerns to its ASB team for investigation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_efe09ab843d15e968b6da1eae594ebba",
+        "paragraph_range": null,
+        "quote_text": "It apologised for the resident’s dissatisfaction",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_e26e24276f1b5c21a879bcdc757922ae",
+        "paragraph_range": null,
+        "quote_text": "The absence of such monitoring records indicates the landlord did not effectively oversee the service.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_5770dc50bd6d50e598ce4b02ad5257e0",
+        "paragraph_range": null,
+        "quote_text": "The evidence shows the contractors cleared the area on 4 July 2024 and again 9 months later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      },
+      {
+        "evidence_span_id": "es_promoted_f49de59333a25addbda7241bba8deea2",
+        "paragraph_range": null,
+        "quote_text": "At stage 1, the landlord acknowledged there were areas of concern in the garden containing litter and said it would clear them within 3 days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202429736"
+      }
+    ],
+    "housing-ombudsman-202430026": [
+      {
+        "evidence_span_id": "es_promoted_261fd061bfe552a79d7cafc75d4013f5",
+        "paragraph_range": null,
+        "quote_text": "14 October 2024 The landlord provided its stage 2 complaint response. Based on the evidence, the landlord contacted the resident on 17 March 2025, to ask if the floor had been fitted and if she had received the compensation offered at stage 2.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_fa4d1d2874ec5a59a527d75cd12f972a",
+        "paragraph_range": null,
+        "quote_text": "The resident raised her complaint. … 6 September 2024 The landlord provided its stage 1 complaint response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_92fdfef7ddeb5efd8d22fa3559b3d9c7",
+        "paragraph_range": null,
+        "quote_text": "On 19 February 2024, the resident reported an emergency repair because a recently installed radiator was leaking and damaging the flooring.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_674e49a5fe86556f9e7b9788b7b69f19",
+        "paragraph_range": null,
+        "quote_text": "On 2 May 2024, the resident reported a further emergency repair because of the leak in the hallway. The landlord inspected the leak the following day and raised a work order to relay the sub floor.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_7c6cc93e03615f62867d3587699bca8b",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s response to reports of a data breach is outside of our jurisdiction.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_7be135eb944158c6bdd9a3ec56e9161b",
+        "paragraph_range": null,
+        "quote_text": "On 2 May 2024, the resident reported a further emergency repair because of the leak in the hallway. The landlord inspected the leak the following day and raised a work order to relay the sub floor.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_717a9bdc0c765eac994d47c5dfd533aa",
+        "paragraph_range": null,
+        "quote_text": "“It apologised for its complaint handling failure at stage 1 and offered £50. It offered a further £150 for her time, trouble and inconvenience.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_4a1fffc4fd29571bb34878caacafd221",
+        "paragraph_range": null,
+        "quote_text": "This investigation was consequently hampered by the landlord’s poor record keeping.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_b072b3c588b756cc8b7da95f7a99dc6c",
+        "paragraph_range": null,
+        "quote_text": "The landlord repaired the motor in the bathroom fan on 11 July 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_cdfce08448ff59059382b12daf6e5ee7",
+        "paragraph_range": null,
+        "quote_text": "On 19 February 2024, the resident reported an emergency repair because a recently installed radiator was leaking and damaging the flooring. The landlord contacted the resident on 17 March 2025 to ask if the floor had been fitted and if she had received the compensation offered.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_60f35d31b4db5a21a8c6ad8e8facf530",
+        "paragraph_range": null,
+        "quote_text": "In both complaint responses the landlord upheld her complaint for the delay in completing these repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      },
+      {
+        "evidence_span_id": "es_promoted_5eea138c8986580b96ce52903898036e",
+        "paragraph_range": null,
+        "quote_text": "She reported that this disruption had a detrimental impact on her son’s mental health.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202430026"
+      }
+    ],
+    "housing-ombudsman-202432454": [
+      {
+        "evidence_span_id": "es_promoted_d88bbf0063d95fad8e0dcbcb6e2cac8e",
+        "paragraph_range": null,
+        "quote_text": "This was 6 months after it had removed the bedroom heater, which was unreasonable and caused inconvenience to the resident",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_09496e37260e57cd941b9af6eeb704b8",
+        "paragraph_range": null,
+        "quote_text": "23 April 2024 The resident raised a complaint about the landlord’s handling of the repairs since he moved in. 15 May 2024 The landlord issued its stage 1 response",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_8e1f9141de9a5e99972c2fe936df0882",
+        "paragraph_range": null,
+        "quote_text": "The resident reported many repairs between February 2024 and November 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_493acf6088795c5098abf8dab7b55cad",
+        "paragraph_range": null,
+        "quote_text": "On 20 May 2024 it inspected the property and provided a detailed work schedule to the resident,",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_942f86f4dbbf56578de4368c62bdec5b",
+        "paragraph_range": null,
+        "quote_text": "30 April 2024 The landlord acknowledged the resident’s complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_7607f2590cb2528a99639ee8bab4a15d",
+        "paragraph_range": null,
+        "quote_text": "It apologised and confirmed it would fit the new heater and thermostat on 21 November 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_d2c51d5e3b265fb397cd01ab9394bef6",
+        "paragraph_range": null,
+        "quote_text": "The landlord failed to maintain accurate and complete repair records, which undermined its ability to monitor progress, reschedule appointments, and confirm that it had resolved the issues.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_5b35029d49945772be42ee1cac2f1fc3",
+        "paragraph_range": null,
+        "quote_text": "It subsequently completed the wall repairs on 4 November 2024 and installed the new heater on 21 November 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_6446c477734851c1aa896dd0a835e5e2",
+        "paragraph_range": null,
+        "quote_text": "\"It subsequently completed the wall repairs on 4 November 2024 and installed the new heater on 21 November 2024. This was 6 months after it had removed the bedroom heater\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_4aa7c279b6ab57c4a51a68df44d21c10",
+        "paragraph_range": null,
+        "quote_text": "It replaced the kitchen and bedroom windows as agreed during its void inspection.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      },
+      {
+        "evidence_span_id": "es_promoted_1e516aedcd2059b9bc40061988d30ae0",
+        "paragraph_range": null,
+        "quote_text": "In this case, the resident repeatedly informed the landlord that he had health conditions and in September 2024, he said that he was disabled.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202432454"
+      }
+    ],
+    "housing-ombudsman-202440462": [
+      {
+        "evidence_span_id": "es_promoted_697a7256b5c050ad9f019bee7ff460e1",
+        "paragraph_range": null,
+        "quote_text": "The landlord repaired the doors around 3 years after they were first reported.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_f8bad1c7e7ad5800b4b82d883c8d9dc5",
+        "paragraph_range": null,
+        "quote_text": "On 25 December 2024 the resident reported to the landlord that she had no electricity in her kitchen, meaning she could not use her oven or washing machine.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_0b62b1c1329b5eeca37984e799842e09",
+        "paragraph_range": null,
+        "quote_text": "On 25 December 2024 the resident reported to the landlord that she had no electricity in her kitchen... In an email on 27 December 2024 the landlord said it had attended that day",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_5ef2b4c6ee8658cebad448f8b84e5fcf",
+        "paragraph_range": null,
+        "quote_text": "The resident’s complaint about the landlord’s handling of the suitability of the property is outside of the Ombudsman’s jurisdiction.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_b7e5e73e724c5f79a18b2245f22b30df",
+        "paragraph_range": null,
+        "quote_text": "On 25 December 2024 the resident reported to the landlord that she had no electricity in her kitchen, meaning she could not use her oven or washing machine. In an email on 27 December 2024 the landlord said it had attended that day",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_e696df07fb67591d932a3b03fdeec24f",
+        "paragraph_range": null,
+        "quote_text": "It apologised for the delay in completing the repair and said it partially upheld the complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_471d82c66a5f5c4f810e1f36958bed5a",
+        "paragraph_range": null,
+        "quote_text": "Despite us having asked the landlord multiple times to provide evidence of its handling of this ASB, it has failed to provide any records to us.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_c8dce3571ee850c38c8621d367384bf3",
+        "paragraph_range": null,
+        "quote_text": "The landlord repaired the electrical fault in the kitchen.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_92b86417e5a45dd5bd0fc2f5ab1145ff",
+        "paragraph_range": null,
+        "quote_text": "The landlord repaired the doors around 3 years after they were first reported.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_43662fcafd435558bf9f5db368beba0f",
+        "paragraph_range": null,
+        "quote_text": "Under the tenancy agreement the landlord will maintain and repair the structure of the building, including windows and external doors.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_318ec705eab45cf7b6c507b681bdaaec",
+        "paragraph_range": null,
+        "quote_text": "The landlord temporarily moved her to alternative accommodation from around 28 December 2022 until around the end of January 2023. During this period she stayed in 2 different hotels.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      },
+      {
+        "evidence_span_id": "es_promoted_a8fc29820d0d5815a58f4e22011ddca8",
+        "paragraph_range": null,
+        "quote_text": "The resident and 2 of her children are vulnerable and have health conditions.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202440462"
+      }
+    ],
+    "housing-ombudsman-202441018": [
+      {
+        "evidence_span_id": "es_promoted_57af8cdfc32b524a8d950f977b642055",
+        "paragraph_range": null,
+        "quote_text": "There's no evidence that there was any further communication between any parties about starting works in May.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_f436d60e24e952f590967e661fef4e01",
+        "paragraph_range": null,
+        "quote_text": "The landlord responded at stage 1 within 11 working days (23 August to 9 September 2024).",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_3c1cc444ad315d719c2a6394c822ef3c",
+        "paragraph_range": null,
+        "quote_text": "23 August 2024 The resident raised a formal complaint and said: Boxes left around her home meant she was unable to safely move around.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_76471ef2d3b9526aaeeedd5b9940bb48",
+        "paragraph_range": null,
+        "quote_text": "We have made orders for the landlord to put things right.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_12936102885153b3adc098332f6f8882",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s repair logs show that it raised works orders on 13 June 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_b2cdff25138f5f11a85ced7862082821",
+        "paragraph_range": null,
+        "quote_text": "It offer ed £225 compensation comprised of: £25 for the delay in its complaint response. £200 for time, trouble and inconvenience.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_fc7eb8fcf6e456ffaa3cce667604d436",
+        "paragraph_range": null,
+        "quote_text": "There were record keeping failures which impacted on our assessment of the landlord’s response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_ed2653f533bb5e38be1146b41f029fa6",
+        "paragraph_range": null,
+        "quote_text": "Works commenced during August. On 23 September the resident moved to temporary accommodation. Works were completed in October 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_0e6f76b6eb22568f97537af21a1dad9b",
+        "paragraph_range": null,
+        "quote_text": "Works commenced during August. On 23 September the resident moved to temporary accommodation. Works were completed in October 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_457919f06aa25a14b1e2b53e6c9ba0e0",
+        "paragraph_range": null,
+        "quote_text": "The landlord carried out a pre inspection of the property on 4 March 2024. The works it identified included the entrance hall, bedroom, and shower enclosure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_2f0928bb83a457c6b8fa201368217652",
+        "paragraph_range": null,
+        "quote_text": "“it offered the resident 2 properties on 20 September. She declined the offers because they were outside the borough… On 23 September 2024 the landlord emailed the resident with a further offer of temporary hotel accommodation to start that day until 7 October.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      },
+      {
+        "evidence_span_id": "es_promoted_19d7349d09345a448310f96ec89aefbd",
+        "paragraph_range": null,
+        "quote_text": "The landlord is aware that the resident has vulnerabilities, including mobility issues.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202441018"
+      }
+    ],
+    "housing-ombudsman-202442504": [
+      {
+        "evidence_span_id": "es_promoted_ef4675461e0357a091e714a95ada0b1a",
+        "paragraph_range": null,
+        "quote_text": "The landlord provided its stage 1 response on 8 January 2025. The landlord did not provide its stage 2 response until 21 March 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_0d15539795475c37acaef398a5c4f340",
+        "paragraph_range": null,
+        "quote_text": "27 November 2024 The resident made a complaint to the landlord about a lack of heating and hot water . 8 January 2025 The landlord provided its stage 1 response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_2cdd810628295270947846c8091ac684",
+        "paragraph_range": null,
+        "quote_text": "The resident made a complaint to the landlord about a lack of heating and hot water.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_c7421031966450bb8718ff4edf6bd073",
+        "paragraph_range": null,
+        "quote_text": "An emergency repair was raised on 12 January 2024 and a contractor attended the same day and restored heat and hot water to the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_7f44146673df5aa29de89a6cfd6276d6",
+        "paragraph_range": null,
+        "quote_text": "We have found: Service failure in the landlord’s handling of reports of no heating and hot water. Maladministration in the landlord’s complaint handling.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_bef9c48eb3d6523bb9107ed3ead4e905",
+        "paragraph_range": null,
+        "quote_text": "The landlord emailed the resident and said the resident would receive a formal acknowledgment within 5 working days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_0c78c0250d2154e780da96a0363302d4",
+        "paragraph_range": null,
+        "quote_text": "The landlord upheld the resident’s complaint. It apologised for distress and inconvenience and offered compensation in the form of heating rebate. It provided a link to make a claim.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_6dc54d8bd6d954a8b8b728e8999151db",
+        "paragraph_range": null,
+        "quote_text": "The landlord demonstrated poor record keeping in this case, especially in its complaint handling.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_186bfda093be5e5492af6d9724373aa9",
+        "paragraph_range": null,
+        "quote_text": "On each of these occasions the contractors flushed the system and left the heating working.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_0aca45beb03a514ba7740e0c3a2806b8",
+        "paragraph_range": null,
+        "quote_text": "27 November 2024 The resident made a complaint to the landlord about a lack of heating and hot water. it did not provide the resident with any more information about when this new system would be installed.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      },
+      {
+        "evidence_span_id": "es_promoted_a7f6023af13f5c7a8fc92ce9fc9c9fc0",
+        "paragraph_range": null,
+        "quote_text": "The Homes (Fitness for Human Habitation) Act 2018 (“Homes Act 2018”) places an obligation on landlords to ensure properties are fit for human habitation, and a duty to repair faults within a reasonable time. This includes ensuring there is a suitable supply of hot and cold water and that there is not excess cold or excess heat.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202442504"
+      }
+    ],
+    "housing-ombudsman-202445527": [
+      {
+        "evidence_span_id": "es_promoted_7461cbb97d94592b914b5bf3f86ec5f9",
+        "paragraph_range": null,
+        "quote_text": "It did not share the survey recommendations until 7 January 2024 a further 26 days delay which was an inappropriate delay.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_1144504060b050a4ad888205e2a082ce",
+        "paragraph_range": null,
+        "quote_text": "It acknowledged the resident’s formal complaint of 28 May 2024, within its 5-day acknowledgement response time frame on 29 May 2024. It provided its stage 1 complaint response on 10 June 2024",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_22c29da6c40d5aa6875aeaea96b20980",
+        "paragraph_range": null,
+        "quote_text": "She reported mould to the landlord on 16 October 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_8df599acbc3d5173a0ba68b01ce336a4",
+        "paragraph_range": null,
+        "quote_text": "\"She reported mould to the landlord on 16 October 2023... it completed a specialist damp and mould survey on 7 December 2023.\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_9eda4a94b2cb5286bebab37d45b81096",
+        "paragraph_range": null,
+        "quote_text": "It would be fairer, more reasonable and more effective for the resident to make a personal injury claim for any injury caused.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_fc772e52386758b0865aca07f0a9abed",
+        "paragraph_range": null,
+        "quote_text": "Following the residents mould report on 16 October 2023 it completed a specialist damp and mould survey on 7 December 2023",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_d8982557b0fa5bf19233cf2ee9057285",
+        "paragraph_range": null,
+        "quote_text": "It was sorry it had not progressed its stage 1 complaint response actions and offered £300 compensation for this service failure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_0c7d20fafce55d4b856544cdaac00739",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records were clear and detailed and enabled an effective assessment of the complaint issue.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_cbf472830fd656a98838c8fae2af7d97",
+        "paragraph_range": null,
+        "quote_text": "the landlord’s file confirms that the only action completed was a mould spray treatment 4 months later on 9 April 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_0b769c0e0d315781a8da9f4e6e6b2fb3",
+        "paragraph_range": null,
+        "quote_text": "She reported mould to the landlord on 16 October 2023. The landlord provided evidence to show it completed the necessary works including the cavity wall works (completed on 25 March 2025) which the resident had specifically requested be completed.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_6d85ec53f75d5004b67cf88cf9986234",
+        "paragraph_range": null,
+        "quote_text": "It is the landlord’s responsibility to allocate sufficient resources to meet demand and prioritise repairs appropriately and it failed to do so in this case.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      },
+      {
+        "evidence_span_id": "es_promoted_9aff5c1d58395b3e89634be1768ed04f",
+        "paragraph_range": null,
+        "quote_text": "the landlord was aware of the specific vulnerabilities in the resident’s household, resident’s asthma and young children with respiratory issues",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202445527"
+      }
+    ],
+    "housing-ombudsman-202446687": [
+      {
+        "evidence_span_id": "es_promoted_00beb6092aa55f33bb17676047dc75c8",
+        "paragraph_range": null,
+        "quote_text": "The landlord did not carry out a window survey until 5 March 2025. The landlord did not provide a stage 2 response until 30 July 2025, nearly 7 months later.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_d5259126055e514b80f0921965eba15c",
+        "paragraph_range": null,
+        "quote_text": "14 January 2025 The resident raised a complaint, stating that:\n5 February 2025 The landlord sent its stage 1 response upholding her complaint.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_60f1e73ab81954548feb989d4e86714e",
+        "paragraph_range": null,
+        "quote_text": "It acknowledged the resident had raised multiple repairs over the past few years.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_d724c1d7f62551e1b2315f686781f515",
+        "paragraph_range": null,
+        "quote_text": "The landlord did not carry out a window survey until 5 March 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_e81bb802116c5f63b7d713717e22957a",
+        "paragraph_range": null,
+        "quote_text": "We have made orders for the landlord to put things right.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_a1dcf7af87435acba6efbf4bf8380e26",
+        "paragraph_range": null,
+        "quote_text": "On 23 January 2025, the landlord said that the windows were causing extensive damp, mould and condensation but noted no vulnerabilities in the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_9bfb86a0c8cc5f05a525ce2cc74698c4",
+        "paragraph_range": null,
+        "quote_text": "It offered £150 compensation for distress and inconvenience.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_78864ed1629b589d9b52dcedfe52d93e",
+        "paragraph_range": null,
+        "quote_text": "While the landlord demonstrated generally adequate record keeping, the failure to consistently track and apply vulnerability information to repairs and risk assessments represents a significant gap.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_2bebc0d3cc06570bb47c7097be9ba165",
+        "paragraph_range": null,
+        "quote_text": "The landlord replaced the kitchen, 1 bedroom and the living room windows in August 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_c8c7a05d2ac057cc9c79d2143c469623",
+        "paragraph_range": null,
+        "quote_text": "The landlord did not carry out a window survey until 5 March 2025. ... It has not replaced the second bedroom window it identified in its report as requiring replacement and causing damp and mould.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_6611bbb48cfb57c3ad060f15630e82ed",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s responsive repairs policy says it will carry out major works, including window replacements, in 60 calendar days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      },
+      {
+        "evidence_span_id": "es_promoted_aef64f239c985d9b9b553232e6edf73d",
+        "paragraph_range": null,
+        "quote_text": "She had just had emergency surgery, leaving her with limited mobility and she was housebound and unable to afford to heat her home.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202446687"
+      }
+    ],
+    "housing-ombudsman-202451564": [
+      {
+        "evidence_span_id": "es_promoted_f59e188cee6952bbb662c7c9f6db014b",
+        "paragraph_range": null,
+        "quote_text": "The landlord tried to complete the repair again on 7 June 2024. The resident contacted the landlord on 18 October 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_63e0a325e5d45acda2d59b886b50e0b1",
+        "paragraph_range": null,
+        "quote_text": "The landlord raised a formal complaint on 11 April 2025 following contact from us. It sent the resident a stage 1 response on 25 April 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_eb0d0328b42355b496e26a375b091fcd",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records show that the resident first reported a leak from her kitchen sink on 17 February 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_cbfa0dd1efbb521c9d4935b10bc7b77a",
+        "paragraph_range": null,
+        "quote_text": "The landlord's records show that the resident first reported a leak from her kitchen sink on 17 February 2024. The landlord attended the resident’s property to complete the kitchen sink repair on 7 May 2024",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_527ca0d5f087579d927d131c12fc57be",
+        "paragraph_range": null,
+        "quote_text": "The courts are best placed to deal with this type of dispute... We have not investigated this further.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_bfbe99add2d35e1a8c67694f5908b1e4",
+        "paragraph_range": null,
+        "quote_text": "“The landlord’s records show that the resident first reported a leak from her kitchen sink on 17 February 2024. In response, the landlord raised a routine repair.”",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_23658c9301d95bb2b886b25048993173",
+        "paragraph_range": null,
+        "quote_text": "\"It apologised and increased the compensation offer to £275.\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_5434b19e00f250e6961fe6d7cb2c643d",
+        "paragraph_range": null,
+        "quote_text": "There were key documents and information missing from the landlord’s evidence.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_4393fa8e648159f4b15fc27a055b9b72",
+        "paragraph_range": null,
+        "quote_text": "The landlord attended the resident’s property to complete the kitchen sink repair on 7 May 2024 and 16 May 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_975ec4bb97fd53518d200cb740c3ab98",
+        "paragraph_range": null,
+        "quote_text": "The landlord's records show that the resident first reported a leak from her kitchen sink on 17 February 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_f4e5d09f66025b8dbe29ee259ca87630",
+        "paragraph_range": null,
+        "quote_text": "The landlord raised repairs for the sub flooring throughout the flat, the leak from the kitchen sink, the kitchen cupboards, kickboards and worktops, and damp and mould.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_2e3cdf32b0e5570897c160d0fa1c4689",
+        "paragraph_range": null,
+        "quote_text": "after it had temporarily moved her and her family into a hotel while it carried out repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      },
+      {
+        "evidence_span_id": "es_promoted_e6ab5f102ac75c128543b795d357d358",
+        "paragraph_range": null,
+        "quote_text": "The resident has mental health issues and asthma.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202451564"
+      }
+    ],
+    "housing-ombudsman-202506211": [
+      {
+        "evidence_span_id": "es_promoted_30a7748e7fc85626b17f637739b89b92",
+        "paragraph_range": null,
+        "quote_text": "The £950 was paid to the resident on 11 December 2024. 23 April 2025 The landlord finalised all outstanding works and offered additional compensation to the resident of £800.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_bac4cfc8c88f5ad68ad6170607dba2bf",
+        "paragraph_range": null,
+        "quote_text": "5 June 2024 The resident confirmed she wanted her concerns recorded as a formal complaint. The landlord acknowledged this and confirmed this had been logged at stage 1 and she would receive a response within 10 working days. 21 June 2024 The landlord issued its stage 1 response",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_f30c9d44dfce5a00bcb68fb2d311d805",
+        "paragraph_range": null,
+        "quote_text": "In this case, the resident reported an issue on 29 January 2024,",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_282681fc2c2b5c169f770b532cac3cf7",
+        "paragraph_range": null,
+        "quote_text": "In this case, the resident reported an issue on 29 January 2024, and it took 22 calendar days for someone to attend.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_85c1ff276a42598e9e0b8f8753f5e861",
+        "paragraph_range": null,
+        "quote_text": "In this case, the resident reported an issue on 29 January 2024, and it took 22 calendar days for someone to attend.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_52029cbf906f50159af248c21ca6835c",
+        "paragraph_range": null,
+        "quote_text": "It offered the resident £950 compensation: £700 for the disruption caused and £250 for the inconvenience of not following its complaints policy or procedure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_055163ad0f4b5198aa47448f94fe4b56",
+        "paragraph_range": null,
+        "quote_text": "The guttering was repaired and between June and August 2024, it stripped back the hallway, replastered and redecorated.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_b46a8b4460bf52b99878b8eed2734b2c",
+        "paragraph_range": null,
+        "quote_text": "In this case, the resident reported an issue on 29 January 2024, and it took 22 calendar days for someone to attend.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      },
+      {
+        "evidence_span_id": "es_promoted_1402418383ac5c48aa32f7f092d28334",
+        "paragraph_range": null,
+        "quote_text": "In March 2024, the landlord identified that the damp was caused by an issue with guttering. The guttering was repaired",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202506211"
+      }
+    ],
+    "housing-ombudsman-202508050": [
+      {
+        "evidence_span_id": "es_promoted_22b7395e75015946b2c7b1e26f0ad4fc",
+        "paragraph_range": null,
+        "quote_text": "There is no evidence to show that the landlord attempted to complete repairs until he made another report on 27 September 2023. This was 267 days after the first report.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_7ef49c263edf53c78ff5da1f2cb80a51",
+        "paragraph_range": null,
+        "quote_text": "30 October 2023\nThe resident complained that\nthe landlord had done nothing\nto\nfix\na\nleak above his front\ndoor\n.\n\n14 December 2023\nThe landlord sent its stage 1 complaint response",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_d99cb8d822995f8dabb6f518fa2a60a8",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported the leak above the front door to the landlord on 3 January 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_1f5abb112e835d90abca487b48c04124",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported the leak above the front door to the landlord on 3 January 2023. It completed an inspection on 12 October 2023 but there is no evidence it shared its findings or arranged further action.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_91ebebc918875706a58c300a0f0264ac",
+        "paragraph_range": null,
+        "quote_text": "The courts are best placed to deal with health disputes as they will have the benefit of independent medical advice to decide on the cause of any illness or injury and how long it will last. We have not investigated this further.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_a071f855a60e50c78486e7611af893bb",
+        "paragraph_range": null,
+        "quote_text": "It completed an inspection on 12 October 2023",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_4e6625c630c450398b006f296b1e8a5e",
+        "paragraph_range": null,
+        "quote_text": "It apologised and offered redress in line with our remedies guidance.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_ca6b0494c96250db837c775a1bef48e6",
+        "paragraph_range": null,
+        "quote_text": "The landlord provided limited evidence in relation to this case which has affected our ability to accurately assess the timeline of events.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_6a1e5f1294c651189276319b20f4aa58",
+        "paragraph_range": null,
+        "quote_text": "Following the landlords final response, it completed balcony works on 12 December 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_799a250eb24753ffbb5e02aa17d3e782",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported the leak above the front door to the landlord on 3 January 2023. While the issue is ongoing, it has evidenced it is taking steps to find a lasting solution.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_0694643b019656c6b5fb0f64962faaa6",
+        "paragraph_range": null,
+        "quote_text": "it repaired the balcony above.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      },
+      {
+        "evidence_span_id": "es_promoted_bb4f5937eadc584e95cb814d9b4f5aa7",
+        "paragraph_range": null,
+        "quote_text": "The resident has vulnerabilities including learning difficulties, mental health, and asthma, which the landlord is aware of.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508050"
+      }
+    ],
+    "housing-ombudsman-202508313": [
+      {
+        "evidence_span_id": "es_promoted_4b62779e01a65bd49840774ea898ddef",
+        "paragraph_range": null,
+        "quote_text": "Between November 2023 and September 2024, we have seen no evidence that the resident reported any issues about damp and mould in her home.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_899f6830a3c553b3bf984fd6e10bc56f",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported damp and mould on 9 February 2023, with an inspection initially scheduled for 4 April 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_1a70fcd2d915519ca1098d27e26e176b",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported damp and mould on 9 February 2023, with an inspection initially scheduled for 4 April 2023. The inspection took place on 16 February 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_1d83ae75f83e56fc9c3e0a806d731240",
+        "paragraph_range": null,
+        "quote_text": "It would be fairer, more reasonable, and more effective for the resident to make a personal injury claim for any injury caused.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_9e8a75fa1b8258d18900d5852ee6d9e7",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported damp and mould on 9 February 2023, with an inspection initially scheduled for 4 April 2023. The inspection took place on 16 February 2023.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_1f0626e67d5a50248b3ca6abd4605dae",
+        "paragraph_range": null,
+        "quote_text": "It offered the resident £100 compensation. It said this was in recognition of the delays in addressing the mould in the kitchen.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_a18b1d7b2ec056daaea2243b5bb17e7c",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s record keeping was generally satisfactory.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_d18e9a70d9f151689defb929f3b5a06f",
+        "paragraph_range": null,
+        "quote_text": "Its repair records show that it installed the bathroom extractor fan on 1 November 2024, which was timely and appropriate.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_1e090bb087eb53478a8c0474cc5d73bf",
+        "paragraph_range": null,
+        "quote_text": "The resident first reported damp and mould on 9 February 2023 ... At the time of our investigation, the repairs remained outstanding.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_ec1abf67a29e505fb68f541bb342a77f",
+        "paragraph_range": null,
+        "quote_text": "The tenancy agreement says that: The landlord will keep in good repair the external and internal structure of the property, including plasterwork and walls.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_7ca6ae33abd35dd28b632f1194e5424e",
+        "paragraph_range": null,
+        "quote_text": "It was satisfied that its decision not to offer the resident a management move was appropriate, but had agreed to arrange hotel accommodation for 2 days while the repairs were undertaken in the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      },
+      {
+        "evidence_span_id": "es_promoted_cfb84ea5393f5315805d27e15f395230",
+        "paragraph_range": null,
+        "quote_text": "The resident and her children have vulnerabilities that are known to the landlord.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202508313"
+      }
+    ],
+    "housing-ombudsman-202509252": [
+      {
+        "evidence_span_id": "es_promoted_1c8fa63f84c553c3be01e431e7862e98",
+        "paragraph_range": null,
+        "quote_text": "The works recommended in May 2024 were not progressed until after the resident took time and effort to chase them up 6 months later, on 18 November 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_2367fd24d7fb5741bfab2b76ffcf470e",
+        "paragraph_range": null,
+        "quote_text": "The landlord acknowledged the stage 1 complaint on 12 March 2025, 6 working days after the complaint was made. This was just over the 5 working day timescale in the landlord’s complaint policy. The landlord sent the stage 1 response 9 working days later, in line with the 10 working day timescale in its policy.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_585c1def8dce5b85a2831d6ce6f453a0",
+        "paragraph_range": null,
+        "quote_text": "The resident reported damp and mould.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_6a0436b0ef8558dfb312e03b7e6fe137",
+        "paragraph_range": null,
+        "quote_text": "When the resident reported damp and mould in early March 2024, the landlord appropriately arranged to inspect the following month.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_de37d0a806e75a8cb828d06b38b2847a",
+        "paragraph_range": null,
+        "quote_text": "It apologised, offered £100 compensation, and said it would revisit to inspect the damp and mould and the gutters.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_001464b7d5ca5e85a86865fbcc33e1fe",
+        "paragraph_range": null,
+        "quote_text": "The landlord has not provided a record of the inspection on 22 April 2025. This means we do not know what was assessed, or any conclusions reached. It is not clear if the lack of records is because there are none, or they were simply not provided to us. Regardless, this is a failure.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_d38ed93971255a73877b11e45e281c7a",
+        "paragraph_range": null,
+        "quote_text": "The landlord attended on 16 January 2025 to remove and treat mould in multiple rooms.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_542800d55b0954c69c0b1493d68dca3b",
+        "paragraph_range": null,
+        "quote_text": "This meant the works took 18 months to complete since March 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_d81a972a95575d099aa79ef993d75bec",
+        "paragraph_range": null,
+        "quote_text": "The landlord must address damp and mould in line with section 9A of the Landlord and Tenant Act 1985. This says the landlord has an obligation to ensure the property is fit for human habitation during the term of the tenancy, in relation to freedom from damp.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      },
+      {
+        "evidence_span_id": "es_promoted_b61795920c695bac9f342a355e957927",
+        "paragraph_range": null,
+        "quote_text": "She said she was vulnerable and disabled with severe asthma.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509252"
+      }
+    ],
+    "housing-ombudsman-202509792": [
+      {
+        "evidence_span_id": "es_promoted_2bd8973dfc4d5ce3a285efd772b000cd",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s surveyor inspected the property on 13 November 2024. Those inspections were completed on 17 January 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_0abefb51f56e55d797bad5bcf5db976f",
+        "paragraph_range": null,
+        "quote_text": "28 February 2025 The resident complained to the landlord that it had not treated the cause of damp and mould in the property despite her reporting it for several years.\n3 April 2025 The landlord sent its stage 1 complaint response to the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_6b6ebc92928056b49d4e37a78b42ca3e",
+        "paragraph_range": null,
+        "quote_text": "January 2020 to November 2024 The resident reported damp and mould in her property several times.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_53e221f32fd450b791fede1f4677d736",
+        "paragraph_range": null,
+        "quote_text": "The resident reported damp and mould in her kitchen again on 12 April 2024... No further action was taken until the landlord inspected the kitchen again on 18 June 2024.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_2b5e6b68254b596cb475f6798385e3f9",
+        "paragraph_range": null,
+        "quote_text": "It would be fairer, more reasonable and more effective for the resident to make a personal injury claim for any injury caused.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_a2faec93337a56e587d612c9373269d1",
+        "paragraph_range": null,
+        "quote_text": "The resident reported damp and mould in her property several times. The landlord attended and carried out mould treatment and some repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_175a05110dec5d7fbbe8b5ac360d4bd4",
+        "paragraph_range": null,
+        "quote_text": "It apologised and offered £250 for in the delay to carrying out inspections and repairs.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_493e72bc83285c35a562d55c3cb8a774",
+        "paragraph_range": null,
+        "quote_text": "The landlord demonstrated sufficient record keeping in respect of the matters we have investigated in this case.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_dd4839139dbb583e8a6cacd27198938b",
+        "paragraph_range": null,
+        "quote_text": "\"Those inspections were completed on 17 January 2025, and repairs were carried out to the roof and gutters in February 2025.\"",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_142c20d76a4c5fde98101bc10d38568d",
+        "paragraph_range": null,
+        "quote_text": "The landlord accepted it should have acted more promptly to address the problem.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      },
+      {
+        "evidence_span_id": "es_promoted_8b1f1e6486e55411b4ee0ff265640d12",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records say the resident is elderly and she suffers from breathing problems.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202509792"
+      }
+    ],
+    "housing-ombudsman-202511313": [
+      {
+        "evidence_span_id": "es_promoted_1615d422cff255ab93e3dc5e30c63f4c",
+        "paragraph_range": null,
+        "quote_text": "The resident requested to escalate her complaint on 16 April 2025. The landlord failed to acknowledge her request until 59 working days later on 11 July 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_61a04965dd875e5892f87a897f326988",
+        "paragraph_range": null,
+        "quote_text": "23 January 2025 The resident raised a formal complaint about the landlord’s handling of the mice infestation. 27 January 2025 The landlord sent its stage 1 complaint response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_698fa0ce8b4952268190c32de321433c",
+        "paragraph_range": null,
+        "quote_text": "The landlord raised a job with is pest contactor in relation to the resident’s report of a mice infestation in the kitchen, bathroom, and bedrooms.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_d3bcbbf942195c4ba2c2a1305f526b57",
+        "paragraph_range": null,
+        "quote_text": "Its records show the inspection took place on 27 January 2025 demonstrating the landlord took prompt and appropriate action here.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_4cfe9d5738c15706b9715ee7a3abb843",
+        "paragraph_range": null,
+        "quote_text": "In its final response the landlord reiterated that the resident’s re-housing request was outside the remit of the complaint. Rehousing matters are not listed as an exception in the landlord’s complaint policy, so the basis of the landlord’s comment here is unclear.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_a6197904a0af58b5b372f1728a48ce3a",
+        "paragraph_range": null,
+        "quote_text": "The landlord’s records confirm it raised a job with its repair team within a day of receiving the resident’s 23 January 2025 report.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_4864ab57e7485c19a81ca3898dfda55a",
+        "paragraph_range": null,
+        "quote_text": "The landlord must pay the resident £350 (including the £190 offered during the complaints process) made up as follows:",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_640ba3e4a1ff54e18019c6b90d86aef6",
+        "paragraph_range": null,
+        "quote_text": "We identified an issue with the landlord’s repair records where jobs raised did not include any comments or details of the repairs or works subsequently provided.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_d0599ef76c2852bea28941c9c5e02c18",
+        "paragraph_range": null,
+        "quote_text": "the landlord’s subsequent repairs, including sealing entry points in the gas meter at the front of the property and additional pest treatments, resolved the mice infestation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_186abc616d13550eac2e8c7eac9656b9",
+        "paragraph_range": null,
+        "quote_text": "This action was in line with its repair and pest policies which state the landlord is responsible for structural defects and for dealing with pest infestations respectively.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      },
+      {
+        "evidence_span_id": "es_promoted_05de93e9dc1c5b8489e1c10600d43dee",
+        "paragraph_range": null,
+        "quote_text": "The landlord has vulnerabilities recorded for the resident.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511313"
+      }
+    ],
+    "housing-ombudsman-202511615": [
+      {
+        "evidence_span_id": "es_promoted_7acf54f222935da692eb02eb5eeb8885",
+        "paragraph_range": null,
+        "quote_text": "On 11 March 2024, the contractor’s administrator called the resident to arrange works from the survey and reported he declined further contact. Contractors attended on 14 March 2024 and reported that he denied access.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_1c631d74c2675e01aec169abcc0a0801",
+        "paragraph_range": null,
+        "quote_text": "12 August 2024 The resident complained that the property was unsuitable for his disability due to damp, mould, lack of an access ramp, and restricted space for wheelchair use. 30 August 2024 The landlord issued its stage 1 response,",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_3a51de5b8b02595ab1d72d389e1df44f",
+        "paragraph_range": null,
+        "quote_text": "The landlord said the resident initially reported damp and mould in 2022.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_bd1bcc62160a5ccfb26a92b34861bf54",
+        "paragraph_range": null,
+        "quote_text": "The resident was concerned about the health impact of damp and mould. The courts are best placed to deal with health disputes as they will have the benefit of independent medical advice to decide on the cause of any illness or injury and how long it will last. We have not investigated this further.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_3cfc98e7da1856778ed493bc13a9d212",
+        "paragraph_range": null,
+        "quote_text": "The landlord identified damp and mould during a December 2022 inspection.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_ef10884142ca532f8eada712f267700a",
+        "paragraph_range": null,
+        "quote_text": "The landlord has not provided a copy of the survey although it has shared the surveyor’s findings. This is a shortcoming in its record keeping but has not impacted the overall outcome of this investigation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_30dbae18c6c15097b20dcdc98584a7fd",
+        "paragraph_range": null,
+        "quote_text": "The landlord attempted to arrange the works on several occasions and offered reasonable options of temporary accommodation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_04a106252633506fbe108a560ee3acb1",
+        "paragraph_range": null,
+        "quote_text": "On 11 March 2024, the contractor’s administrator called the resident to arrange works from the survey and reported he declined further contact. During a call in November 2025, the resident said the landlord was now completing repairs while he remained in the property. Date 1 3 November 2025",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_c489897c92905b59956c8dc2777cd80d",
+        "paragraph_range": null,
+        "quote_text": "The landlord's repairs policy states it completes routine repairs within a month and complex repairs within 90 days.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_6095fef012a2553f8dff490423c96ac7",
+        "paragraph_range": null,
+        "quote_text": "The landlord attempted to arrange the works on several occasions and offered reasonable options of temporary accommodation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      },
+      {
+        "evidence_span_id": "es_promoted_c04ba40e8f6b5ba3a8f12a6b11921704",
+        "paragraph_range": null,
+        "quote_text": "He has mobility issues. Both occupants have asthma. The landlord is aware of their vulnerabilities.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202511615"
+      }
+    ],
+    "housing-ombudsman-202513245": [
+      {
+        "evidence_span_id": "es_promoted_fa4c2796850a5c8fa96bdcf82793f32e",
+        "paragraph_range": null,
+        "quote_text": "The landlord sent its stage 2 response 129 days after the damp and mould was first reported, which equates to £2.70 per day.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_e916e739d69a51e7901910c4c5786df3",
+        "paragraph_range": null,
+        "quote_text": "2 May 2025 The resident complained to the landlord. 16 June 2025 The landlord sent its stage one response.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_b38b335b6548507299c2056cef8bb493",
+        "paragraph_range": null,
+        "quote_text": "On 27 March 2025 a third-party agency informed the landlord about damp and mould in the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_55845c3d8f1b52b185bb35874924a39b",
+        "paragraph_range": null,
+        "quote_text": "On 9 July 2025, the landlord carried out a damp and mould survey.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_eaa7cf090bc35e0e88d183412d9a69ac",
+        "paragraph_range": null,
+        "quote_text": "We cannot assess whether the property conditions or the landlord’s actions affected the resident’s health, as this would involve a decision on personal injury. Personal injury matters are to be assessed and determined by the court",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_e67624150d085db78c017ebf75bccc77",
+        "paragraph_range": null,
+        "quote_text": "It had been notified of the damp and mould on 24 March 2025, and it opened a damp and mould case on 27 March 2025.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_3917a5fbbc0157b79df6b91edf8cb069",
+        "paragraph_range": null,
+        "quote_text": "During the complaints process, the landlord apologised and offered £475 compensation.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_b97ef4b75f2f51e4a6bccef16d527f97",
+        "paragraph_range": null,
+        "quote_text": "This was not appropriate and suggests shortcomings in record keeping and information sharing.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_51f7549f71135a9b891fec2f7b2f02e8",
+        "paragraph_range": null,
+        "quote_text": "A mould wash was completed on 18 August 2025, 145 days after the initial report.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_753fe751e0c85ab98b0c1b1d7665e8a7",
+        "paragraph_range": null,
+        "quote_text": "On 27 March 2025 a third-party agency informed the landlord about damp and mould in the property. At the time we conducted our investigation the damp and mould issues in the property were ongoing.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_9ea6531a98c854e3abb1eeeb3ddf0571",
+        "paragraph_range": null,
+        "quote_text": "Following the damp and mould survey the landlord must produce a schedule of repairs which outlines the works it will conduct to remedy the damp and mould in the property.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      },
+      {
+        "evidence_span_id": "es_promoted_e098682259d65c6ba5acd1082a5f6051",
+        "paragraph_range": null,
+        "quote_text": "They were concerned about the impact of the conditions, as they were pregnant, had asthma, and had experienced regular asthma attacks.",
+        "source_kind": "ombudsman_determination",
+        "source_reference": "housing-ombudsman-202513245"
+      }
+    ]
+  },
   "extractor_version": "gpt-5+gpt-5-mini-2026-05-09",
   "factor_assertions_by_case_id": {
     "housing-ombudsman-202306436": [

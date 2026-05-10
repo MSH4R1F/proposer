@@ -22,6 +22,7 @@ from eval.factor_assertion_sidecar import (
     SIDECAR_SCHEMA_VERSION,
     default_sidecar_path,
     hydrate_knowledge_graph,
+    load_full_sidecar,
     load_sidecar,
     resolve_sidecar_for_gold_path,
     write_sidecar,
@@ -59,6 +60,16 @@ def _sample_factor_assertion_dict(case_id: str, factor_id: str) -> Dict[str, Any
         "extractor_version": "test/2026-05-08",
         "verifier_version": None,
         "requires_human_review": False,
+    }
+
+
+def _sample_evidence_span_dict(case_id: str, factor_id: str) -> Dict[str, Any]:
+    return {
+        "evidence_span_id": f"es_test_{case_id}_{factor_id}",
+        "source_kind": "ombudsman_determination",
+        "source_reference": case_id,
+        "quote_text": "The resident reported damp and mould in the property.",
+        "paragraph_range": None,
     }
 
 
@@ -100,6 +111,30 @@ def test_write_then_load_round_trip(tmp_path):
     fa = loaded["case-A"][0]
     assert fa.factor_id == "hazard_or_disrepair_reported"
     assert fa.confidence == 0.9
+
+
+def test_write_load_round_trip_preserves_evidence_spans(tmp_path):
+    factor_payload = {
+        "case-A": [_sample_factor_assertion_dict("case-A", "hazard_or_disrepair_reported")]
+    }
+    span_payload = {
+        "case-A": [_sample_evidence_span_dict("case-A", "hazard_or_disrepair_reported")]
+    }
+    path = tmp_path / "x.factor_assertions.json"
+    write_sidecar(
+        path,
+        domain_id="housing.repairs_social.v1",
+        extractor_version="test/v1",
+        factor_assertions_by_case_id=factor_payload,
+        evidence_spans_by_case_id=span_payload,
+    )
+
+    loaded = load_full_sidecar(path)
+    assert set(loaded["factor_assertions_by_case_id"]) == {"case-A"}
+    assert set(loaded["evidence_spans_by_case_id"]) == {"case-A"}
+    span = loaded["evidence_spans_by_case_id"]["case-A"][0]
+    assert span.evidence_span_id == "es_test_case-A_hazard_or_disrepair_reported"
+    assert span.quote_text.startswith("The resident reported")
 
 
 def test_unsupported_schema_version_raises(tmp_path):
@@ -180,6 +215,36 @@ def test_hydrate_knowledge_graph_attaches_factor_assertions():
     assert getattr(kg, "factor_assertions", None) is not None
     assert len(kg.factor_assertions) == 1
     assert kg.factor_assertions[0].factor_id == "hazard_or_disrepair_reported"
+
+
+def test_hydrate_knowledge_graph_attaches_evidence_spans():
+    from kg_builder.models.graph import KnowledgeGraph
+    from legal_core.graph.evidence_span import EvidenceSpan
+    from legal_core.graph.factor_assertion import FactorAssertion
+
+    typed_sidecar = {
+        "factor_assertions_by_case_id": {
+            "case-K": [
+                FactorAssertion.model_validate(
+                    _sample_factor_assertion_dict("case-K", "hazard_or_disrepair_reported")
+                )
+            ]
+        },
+        "evidence_spans_by_case_id": {
+            "case-K": [
+                EvidenceSpan.model_validate(
+                    _sample_evidence_span_dict("case-K", "hazard_or_disrepair_reported")
+                )
+            ]
+        },
+    }
+
+    kg = KnowledgeGraph(case_id="case-K")
+    hydrate_knowledge_graph(kg, "case-K", typed_sidecar)
+
+    assert len(kg.factor_assertions) == 1
+    assert len(kg.evidence_spans) == 1
+    assert kg.evidence_spans[0].quote_text.startswith("The resident reported")
 
 
 def test_hydrate_knowledge_graph_no_op_for_missing_case():

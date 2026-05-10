@@ -465,6 +465,54 @@ class TestLiveEvalRetrievalFilters:
         assert len(kg.nodes) >= 3
         assert all(node.domain_id == "housing.repairs_social.v1" for node in kg.nodes)
 
+    def test_chunk_gold_auto_resolves_covering_factor_sidecar(self, tmp_path):
+        mod = _import_script_module()
+
+        repo_root = tmp_path / "repo"
+        sidecar_dir = repo_root / "data" / "eval_artifacts" / "factor_assertions"
+        sidecar_dir.mkdir(parents=True)
+        sidecar_path = sidecar_dir / "housing_repairs_social_v2_strict_clean.factor_assertions.json"
+        sidecar_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "v1",
+                    "domain_id": "housing.repairs_social.v1",
+                    "extractor_version": "test",
+                    "factor_assertions_by_case_id": {
+                        "housing-ombudsman-1": [],
+                        "housing-ombudsman-2": [],
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        chunk_path = tmp_path / "chunk_0.jsonl"
+        chunk_path.write_text(
+            '{"case_id":"housing-ombudsman-1"}\n'
+            '{"case_id":"housing-ombudsman-2"}\n',
+            encoding="utf-8",
+        )
+
+        resolved = mod._resolve_factor_assertion_sidecar_path(
+            chunk_path,
+            explicit_path=None,
+            repo_root=repo_root,
+        )
+
+        assert resolved == sidecar_path
+
+    def test_chunk_gold_resolver_prefers_explicit_factor_sidecar(self, tmp_path):
+        mod = _import_script_module()
+
+        explicit = tmp_path / "explicit.factor_assertions.json"
+        resolved = mod._resolve_factor_assertion_sidecar_path(
+            tmp_path / "chunk_0.jsonl",
+            explicit_path=explicit,
+            repo_root=tmp_path / "repo",
+        )
+
+        assert resolved == explicit
+
 
 # ---------- Subprocess (real entry point) ----------
 

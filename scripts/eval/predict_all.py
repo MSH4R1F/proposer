@@ -45,6 +45,7 @@ from urllib.parse import urlparse
 # Allow running the script directly: prepend packages/ to sys.path.
 _HERE = Path(__file__).resolve()
 _REPO_ROOT = _HERE.parents[2]
+sys.path.insert(0, str(_REPO_ROOT))
 sys.path.insert(0, str(_REPO_ROOT / "packages"))
 
 from dotenv import load_dotenv  # noqa: E402
@@ -283,6 +284,68 @@ def _select_namespace(domain_id: str, namespace_id: Optional[str]):
             "set retrieval_namespace_id"
         )
     return spec.retrieval_namespaces[0]
+
+
+def _gold_case_ids_from_jsonl(gold_path: Path) -> set[str]:
+    """Read case_ids from a gold JSONL without importing eval schemas."""
+    case_ids: set[str] = set()
+    if not gold_path.exists():
+        return case_ids
+    with gold_path.open(encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                case_id = json.loads(line).get("case_id")
+            except json.JSONDecodeError:
+                continue
+            if case_id:
+                case_ids.add(str(case_id))
+    return case_ids
+
+
+def _resolve_factor_assertion_sidecar_path(
+    gold_path: Path,
+    explicit_path: Optional[Path],
+    *,
+    repo_root: Path = _REPO_ROOT,
+) -> Path:
+    """Resolve the factor sidecar, including chunked gold files.
+
+    Chunked evals run against paths like ``/tmp/stream_c_chunks/chunk_0.jsonl``.
+    A pure filename-based lookup misses the corpus-level
+    ``housing_repairs_social_v2_strict_clean.factor_assertions.json`` sidecar,
+    leaving every chunk with empty ``factor_assertions``. When the canonical
+    filename sidecar is absent, find a sidecar whose case-id set covers the
+    gold file's case ids.
+    """
+    if explicit_path is not None:
+        return explicit_path
+
+    from eval.factor_assertion_sidecar import default_sidecar_path  # noqa: PLC0415
+
+    direct = default_sidecar_path(repo_root, gold_path.name)
+    if direct.exists():
+        return direct
+
+    gold_case_ids = _gold_case_ids_from_jsonl(gold_path)
+    if not gold_case_ids:
+        return direct
+
+    sidecar_dir = repo_root / "data" / "eval_artifacts" / "factor_assertions"
+    for candidate in sorted(sidecar_dir.glob("*.factor_assertions.json")):
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        by_case = payload.get("factor_assertions_by_case_id") or {}
+        if not isinstance(by_case, dict):
+            continue
+        if gold_case_ids.issubset(set(map(str, by_case.keys()))):
+            return candidate
+
+    return direct
 
 
 def _decision_date_coverage(rag_pipeline: Any) -> float:
@@ -983,22 +1046,23 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
     # Default location is canonical; explicit --factor-assertion-sidecar
     # overrides. A missing sidecar is NOT an error — eval still runs with
     # the legacy empty-pack fallback so old eval scripts keep working.
-    from eval.factor_assertion_sidecar import (  # noqa: PLC0415
-        load_sidecar,
-        resolve_sidecar_for_gold_path,
-    )
+    from eval.factor_assertion_sidecar import load_full_sidecar  # noqa: PLC0415
 
-    sidecar_path = args.factor_assertion_sidecar
-    if sidecar_path is None:
-        sidecar_path = resolve_sidecar_for_gold_path(args.gold.resolve())
+    sidecar_path = _resolve_factor_assertion_sidecar_path(
+        args.gold.resolve(),
+        args.factor_assertion_sidecar,
+    )
     factor_assertion_sidecar: Optional[dict] = None
     if sidecar_path.exists():
-        factor_assertion_sidecar = load_sidecar(sidecar_path)
-        n_cases = len(factor_assertion_sidecar)
-        n_assertions = sum(len(v) for v in factor_assertion_sidecar.values())
+        factor_assertion_sidecar = load_full_sidecar(sidecar_path)
+        factor_rows = factor_assertion_sidecar["factor_assertions_by_case_id"]
+        span_rows = factor_assertion_sidecar["evidence_spans_by_case_id"]
+        n_cases = len(factor_rows)
+        n_assertions = sum(len(v) for v in factor_rows.values())
+        n_spans = sum(len(v) for v in span_rows.values())
         print(
             f"Loaded factor-assertion sidecar from {sidecar_path}: "
-            f"{n_cases} cases, {n_assertions} assertions"
+            f"{n_cases} cases, {n_assertions} assertions, {n_spans} evidence spans"
         )
 
     # Stream C: load the JSONL proposition store (proposition-side backfill).
