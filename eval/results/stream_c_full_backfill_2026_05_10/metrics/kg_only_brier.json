@@ -1,0 +1,13 @@
+{
+  "metric": "brier_score",
+  "metric_alias": "brier",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_full_backfill_2026_05_10/kg_only.jsonl",
+  "point": 0.3517166666666666,
+  "lower_95": 0.3274272916666666,
+  "upper_95": 0.3735797916666666,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-10T02:50:39.607336+00:00"
+}

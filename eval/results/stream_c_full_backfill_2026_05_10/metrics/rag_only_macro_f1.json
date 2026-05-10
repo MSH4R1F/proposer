@@ -1,0 +1,13 @@
+{
+  "metric": "macro_f1",
+  "metric_alias": "macro_f1",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_full_backfill_2026_05_10/rag_only.jsonl",
+  "point": 0.6444444444444445,
+  "lower_95": 0.4606741573033708,
+  "upper_95": 0.89521669341894,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-10T02:50:37.834114+00:00"
+}

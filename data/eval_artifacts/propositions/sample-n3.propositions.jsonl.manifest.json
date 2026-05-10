@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "case_reference": "housing-ombudsman-202451564",
+      "case_type_code": "repairs_damp_mould",
+      "category": "housing.repairs_social.v1",
+      "decision_date": "2025-10-23",
+      "html_path": null,
+      "pdf_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/raw/housing_ombudsman/decisions/the-guinness-partnership-limited-202451564/raw.txt",
+      "region_code": null,
+      "source_url": "https://www.housing-ombudsman.org.uk/decisions/the-guinness-partnership-limited-202451564/",
+      "year": 2025
+    },
+    {
+      "case_reference": "housing-ombudsman-202427949",
+      "case_type_code": "repairs_damp_mould",
+      "category": "housing.repairs_social.v1",
+      "decision_date": "2025-10-29",
+      "html_path": null,
+      "pdf_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/raw/housing_ombudsman/decisions/sanctuary-housing-association-202427949/raw.txt",
+      "region_code": null,
+      "source_url": "https://www.housing-ombudsman.org.uk/decisions/sanctuary-housing-association-202427949/",
+      "year": 2025
+    },
+    {
+      "case_reference": "housing-ombudsman-202332678",
+      "case_type_code": "repairs_damp_mould",
+      "category": "housing.repairs_social.v1",
+      "decision_date": "2025-10-30",
+      "html_path": null,
+      "pdf_path": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/raw/housing_ombudsman/decisions/birmingham-city-council-202332678/raw.txt",
+      "region_code": null,
+      "source_url": "https://www.housing-ombudsman.org.uk/decisions/birmingham-city-council-202332678/",
+      "year": 2025
+    }
+  ],
+  "manifest_version": "v1"
+}
