@@ -870,6 +870,36 @@ class IssuePredictor:
             amount_value = self._to_optional_float(data.get("predicted_amount"))
             amount_band = self._normalise_amount_band(data.get("amount_band"))
 
+            # STREAM_C_ALWAYS_PREDICT_AMOUNTS / STREAM_C_NO_RAG_PREDICT_AMOUNTS:
+            # If the LLM still emits null despite the strengthened schema +
+            # reasoning instruction (which happens in hybrid mode when the
+            # deposit-FTT IRAC system prompt's comparator framing takes
+            # precedence over our user-prompt override), synthesise an
+            # amount from amount_band (midpoint) or a domain default. This
+            # guarantees the user-requested "predict an answer no matter
+            # what" property without changing the underlying system prompt.
+            always_amounts = (
+                os.getenv("STREAM_C_ALWAYS_PREDICT_AMOUNTS", "0") == "1"
+                or os.getenv("STREAM_C_NO_RAG_PREDICT_AMOUNTS", "0") == "1"
+            )
+            if always_amounts and amount_value is None:
+                _band_midpoints = {
+                    "0": 0.0,
+                    "1-100": 50.0,
+                    "101-250": 175.0,
+                    "251-600": 425.0,
+                    "601-1000": 800.0,
+                    "1000+": 1500.0,
+                }
+                if amount_band in _band_midpoints:
+                    amount_value = _band_midpoints[amount_band]
+                else:
+                    # Domain default for repairs_social.v1 ombudsman cases:
+                    # median Ombudsman compensation order is ~£400-£500.
+                    amount_value = 400.0
+                    if amount_band is None:
+                        amount_band = "251-600"
+
             # 2026-05-06 — Housing Ombudsman determination ontology.
             # Optional. Missing or invalid → None (treat as legacy / non-housing prompt).
             det_raw = data.get("predicted_determination")

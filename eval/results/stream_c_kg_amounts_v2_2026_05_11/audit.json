@@ -1,0 +1,25 @@
+{
+  "n_cases": 48,
+  "train_count": 0,
+  "test_count": 48,
+  "leakage_violations": [],
+  "understratified_types": {
+    "complaint_handling_failure": 0
+  },
+  "region_distribution": {
+    "london": 46,
+    "west_midlands": 2
+  },
+  "case_size_distribution": {
+    "small": 44,
+    "large": 4
+  },
+  "matter_type_distribution": {
+    "repairs_damp_mould": 24,
+    "repairs_disrepair": 24
+  },
+  "is_clean": false,
+  "clean_failure_reasons": [
+    "complaint_handling_failure has 0 case(s), below STRATIFICATION_FLOOR=5"
+  ]
+}

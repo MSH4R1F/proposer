@@ -162,10 +162,32 @@ def build_irac_json_schema() -> str:
     allowed). Eliminates the UNCERTAIN-as-final-label pathology that
     pushed kg_only abstention to 67% and llm_only to 65% in the
     2026-05-07 ablation.
+
+    Additionally, when STREAM_C_ALWAYS_PREDICT_AMOUNTS=1 (or its alias
+    STREAM_C_NO_RAG_PREDICT_AMOUNTS=1), the schema is post-processed to
+    remove the "or null if uncertain" amount-permission language and
+    replace it with a positive-number-required directive plus an
+    estimation rule. This stops the LLM from defaulting to null when
+    retrieved comparators lack usable awards.
     """
-    if os.getenv("STREAM_C_FORCE_ANSWER", "1") == "1":
-        return _IRAC_JSON_SCHEMA_FORCED
-    return _IRAC_JSON_SCHEMA_LEGACY
+    schema = (
+        _IRAC_JSON_SCHEMA_FORCED
+        if os.getenv("STREAM_C_FORCE_ANSWER", "1") == "1"
+        else _IRAC_JSON_SCHEMA_LEGACY
+    )
+    if (
+        os.getenv("STREAM_C_ALWAYS_PREDICT_AMOUNTS", "0") == "1"
+        or os.getenv("STREAM_C_NO_RAG_PREDICT_AMOUNTS", "0") == "1"
+    ):
+        schema = schema.replace(
+            '"predicted_amount": <number in pounds or null if uncertain>',
+            '"predicted_amount": <positive number in pounds, estimated from facts when no comparator awards retrieved>',
+        )
+        schema = schema.replace(
+            '- "predicted_amount" should be a positive number (the amount the winning party recovers for this issue) or null',
+            '- "predicted_amount" MUST be a positive number (the amount the winning party recovers for this issue). Estimate from case facts and typical UK Housing Ombudsman compensation ranges when no comparator award is available. Use null ONLY when the case facts are too sparse for any order-of-magnitude estimate.',
+        )
+    return schema
 
 
 # Backwards-compatible module-level constant. Tests and downstream packs
