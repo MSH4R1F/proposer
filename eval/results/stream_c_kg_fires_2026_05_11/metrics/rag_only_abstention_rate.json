@@ -1,0 +1,13 @@
+{
+  "metric": "abstention_rate",
+  "metric_alias": "abstention_rate",
+  "gold_path": "data/gold_standard/housing_repairs_social_v2_strict_clean.jsonl",
+  "predictions_path": "eval/predictions/stream_c_kg_fires_2026_05_11/rag_only.jsonl",
+  "point": 0.0,
+  "lower_95": 0.0,
+  "upper_95": 0.0,
+  "n": 48,
+  "n_resamples": 1000,
+  "seed": 42,
+  "computed_at": "2026-05-11T10:11:36.607981+00:00"
+}

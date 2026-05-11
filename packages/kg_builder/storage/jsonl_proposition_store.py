@@ -152,11 +152,21 @@ class JsonlPropositionStore:
         its ``issue_tags`` exactly equals one of the requested *tags*.
         De-duplication preserves first-seen order so a proposition with
         two matching tags appears only once.
+
+        When ``STREAM_C_PROPOSITION_TAG_FUZZY=1`` is set, the matcher also
+        performs token-level fuzzy matching: each query tag is split on
+        ``_`` and matched against any proposition whose tag-tokens overlap.
+        This bridges the orchestrator-side issue IDs (e.g. ``repairs_damp_mould``)
+        and the proposition-side natural tags (e.g. ``repairs`` + ``damp_and_mould``)
+        produced by the extractor without requiring a re-tag pass.
         """
+        import os
+
         if not tags:
             return []
         seen_ids: set = set()
         out: List[Proposition] = []
+        # Exact-match pass (default behaviour).
         for tag in tags:
             for prop in self._by_issue_tag.get(tag, ()):
                 if prop.proposition_id in seen_ids:
@@ -165,6 +175,33 @@ class JsonlPropositionStore:
                 out.append(prop)
                 if len(out) >= limit:
                     return out
+        # Fuzzy token-overlap pass (opt-in).
+        if (
+            os.getenv("STREAM_C_PROPOSITION_TAG_FUZZY", "0") == "1"
+            and len(out) < limit
+        ):
+            def _tokens(t: str) -> set:
+                # Split on underscores; treat each piece as a token.
+                # ``repairs_damp_mould`` -> {repairs, damp, mould}
+                # ``damp_and_mould`` -> {damp, and, mould} (the stop-word
+                # ``and`` is harmless because it almost never appears as a
+                # standalone proposition tag).
+                return {p for p in t.lower().split("_") if p}
+
+            query_tokens: set = set()
+            for q in tags:
+                query_tokens |= _tokens(q)
+            if query_tokens:
+                for tag, props in self._by_issue_tag.items():
+                    if not (query_tokens & _tokens(tag)):
+                        continue
+                    for prop in props:
+                        if prop.proposition_id in seen_ids:
+                            continue
+                        seen_ids.add(prop.proposition_id)
+                        out.append(prop)
+                        if len(out) >= limit:
+                            return out
         return out
 
     async def search_by_entities(
