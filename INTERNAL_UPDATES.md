@@ -4,6 +4,65 @@ Log of changes, fixes, and improvements made to the legal mediation system.
 
 ---
 
+## 2026-05-13 - Employment Tribunal vertical: SHA-65 design + decomposition into 6 child tickets
+
+User asked to scrape ~1000 UK Employment Tribunal decisions and stand up the same kind of pipeline already in place for housing (`housing.repairs_social.v1` Housing Ombudsman + `housing.rent_determination.v1` MNR + the now-deprecated `housing.property_chamber.rro.v1` RRO pilot). Coordinator session — no `apps/` / `packages/` / `scripts/` edits, just spec writing and Linear scaffolding.
+
+### What I found before designing
+
+- **[SHA-65](https://linear.app/sharifbuilders/issue/SHA-65)** ("Employment vertical: ingest 130k Employment Tribunal decisions (OGL v3.0)", 8 pts, Todo) already exists. The user's request is exactly the work behind that ticket, but the 8-pt estimate covered "ingestion only" — gold-set + factor catalog + evals were assumed implicit. Decomposition needed.
+- **`packages/domain_core/domains/employment.unfair_dismissal.v1.yaml`** already declares: retrieval namespace `employment_unfair_dismissal_v1`, eval gate (`min_cases=30`, `max_hallucination_rate=0.02`, `min_citation_validity=0.98`), unfair-dismissal-only forum profile, prohibited phrases, required disclaimers. Audit decision D5 (`docs/superpowers/audits/2026-05-01-domain-corpus-boundary-audit.md`) explicitly scoped v1 to unfair-dismissal-only.
+- **Authoritative architecture spec** (`docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md`) lists five ET sub-domains under `employment.core.v1` and instructs that the legacy `employment.unfair_dismissal.v1` ID is kept as a compatibility alias while `employment.et.unfair_dismissal.v1` is introduced as a v2/domain-pack migration — **not renamed in-place** in the same PR as new ingestion code.
+- **Housing pipeline pattern**: SHA-125 scraper code → SHA-136 30-doc pilot → SHA-127 50-case stratified gold → Stream B factor catalog → 13/15 factors gate-countable. The RRO pivot (SHA-126/137 → SHA-138 MNR) taught the explicit lesson: **a 30-doc pilot must precede the bulk scrape** because corpus rarity (~0.1% for RRO) was not discovered until live data.
+
+### Why I declined "scrape 1000 first"
+
+The user proposed 1000 cases up-front. Three reasons that's wrong by the team's own pattern:
+
+1. RRO precedent: corpus rarity is the lurking failure mode and a 30-doc pilot is the only place it shows up early.
+2. Parser/PII validation is cheaper on 30 docs than 1000 — ET HTML and PDFs have a different shape from Housing Ombudsman and a different PII fingerprint (claimant names, NI numbers, postcodes embedded in employment context).
+3. Factor-catalog IAA on housing only converged after a small validated gold sample. Throwing 1000 docs into ingestion before the gold-set protocol works on ET is the "architecture without data" failure mode the user is explicitly on record about (see memory `feedback_data_backfill_before_architecture_eval.md`).
+
+So the 1000-case scrape became **SHA-65c**, not the first ticket.
+
+### Decomposition (option A — full vertical, 25 pts total)
+
+| ID | Title | Estimate | Depends on |
+|---|---|---|---|
+| SHA-65a | ET scraper code (`scripts/scrapers/employment_tribunal/`) | 5 pts | — |
+| SHA-65b | Live 30-doc unfair-dismissal pilot | 2 pts | 65a |
+| SHA-65c | 1000-doc full scrape into `employment_unfair_dismissal_v1` namespace | 5 pts | 65b passing |
+| SHA-65d | Stratified 50-case gold set at `data/gold_standard/employment_unfair_dismissal_v1.jsonl` | 5 pts | 65c |
+| SHA-65e | Factor catalog + extractor protocol (ERA 1996 s98 framework, 15 candidate factors) | 5 pts | 65d |
+| SHA-65f | Cross-domain ablation evals via [SHA-116](https://linear.app/sharifbuilders/issue/SHA-116) | 3 pts | 65e |
+
+Each ticket = one PR, one worktree window, one Codex sparring loop. Award-amount MAE in 65f is gated on [SHA-66](https://linear.app/sharifbuilders/issue/SHA-66) (deterministic unfair-dismissal award calculator); win-probability metrics ship regardless.
+
+### Open coordination decision
+
+[SHA-67](https://linear.app/sharifbuilders/issue/SHA-67) (Implementation chapter, Urgent, due was 2026-05-10) is overdue. Three sequencing options live in §6.1 of the design spec:
+
+- **α** ET work runs after SHA-67 ships.
+- **β** (recommended) SHA-65a–c (scraper, pilot, full scrape) run in a parallel worktree window concurrent with SHA-67; SHA-65d–f land after chapter ship to feed the Evaluation chapter.
+- **γ** Deferred until post-submission.
+
+User has not yet chosen. No Linear tickets created until they do — would be wasteful to scaffold them and immediately have to re-parent or re-prioritise.
+
+### Artifacts shipped this session
+
+- `docs/superpowers/specs/2026-05-13-employment-tribunal-vertical-design.md` (173 lines, committed in `7e151e61`).
+- `CLAUDE.md` footer updated (`Last Updated` → 2026-05-13, `Current Phase` extended with ET decomposition pointer).
+- `CHANGELOG.md` `[Unreleased]` → new `Planned` section with the decomposition summary.
+- This `INTERNAL_UPDATES.md` entry.
+
+### Next session (when user signs off)
+
+1. Update SHA-65 to "epic" framing and create SHA-65a..f as children, each with the DoD from spec §4.
+2. Write launch prompt for SHA-65a under `docs/prompts/` following the existing prompt shape.
+3. Brief whichever worktree window picks it up.
+
+---
+
 ## 2026-05-01 - E2E mediation conversation: two `/mediation/{id}/start` 500s + offer-cap finding
 
 Drove a full tenant ↔ landlord ↔ mediator conversation against the running stack via a scripted client (`/tmp/mediation_e2e.py`). Tenant intake → landlord joins via invite code → prediction generated (tenant_win, ~84% confidence) → mediation starts → 4 alternating turns of natural-language messages → offers + counter → settle. Surfaced two real backend bugs and one product gap.
