@@ -20,7 +20,7 @@ from typing import Optional
 from pydantic import ValidationError
 
 from eval.constants import HOUSING_REPAIRS_MATTER_TYPES
-from eval.schema import CaseSize, ClaimType, GoldCase
+from eval.schema import CaseSize, ClaimType, GoldCase, _HOUSING_CLAIM_TYPES
 
 _log = logging.getLogger(__name__)
 
@@ -229,14 +229,21 @@ def audit(cases: list) -> AuditReport:
     # in scope", preserving legacy deposit-gold behaviour. Mixed corpora
     # therefore correctly fall back too. An empty corpus also keeps the
     # legacy behaviour (every ClaimType reported as understratified).
+    # SHA-144 (2026-05-14): the legacy housing audit predates multi-domain
+    # corpora. When no row carries a domain_id (legacy housing_v1.jsonl) or
+    # the domain_id has no explicit mapping, fall back to the *housing*
+    # ClaimType partition — not `set(ClaimType)`, which now also includes
+    # employment values added by the SHA-65 vertical. Falling back to the
+    # full union would force the legacy housing audit to require employment
+    # cases too.
     expected_types: set = set()
     if not cases:
-        expected_types = set(ClaimType)
+        expected_types = set(_HOUSING_CLAIM_TYPES)
     for case in cases:
         domain_id = getattr(case, "domain_id", None) or ""
         domain_types = _DOMAIN_EXPECTED_CLAIM_TYPES.get(domain_id)
         if domain_types is None:
-            expected_types = set(ClaimType)
+            expected_types = set(_HOUSING_CLAIM_TYPES)
             break
         expected_types |= domain_types
 

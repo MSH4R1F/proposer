@@ -15,7 +15,11 @@ from eval.schema import (
 
 class TestDeterminationEnum:
     def test_enum_values(self):
+        # SHA-144 (2026-05-14): extended additively with forum-neutral
+        # values used by the employment vertical. Housing Ombudsman values
+        # unchanged.
         assert {d.value for d in Determination} == {
+            # Housing Ombudsman values
             "maladministration",
             "severe_maladministration",
             "service_failure",
@@ -23,6 +27,11 @@ class TestDeterminationEnum:
             "no_maladministration",
             "resolved_with_intervention",
             "outside_jurisdiction",
+            # Forum-neutral / employment values
+            "claimant_success",
+            "respondent_success",
+            "partial_success",
+            "non_merits",
         }
 
     def test_legacy_winner_for_handles_every_determination(self):
@@ -32,9 +41,19 @@ class TestDeterminationEnum:
         seen = set()
         for d in Determination:
             seen.add(_legacy_winner_for(d))
-        # Sanity: at least all three Winner values appear in the mapping.
+        # Sanity: every Winner value appears in the mapping at least once
+        # post-SHA-144. CLAIMANT comes from CLAIMANT_SUCCESS, RESPONDENT
+        # from RESPONDENT_SUCCESS / NON_MERITS, SPLIT from
+        # RESOLVED_WITH_INTERVENTION / PARTIAL_SUCCESS, plus the legacy
+        # TENANT / LANDLORD from the Ombudsman values.
         from eval.schema import Winner
-        assert seen == {Winner.TENANT, Winner.LANDLORD, Winner.SPLIT}
+        assert seen == {
+            Winner.TENANT,
+            Winner.LANDLORD,
+            Winner.CLAIMANT,
+            Winner.RESPONDENT,
+            Winner.SPLIT,
+        }
 
 
 class TestComplaintFinding:

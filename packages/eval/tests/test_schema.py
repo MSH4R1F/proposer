@@ -22,6 +22,8 @@ def _load_unapportioned() -> dict:
 
 class TestEnums:
     def test_claim_type_values(self):
+        # SHA-144 (2026-05-14): enum extended additively with the SHA-65
+        # employment vertical. Housing values unchanged.
         from eval.schema import ClaimType
         assert {c.value for c in ClaimType} == {
             "cleaning",
@@ -29,6 +31,7 @@ class TestEnums:
             "deposit_non_protection",
             "disrepair",
             "end_of_tenancy",
+            "unfair_dismissal",
         }
 
     def test_case_size_values(self):
@@ -37,11 +40,23 @@ class TestEnums:
 
     def test_party_role_values(self):
         from eval.schema import PartyRole
-        assert {c.value for c in PartyRole} == {"tenant", "landlord", "agent"}
+        assert {c.value for c in PartyRole} == {
+            "tenant",
+            "landlord",
+            "agent",
+            "claimant",
+            "respondent_employer",
+        }
 
     def test_winner_values(self):
         from eval.schema import Winner
-        assert {c.value for c in Winner} == {"tenant", "landlord", "split"}
+        assert {c.value for c in Winner} == {
+            "tenant",
+            "landlord",
+            "claimant",
+            "respondent",
+            "split",
+        }
 
     def test_schema_version_v1_only(self):
         from eval.schema import SchemaVersion

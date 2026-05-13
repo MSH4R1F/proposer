@@ -30,11 +30,14 @@ class SchemaVersion(str, Enum):
 
 
 class ClaimType(str, Enum):
+    # Housing values (deposit + repairs_social verticals).
     CLEANING = "cleaning"
     DAMAGES = "damages"
     DEPOSIT_NON_PROTECTION = "deposit_non_protection"
     DISREPAIR = "disrepair"
     END_OF_TENANCY = "end_of_tenancy"
+    # Employment values (SHA-65 vertical). v1 covers unfair dismissal only.
+    UNFAIR_DISMISSAL = "unfair_dismissal"
 
 
 class CaseSize(str, Enum):
@@ -44,41 +47,60 @@ class CaseSize(str, Enum):
 
 
 class PartyRole(str, Enum):
+    # Housing values.
     TENANT = "tenant"
     LANDLORD = "landlord"
     AGENT = "agent"
+    # Employment values (SHA-65 vertical).
+    CLAIMANT = "claimant"
+    RESPONDENT_EMPLOYER = "respondent_employer"
 
 
 class Winner(str, Enum):
+    # Housing values.
     TENANT = "tenant"
     LANDLORD = "landlord"
+    # Employment values.
+    CLAIMANT = "claimant"
+    RESPONDENT = "respondent"
+    # Forum-neutral.
     SPLIT = "split"
 
 
 class Determination(str, Enum):
-    """Housing Ombudsman determination class.
+    """Substantive finding on a single complaint head.
 
-    Captures the substantive Ombudsman finding for a single complaint head.
-    Used in `GroundTruthOutcome.determination` for `housing.repairs_social.v1`
-    gold rows. The legacy `Winner` enum is preserved for backward compatibility
-    via `overall_winner_legacy`.
+    Housing Ombudsman values (legacy — see
+    ``docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md``):
 
-    Mapping rules (canonical, see
-    `docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md`):
-
-    * `maladministration`, `severe_maladministration`, `service_failure`
+    * ``maladministration``, ``severe_maladministration``, ``service_failure``
       indicate the Ombudsman found against the landlord on the merits and
       typically issues a binding compensation order.
-    * `reasonable_redress` indicates the Ombudsman found the landlord's
+    * ``reasonable_redress`` indicates the Ombudsman found the landlord's
       pre-existing offer proportionate; only non-binding recommendations are
       issued.
-    * `no_maladministration` is a substantive landlord defence.
-    * `resolved_with_intervention` indicates settlement during Ombudsman
+    * ``no_maladministration`` is a substantive landlord defence.
+    * ``resolved_with_intervention`` indicates settlement during Ombudsman
       involvement; not a merits decision.
-    * `outside_jurisdiction` is a non-determination — the Ombudsman declined
+    * ``outside_jurisdiction`` is a non-determination — the Ombudsman declined
       to investigate. Eval should test for abstention on these rows.
+
+    Forum-neutral employment-friendly values (SHA-65 vertical):
+
+    * ``claimant_success`` — claimant won on the merits of the lead issue.
+    * ``respondent_success`` — respondent won.
+    * ``partial_success`` — mixed result across complaint heads.
+    * ``non_merits`` — preliminary / strike-out / withdrawn / default /
+      remedy-only / jurisdiction-only / reconsideration. Eval treats these
+      as abstention test points (cf. ``outside_jurisdiction`` for the
+      Ombudsman side).
+
+    The legacy ``Winner`` enum is preserved for backward compatibility via
+    ``overall_winner_legacy``; the canonical mapping lives in
+    ``_legacy_winner_for``.
     """
 
+    # Housing Ombudsman values.
     MALADMINISTRATION = "maladministration"
     SEVERE_MALADMINISTRATION = "severe_maladministration"
     SERVICE_FAILURE = "service_failure"
@@ -86,6 +108,84 @@ class Determination(str, Enum):
     NO_MALADMINISTRATION = "no_maladministration"
     RESOLVED_WITH_INTERVENTION = "resolved_with_intervention"
     OUTSIDE_JURISDICTION = "outside_jurisdiction"
+
+    # Forum-neutral / employment values.
+    CLAIMANT_SUCCESS = "claimant_success"
+    RESPONDENT_SUCCESS = "respondent_success"
+    PARTIAL_SUCCESS = "partial_success"
+    NON_MERITS = "non_merits"
+
+
+# ---------------------------------------------------------------------------
+# Forum-coercion partitions
+# ---------------------------------------------------------------------------
+#
+# Option 1 of the SHA-65-0 schema gate extends GoldCase enums additively.
+# To stop accidental cross-forum coercion, validator INV-F1 partitions every
+# value into a forum family and rejects mixing on a single gold row.
+
+_HOUSING_PARTY_ROLES = frozenset(
+    {PartyRole.TENANT, PartyRole.LANDLORD, PartyRole.AGENT}
+)
+_EMPLOYMENT_PARTY_ROLES = frozenset(
+    {PartyRole.CLAIMANT, PartyRole.RESPONDENT_EMPLOYER}
+)
+
+_HOUSING_WINNERS = frozenset({Winner.TENANT, Winner.LANDLORD})
+_EMPLOYMENT_WINNERS = frozenset({Winner.CLAIMANT, Winner.RESPONDENT})
+# Winner.SPLIT is forum-neutral and intentionally absent from both sets.
+
+_HOUSING_CLAIM_TYPES = frozenset(
+    {
+        ClaimType.CLEANING,
+        ClaimType.DAMAGES,
+        ClaimType.DEPOSIT_NON_PROTECTION,
+        ClaimType.DISREPAIR,
+        ClaimType.END_OF_TENANCY,
+    }
+)
+_EMPLOYMENT_CLAIM_TYPES = frozenset({ClaimType.UNFAIR_DISMISSAL})
+
+_HOUSING_DETERMINATIONS = frozenset(
+    {
+        Determination.MALADMINISTRATION,
+        Determination.SEVERE_MALADMINISTRATION,
+        Determination.SERVICE_FAILURE,
+        Determination.REASONABLE_REDRESS,
+        Determination.NO_MALADMINISTRATION,
+        Determination.RESOLVED_WITH_INTERVENTION,
+        Determination.OUTSIDE_JURISDICTION,
+    }
+)
+# Employment + forum-neutral determinations. The four forum-neutral values
+# could conceivably appear on a future housing vertical, but housing rows
+# today MUST use the Ombudsman-specific values — adding them here would
+# silently broaden the partition with no test coverage. Re-evaluate when a
+# second housing forum adopts the neutral set.
+_EMPLOYMENT_DETERMINATIONS = frozenset(
+    {
+        Determination.CLAIMANT_SUCCESS,
+        Determination.RESPONDENT_SUCCESS,
+        Determination.PARTIAL_SUCCESS,
+        Determination.NON_MERITS,
+    }
+)
+
+
+def _domain_family(domain_id: Optional[str]) -> Optional[str]:
+    """Return ``'housing'`` or ``'employment'`` for a recognised ``domain_id``.
+
+    ``None`` for unrecognised / unset ``domain_id`` so the existing legacy
+    rows that pre-date the per-domain SHA-20 fields keep validating.
+    """
+
+    if not domain_id:
+        return None
+    if domain_id.startswith("housing."):
+        return "housing"
+    if domain_id.startswith("employment."):
+        return "employment"
+    return None
 
 
 def _legacy_winner_for(determination: Determination) -> Winner:
@@ -95,8 +195,21 @@ def _legacy_winner_for(determination: Determination) -> Winner:
     supplied `overall_winner_legacy` matches the rule, and by the migration
     script to populate the field deterministically.
 
-    `RESOLVED_WITH_INTERVENTION` maps to SPLIT because settlement during
-    Ombudsman intervention is not a clean tenant-or-landlord merits win.
+    Housing Ombudsman side:
+
+    * ``RESOLVED_WITH_INTERVENTION`` maps to SPLIT because settlement during
+      Ombudsman intervention is not a clean tenant-or-landlord merits win.
+
+    Employment side (SHA-65):
+
+    * ``CLAIMANT_SUCCESS`` -> ``Winner.CLAIMANT``
+    * ``RESPONDENT_SUCCESS`` -> ``Winner.RESPONDENT``
+    * ``PARTIAL_SUCCESS`` -> ``Winner.SPLIT`` (reuses the forum-neutral
+      split value rather than introducing a parallel partial-claimant
+      construct — keeps eval aggregation simple).
+    * ``NON_MERITS`` -> ``Winner.RESPONDENT``. A claim that never reached
+      the merits is effectively dismissed for outcome-modelling purposes,
+      mirroring how ``outside_jurisdiction`` maps to LANDLORD.
     """
 
     if determination in (
@@ -113,6 +226,14 @@ def _legacy_winner_for(determination: Determination) -> Winner:
         return Winner.LANDLORD
     if determination == Determination.RESOLVED_WITH_INTERVENTION:
         return Winner.SPLIT
+    if determination == Determination.CLAIMANT_SUCCESS:
+        return Winner.CLAIMANT
+    if determination == Determination.RESPONDENT_SUCCESS:
+        return Winner.RESPONDENT
+    if determination == Determination.PARTIAL_SUCCESS:
+        return Winner.SPLIT
+    if determination == Determination.NON_MERITS:
+        return Winner.RESPONDENT
     raise ValueError(f"unhandled determination: {determination!r}")
 
 
@@ -279,6 +400,24 @@ class GroundTruthOutcome(StrictBaseModel):
     amount_previously_offered_gbp: Optional[Decimal] = Field(default=None, ge=0)
     amount_global_unapportioned_gbp: Optional[Decimal] = Field(default=None, ge=0)
     overall_winner_legacy: Optional[Winner] = None
+
+    # --- 2026-05-14 employment-remedy fields (additive, optional) -----
+    # Populated only on employment-family GoldCase rows. Validators in
+    # GoldCase._validate_invariants ensure these never appear on housing
+    # rows (INV-F2). All fields are Optional so legacy rows continue to
+    # validate. The compensatory amount split mirrors Acas guidance:
+    # basic award (statutory formula), compensatory award (loss of
+    # earnings + future loss), deductions (Polkey + contributory fault as
+    # a combined %), uplifts (Acas Code uplift as a %), and reinstatement
+    # / re-engagement remedy flags (sought vs granted).
+    basic_award_gbp: Optional[Decimal] = Field(default=None, ge=0)
+    compensatory_award_gbp: Optional[Decimal] = Field(default=None, ge=0)
+    deductions_pct: Optional[Decimal] = Field(default=None, ge=0, le=100)
+    uplifts_pct: Optional[Decimal] = Field(default=None, ge=0, le=100)
+    reinstatement_sought: Optional[bool] = None
+    reinstatement_granted: Optional[bool] = None
+    re_engagement_sought: Optional[bool] = None
+    re_engagement_granted: Optional[bool] = None
 
     @model_validator(mode="after")
     def _validate_apportionment(self) -> "GroundTruthOutcome":
@@ -589,6 +728,103 @@ class GoldCase(StrictBaseModel):
         ),
     )
 
+    def _enforce_forum_partition(self, family: str) -> None:
+        """Refuse any row that mixes housing-family + employment-family enum values.
+
+        Called from ``_validate_invariants`` when ``family`` is known. The
+        partition is documented above (``_HOUSING_*`` / ``_EMPLOYMENT_*``
+        frozensets); ``Winner.SPLIT`` is intentionally forum-neutral and
+        permitted on either side.
+        """
+
+        if family == "housing":
+            allowed_roles = _HOUSING_PARTY_ROLES
+            allowed_winners = _HOUSING_WINNERS | {Winner.SPLIT}
+            allowed_claim_types = _HOUSING_CLAIM_TYPES
+            allowed_determinations = _HOUSING_DETERMINATIONS
+        elif family == "employment":
+            allowed_roles = _EMPLOYMENT_PARTY_ROLES
+            allowed_winners = _EMPLOYMENT_WINNERS | {Winner.SPLIT}
+            allowed_claim_types = _EMPLOYMENT_CLAIM_TYPES
+            allowed_determinations = _EMPLOYMENT_DETERMINATIONS
+        else:
+            return
+
+        bad_roles = [p.role for p in self.parties if p.role not in allowed_roles]
+        if bad_roles:
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but parties carry role(s) "
+                f"{sorted({r.value for r in bad_roles})} from the other "
+                "forum. Cross-forum coercion is rejected."
+            )
+
+        bad_claim_types = [
+            ct for ct in self.claim_types if ct not in allowed_claim_types
+        ]
+        if bad_claim_types:
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but claim_types include "
+                f"{sorted({c.value for c in bad_claim_types})} from the "
+                "other forum. Cross-forum coercion is rejected."
+            )
+
+        outcome = self.ground_truth_outcome
+        if outcome.overall_winner not in allowed_winners:
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but ground_truth_outcome.overall_winner is "
+                f"{outcome.overall_winner.value!r} from the other forum. "
+                "Cross-forum coercion is rejected."
+            )
+
+        bad_issue_winners = [
+            io.winner for io in outcome.per_issue if io.winner not in allowed_winners
+        ]
+        if bad_issue_winners:
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but per_issue carries winner(s) "
+                f"{sorted({w.value for w in bad_issue_winners})} from the "
+                "other forum. Cross-forum coercion is rejected."
+            )
+
+        if (
+            outcome.determination is not None
+            and outcome.determination not in allowed_determinations
+        ):
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but ground_truth_outcome.determination is "
+                f"{outcome.determination.value!r} from the other forum. "
+                "Cross-forum coercion is rejected."
+            )
+
+        bad_per_complaint = [
+            cf.finding
+            for cf in outcome.determination_per_complaint
+            if cf.finding not in allowed_determinations
+        ]
+        if bad_per_complaint:
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but determination_per_complaint carries "
+                f"finding(s) {sorted({f.value for f in bad_per_complaint})} "
+                "from the other forum. Cross-forum coercion is rejected."
+            )
+
+        if (
+            outcome.overall_winner_legacy is not None
+            and outcome.overall_winner_legacy not in allowed_winners
+        ):
+            raise ValueError(
+                f"INV-F1: domain_id {self.domain_id!r} is in the "
+                f"{family!r} family but overall_winner_legacy is "
+                f"{outcome.overall_winner_legacy.value!r} from the other forum. "
+                "Cross-forum coercion is rejected."
+            )
+
     @model_validator(mode="after")
     def _validate_invariants(self) -> "GoldCase":
         # INV-1: decision_date in PILOT-permitted window
@@ -601,13 +837,28 @@ class GoldCase(StrictBaseModel):
                 f"decision_date {self.decision_date} outside permitted "
                 f"window [{_MIN_DECISION_DATE}, {max_decision_date}]"
             )
-        # INV-2: at least one tenant and one landlord
+        # INV-2: party-role coverage. Branches on the gold case's domain
+        # family so employment rows aren't forced to claim a "landlord".
+        family = _domain_family(self.domain_id)
         roles = {p.role for p in self.parties}
-        if PartyRole.TENANT not in roles or PartyRole.LANDLORD not in roles:
-            raise ValueError(
-                "parties must include at least one tenant and one landlord; "
-                f"got roles={sorted(r.value for r in roles)}"
-            )
+        if family == "employment":
+            if (
+                PartyRole.CLAIMANT not in roles
+                or PartyRole.RESPONDENT_EMPLOYER not in roles
+            ):
+                raise ValueError(
+                    "employment-family gold rows require at least one "
+                    "claimant and one respondent_employer party; "
+                    f"got roles={sorted(r.value for r in roles)}"
+                )
+        else:
+            # Housing (and legacy unset-domain) rows still require
+            # tenant + landlord per the original SHA-28 contract.
+            if PartyRole.TENANT not in roles or PartyRole.LANDLORD not in roles:
+                raise ValueError(
+                    "parties must include at least one tenant and one landlord; "
+                    f"got roles={sorted(r.value for r in roles)}"
+                )
         if len(set(self.claim_types)) != len(self.claim_types):
             raise ValueError(
                 "claim_types must not contain duplicates; each type should "
@@ -659,21 +910,32 @@ class GoldCase(StrictBaseModel):
                 "statutory_basis_unavailable_reason given; annotators must "
                 "record why statutes were not captured"
             )
-        # Repairs-social Ombudsman rows can have a final compensation order
-        # without a clean pre-decision monetary claim in the source. Legacy
-        # deposit/RRO style rows still require claimed/disputed amounts.
-        if self.domain_id != "housing.repairs_social.v1":
+        # Domains where the upstream record may not carry a pre-decision
+        # monetary claim. The Housing Ombudsman corpus orders global
+        # compensation without an itemised dispute amount; the Employment
+        # Tribunal corpus often issues judgments where the merits are
+        # decided and remedy is deferred. Legacy deposit/RRO rows still
+        # require claimed/disputed amounts.
+        _CORPUS_WITHOUT_DISPUTED_AMOUNT = (
+            "housing.repairs_social.v1",
+            # employment.* family — any sub-domain (unfair_dismissal,
+            # discrimination, etc) follows the same rule.
+        )
+        amount_required = self.domain_id not in _CORPUS_WITHOUT_DISPUTED_AMOUNT and family != "employment"
+        if amount_required:
             if self.disputed_amount_gbp is None:
                 raise ValueError(
                     "disputed_amount_gbp is required unless domain_id is "
-                    "'housing.repairs_social.v1'"
+                    "in the housing.repairs_social.v1 or employment.* "
+                    "exempt set"
                 )
             if not self.claimed_amounts:
                 raise ValueError(
                     "claimed_amounts must contain at least one row unless "
-                    "domain_id is 'housing.repairs_social.v1'"
+                    "domain_id is in the housing.repairs_social.v1 or "
+                    "employment.* exempt set"
                 )
-        else:
+        elif self.domain_id == "housing.repairs_social.v1":
             # housing.repairs_social.v1 — determination is required (INV-D4)
             if self.ground_truth_outcome.determination is None:
                 raise ValueError(
@@ -681,6 +943,55 @@ class GoldCase(StrictBaseModel):
                     "domain_id == 'housing.repairs_social.v1' (INV-D4); "
                     "see docs/eval/housing-ombudsman-determination-ontology-2026-05-06.md"
                 )
+        elif family == "employment":
+            # INV-D5: employment-family rows must record a determination so
+            # downstream metrics can group claimant_success / respondent_success
+            # / partial_success / non_merits without falling back to the
+            # housing-shaped winner-only summary.
+            if self.ground_truth_outcome.determination is None:
+                raise ValueError(
+                    "ground_truth_outcome.determination is required when "
+                    f"domain_id is in the employment family (got {self.domain_id!r}) "
+                    "(INV-D5); set claimant_success / respondent_success / "
+                    "partial_success / non_merits."
+                )
+
+        # INV-F1: cross-forum coercion guard.
+        #
+        # Option 1 of the SHA-65-0 schema gate (chosen by the user on
+        # 2026-05-14) extends GoldCase enums additively across housing and
+        # employment. The whole point of going with option 1 over an
+        # adapter pattern is that *one* schema represents both forums —
+        # but only if the enum partitions stay internally consistent on a
+        # single row. INV-F1 refuses any row that mixes families.
+        if family is not None:
+            self._enforce_forum_partition(family)
+
+        # INV-F2: employment-only remedy fields. Optional ET-specific
+        # remedy fields on GroundTruthOutcome MUST be unset on
+        # non-employment rows so a housing case can never accidentally
+        # carry a basic_award or compensatory_award (those concepts have
+        # no Ombudsman analogue).
+        if family != "employment":
+            for field_name in (
+                "basic_award_gbp",
+                "compensatory_award_gbp",
+                "deductions_pct",
+                "uplifts_pct",
+                "reinstatement_sought",
+                "reinstatement_granted",
+                "re_engagement_sought",
+                "re_engagement_granted",
+            ):
+                value = getattr(self.ground_truth_outcome, field_name)
+                if value is not None:
+                    raise ValueError(
+                        f"ground_truth_outcome.{field_name} is set "
+                        f"({value!r}) but domain_id "
+                        f"{self.domain_id!r} is not in the employment "
+                        "family (INV-F2). ET remedy fields belong only on "
+                        "employment.* gold rows."
+                    )
 
         # INV-5: every per_issue.issue must appear in claimed_amounts
         # (vacuously satisfied when per_issue is empty under an unapportioned outcome)
