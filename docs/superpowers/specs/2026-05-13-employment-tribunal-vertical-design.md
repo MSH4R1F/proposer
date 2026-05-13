@@ -1,173 +1,250 @@
-# Employment Tribunal Vertical — Pipeline Design (`employment.et.unfair_dismissal.v1`)
+# Employment Tribunal Vertical Design
+
+Domain target: `employment.et.unfair_dismissal.v1`
 
 **Date:** 2026-05-13
-**Author:** Coordinator (multi-window orchestration)
-**Status:** Draft → awaiting user review
+**Status:** Reviewed draft - implementation gated
 **Parent epic:** [SHA-20 (Done)](https://linear.app/sharifbuilders/issue/SHA-20)
-**Decomposes:** [SHA-65](https://linear.app/sharifbuilders/issue/SHA-65) into six ordered child tickets
+**Decomposes:** [SHA-65](https://linear.app/sharifbuilders/issue/SHA-65) into one schema-readiness gate plus six implementation tickets
 **Authoritative architecture spec:** [`docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md`](./2026-05-06-factor-proposition-kg-controlled-cbr-rag.md)
-**Boundary audit referenced:** [`docs/superpowers/audits/2026-05-01-domain-corpus-boundary-audit.md`](../audits/2026-05-01-domain-corpus-boundary-audit.md) (decision **D5** — unfair-dismissal-only for v1)
+**Boundary audit referenced:** [`docs/superpowers/audits/2026-05-01-domain-corpus-boundary-audit.md`](../audits/2026-05-01-domain-corpus-boundary-audit.md) (decision **D5** - unfair-dismissal-only for v1)
+
+## 0. Review Summary
+
+This revision keeps the original thesis goal but tightens the implementation plan around three blockers:
+
+1. `GoldCase` is not currently employment-ready. `ClaimType`, `PartyRole`, and winner/determination semantics are still housing-shaped, so the ET gold set must be gated on a small schema/adapter readiness ticket before SHA-65d.
+2. GOV.UK's "Unfair Dismissal" filter is a discovery signal, not a guarantee that the decision is a clean merits unfair-dismissal judgment. The scraper needs a two-stage filter: category discovery first, merits-quality filtering second.
+3. Award metrics should be reported only after an employment-specific award/remedy model exists. Unfair dismissal has basic award, compensatory award, deductions, uplifts, reinstatement, and re-engagement. Treating all remedies as one housing-style amount would create misleading evaluation results.
+
+External facts checked on 2026-05-13:
+
+- [GOV.UK Employment Tribunal decisions](https://www.gov.uk/employment-tribunal-decisions) publishes England, Wales, and Scotland ET decisions from February 2017 onwards and exposes a "Jurisdiction code" filter including "Unfair Dismissal".
+- [Filtered GOV.UK unfair dismissal page](https://www.gov.uk/employment-tribunal-decisions?tribunal_decision_categories=unfair-dismissal) returns many current unfair-dismissal-labelled results, so the pilot is primarily a parser/quality gate, not a corpus-rarity gate.
+- [GOV.UK reuse terms](https://www.gov.uk/help/reuse-govuk-content) state GOV.UK content is available under OGL v3.0 unless otherwise stated; the scraper must still persist the per-source licence it observes.
+- [Acas unfair dismissal guidance](https://www.acas.org.uk/dismissals/unfair-dismissal) confirms the current general two-year service framing and notes the announced Employment Rights Act 2025 change is expected in January 2027 but is not yet law.
+- [Acas dismissal-type guidance](https://www.acas.org.uk/dismissals/types-of-dismissal) summarises the potentially fair reasons: conduct, capability, redundancy, legal reason, and some other substantial reason.
 
 ## 1. Goal
 
-Build an end-to-end vertical for **UK Employment Tribunal unfair-dismissal decisions** that mirrors the housing pipeline pattern (scraper → 30-doc pilot → 1000-doc full scrape → 50-case stratified gold → factor catalog → cross-domain evals). The vertical exists to:
+Build an end-to-end research vertical for **Great Britain Employment Tribunal unfair-dismissal decisions** that mirrors the housing pattern:
 
-1. **Stress-test cross-domain generalisation** of the factor-proposition-KG + CBR-RAG architecture (thesis RQ).
-2. **Provide a non-housing corpus** for ablation studies in the thesis Evaluation chapter.
-3. **Keep the platform research-stage** behind feature flags until SHA-66 (deterministic award calculator) and SHA-123 (PII redaction) are signed.
-
-Out of scope: discrimination, redundancy, working-time, unlawful deduction of wages, whistleblowing. These remain in [`docs/superpowers/specs/2026-05-06-factor-proposition-kg-controlled-cbr-rag.md`](./2026-05-06-factor-proposition-kg-controlled-cbr-rag.md) §13 as later domains.
-
-## 2. Why the housing pattern, not a 1000-shot
-
-The housing pipeline taught the team two lessons that this design encodes as gates:
-
-- **SHA-126/137 (RRO):** corpus rarity (~0.1% of FTT(PC) listings) was not discovered until the live scrape. The fix was to pivot to MNR ([SHA-138](https://linear.app/sharifbuilders/issue/SHA-138)). Lesson: a 30-doc pilot must precede the bulk scrape.
-- **Stream B housing factor IAA:** 13/15 factors became gate-countable only after double-pass adjudication. Lesson: gold-set design and factor catalog are not parallelisable with the bulk scrape — they need a small validated sample first.
-
-Therefore the 1000-case target is a **downstream** ticket gated on a 30-doc pilot, not the first ticket.
-
-## 3. Architecture (reuses existing components)
-
+```text
+scraper -> 30-doc pilot -> 1000-doc corpus -> 50-case reviewed gold set
+        -> factor catalog -> cross-domain ablation
 ```
+
+The vertical exists to:
+
+1. Stress-test cross-domain generalisation of the factor-proposition-KG plus CBR-RAG architecture.
+2. Provide a non-housing corpus for the thesis Evaluation chapter.
+3. Keep employment functionality research-only behind feature flags until privacy, schema, and award-calculation gates are signed off.
+
+Out of scope for v1: discrimination, redundancy-as-a-standalone-domain, working-time, unlawful deduction of wages, whistleblowing, and Employment Appeal Tribunal authority modelling. A dismissal may still have a "redundancy" reason inside the unfair-dismissal framework; that is allowed only when the unfair-dismissal merits issue is the lead issue being modelled.
+
+## 2. Why Not Start With a 1000-Case Scrape
+
+The housing pipeline produced two lessons that this design turns into gates:
+
+- **SHA-126/137 (RRO):** corpus availability and filter quality were only understood after a live pilot. ET unfair dismissal appears abundant, but the ratio of clean merits judgments to preliminary, strike-out, withdrawal, combined-claim, default, or remedy-only decisions still needs measurement.
+- **Stream B housing factor IAA:** factors became gate-countable only after a validated sample and adjudication loop. The ET factor catalog should be derived from a small reviewed sample, not invented before seeing the source-document shape.
+
+Therefore the 1000-case scrape is downstream of the 30-doc pilot, and the 50-case gold set is downstream of a schema-readiness gate.
+
+## 3. Architecture
+
+```text
 gov.uk/employment-tribunal-decisions
-        │
-        ▼  (SHA-65a)
-scripts/scrapers/employment_tribunal/   ──── OGL v3.0 attribution
-        │
-        ▼  (SHA-65b — 30-doc pilot)
-data/raw/employment/<jurisdiction-code>/
-        │
-        ▼  (SHA-65c — 1000-doc scrape, gated on 65b passing)
-employment_unfair_dismissal_v1   ←── RetrievalNamespace (already declared in
-        │                            packages/domain_core/domains/employment.unfair_dismissal.v1.yaml)
-        ▼  (SHA-65d)
-data/gold_standard/employment_unfair_dismissal_v1.jsonl   (≥50 reviewed-gold rows)
-        │
-        ▼  (SHA-65e)
-packages/domain_packs/employment_unfair_dismissal_v1/factors/   (factor catalog + extractor protocol)
-        │
-        ▼  (SHA-65f)
-data/eval_artifacts/.../employment.et.unfair_dismissal.v1/   (Brier, ECE, F1, ablation report)
+        |
+        v  (SHA-65a)
+scripts/scrapers/employment_tribunal/
+        |
+        v  (SHA-65b - 30-doc pilot)
+data/raw/employment/
+        |
+        v  (SHA-65c - gated 1000-doc corpus)
+employment_unfair_dismissal_v1 retrieval namespace
+        |
+        v  (SHA-65-0 + SHA-65d)
+data/gold_standard/employment_unfair_dismissal_v1.jsonl
+        |
+        v  (SHA-65e)
+packages/domain_packs/employment/unfair_dismissal/
+        |
+        v  (SHA-65f)
+cross-domain ablation report and dashboard entry
 ```
 
-Everything below the scraper is existing code reused via the per-domain abstractions ([SHA-59](https://linear.app/sharifbuilders/issue/SHA-59) registry, [SHA-60](https://linear.app/sharifbuilders/issue/SHA-60) RAG namespacing, [SHA-116](https://linear.app/sharifbuilders/issue/SHA-116) eval harness).
+Everything below the scraper should reuse the domain abstractions from SHA-59, SHA-60, and SHA-116 wherever possible. The exception is the gold/eval schema: that contract is not employment-ready yet and must not be assumed.
 
-### 3.1 Domain ID note (must be resolved in SHA-65a)
+### 3.1 Domain ID Note
 
-`packages/domain_core/domains/employment.unfair_dismissal.v1.yaml` already exists and uses the legacy domain ID. The authoritative spec ([2026-05-06](./2026-05-06-factor-proposition-kg-controlled-cbr-rag.md)) calls for `employment.et.unfair_dismissal.v1`. Per that spec's implementation note: keep the legacy ID as a compatibility alias and introduce the new namespaced ID in a v2/domain-pack migration with explicit artifact mapping. **SHA-65a must NOT rename in-place in the same PR as the scraper.**
+The repo currently has `packages/domain_core/domains/employment_unfair_dismissal_v1.yaml` with:
 
-## 4. Child-ticket decomposition
+```yaml
+id: employment.unfair_dismissal.v1
+retrieval_namespaces:
+  - namespace_id: employment_unfair_dismissal_v1
+```
 
-Each child ticket is one PR, one worktree window, one Codex sparring loop.
+The newer architecture spec names the target domain `employment.et.unfair_dismissal.v1`. Do not rename the YAML in the scraper PR. Treat `employment.unfair_dismissal.v1` as the compatibility ID and introduce the namespaced ID through a separate migration with explicit artifact mapping.
+
+## 4. Tickets
+
+Each row is intended to become one PR. The schema gate is listed first because it determines whether SHA-65d can emit valid `GoldCase` rows.
 
 | ID | Title | Estimate | Depends on | DoD summary |
-|---|---|---|---|---|
-| **SHA-65a** | ET scraper code (`scripts/scrapers/employment_tribunal/`) | 5 pts | — | Module mirrors `housing_ombudsman/` layout: `config.py`, `downloader.py`, `filter.py` (unfair-dismissal jurisdiction code filter), `models.py`, `parsers.py`, `progress.py`, `to_source_document.py`, `tests/`. **No live scrape.** Unit tests against fixture HTML. PII redactor wired (SHA-123 prereq). OGL v3.0 attribution line in `models.py` and `data/raw/employment/LICENCE.md`. |
-| **SHA-65b** | Live 30-doc pilot (unfair dismissal) | 2 pts | 65a | Mirrors SHA-136. Run scraper with `--max-keep 30 --jurisdiction-code unfair_dismissal --rps 0.5`. Validate: (i) parser extracts case name, decision date, jurisdiction code, outcome paragraph; (ii) PII redaction removes claimant name, postcode, email, phone, NI number; (iii) dedupe by case ID; (iv) source-document JSON conforms to `to_source_document` schema; (v) manual spot-check 5 docs for parser fidelity. Pilot manifest committed to `data/eval_artifacts/pilots/employment_et_unfair_dismissal_pilot_30_<date>.jsonl`. |
-| **SHA-65c** | 1000-doc full scrape into namespace | 5 pts | 65b passing | Run scrape with `--max-keep 1000 --jurisdiction-code unfair_dismissal --years 2019-2024 --rps 0.5`. Ingest into `employment_unfair_dismissal_v1` retrieval namespace (vector + BM25). Manifest at `data/raw/employment/manifests/employment_et_unfair_dismissal_<date>.jsonl`. Corpus version recorded as `research_seed_2026_05` to match domain spec. Leakage controls per [SHA-121](https://linear.app/sharifbuilders/issue/SHA-121). Temporal split: 2019-2022 train, 2023-2024 test. |
-| **SHA-65d** | Stratified 50-case gold set | 5 pts | 65c | Mirrors SHA-127. Outputs to `data/gold_standard/employment_unfair_dismissal_v1.jsonl`. Stratification: by outcome (claim_succeeded / claim_dismissed / partial), by fairness ground (conduct / capability / redundancy / SOSR), by year. Each row uses existing `GoldCase` schema with `domain_id="employment.et.unfair_dismissal.v1"`, `forum="employment_tribunal"`, `source_publisher="govuk"`. LLM-panel double-pass labelling (per memory rule: LLM panel substitutes paralegal review for thesis-pace solo work) + mandatory human review of `claim_types`, `ground_truth_outcome.overall_winner`, `ground_truth_outcome.total_awarded_gbp`, `matter_type`. |
-| **SHA-65e** | Factor catalog + extractor for unfair dismissal | 5 pts | 65d | Mirrors housing Stream B. Factor catalog at `packages/domain_packs/employment_unfair_dismissal_v1/factors/catalog.yaml` covering: fair-reason category (ERA 1996 s98(1)-(2)), reasonableness (s98(4)), Acas Code compliance, procedural fairness (notice, hearing, appeal), Polkey deduction triggers, contributory fault. Extractor protocol producing `FactorAssertion` rows with span provenance. LLM panel review + double-pass IAA target ≥0.6 agreement on ≥10 of the catalog factors. Comparative report at `docs/eval/extractor_f1_reports/employment.et.unfair_dismissal.v1-<date>-gold-iaa-comparative.md`. |
-| **SHA-65f** | Cross-domain ablation evals | 3 pts | 65e, [SHA-116](https://linear.app/sharifbuilders/issue/SHA-116) | Run prediction harness against ET test split. Metrics: Brier on win-probability, ECE, F1 on factor extraction, MAE on award amount (gated on SHA-66 calculator), retrieval P@5 / nDCG@10. Output cross-domain ablation table (housing vs employment) for thesis Evaluation chapter. Per-domain dashboard entry. Forum-mixing leakage check: assert no `housing_ombudsman` or `first_tier_property_chamber` documents appear in ET retrieval results. |
+|---|---:|---:|---|---|
+| **SHA-65-0** | Employment gold-schema readiness gate | 2 pts | - | Decide whether ET uses an extended `GoldCase` or a domain-specific adapter. Cover `claim_types`, party roles (`claimant`, `respondent_employer`), determination/winner mapping, remedy fields, and 2019-2024 date constraints. Add validator tests before any ET gold rows are generated. |
+| **SHA-65a** | ET scraper code (`scripts/scrapers/employment_tribunal/`) | 5 pts | - | Module mirrors the GOV.UK tribunal scraper pattern: `config.py`, `downloader.py`, `filter.py`, `govuk_scraper.py`, `models.py`, `parsers.py`, `progress.py`, `to_source_document.py`, and `tests/`. No live scrape. Unit tests use fixture listing/search HTML, decision-page HTML, and attachment text/PDF fixtures. Persist observed source licence, defaulting to `OGL-3.0` only where the page does not override it. |
+| **SHA-65b** | Live 30-doc pilot | 2 pts | 65a | Run a polite live pilot against the unfair-dismissal filter with `--max-keep 30 --rps 0.5`. Validate title, case number, decision date, country, category labels, attachment URLs, extracted text, source hash, and model-facing PII redaction. Manually spot-check 5 documents. Commit pilot manifest to `data/eval_artifacts/pilots/employment_et_unfair_dismissal_pilot_30_<date>.jsonl`. |
+| **SHA-65c** | 1000-doc corpus and namespace ingest | 5 pts | 65b passing | Run a 2019-2024 frozen research scrape. Ingest accepted, model-facing documents into `employment_unfair_dismissal_v1` vector/BM25 namespace with `corpus_version=research_seed_2026_05`. Keep excluded/preliminary/default/remedy-only decisions in an exclusion manifest, not silently discarded. Apply leakage controls per SHA-121. |
+| **SHA-65d** | Stratified 50-case reviewed gold set | 5 pts | 65-0, 65c | Output `data/gold_standard/employment_unfair_dismissal_v1.jsonl`. Stratify by outcome, fair-reason category, country, and year. Use LLM-panel labelling only for candidate labels; mandatory human review confirms claim type, outcome, award/remedy fields, key reasoning quotes, and matter type before append. |
+| **SHA-65e** | Factor catalog and extractor | 5 pts | 65d | Add `packages/domain_packs/employment/unfair_dismissal/factors.yaml` plus extractor protocol. Cover s98 fair-reason category, s98(4) reasonableness, investigation, hearing, appeal, Acas Code, Polkey, contributory fault, qualifying period, time limit, and remedy fields. Every `FactorAssertion` must carry span provenance. Target >=10 gate-countable factors after IAA. |
+| **SHA-65f** | Cross-domain ablation evals | 3 pts | 65e, SHA-116 | Run the prediction harness against the ET test split. Metrics: win-probability Brier, ECE, factor F1, retrieval P@5 / nDCG@10, and leakage checks. Report award MAE only if the employment award calculator/remedy schema is done; otherwise explicitly mark amount evaluation as blocked. |
 
-**Total:** 25 pts (matches SHA-65's original 8-pt estimate being unrealistic for a complete vertical — the original ticket should be downgraded to "epic-only" and the points moved to the children).
+**Total:** 27 pts. The original 8-point SHA-65 estimate should be treated as epic-level only.
 
-## 5. Data flow and contracts
+## 5. Data Flow and Contracts
 
 ### 5.1 Source
 
-`https://www.gov.uk/employment-tribunal-decisions`. Each decision is a static HTML page with PDF attachment(s). Licence is **OGL v3.0** (Open Government Licence). Attribution string lives in `data/raw/employment/LICENCE.md` and on every persisted record's `source_license` field.
+Primary source: `https://www.gov.uk/employment-tribunal-decisions`.
 
-### 5.2 Filtering
+The scraper should treat the public page and any GOV.UK APIs as discovery surfaces, not as a stable legal-data contract. It must persist:
 
-Pilot and full scrape filter by `jurisdiction_code` matching "Unfair Dismissal" tag on the listing pages. Reject:
+- public page URL
+- GOV.UK base path or equivalent stable path
+- case title
+- case number(s)
+- decision date
+- country (`england_and_wales` or `scotland`, where available)
+- jurisdiction/category labels
+- attachment metadata
+- source hash
+- observed licence
+- parser version
 
-- combined claims where unfair dismissal is not the lead head
-- strike-out or jurisdiction-only decisions (no merits ruling)
-- decisions where the respondent did not appear (default judgments — too lopsided for outcome modelling)
+The persisted source licence should be `OGL-3.0` only where the source page/footer supports that and no exception is stated.
 
-The filter rules live in `scripts/scrapers/employment_tribunal/filter.py` and are unit-tested in 65a.
+### 5.2 Two-Stage Filtering
 
-### 5.3 Gold record schema
+Stage 1: discovery filter.
 
-Reuse `GoldCase` (already used by housing). Required fields per [SHA-20](https://linear.app/sharifbuilders/issue/SHA-20) Phase 7:
+- Use GOV.UK's unfair-dismissal category/filter slug where available.
+- Record the raw category labels returned by the page/API.
+- Do not assume the label means the case is a clean merits unfair-dismissal judgment.
 
-- `domain_id = "employment.et.unfair_dismissal.v1"`
+Stage 2: eval-quality filter.
+
+Reject or quarantine from the gold/eval corpus:
+
+- unfair dismissal is not the lead merits issue
+- preliminary-only, strike-out, withdrawal, reconsideration, or jurisdiction-only decisions
+- default judgments or no-response decisions with too little reasoning for outcome modelling
+- remedy-only decisions without liability reasoning
+- decisions where the award/remedy is not attributable to unfair dismissal
+
+Rejected rows should be kept in `excluded.jsonl` with reason codes. They may still be useful later for abstention and routing tests.
+
+### 5.3 Gold Schema
+
+Do not start ET gold promotion until SHA-65-0 resolves the schema mismatch.
+
+Current blockers in `packages/eval/schema.py`:
+
+- `ClaimType` is deposit/housing-shaped (`cleaning`, `damages`, `deposit_non_protection`, `disrepair`, `end_of_tenancy`).
+- `PartyRole` is tenancy-shaped (`tenant`, `landlord`, `agent`).
+- `Winner` is tenancy-shaped (`tenant`, `landlord`, `split`).
+- `Determination` is Housing Ombudsman-shaped.
+
+The ET-ready contract must support at least:
+
+- `domain_id = "employment.et.unfair_dismissal.v1"` or the agreed compatibility ID
 - `forum = "employment_tribunal"`
 - `source_publisher = "govuk"`
 - `source_kind = "case_decision"`
 - `matter_type = "unfair_dismissal"`
 - `retrieval_namespace_id = "employment_unfair_dismissal_v1"`
 - `corpus_version = "research_seed_2026_05"`
-- `train_test_split ∈ {"train", "test"}` per temporal split
-- `labeling_provenance` with `inter_model_agreement_rate`, `mandatory_review_completed_at`, `field_provenance`
+- temporal split (`train`, `dev`, `test`) based on decision date
+- claimant/respondent-employer party roles
+- claimant-success/respondent-success/partial/non-merits determination labels
+- basic award, compensatory award, deductions/uplifts, and reinstatement/re-engagement remedy fields where available
+- field-level provenance and mandatory human-review markers
 
-### 5.4 Factor catalog (unfair dismissal)
+### 5.4 Factor Catalog
 
-Initial catalog covers s98 ERA 1996 framework. Candidate factors (final list refined in 65e):
+Initial unfair-dismissal factors:
 
-1. **Fair reason established (s98(1)-(2))** — categorical: conduct / capability / redundancy / illegality / SOSR / none. (Note: "redundancy" here is a dismissal-reason category under s98, not the separately-scoped `employment.et.redundancy.v1` domain. A dismissal labelled "redundancy" by the employer can still be unfair if the s98(4) reasonableness test fails — that is exactly what this factor measures.)
-2. **Reasonableness of decision (s98(4))** — bool
-3. **Investigation adequate** — bool
-4. **Hearing held before dismissal** — bool
-5. **Right of appeal offered** — bool
-6. **Right of appeal exercised** — bool
-7. **Acas Code followed** — bool
-8. **Polkey deduction applied** — bool with % range
-9. **Contributory fault deduction** — bool with % range
-10. **Reinstatement / re-engagement sought** — bool
-11. **Length of service ≥ 2 years (qualifying period)** — bool
-12. **Time limit met (ACAS EC + 3 months)** — bool
-13. **Compensation awarded** — bool + amount band
-14. **Reason genuinely held** — bool (relevant to capability/SOSR)
-15. **Band of reasonable responses applied** — bool
+1. **Potentially fair reason category** - conduct, capability, redundancy, illegality/statutory restriction, SOSR, or none.
+2. **Employer's reason genuinely held** - bool.
+3. **Reasonableness under s98(4)** - bool or ordinal.
+4. **Investigation adequate** - bool.
+5. **Employee informed of allegations/reason** - bool.
+6. **Hearing or meeting held before dismissal** - bool.
+7. **Right of appeal offered** - bool.
+8. **Appeal exercised** - bool.
+9. **Acas Code compliance relevant** - bool.
+10. **Acas uplift/reduction considered** - bool plus percent where available.
+11. **Polkey deduction applied** - bool plus percent/range where available.
+12. **Contributory fault deduction applied** - bool plus percent/range where available.
+13. **Two-year qualifying period satisfied or exception applies** - bool/category.
+14. **Limitation/early-conciliation issue** - bool/category.
+15. **Basic award identified** - bool plus amount where available.
+16. **Compensatory award identified** - bool plus amount where available.
+17. **Reinstatement or re-engagement sought/granted** - categorical.
+18. **Automatic unfair-dismissal flag** - exclusion or separate-routing flag for v1, unless user explicitly expands scope.
 
-Target: ≥10 gate-countable factors after IAA. Mirrors the housing 13-of-15 result.
+Target: at least 10 gate-countable factors after IAA and human review.
 
-## 6. Sequencing and dispatch
+## 6. Sequencing
 
-### 6.1 Critical-path question — UNRESOLVED
+### 6.1 Critical Path
 
-[SHA-67](https://linear.app/sharifbuilders/issue/SHA-67) (Implementation chapter, Urgent, due 2026-05-10) is overdue. The coordinator must decide:
+SHA-67 (Implementation chapter) is overdue as of 2026-05-13. ET work should not derail thesis writing.
 
-- **Option α:** ET work runs **after** SHA-67 chapter is delivered. ET evals (65f) feed the *Evaluation* chapter (SHA-21 children) but not Implementation.
-- **Option β:** SHA-65a–c run **in parallel** with SHA-67 in different worktree windows (scraping is independent of chapter prose). SHA-65d-f wait for chapter ship.
-- **Option γ:** ET work is **deferred** until after thesis submission entirely.
+Recommended sequence:
 
-**Recommended:** Option β. Scrapers do not block writing because they reuse the housing pattern, and a parallel worker window has spare capacity per [`docs/ORCHESTRATION.md`](../../ORCHESTRATION.md). Decision needs user sign-off.
+1. Run SHA-65a and SHA-65b in a separate worktree/window if capacity exists.
+2. Hold SHA-65c until the pilot shows clean parser and merits-filter yield.
+3. Hold SHA-65d until SHA-65-0 resolves the employment schema contract.
+4. Hold SHA-65f amount metrics until the employment award/remedy model is ready.
 
-### 6.2 Worktree assignment
+### 6.2 Worktree Ownership
 
-Per [`docs/ORCHESTRATION.md`](../../ORCHESTRATION.md), the four parallel windows have file-ownership rules. SHA-65a–c touch only `scripts/scrapers/` and `data/raw/employment/`, which is currently uncontested — any window with capacity can pick them up. SHA-65d–f touch `scripts/eval/` and `packages/domain_packs/`, where ownership conflicts are likelier; coordinator must serialise.
+SHA-65a and SHA-65b touch only `scripts/scrapers/employment_tribunal/`, fixtures, and `data/raw/employment/`. They are safe to run in parallel with thesis-writing work.
 
-### 6.3 Launch prompt
+SHA-65-0, SHA-65d, SHA-65e, and SHA-65f touch shared eval schemas, domain packs, and evaluation harness code. These should be serialised with any active Stream C or schema work.
 
-A launch prompt for SHA-65a will be added to [`docs/prompts/`](../../prompts/) after Linear tickets are created. It will follow the same shape as existing prompts: WORKTREE.md path, ticket link, success criteria, Codex sparring expectation.
-
-## 7. Risks and mitigations
+## 7. Risks and Mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Live scrape reveals corpus rarity for unfair-dismissal-only (cf. RRO at 0.1%) | SHA-65b 30-doc pilot is the gate. If pilot fails to fill 30 docs, escalate before SHA-65c. |
-| OGL v3.0 attribution miss | Attribution string committed in `LICENCE.md` and asserted as a unit test in 65a. |
-| PII redaction regression on ET data (different fields than housing) | SHA-65b adds 5-doc manual spot-check + automated check for postcode/email/phone/NI patterns. PR blocked if any leak found. |
-| Forum leakage in retrieval (ET case retrieved for housing query) | SHA-65f explicit leakage assertion. Per-domain RAG namespacing ([SHA-60](https://linear.app/sharifbuilders/issue/SHA-60)) is the structural defence. |
-| Domain ID rename breaks artifacts | SHA-65a keeps legacy `employment.unfair_dismissal.v1` as compatibility alias; new ID introduced separately. |
-| Factor catalog IAA fails to clear 10/15 gate | Same fallback as housing Stream B — narrow gate-countable set, document non-gate factors as exploratory. |
-| Award amount prediction blocked by missing SHA-66 calculator | SHA-65f reports MAE only if SHA-66 is `Done`; otherwise reports win-probability metrics and flags the gap. |
+| `GoldCase` cannot validate ET rows | Add SHA-65-0 before gold generation. No ET gold append until schema tests pass. |
+| GOV.UK category filter includes noisy decisions | Two-stage filter with explicit exclusion reasons and 30-doc pilot yield report. |
+| Licence assumption is wrong for a subset of attachments | Persist observed licence/source page footer; default to `OGL-3.0` only when supported; quarantine exceptions. |
+| PII redaction damages citation fidelity | Keep raw public source quarantined; use redacted model-facing `SourceDocument`; preserve source hashes and span offsets where possible. |
+| ET amount prediction is misleading | Split remedies before MAE: basic award, compensatory award, deductions/uplifts, and reinstatement/re-engagement. Gate MAE on award-schema readiness. |
+| Forum leakage in retrieval | Assert ET eval never retrieves `housing_ombudsman` or `first_tier_property_chamber` documents. |
+| Domain ID rename breaks artifacts | Keep current YAML ID for compatibility; migrate to `employment.et.unfair_dismissal.v1` separately. |
+| 2025/2027 legal changes confuse the corpus | Freeze v1 to 2019-2024 for thesis reproducibility. Add law-effective-date metadata before ingesting post-2024 rows. |
 
-## 8. Open questions
+## 8. Open Questions
 
-1. **SHA-67 sequencing (above).** Awaiting user decision.
-2. **Years to scrape.** Default proposed: 2019-2024 (matches housing temporal split). User to confirm — earlier coverage would shift train/test cuts.
-3. **Reinstatement/re-engagement weight.** These are remedies the housing pipeline does not have an analogue for. Should they be in the per-issue prediction output or only in award-amount calculation? Recommend: predict only the binary remedy-granted, defer amount to SHA-66.
-4. **GOV.UK rate limiting.** Housing Ombudsman scrape used 1.0 RPS. ET listing pages are static and lighter — propose 0.5 RPS to be conservative. User to confirm.
+1. **Gold schema route.** Extend `GoldCase` enums directly, or add a domain-specific ET adapter that projects into common eval metrics?
+2. **Domain ID.** Should SHA-65 use the compatibility ID `employment.unfair_dismissal.v1` until migration, or should the migration happen before any ET artifacts are generated?
+3. **Raw-source privacy.** Should raw public ET attachments be committed, quarantined locally, or excluded from git with only manifests committed?
+4. **Years to scrape.** Default is 2019-2024 for compatibility with the current schema date range and thesis reproducibility. User to confirm.
+5. **Remedy output shape.** Should reinstatement/re-engagement be predicted in the main output, or only captured as factor/remedy metadata?
+6. **GOV.UK throttle.** Proposed default is 0.5 RPS with robots.txt respected.
 
-## 9. Definition of done for this design phase
+## 9. Definition of Done for This Design Phase
 
 - [x] Design committed to `docs/superpowers/specs/2026-05-13-employment-tribunal-vertical-design.md`
-- [ ] User reviews and approves design
-- [ ] Open question §8.1 (SHA-67 sequencing) resolved
-- [ ] Linear tickets SHA-65a..f created/updated and linked to SHA-65
+- [x] Review pass incorporated schema, data-source, filtering, and remedy gates
+- [ ] User approves or rejects SHA-65-0 schema-readiness gate
+- [ ] Open questions in section 8 resolved
+- [ ] Linear tickets SHA-65-0 and SHA-65a..f created/updated and linked to SHA-65
 - [ ] Launch prompt for SHA-65a added to `docs/prompts/`
 - [ ] First worktree window briefed
