@@ -184,6 +184,35 @@ class EmploymentTribunalScraper:
             )
             return
 
+        # SHA-146 pilot finding #2: GOV.UK's URL-level date filter is
+        # best-effort and may silently drop the params on a schema change.
+        # Belt-and-braces: enforce the year window in code too. The
+        # decision is rejected with reason `out_of_year_window` so
+        # `excluded.jsonl` still records it, rather than disappearing
+        # silently like a dedup hit would.
+        if metadata.decision_date is not None:
+            dy = metadata.decision_date.year
+            if dy < self.config.years_from or dy > self.config.years_to:
+                filter_result_out_of_window = FilterResult(
+                    keep=False,
+                    reject_reason="out_of_year_window",
+                    matched_signals=[
+                        f"decision_year={dy}",
+                        f"window={self.config.years_from}-{self.config.years_to}",
+                    ],
+                    excerpt=None,
+                )
+                metadata.stage2_keep = False
+                metadata.stage2_reason = "out_of_year_window"
+                self._record_exclusion(
+                    case_ref,
+                    source_url,
+                    metadata,
+                    filter_result_out_of_window,
+                    content_hash,
+                )
+                return
+
         filter_result = keep_unfair_dismissal_merits_only(metadata, body_text)
         metadata.stage2_keep = filter_result.keep
         metadata.stage2_reason = filter_result.reject_reason

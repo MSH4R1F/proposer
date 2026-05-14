@@ -178,10 +178,26 @@ class ETDownloader:
     # ------------------------------------------------------------------
 
     def listing_start_url(self) -> str:
-        """Listing URL with Stage-1 category filter applied."""
-        qs_key = self.config.jurisdiction_category_qs_key
-        slug = self.config.jurisdiction_category_slug
-        return f"{self.config.listing_url}?{qs_key}={slug}"
+        """Listing URL with Stage-1 category filter + date window applied.
+
+        GOV.UK's finder UI surfaces the date window as
+        ``decision_date_from[year]=YYYY`` / ``decision_date_to[year]=YYYY``
+        on the listing path. The finder ignores unknown params, so even
+        if the schema drifts the worst case is no narrowing — which we
+        defend in depth via the post-filter in ``govuk_scraper._handle_detail``.
+
+        See SHA-146 pilot finding #2 — without this, the corpus came
+        back 2025-2026 instead of 2019-2024.
+        """
+        cfg = self.config
+        params: list[tuple[str, str]] = [
+            (cfg.jurisdiction_category_qs_key, cfg.jurisdiction_category_slug),
+            ("decision_date_from[year]", str(cfg.years_from)),
+            ("decision_date_to[year]", str(cfg.years_to)),
+        ]
+        from urllib.parse import urlencode
+
+        return f"{cfg.listing_url}?{urlencode(params)}"
 
     async def fetch_listing_pages(self) -> AsyncIterator[str]:
         """Yield raw HTML for each listing page until no next-link is found."""

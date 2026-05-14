@@ -87,6 +87,28 @@ def _normalize_outcome(raw: Optional[str]) -> Tuple[Optional[str], List[str]]:
     return None, [f"unrecognised_outcome_label:{raw[:80]}"]
 
 
+def _outcome_phrase_from_body(body_text: str) -> Optional[str]:
+    """Scan visible body text for a known outcome phrase.
+
+    Returns the first matching phrase (longest-prefix-wins order from
+    ``_OUTCOME_PHRASE_TO_SLUG``) so the caller can hand it to
+    :func:`_normalize_outcome`. Used as the SHA-146 fallback when the
+    labelled-field path returned no outcome.
+
+    The phrase mapping is already ordered with longer phrases first
+    (e.g. "claim is well-founded" before "claim succeeds"); preserving
+    that order matters so a partial-success body doesn't get picked up
+    by a generic "claim succeeded" earlier in the text.
+    """
+    if not body_text:
+        return None
+    haystack = re.sub(r"\s+", " ", body_text.lower())
+    for needle, _slug in _OUTCOME_PHRASE_TO_SLUG:
+        if needle in haystack:
+            return needle
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Date parsing
 # ---------------------------------------------------------------------------
@@ -148,6 +170,51 @@ def _case_ref_from_url(url: str) -> Optional[str]:
     return None
 
 
+# Slugs GOV.UK exposes under /employment-tribunal-decisions/<slug> that are
+# NOT decision pages: marketing widgets, feed endpoints, and pagination
+# back-links. Stage-2 caught these as a backstop in the SHA-146 pilot; we
+# now reject them at Stage-1 to keep `cases_seen` honest.
+_NON_CASE_SLUGS = frozenset(
+    {
+        "employment-tribunal-decisions",
+        "page",
+        "email-signup",
+        "feedback",
+        "atom",
+        "atom.xml",
+    }
+)
+
+
+def _is_non_case_listing_href(href: str) -> bool:
+    """Return True for listing-page anchors that don't lead to a decision page.
+
+    Covers two SHA-146 pilot patterns:
+
+    1. Filter / pagination links that target the index path itself with
+       query strings (``?tribunal_decision_categories=…`` /
+       ``?page=2`` / ``?keywords=…``).
+    2. Anchors to non-case slugs under the index path
+       (``/employment-tribunal-decisions/email-signup`` and friends).
+       These are handled below via :data:`_NON_CASE_SLUGS` but we also
+       short-circuit on common nav slugs here so the cheaper test fires
+       first.
+    """
+    if not href:
+        return True
+    # Filter / pagination links targeting the index itself.
+    if re.search(r"/employment-tribunal-decisions/?\?", href):
+        return True
+    if re.search(r"/employment-tribunal-decisions/?#", href):
+        return True
+    if re.fullmatch(r"[^?#]*?/employment-tribunal-decisions/?", href):
+        return True
+    # Atom feed.
+    if href.rstrip("/").endswith("/employment-tribunal-decisions.atom"):
+        return True
+    return False
+
+
 # ---------------------------------------------------------------------------
 # Listing parser
 # ---------------------------------------------------------------------------
@@ -172,11 +239,19 @@ def parse_listing_html(
         href = str(anchor.get("href") or "")
         if not href:
             continue
+        # SHA-146 pilot finding: GOV.UK's ET landing page links to several
+        # non-case slugs alongside the decision detail pages (email signup,
+        # feedback survey, atom feed, etc) and to the index path itself
+        # with various query strings (category / page / tribunal filter).
+        # Stage-2 caught the noise as a backstop, but skipping at Stage-1
+        # keeps `cases_seen` honest and avoids paying a detail fetch on
+        # nav clutter.
+        if _is_non_case_listing_href(href):
+            continue
         case_ref = _case_ref_from_url(href)
         if not case_ref or case_ref in seen_refs:
             continue
-        # Skip back-links to the index page itself.
-        if case_ref.lower() in {"employment-tribunal-decisions", "page"}:
+        if case_ref.lower() in _NON_CASE_SLUGS:
             continue
         seen_refs.add(case_ref)
 
@@ -283,7 +358,13 @@ _LABEL_JURISDICTION_CODE = (
     "tribunal decision category",
 )
 _LABEL_CASE_NUMBER = ("case number", "case numbers", "case reference")
-_LABEL_OUTCOME = ("outcome", "judgment", "decision")
+# SHA-146 pilot finding: `"decision"` used to live here and was matched
+# loosely against `"decision date"` on live GOV.UK pages, pulling the date
+# string into `outcome_raw` and tripping every kept row's
+# `parser_diagnostics`. The labelled-field path now uses only unambiguous
+# outcome labels; everything else falls through to body-text phrase
+# scanning in ``_derive_outcome_raw``.
+_LABEL_OUTCOME = ("outcome", "judgment")
 _LABEL_COUNTRY = ("country", "country of decision")
 
 
@@ -324,6 +405,19 @@ def parse_detail_html(
     outcome_raw = _value_for(labelled, _LABEL_OUTCOME)
 
     body_text = _visible_text(soup)
+
+    # SHA-146 pilot finding: GOV.UK ET pages are "landing-page + PDF" —
+    # the HTML body rarely carries an explicit outcome label and the real
+    # outcome lives in the PDF attachment. When the labelled-field path
+    # returned nothing, fall back to scanning the visible body text for
+    # the canonical outcome phrases the parser already knows about
+    # (``_OUTCOME_PHRASE_TO_SLUG``). If a phrase matches, surface it as
+    # ``outcome_raw`` so ``_normalize_outcome`` can map it; the
+    # bare-decision-date string never becomes ``outcome_raw`` again.
+    if not outcome_raw:
+        body_match = _outcome_phrase_from_body(body_text)
+        if body_match is not None:
+            outcome_raw = body_match
 
     # Fall back: harvest case number(s) from body text using the canonical
     # ET pattern (7 digits / 4-digit year).

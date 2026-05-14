@@ -123,3 +123,40 @@ class TestEndToEndDryRun:
 
         excluded_text = tmp_config.excluded_path.read_text(encoding="utf-8")
         assert "preliminary_only" in excluded_text
+
+
+class TestSha146YearWindowPostFilter:
+    """SHA-146 pilot finding #2: ``--years`` must be enforced in code,
+    not just in the URL. Belt-and-braces for the case where GOV.UK
+    drops or renames the listing-page query params."""
+
+    def test_out_of_window_decision_rejected(self, fixtures_dir, listing_html, tmp_path):
+        # Acme is dated 2024-04-12; with a 2019-2023 window it's out.
+        cfg = ScraperConfig(project_root=tmp_path)
+        cfg.max_keep = 10
+        cfg.years_from = 2019
+        cfg.years_to = 2023
+        scraper = EmploymentTribunalScraper(cfg)
+        scraper.run_dry(listing_html, _detail_pairs(fixtures_dir))
+
+        excluded_text = cfg.excluded_path.read_text(encoding="utf-8")
+        assert "out_of_year_window" in excluded_text
+        # The misconduct case (2024-04-12) must be the one rejected; the
+        # capability case (2023-09-21) stays in.
+        assert "mx-acme-ltd-2024-misconduct" in excluded_text
+        assert "mz-betacorp-2023-capability" not in excluded_text
+
+    def test_in_window_decision_kept(self, fixtures_dir, listing_html, tmp_path):
+        cfg = ScraperConfig(project_root=tmp_path)
+        cfg.max_keep = 10
+        cfg.years_from = 2023
+        cfg.years_to = 2024
+        scraper = EmploymentTribunalScraper(cfg)
+        report = scraper.run_dry(listing_html, _detail_pairs(fixtures_dir))
+        # Default fixtures: 2 in-window merits (2024 misconduct, 2023
+        # capability), plus 1 preliminary 2024 (Stage-2 reject) and 1
+        # discrimination-led 2024 (Stage-2 reject). Year filter must NOT
+        # touch the two merits cases.
+        assert report.cases_kept == 2
+        out_of_window_count = report.excluded_reasons.get("out_of_year_window", 0)
+        assert out_of_window_count == 0

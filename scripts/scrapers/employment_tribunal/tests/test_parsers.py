@@ -86,14 +86,17 @@ class TestDetailParser:
         assert metadata.outcome_normalized == "partial-success"
 
     def test_outcome_unrecognised_is_diagnostic_not_failure(self):
-        # Page with a free-text outcome we can't normalise.
+        # Page with a labelled outcome we can't normalise. Uses the
+        # `Outcome` label (still hooked to `_LABEL_OUTCOME`); the
+        # `Decision` label is intentionally no longer hooked post-SHA-146
+        # because it collided with `Decision date` on live GOV.UK pages.
         url = "https://www.gov.uk/employment-tribunal-decisions/zz-unknown-outcome"
         html = """
         <html><body><main><article>
           <h1>Zz Test v Anon</h1>
           <dl>
             <dt>Decision date</dt><dd>1 January 2024</dd>
-            <dt>Decision</dt><dd>Something the parser has never seen before</dd>
+            <dt>Outcome</dt><dd>Something the parser has never seen before</dd>
           </dl>
           <p>section 98 ERA 1996 referenced.</p>
         </article></main></body></html>
@@ -165,3 +168,152 @@ class TestPreliminaryDecisionStillParseable:
         # Parser shouldn't pre-empt the filter; it normalises the outcome to
         # "preliminary" so Stage 2 can reject by reason code.
         assert metadata.outcome_normalized in {"preliminary", None}
+
+
+# ---------------------------------------------------------------------------
+# SHA-146 pilot follow-up: outcome extraction, listing nav clutter
+# ---------------------------------------------------------------------------
+
+
+class TestSha146OutcomeFix:
+    """Live GOV.UK ET pages have `Decision date` but no `Decision` label,
+    and the outcome usually lives in narrative body text (or in the PDF).
+    The parser must NOT misbind `decision` -> `decision date`."""
+
+    def test_decision_date_label_does_not_leak_into_outcome(self):
+        url = "https://www.gov.uk/employment-tribunal-decisions/zz-livestyle"
+        html = """
+        <html><body><main><article>
+          <h1>Zz Live-Style v Co</h1>
+          <dl class="govuk-summary-list">
+            <dt>Decision date</dt><dd>8 April 2026</dd>
+            <dt>Jurisdiction code</dt><dd>Unfair Dismissal</dd>
+          </dl>
+          <p>Read the full decision in Zz Live-Style v Co.</p>
+        </article></main></body></html>
+        """
+        metadata, _ = parse_detail_html(html, url)
+        # Pre-SHA-146-fix: `outcome_raw` was "8 April 2026" + diagnostic.
+        # Post-fix: no labelled-field hook for `decision`, body has no
+        # outcome phrase -> `outcome_raw` stays None.
+        assert metadata.outcome_raw is None
+        assert metadata.outcome_normalized is None
+        assert metadata.parser_diagnostics == []
+
+    def test_outcome_picked_up_from_body_when_no_label(self):
+        url = "https://www.gov.uk/employment-tribunal-decisions/zz-body-outcome"
+        html = """
+        <html><body><main><article>
+          <h1>Zz Body-Outcome v Co</h1>
+          <dl class="govuk-summary-list">
+            <dt>Decision date</dt><dd>15 March 2024</dd>
+          </dl>
+          <p>The tribunal applied section 98 ERA 1996 and found that the
+             dismissal was unfair.</p>
+        </article></main></body></html>
+        """
+        metadata, _ = parse_detail_html(html, url)
+        assert metadata.outcome_normalized == "claim-succeeded"
+
+    def test_outcome_label_still_honoured_when_present(self):
+        # The `Outcome` label remains hooked — only `Decision` was
+        # de-hooked. A page that does carry `Outcome` still wins.
+        url = "https://www.gov.uk/employment-tribunal-decisions/zz-labelled-outcome"
+        html = """
+        <html><body><main><article>
+          <h1>Zz Labelled v Co</h1>
+          <dl>
+            <dt>Decision date</dt><dd>15 March 2024</dd>
+            <dt>Outcome</dt><dd>Claim succeeds</dd>
+          </dl>
+          <p>section 98 ERA 1996 reasoning.</p>
+        </article></main></body></html>
+        """
+        metadata, _ = parse_detail_html(html, url)
+        assert metadata.outcome_normalized == "claim-succeeded"
+
+
+class TestSha146ListingNoiseFix:
+    """Live GOV.UK ET listing pages include nav clutter under
+    /employment-tribunal-decisions/<slug> that is NOT a case page."""
+
+    def test_email_signup_slug_skipped(self):
+        html = """
+        <html><body><main>
+          <ul>
+            <li><a href="/employment-tribunal-decisions/mx-acme-ltd-2024">Mx A v Acme Ltd</a></li>
+            <li><a href="/employment-tribunal-decisions/email-signup">Get an email when a new ET decision is published</a></li>
+            <li><a href="/employment-tribunal-decisions/feedback">Give feedback on this page</a></li>
+          </ul>
+        </main></body></html>
+        """
+        rows = parse_listing_html(html)
+        case_refs = [r.case_reference for r in rows]
+        assert "mx-acme-ltd-2024" in case_refs
+        assert "email-signup" not in case_refs
+        assert "feedback" not in case_refs
+
+    def test_filter_index_self_link_skipped(self):
+        # Pagination / facet self-links — the index path itself with
+        # query strings or fragments must not be parsed as a case.
+        html = """
+        <html><body><main>
+          <a href="/employment-tribunal-decisions?tribunal_decision_categories=unfair-dismissal">Unfair dismissal</a>
+          <a href="/employment-tribunal-decisions/?page=2">Next page</a>
+          <a href="/employment-tribunal-decisions/mr-real-case-2024">Mr R v Real Co</a>
+        </main></body></html>
+        """
+        rows = parse_listing_html(html)
+        case_refs = [r.case_reference for r in rows]
+        assert case_refs == ["mr-real-case-2024"]
+
+    def test_atom_feed_link_skipped(self):
+        html = """
+        <html><body><main>
+          <a href="/employment-tribunal-decisions.atom">Atom feed</a>
+          <a href="/employment-tribunal-decisions/atom">Atom feed alt</a>
+          <a href="/employment-tribunal-decisions/ms-real-case-2024">Ms R v Real Co</a>
+        </main></body></html>
+        """
+        rows = parse_listing_html(html)
+        case_refs = [r.case_reference for r in rows]
+        assert "ms-real-case-2024" in case_refs
+        assert "atom" not in case_refs
+
+
+class TestSha146DateFilterUrl:
+    """The --years flag must propagate into the listing URL's date params."""
+
+    def test_listing_start_url_contains_decision_date_params(self):
+        from scripts.scrapers.employment_tribunal.config import ScraperConfig
+        from scripts.scrapers.employment_tribunal.downloader import ETDownloader
+
+        cfg = ScraperConfig()
+        cfg.years_from = 2019
+        cfg.years_to = 2024
+        dl = ETDownloader(cfg)
+        url = dl.listing_start_url()
+        # GOV.UK finder param shape: `decision_date_from[year]=YYYY`. The
+        # bracket characters are urlencoded; assert on the decoded params
+        # for readability.
+        from urllib.parse import urlparse, parse_qs
+
+        q = parse_qs(urlparse(url).query)
+        assert q.get("tribunal_decision_categories") == ["unfair-dismissal"]
+        assert q.get("decision_date_from[year]") == ["2019"]
+        assert q.get("decision_date_to[year]") == ["2024"]
+
+    def test_listing_start_url_respects_custom_window(self):
+        from scripts.scrapers.employment_tribunal.config import ScraperConfig
+        from scripts.scrapers.employment_tribunal.downloader import ETDownloader
+
+        cfg = ScraperConfig()
+        cfg.years_from = 2022
+        cfg.years_to = 2023
+        dl = ETDownloader(cfg)
+        url = dl.listing_start_url()
+        from urllib.parse import urlparse, parse_qs
+
+        q = parse_qs(urlparse(url).query)
+        assert q.get("decision_date_from[year]") == ["2022"]
+        assert q.get("decision_date_to[year]") == ["2023"]
