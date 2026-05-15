@@ -333,13 +333,16 @@ class TestAudit:
 
     def test_audit_empty_corpus(self):
         from eval.dataset import audit
-        from eval.schema import ClaimType
+        from eval.schema import _HOUSING_CLAIM_TYPES
         report = audit([])
         assert report.n_cases == 0
         assert report.train_count == 0
         assert report.test_count == 0
-        # Every claim type is "0 cases" — all five are under-stratified.
-        assert set(report.understratified_types) == set(ClaimType)
+        # SHA-144 (2026-05-14): empty-corpus audit defaults to the housing
+        # ClaimType partition (legacy housing_v1.jsonl is the canonical
+        # empty/legacy case). Employment claim types only appear under-
+        # stratified when at least one employment-domain row is present.
+        assert set(report.understratified_types) == set(_HOUSING_CLAIM_TYPES)
         assert report.is_clean is False
         assert report.clean_failure_reasons
 
@@ -399,6 +402,64 @@ class TestAudit:
         assert ClaimType.DISREPAIR in report.understratified_types
         assert (
             report.understratified_types[ClaimType.DISREPAIR] == 3
+            < STRATIFICATION_FLOOR
+        )
+
+    def test_audit_employment_corpus_scoped_to_unfair_dismissal_only(self):
+        """CodeRabbit PR #38 finding: an ``employment.*`` corpus must NOT
+        fall through to ``_HOUSING_CLAIM_TYPES`` — only
+        ``unfair_dismissal`` is in-scope for the unfair-dismissal vertical.
+        Without the ``_DOMAIN_EXPECTED_CLAIM_TYPES`` entries for the
+        employment IDs, every row showed every housing ClaimType as
+        understratified."""
+        from eval.dataset import STRATIFICATION_FLOOR, audit
+        from eval.schema import ClaimType, _HOUSING_CLAIM_TYPES
+
+        cases = self._build(
+            [
+                gold_case_dict(
+                    case_id=f"ET-{i}",
+                    domain_id="employment.et.unfair_dismissal.v1",
+                    forum="employment_tribunal",
+                    source_kind="case_decision",
+                    source_publisher="govuk",
+                    retrieval_namespace_id="employment_unfair_dismissal_v1",
+                    target_source_id=f"ET-target-{i}",
+                    matter_type="unfair_dismissal",
+                    claim_types=["unfair_dismissal"],
+                    decision_date="2026-02-01",
+                    disputed_amount_gbp=None,
+                    claimed_amounts=[],
+                    case_size="unknown",
+                    parties=[
+                        {"role": "claimant", "represented": False},
+                        {"role": "respondent_employer", "represented": True},
+                    ],
+                    ground_truth_outcome={
+                        "overall_winner": "claimant",
+                        "total_awarded_gbp": "0.00",
+                        "per_issue": [],
+                        "unapportioned_reason": "Liability-only; remedy deferred.",
+                        "determination": "claimant_success",
+                    },
+                )
+                for i in range(3)
+            ]
+        )
+
+        report = audit(cases)
+
+        # Housing ClaimTypes must NOT be flagged on an employment corpus.
+        for housing_only in _HOUSING_CLAIM_TYPES:
+            assert (
+                housing_only not in report.understratified_types
+            ), f"housing ClaimType {housing_only.value!r} leaked into the employment audit scope"
+
+        # UNFAIR_DISMISSAL is the in-scope ClaimType, and 3 < floor so
+        # it SHOULD be flagged (the floor still applies in-scope).
+        assert ClaimType.UNFAIR_DISMISSAL in report.understratified_types
+        assert (
+            report.understratified_types[ClaimType.UNFAIR_DISMISSAL] == 3
             < STRATIFICATION_FLOOR
         )
 
@@ -504,7 +565,7 @@ class TestSyntheticCorpus10:
 
     def test_every_claim_type_represented(self):
         from eval.dataset import load
-        from eval.schema import ClaimType
+        from eval.schema import ClaimType, _HOUSING_CLAIM_TYPES
         result = load(
             "synthetic_corpus_10",
             base_dir=Path(__file__).parent / "fixtures",
@@ -512,7 +573,12 @@ class TestSyntheticCorpus10:
         types_seen = set()
         for c in result.cases:
             types_seen.update(c.claim_types)
-        assert types_seen == set(ClaimType)
+        # SHA-144 (2026-05-14): the synthetic housing corpus has fixtures
+        # for housing ClaimType values only. Employment claim types
+        # (UNFAIR_DISMISSAL) belong to a separate corpus and are not in
+        # synthetic_corpus_10; assert the housing partition is fully
+        # represented rather than the union.
+        assert types_seen == _HOUSING_CLAIM_TYPES
 
     def test_train_test_split_is_meaningful(self):
         from eval.dataset import load, train, test as test_split
@@ -550,11 +616,17 @@ class TestCli:
         write_jsonl(path, cases)
 
     def test_cli_audit_clean_corpus_exit_zero(self, tmp_path):
-        from eval.schema import ClaimType
+        # SHA-144 (2026-05-14): this CLI audit fixture is housing-shaped
+        # (gold_case_dict uses tenant/landlord parties and the housing
+        # `cleaning` issue). Iterate the housing ClaimType partition only,
+        # not all of `ClaimType` — employment values would either fail
+        # forum coercion (when domain_id is set) or pollute the housing
+        # audit (when it isn't).
+        from eval.schema import _HOUSING_CLAIM_TYPES
         path = tmp_path / "housing_v1.jsonl"
         cases = [
             gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
-            for t in ClaimType
+            for t in _HOUSING_CLAIM_TYPES
             for i in range(5)
         ]
         self._write_corpus(path, cases)
@@ -579,11 +651,11 @@ class TestCli:
         assert proc.returncode == 1
 
     def test_cli_audit_clean_strict_exit_zero(self, tmp_path):
-        from eval.schema import ClaimType
+        from eval.schema import _HOUSING_CLAIM_TYPES
         path = tmp_path / "housing_v1.jsonl"
         cases = [
             gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
-            for t in ClaimType
+            for t in _HOUSING_CLAIM_TYPES
             for i in range(5)
         ]
         self._write_corpus(path, cases)
@@ -591,11 +663,11 @@ class TestCli:
         assert proc.returncode == 0, proc.stderr
 
     def test_cli_audit_strict_fails_on_load_errors(self, tmp_path):
-        from eval.schema import ClaimType
+        from eval.schema import _HOUSING_CLAIM_TYPES
         path = tmp_path / "housing_v1.jsonl"
         cases = [
             gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
-            for t in ClaimType
+            for t in _HOUSING_CLAIM_TYPES
             for i in range(5)
         ]
         self._write_corpus(path, cases)
@@ -638,11 +710,13 @@ class TestCliInProcess:
         return [GoldCase.model_validate(d) for d in dicts]
 
     def test_format_report_clean(self):
+        # SHA-144 (2026-05-14): housing-shaped CLI audit — iterate the
+        # housing partition only.
         from eval.dataset import _format_report, audit
-        from eval.schema import ClaimType
+        from eval.schema import _HOUSING_CLAIM_TYPES
         cases = self._build([
             gold_case_dict(case_id=f"{t.value}-{i}", claim_types=[t.value])
-            for t in ClaimType for i in range(5)
+            for t in _HOUSING_CLAIM_TYPES for i in range(5)
         ])
         report = audit(cases)
         text = _format_report(report)

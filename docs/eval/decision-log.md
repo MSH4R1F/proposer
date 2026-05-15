@@ -666,6 +666,46 @@ validate that LLM-LLM perfect agreement isn't shared model bias. Reports:
 
 ---
 
+## D-029 — Extend `GoldCase` enums for the employment vertical (option 1), not a domain-specific adapter
+
+**Linear:** [SHA-144 / SHA-65-0](https://linear.app/sharifbuilders/issue/SHA-144) (child of [SHA-65](https://linear.app/sharifbuilders/issue/SHA-65))
+**Date:** 2026-05-14
+**Decision:** Resolve the housing-shaped enum mismatch that blocks `employment.et.unfair_dismissal.v1` gold append by **extending the existing `ClaimType` / `PartyRole` / `Winner` / `Determination` enums additively** rather than introducing a separate `EmploymentGoldCase` adapter. Housing enum values stay unchanged; employment values are added alongside; a new `INV-F1` cross-forum coercion validator on `GoldCase` enforces that a single row never mixes families.
+
+Concrete additions:
+
+- `ClaimType.UNFAIR_DISMISSAL`
+- `PartyRole.CLAIMANT`, `PartyRole.RESPONDENT_EMPLOYER`
+- `Winner.CLAIMANT`, `Winner.RESPONDENT` (`SPLIT` stays forum-neutral)
+- `Determination.CLAIMANT_SUCCESS`, `RESPONDENT_SUCCESS`, `PARTIAL_SUCCESS`, `NON_MERITS` — forum-neutral; the legacy Ombudsman values are unchanged
+- Optional ET remedy fields on `GroundTruthOutcome`: `basic_award_gbp`, `compensatory_award_gbp`, `deductions_pct`, `uplifts_pct`, `reinstatement_sought`, `reinstatement_granted`, `re_engagement_sought`, `re_engagement_granted` — gated by `INV-F2` to employment-family rows only
+- `INV-2` now branches on `_domain_family(domain_id)`: housing rows still require `tenant` + `landlord`; employment rows require `claimant` + `respondent_employer`
+- The pre-existing `housing.repairs_social.v1` exemption from `disputed_amount_gbp` / `claimed_amounts` is broadened to cover `employment.*` domains
+- New `INV-D5`: employment-family rows must record `ground_truth_outcome.determination`
+- `_legacy_winner_for` extended for the four new determinations
+
+**Why:** A single canonical `GoldCase` keeps retrieval, factor extraction, eval harness, and dashboard code single-source across forums. The user (Mohamed) explicitly chose this over the design spec's option-2 recommendation (`EmploymentGoldCase` adapter) on 2026-05-14, accepting the trade-off that every existing housing test that hardcoded enum sets has to be re-checked. The cost was nine test updates (one assertion per enum value-set test and four CLI fixtures that iterated `ClaimType` instead of `_HOUSING_CLAIM_TYPES`). All 727 existing tests still pass after the migration.
+
+Forum-coercion partitioning (`_HOUSING_*` / `_EMPLOYMENT_*` frozensets in `schema.py`) is what makes option 1 safe: it stops the "enum sprawl" failure mode where a housing row could silently carry an `UNFAIR_DISMISSAL` claim type because the schema permitted it. `INV-F1` checks party roles, claim types, overall winner, per-issue winners, determination, per-complaint determinations, and `overall_winner_legacy` — refusing any cross-forum mix. Tests prove both directions of coercion are rejected.
+
+**Rejected alternatives:**
+- **Option 2 — `EmploymentGoldCase` adapter** that projects into a shared eval interface. The design spec recommended this for cleaner separation, but it would have polymorphised every consumer of `GoldCase` (retrieval, factor extraction, dashboards). User overrode in favour of single-schema simplicity. Re-evaluate if INV-F1 turns out to leak in production (no observed issue at PR time).
+- **Rename housing-side enums to be forum-neutral** (e.g., `Winner.TENANT` → `Winner.CLAIMANT`). Rejected because it would have broken every `housing_v1.jsonl` row, every housing eval test, and every downstream consumer in a single PR — the opposite of additive.
+- **Generalise `Winner` to a `(family, role)` tuple type**. Rejected as YAGNI for v1; if a third domain family ever needs the same treatment, revisit.
+- **Defer the schema change** until ET gold rows actually exist (SHA-148). Rejected because SHA-148 needs the schema gate in place before it can append rows. Decoupling them keeps the SHA-148 PR scope tight.
+
+**What did NOT change:**
+- `packages/eval/case_file_adapter.py`, `packages/eval/issue_alignment.py`, `packages/eval/adapter.py`, `packages/eval/compare.py`, `packages/eval/metrics/calibration.py` — all left untouched. They'll be updated when ET gold rows actually exist and exercise those paths (SHA-148 / SHA-65f). The schema gate by itself does not make ET cases retrievable, predictable, or measurable — it only makes them *appendable*.
+
+**Trigger to revisit:**
+- If `INV-F1` ever fires on a row a human reviewer believes is legitimate, treat as a schema design bug and reopen.
+- When the third domain family lands (e.g., civil court matters), audit whether the per-family `frozenset` partitioning still scales or whether the generalisation argument finally wins.
+- Before SHA-65f reports cross-domain ablation metrics, confirm that downstream consumers (compare.py, calibration.py) have been updated to handle `Winner.CLAIMANT` / `Winner.RESPONDENT` — they were intentionally left untouched in this PR.
+
+**Files touched:** `packages/eval/schema.py`, `packages/eval/dataset.py` (audit fallback now uses `_HOUSING_CLAIM_TYPES`), `packages/eval/tests/test_schema.py`, `packages/eval/tests/test_schema_determination.py`, `packages/eval/tests/test_dataset.py`, `packages/eval/tests/test_domain_schema.py`, new `packages/eval/tests/test_employment_schema.py` (36 tests). Verification: full `packages/eval/tests/` suite at 763 passed (727 housing baseline + 36 new), 0 regressions.
+
+---
+
 ## How this log relates to the Codex sparring record
 
 `.sisyphus/codex/sha-28-schema-2026-04-27.md` records Codex's findings and our triage. This log records the *implemented* decisions. Some decisions don't appear in Codex (e.g. D-001 Pydantic vs JSON Schema, D-009 pair-vs-issue bootstrap) — those are pure design choices with no Codex input. Conversely, every Codex HIGH that we accepted produced a decision entry here (D-005 through D-008, D-011, D-014, D-015, D-021).

@@ -20,7 +20,7 @@ from typing import Optional
 from pydantic import ValidationError
 
 from eval.constants import HOUSING_REPAIRS_MATTER_TYPES
-from eval.schema import CaseSize, ClaimType, GoldCase
+from eval.schema import CaseSize, ClaimType, GoldCase, _HOUSING_CLAIM_TYPES
 
 _log = logging.getLogger(__name__)
 
@@ -30,12 +30,20 @@ TEST_START = date(2023, 1, 1)
 STRATIFICATION_FLOOR = 5
 
 # ClaimType stratification scope per domain. Domains absent from this map
-# fall back to "every ClaimType in scope" (legacy deposit gold). Used by
-# audit() to avoid spurious "cleaning has 0 cases" warnings on
-# housing.repairs_social.v1, where DISREPAIR is the only claim type by
-# schema design (RCA-2026-05-06 §5 F7).
+# fall back to the housing partition (legacy housing_v1.jsonl behaviour)
+# per the SHA-144 fix below. Used by audit() to avoid spurious
+# "cleaning has 0 cases" warnings on housing.repairs_social.v1 (where
+# DISREPAIR is the only claim type by schema design, RCA-2026-05-06 §5
+# F7) AND to scope employment audits to the unfair_dismissal type only.
+#
+# CodeRabbit (PR #38) caught the previous gap: without explicit entries
+# for the employment domain IDs, an employment.* corpus fell through to
+# `_HOUSING_CLAIM_TYPES` and got audited against the housing partition —
+# every row would show as "understratified" on the housing types.
 _DOMAIN_EXPECTED_CLAIM_TYPES: dict[str, set] = {
     "housing.repairs_social.v1": {ClaimType.DISREPAIR},
+    "employment.unfair_dismissal.v1": {ClaimType.UNFAIR_DISMISSAL},
+    "employment.et.unfair_dismissal.v1": {ClaimType.UNFAIR_DISMISSAL},
 }
 
 
@@ -229,14 +237,21 @@ def audit(cases: list) -> AuditReport:
     # in scope", preserving legacy deposit-gold behaviour. Mixed corpora
     # therefore correctly fall back too. An empty corpus also keeps the
     # legacy behaviour (every ClaimType reported as understratified).
+    # SHA-144 (2026-05-14): the legacy housing audit predates multi-domain
+    # corpora. When no row carries a domain_id (legacy housing_v1.jsonl) or
+    # the domain_id has no explicit mapping, fall back to the *housing*
+    # ClaimType partition — not `set(ClaimType)`, which now also includes
+    # employment values added by the SHA-65 vertical. Falling back to the
+    # full union would force the legacy housing audit to require employment
+    # cases too.
     expected_types: set = set()
     if not cases:
-        expected_types = set(ClaimType)
+        expected_types = set(_HOUSING_CLAIM_TYPES)
     for case in cases:
         domain_id = getattr(case, "domain_id", None) or ""
         domain_types = _DOMAIN_EXPECTED_CLAIM_TYPES.get(domain_id)
         if domain_types is None:
-            expected_types = set(ClaimType)
+            expected_types = set(_HOUSING_CLAIM_TYPES)
             break
         expected_types |= domain_types
 

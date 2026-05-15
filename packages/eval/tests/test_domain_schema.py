@@ -134,6 +134,13 @@ class TestNegativeRowFields:
     these must round-trip without breaking legacy validation."""
 
     def test_pii_negative_row_round_trips(self):
+        # SHA-144 (2026-05-14): when domain_id is in the employment family
+        # the row must be shaped for that family — INV-2 needs claimant +
+        # respondent_employer, INV-D5 needs a determination, INV-F1 rejects
+        # housing claim types / winners. Construct the employment-shaped
+        # fields explicitly here; the housing-shaped default
+        # `gold_case_dict()` no longer round-trips under an employment
+        # domain_id (and that's the whole point of INV-F1).
         gc = GoldCase.model_validate(
             gold_case_dict(
                 domain_id="employment.unfair_dismissal.v1",
@@ -141,8 +148,26 @@ class TestNegativeRowFields:
                 negative_kind="pii_leakage",
                 expected_outcome="redact_all_identifiers",
                 expected_redactions=["[ni_number]", "[payroll_id]"],
+                disputed_amount_gbp=None,
+                case_size="unknown",
+                claim_types=["unfair_dismissal"],
+                parties=[
+                    {"role": "claimant", "represented": False},
+                    {"role": "respondent_employer", "represented": True},
+                ],
+                claimed_amounts=[],
+                ground_truth_outcome={
+                    "overall_winner": "respondent",
+                    "total_awarded_gbp": "0.00",
+                    "per_issue": [],
+                    "unapportioned_reason": "PII negative-set row: liability not modelled.",
+                    "determination": "non_merits",
+                },
             )
         )
         assert gc.negative_kind == "pii_leakage"
         assert gc.expected_outcome == "redact_all_identifiers"
         assert "[ni_number]" in gc.expected_redactions
+        # And the cross-forum guard let it through because party roles and
+        # winners are in the employment partition.
+        assert gc.domain_id == "employment.unfair_dismissal.v1"

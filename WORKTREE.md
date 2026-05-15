@@ -1,51 +1,58 @@
-# WORKTREE — SHA-TBD: LLM-assisted gold-set labeling pipeline
+# WORKTREE — SHA-144 / SHA-65-0: Employment gold-schema readiness gate
 
-**Linear**: pending creation; child of SHA-14 / successor to the deferred-paralegal track in SHA-28.
-**Branch**: `feature/sha-28-llm-labeling-pipeline`
-**Created**: 2026-05-02 off `main@29a0cf6`.
+**Linear**: [SHA-144](https://linear.app/sharifbuilders/issue/SHA-144) (logical name SHA-65-0; child of [SHA-65](https://linear.app/sharifbuilders/issue/SHA-65)).
+**Branch**: `feature/sha-144-sha-65-0-employment-gold-schema-readiness-gate`
+**Created**: 2026-05-14 off `main@be8cb3a8`.
+**Design spec**: [`docs/superpowers/specs/2026-05-13-employment-tribunal-vertical-design.md`](../../docs/superpowers/specs/2026-05-13-employment-tribunal-vertical-design.md) §5.3, §8.1
+**User decision (2026-05-14)**: **Option 1 — extend `GoldCase` enums** (additive). Spec §8.1 had recommended option 2 (domain-specific adapter); user overrode in favour of a single schema with forum-coercion guards.
+**Sibling tickets**: SHA-145 ✅ (scraper, done) · SHA-146 (pilot) · SHA-147 (full scrape) · SHA-148 (gold) · SHA-149 (factor catalog) · SHA-150 (evals)
 
 ## What this worktree owns
 
-Implementation of the dual-LLM + auto-grounder + human-adjudication labeling pipeline described in `.sisyphus/codex/sha-tbd-llm-labeling-2026-05-02.md` (Codex-revised). Replaces the two-paralegal Phase 3 + Phase 6 of `.sisyphus/plans/track-a-plan.md`.
+Resolve the housing-shaped enum mismatch that currently blocks `employment.et.unfair_dismissal.v1` gold append. Extend existing enums + invariants additively, add forum-coercion guards, and add ET remedy fields to `GroundTruthOutcome`. **No ET gold rows generated in this PR** — only schema readiness.
 
 ## Files allowed
 
-- `packages/eval/auto_label/**` (new package)
-- `packages/eval/schema.py` (extend with `LabelingProvenance`)
-- `packages/eval/tests/**` (new tests for new modules)
-- `packages/llm_orchestrator/clients/labeler_factory.py` (new)
-- `packages/llm_orchestrator/tests/**` (new labeler-factory tests)
-- `scripts/eval/auto_label.py` (new)
-- `scripts/eval/adjudicate.py` (new)
-- `data/eval/labeling_examples/positive/**` (positive few-shot exemplars)
-- `docs/eval/gold-schema.md` (provenance section)
-- `docs/eval/reviewer-guide.md`, `docs/eval/reviewer-log.md` (adjudicator-only reframe)
-- `docs/superpowers/plans/2026-05-02-llm-labeling-pipeline.md` (TDD plan)
-- `.sisyphus/plans/track-a-plan.md` (Phase 3 + Phase 6 rewrite)
-- `.sisyphus/notepads/llm-labeling/**` (decision-log entries, scratch)
+- `packages/eval/schema.py` — extend enums + invariants
+- `packages/eval/tests/test_employment_schema.py` — new
+- `docs/eval/decision-log.md` — add D-029 entry recording option 1
+- `docs/eval/gold-schema.md` — append ET-specific section (constraints, examples)
 
 ## Files forbidden
 
-- `apps/**` — owned by other tracks
-- `packages/eval/case_file_adapter.py` (read-only — leakage contract)
-- `packages/eval/leakage.py` (read-only — leakage contract)
-- `data/eval/negative_sets/**` (hand-crafted; do not touch)
-- `data/gold_standard/housing_v1.jsonl` (do not append until full pipeline + gates land)
+- `apps/**` — other tracks
+- `packages/eval/case_file_adapter.py` (read-only — leakage contract; SHA-65f territory)
+- `packages/eval/issue_alignment.py` (read-only — housing-specific matter mapping)
+- `packages/eval/adapter.py` (read-only — orchestrator/eval determination conversion; updated in SHA-65f)
+- `packages/eval/compare.py`, `packages/eval/metrics/calibration.py` (read-only — downstream consumers; updated when ET gold rows actually exist)
+- `data/gold_standard/**` — no ET rows generated here (SHA-148)
+- `scripts/scrapers/**` — separate worktree (SHA-145, SHA-146)
 
-## DoD (carried from sparring plan §What lands when)
+## DoD (from SHA-144 ticket)
 
-- [ ] `LabelingProvenance` + `GoldCase.labeling_provenance` shipped with tests
-- [ ] Canonicalizer, span matcher, and bounded OCR-drift recovery shipped with tests
-- [ ] `LabelerModelSpec` + dual-provider factory helper shipped, tests prove A/B independence
-- [ ] Field-path-level `DisagreementSet` shipped with tests
-- [ ] Real-gold append gate refuses every condition listed in §8 of the sparring plan
-- [ ] Facts leakage scanner rejects verdict/award/finding language
-- [ ] Auto-grounder runs every per-field check listed in §3 of the sparring plan
-- [ ] Labeler runner writes per-case artifact under `data/eval_artifacts/labeling/<run_id>/<case_id>.json`
-- [ ] `scripts/eval/auto_label.py` and `scripts/eval/adjudicate.py` end-to-end on a fixture
-- [ ] `track-a-plan.md` Phase 3 + Phase 6 rewritten; decision-log entry committed
-- [ ] All `packages/eval/tests/` green; coverage gate held; no Edit to `case_file_adapter.py` or `leakage.py`
+- [ ] `ClaimType` adds `UNFAIR_DISMISSAL`. Housing values unchanged.
+- [ ] `PartyRole` adds `CLAIMANT`, `RESPONDENT_EMPLOYER`. Housing values unchanged.
+- [ ] `Winner` adds `CLAIMANT`, `RESPONDENT`. Housing values + `SPLIT` unchanged.
+- [ ] `Determination` adds forum-neutral `CLAIMANT_SUCCESS`, `RESPONDENT_SUCCESS`, `PARTIAL_SUCCESS`, `NON_MERITS`. Housing Ombudsman values unchanged.
+- [ ] `_legacy_winner_for` extended to map the new determinations.
+- [ ] `GroundTruthOutcome` gains optional remedy fields: `basic_award_gbp`, `compensatory_award_gbp`, `deductions_pct`, `uplifts_pct`, `reinstatement_sought`, `reinstatement_granted`, `re_engagement_sought`, `re_engagement_granted`. All `Optional[...]`, default `None`. Validator: these may only be set when `domain_id` is in the employment family.
+- [ ] `GoldCase._validate_invariants`: INV-2 (party roles) branches on domain family. Housing requires tenant+landlord; employment requires claimant+respondent_employer.
+- [ ] `GoldCase._validate_invariants`: `disputed_amount_gbp` / `claimed_amounts` exemption extended from a `housing.repairs_social.v1` literal to a list-driven check that also covers `employment.*` domains. Employment requires `ground_truth_outcome.determination` set (INV-D5).
+- [ ] **Forum-coercion guard (INV-F1)**: a housing-family `domain_id` rejects employment enum values (CLAIMANT, RESPONDENT_EMPLOYER, UNFAIR_DISMISSAL, CLAIMANT_SUCCESS/RESPONDENT_SUCCESS/PARTIAL_SUCCESS/NON_MERITS), and an employment-family `domain_id` rejects housing enum values (TENANT, LANDLORD, AGENT, MALADMINISTRATION/etc, CLEANING/DAMAGES/etc).
+- [ ] `packages/eval/tests/test_employment_schema.py` covers: valid ET gold case, housing case unchanged, cross-forum coercion rejected, missing determination on employment rejected, remedy fields gated on domain family, winner aggregation works with claimant/respondent.
+- [ ] All existing `packages/eval/tests/` (727 tests) still pass — 0 regressions.
+- [ ] `docs/eval/decision-log.md` records D-029 (option 1 chosen over option 2, with rationale).
 
-## Status
+## Out of scope (do not do here)
 
-- 2026-05-02: worktree created off `main@29a0cf6`. Baseline `pytest packages/eval` green (368/368). Plan to land at `docs/superpowers/plans/2026-05-02-llm-labeling-pipeline.md`. Subagent-driven execution.
+- Downstream consumer updates (compare.py, calibration.py, adapter.py, case_file_adapter.py) — they'll be updated when SHA-148 / SHA-65f land ET gold rows that actually exercise those paths.
+- Live scraping (SHA-146) — SHA-145 worktree.
+- Vector/BM25 ingestion (SHA-147).
+- Gold-set generation (SHA-148).
+- Factor catalog (SHA-149).
+
+## Notes
+
+- User chose option 1 (extend) over spec-recommended option 2 (adapter). Trade-off accepted: more validator complexity in one schema, but one canonical `GoldCase` for both housing and employment so retrieval/factor/metrics code stays single-source.
+- The forum-coercion guard (INV-F1) is the *whole point* of the user's choice — without it, option 1 collapses into "enum sprawl with no guarantee of forum consistency". Tests must prove both directions of coercion are refused.
+- Memory note: project venv at `/Users/msharif/Documents/Projects/proposer/legal-mediation-system/venv/`. Use `venv/bin/python -m pytest` from this worktree. Never `pip install --user`.
