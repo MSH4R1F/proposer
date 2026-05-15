@@ -15,7 +15,7 @@ Resolve the housing-shaped enum mismatch that currently blocks `employment.et.un
 
 - `packages/eval/schema.py` — extend enums + invariants
 - `packages/eval/tests/test_employment_schema.py` — new
-- `docs/eval/decision-log.md` — add D-022 entry recording option 1
+- `docs/eval/decision-log.md` — add D-029 entry recording option 1
 - `docs/eval/gold-schema.md` — append ET-specific section (constraints, examples)
 
 ## Files forbidden
@@ -41,7 +41,7 @@ Resolve the housing-shaped enum mismatch that currently blocks `employment.et.un
 - [ ] **Forum-coercion guard (INV-F1)**: a housing-family `domain_id` rejects employment enum values (CLAIMANT, RESPONDENT_EMPLOYER, UNFAIR_DISMISSAL, CLAIMANT_SUCCESS/RESPONDENT_SUCCESS/PARTIAL_SUCCESS/NON_MERITS), and an employment-family `domain_id` rejects housing enum values (TENANT, LANDLORD, AGENT, MALADMINISTRATION/etc, CLEANING/DAMAGES/etc).
 - [ ] `packages/eval/tests/test_employment_schema.py` covers: valid ET gold case, housing case unchanged, cross-forum coercion rejected, missing determination on employment rejected, remedy fields gated on domain family, winner aggregation works with claimant/respondent.
 - [ ] All existing `packages/eval/tests/` (727 tests) still pass — 0 regressions.
-- [ ] `docs/eval/decision-log.md` records D-022 (option 1 chosen over option 2, with rationale).
+- [ ] `docs/eval/decision-log.md` records D-029 (option 1 chosen over option 2, with rationale).
 
 ## Out of scope (do not do here)
 

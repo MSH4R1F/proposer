@@ -965,6 +965,8 @@ class GoldCase(StrictBaseModel):
                     "(INV-D5); set claimant_success / respondent_success / "
                     "partial_success / non_merits."
                 )
+            # INV-D6 lives below the INV-F1 guard so that cross-forum
+            # rejections (a more fundamental error) fire first.
 
         # INV-F1: cross-forum coercion guard.
         #
@@ -976,6 +978,35 @@ class GoldCase(StrictBaseModel):
         # single row. INV-F1 refuses any row that mixes families.
         if family is not None:
             self._enforce_forum_partition(family)
+
+        # INV-D6 (CodeRabbit PR #38 finding): on employment-family rows
+        # the unapportioned branch of INV-9 (winner aggregation) is
+        # vacuously skipped, so a row could otherwise carry
+        # ``determination=respondent_success`` with
+        # ``overall_winner=claimant`` — a contradiction the schema
+        # should refuse at load time. Apply the canonical
+        # determination -> winner mapping from ``_legacy_winner_for``
+        # and assert it matches ``overall_winner``. Housing rows
+        # remain governed by INV-9 (per-issue aggregation) so this
+        # guard is intentionally scoped to the employment family.
+        # Runs AFTER INV-F1 so cross-forum rows surface that error
+        # rather than the more specific INV-D6 message.
+        if (
+            family == "employment"
+            and self.ground_truth_outcome.determination is not None
+        ):
+            expected_winner = _legacy_winner_for(
+                self.ground_truth_outcome.determination
+            )
+            if self.ground_truth_outcome.overall_winner != expected_winner:
+                raise ValueError(
+                    "INV-D6: ground_truth_outcome.overall_winner "
+                    f"({self.ground_truth_outcome.overall_winner.value!r}) "
+                    "inconsistent with ground_truth_outcome.determination "
+                    f"({self.ground_truth_outcome.determination.value!r}); "
+                    f"canonical mapping expects {expected_winner.value!r}. "
+                    "See ``_legacy_winner_for`` for the full mapping table."
+                )
 
         # INV-F2: employment-only remedy fields. Optional ET-specific
         # remedy fields on GroundTruthOutcome MUST be unset on

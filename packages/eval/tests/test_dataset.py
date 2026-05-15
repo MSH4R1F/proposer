@@ -405,6 +405,64 @@ class TestAudit:
             < STRATIFICATION_FLOOR
         )
 
+    def test_audit_employment_corpus_scoped_to_unfair_dismissal_only(self):
+        """CodeRabbit PR #38 finding: an ``employment.*`` corpus must NOT
+        fall through to ``_HOUSING_CLAIM_TYPES`` — only
+        ``unfair_dismissal`` is in-scope for the unfair-dismissal vertical.
+        Without the ``_DOMAIN_EXPECTED_CLAIM_TYPES`` entries for the
+        employment IDs, every row showed every housing ClaimType as
+        understratified."""
+        from eval.dataset import STRATIFICATION_FLOOR, audit
+        from eval.schema import ClaimType, _HOUSING_CLAIM_TYPES
+
+        cases = self._build(
+            [
+                gold_case_dict(
+                    case_id=f"ET-{i}",
+                    domain_id="employment.et.unfair_dismissal.v1",
+                    forum="employment_tribunal",
+                    source_kind="case_decision",
+                    source_publisher="govuk",
+                    retrieval_namespace_id="employment_unfair_dismissal_v1",
+                    target_source_id=f"ET-target-{i}",
+                    matter_type="unfair_dismissal",
+                    claim_types=["unfair_dismissal"],
+                    decision_date="2026-02-01",
+                    disputed_amount_gbp=None,
+                    claimed_amounts=[],
+                    case_size="unknown",
+                    parties=[
+                        {"role": "claimant", "represented": False},
+                        {"role": "respondent_employer", "represented": True},
+                    ],
+                    ground_truth_outcome={
+                        "overall_winner": "claimant",
+                        "total_awarded_gbp": "0.00",
+                        "per_issue": [],
+                        "unapportioned_reason": "Liability-only; remedy deferred.",
+                        "determination": "claimant_success",
+                    },
+                )
+                for i in range(3)
+            ]
+        )
+
+        report = audit(cases)
+
+        # Housing ClaimTypes must NOT be flagged on an employment corpus.
+        for housing_only in _HOUSING_CLAIM_TYPES:
+            assert (
+                housing_only not in report.understratified_types
+            ), f"housing ClaimType {housing_only.value!r} leaked into the employment audit scope"
+
+        # UNFAIR_DISMISSAL is the in-scope ClaimType, and 3 < floor so
+        # it SHOULD be flagged (the floor still applies in-scope).
+        assert ClaimType.UNFAIR_DISMISSAL in report.understratified_types
+        assert (
+            report.understratified_types[ClaimType.UNFAIR_DISMISSAL] == 3
+            < STRATIFICATION_FLOOR
+        )
+
     def test_audit_mixed_corpus_keeps_legacy_every_claim_type_scope(self):
         """A corpus with at least one non-housing case falls back to the
         legacy "every ClaimType in scope" stratification check."""

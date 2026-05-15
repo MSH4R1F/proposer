@@ -354,6 +354,62 @@ class TestPartyRoleCoverage:
 # ---------------------------------------------------------------------------
 
 
+class TestEmploymentDeterminationWinnerConsistency:
+    """INV-D6 (CodeRabbit PR #38): on employment-family rows the
+    canonical determination -> winner mapping in ``_legacy_winner_for``
+    must match ``ground_truth_outcome.overall_winner``. Without this
+    guard the unapportioned branch of INV-9 vacuously skips winner
+    aggregation, allowing contradictory rows like
+    ``determination=respondent_success`` + ``overall_winner=claimant``."""
+
+    @pytest.mark.parametrize(
+        "determination, expected_winner",
+        [
+            (Determination.CLAIMANT_SUCCESS, Winner.CLAIMANT),
+            (Determination.RESPONDENT_SUCCESS, Winner.RESPONDENT),
+            (Determination.PARTIAL_SUCCESS, Winner.SPLIT),
+            (Determination.NON_MERITS, Winner.RESPONDENT),
+        ],
+    )
+    def test_consistent_pair_validates(self, determination, expected_winner):
+        # Build a fresh outcome here (rather than reusing _employment_kwargs)
+        # because the helper bakes in its own determination + winner.
+        kwargs = _employment_kwargs()
+        kwargs["ground_truth_outcome"] = GroundTruthOutcome(
+            overall_winner=expected_winner,
+            total_awarded_gbp=Decimal("0"),
+            per_issue=[],
+            unapportioned_reason="Liability-only; remedy deferred.",
+            determination=determination,
+        )
+        case = GoldCase(**kwargs)
+        assert case.ground_truth_outcome.determination == determination
+        assert case.ground_truth_outcome.overall_winner == expected_winner
+
+    @pytest.mark.parametrize(
+        "determination, wrong_winner",
+        [
+            # Each row pairs a determination with a winner that violates
+            # the canonical mapping.
+            (Determination.CLAIMANT_SUCCESS, Winner.RESPONDENT),
+            (Determination.RESPONDENT_SUCCESS, Winner.CLAIMANT),
+            (Determination.PARTIAL_SUCCESS, Winner.CLAIMANT),
+            (Determination.NON_MERITS, Winner.CLAIMANT),
+        ],
+    )
+    def test_inconsistent_pair_rejected(self, determination, wrong_winner):
+        kwargs = _employment_kwargs()
+        kwargs["ground_truth_outcome"] = GroundTruthOutcome(
+            overall_winner=wrong_winner,
+            total_awarded_gbp=Decimal("0"),
+            per_issue=[],
+            unapportioned_reason="Liability-only; remedy deferred.",
+            determination=determination,
+        )
+        with pytest.raises(ValidationError, match="INV-D6"):
+            GoldCase(**kwargs)
+
+
 class TestEmploymentDeterminationRequired:
     def test_employment_row_without_determination_rejected(self):
         # Build a GoldCase whose ground_truth_outcome has no determination

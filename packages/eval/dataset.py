@@ -30,12 +30,20 @@ TEST_START = date(2023, 1, 1)
 STRATIFICATION_FLOOR = 5
 
 # ClaimType stratification scope per domain. Domains absent from this map
-# fall back to "every ClaimType in scope" (legacy deposit gold). Used by
-# audit() to avoid spurious "cleaning has 0 cases" warnings on
-# housing.repairs_social.v1, where DISREPAIR is the only claim type by
-# schema design (RCA-2026-05-06 §5 F7).
+# fall back to the housing partition (legacy housing_v1.jsonl behaviour)
+# per the SHA-144 fix below. Used by audit() to avoid spurious
+# "cleaning has 0 cases" warnings on housing.repairs_social.v1 (where
+# DISREPAIR is the only claim type by schema design, RCA-2026-05-06 §5
+# F7) AND to scope employment audits to the unfair_dismissal type only.
+#
+# CodeRabbit (PR #38) caught the previous gap: without explicit entries
+# for the employment domain IDs, an employment.* corpus fell through to
+# `_HOUSING_CLAIM_TYPES` and got audited against the housing partition —
+# every row would show as "understratified" on the housing types.
 _DOMAIN_EXPECTED_CLAIM_TYPES: dict[str, set] = {
     "housing.repairs_social.v1": {ClaimType.DISREPAIR},
+    "employment.unfair_dismissal.v1": {ClaimType.UNFAIR_DISMISSAL},
+    "employment.et.unfair_dismissal.v1": {ClaimType.UNFAIR_DISMISSAL},
 }
 
 
