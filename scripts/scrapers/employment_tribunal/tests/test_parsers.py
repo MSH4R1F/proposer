@@ -61,6 +61,30 @@ class TestListingParser:
         nxt = find_next_listing_page(html)
         assert nxt == "https://www.gov.uk/employment-tribunal-decisions?page=2"
 
+    def test_find_next_listing_page_govuk_div_markup(self):
+        # SHA-147 finding (2026-05-15): GOV.UK's real ET listing wraps the
+        # next-page link in `<div class="govuk-pagination__next">` (not a
+        # `<li>`). The original selector list missed this and pagination
+        # silently stopped after page 1, capping every scrape at 50 cases.
+        html = """
+        <html><body><main>
+          <nav class="govuk-pagination">
+            <div class="govuk-pagination__next">
+              <a href="/employment-tribunal-decisions?page=2&amp;tribunal_decision_categories=unfair-dismissal"
+                 class="govuk-link govuk-pagination__link">
+                <span class="govuk-pagination__link-title">Next page</span>
+                <span class="govuk-pagination__link-label">2 of 1,176</span>
+              </a>
+            </div>
+          </nav>
+        </main></body></html>
+        """
+        nxt = find_next_listing_page(html)
+        assert nxt == (
+            "https://www.gov.uk/employment-tribunal-decisions?page=2&"
+            "tribunal_decision_categories=unfair-dismissal"
+        )
+
 
 class TestDetailParser:
     def test_parses_case_number(self, detail_unfair_misconduct):

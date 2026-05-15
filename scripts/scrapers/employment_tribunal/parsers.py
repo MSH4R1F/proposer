@@ -334,11 +334,29 @@ def _country_from_text(text: str) -> Country:
 def find_next_listing_page(
     html: str, *, base_url: str = "https://www.gov.uk"
 ) -> Optional[str]:
-    """Find the URL of the next listing page, or ``None`` if there isn't one."""
+    """Find the URL of the next listing page, or ``None`` if there isn't one.
+
+    GOV.UK's pagination markup on this listing (verified live 2026-05-15)
+    is::
+
+        <div class="govuk-pagination__next">
+          <a href="/employment-tribunal-decisions?page=2&amp;…"
+             class="govuk-link govuk-pagination__link" …>
+            …<span class="govuk-pagination__link-title">Next page</span>…
+          </a>
+        </div>
+
+    The element is a ``div``, NOT a ``li`` — the old selector list missed
+    this and pagination stopped after page 1, capping every scrape at 50
+    cases. We now match ``.govuk-pagination__next a`` (any wrapping
+    element) and keep ``<link rel="next">`` / ``a[rel="next"]`` as
+    secondary fallbacks for layout drift.
+    """
     soup = BeautifulSoup(html, "html.parser")
     nxt = soup.select_one(
-        "link[rel='next'], a.govuk-pagination__next a, a.govuk-pagination__next, "
-        "a[rel='next'], li.govuk-pagination__next a"
+        ".govuk-pagination__next a, "
+        "link[rel='next'], a[rel='next'], "
+        "li.govuk-pagination__next a"
     )
     if nxt and nxt.get("href"):
         return _abs_url(base_url, str(nxt["href"]))
