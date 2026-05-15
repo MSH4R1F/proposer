@@ -21,6 +21,16 @@ _DOMAIN_MAX_DECISION_DATE = {
     # real 2025/2026 determinations. Keep the legacy pilot window for all
     # other domains, but do not force false dates onto this domain's gold rows.
     "housing.repairs_social.v1": date(2026, 5, 4),
+    # SHA-147 finding (caught by Codex review of SHA-148 prompt pack on
+    # 2026-05-15): GOV.UK's Employment Tribunal listing only paginates back
+    # ~3 years and does not honour any documented date filter param, so the
+    # SHA-147 ET corpus is dated 2023-03-23 to 2026-04-20 — entirely outside
+    # the default 2024-12-31 cap. Without these overrides every employment
+    # gold row would fail INV-1 validation. Both IDs are listed: the legacy
+    # compat ID currently on packages/domain_core/domains/employment.unfair_dismissal.v1.yaml
+    # and the namespaced ID the v2 domain-pack migration will adopt.
+    "employment.unfair_dismissal.v1": date(2026, 12, 31),
+    "employment.et.unfair_dismissal.v1": date(2026, 12, 31),
 }
 _SMALL_CASE_THRESHOLD_GBP = Decimal("1500")
 

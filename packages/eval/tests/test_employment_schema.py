@@ -209,6 +209,31 @@ class TestEmploymentGoldCaseValidates:
         assert case.ground_truth_outcome.overall_winner == Winner.CLAIMANT
         assert case.ground_truth_outcome.determination == Determination.CLAIMANT_SUCCESS
 
+    def test_employment_decision_dates_through_2026_accepted(self):
+        # SHA-147 corpus reality (caught by Codex 2026-05-15): every
+        # employment.et.unfair_dismissal.v1 decision in the scraped corpus
+        # is dated 2023-03-23 to 2026-04-20. Without an entry in
+        # _DOMAIN_MAX_DECISION_DATE the default 2024-12-31 cap rejects
+        # them. Both the legacy compat ID and the namespaced ID get the
+        # override.
+        for domain_id in (
+            "employment.unfair_dismissal.v1",
+            "employment.et.unfair_dismissal.v1",
+        ):
+            kwargs = _employment_kwargs()
+            kwargs["domain_id"] = domain_id
+            kwargs["decision_date"] = date(2026, 4, 20)
+            case = GoldCase(**kwargs)
+            assert case.decision_date == date(2026, 4, 20)
+
+    def test_employment_decision_dates_after_override_window_rejected(self):
+        # The override is 2026-12-31, not "anything goes" — a 2027 row
+        # still fails INV-1.
+        kwargs = _employment_kwargs()
+        kwargs["decision_date"] = date(2027, 1, 1)
+        with pytest.raises(ValidationError, match="outside permitted"):
+            GoldCase(**kwargs)
+
     def test_legacy_compat_domain_id_validates(self):
         # Spec §3.1 keeps `employment.unfair_dismissal.v1` as the
         # compatibility ID; scrapers in SHA-145 write that on every row.
