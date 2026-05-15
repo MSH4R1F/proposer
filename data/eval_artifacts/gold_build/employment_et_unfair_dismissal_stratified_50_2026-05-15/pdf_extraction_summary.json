@@ -1,0 +1,22 @@
+{
+  "failures_by_kind": {},
+  "finished_at": "2026-05-15T12:03:58.377725+00:00",
+  "median_pages": 2,
+  "median_redacted_chars": 1725,
+  "n_cases": 50,
+  "n_extracted": 50,
+  "n_failed": 0,
+  "output_jsonl": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/worktrees/sha-148-et-gold/data/eval_artifacts/gold_build/employment_et_unfair_dismissal_stratified_50_2026-05-15/pdf_extraction_report.jsonl",
+  "request_rps": 1.0,
+  "selection_manifest": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/worktrees/sha-148-et-gold/data/eval_artifacts/gold_build/employment_et_unfair_dismissal_stratified_50_2026-05-15/selection_manifest.jsonl",
+  "started_at": "2026-05-15T12:03:07.279329+00:00",
+  "total_pdf_bytes": 10651081,
+  "total_redactions": {
+    "bank_details_redacted": 10,
+    "emails_redacted": 0,
+    "ni_numbers_redacted": 0,
+    "phones_redacted": 0,
+    "postcodes_redacted": 1,
+    "uk_mobiles_spaced_redacted": 0
+  }
+}
