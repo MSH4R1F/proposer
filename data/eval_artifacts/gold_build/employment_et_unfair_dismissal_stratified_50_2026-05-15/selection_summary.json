@@ -1,0 +1,37 @@
+{
+  "corpus_manifest": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/worktrees/sha-148-et-gold/data/eval_artifacts/corpus/employment_et_unfair_dismissal_v1_2026-05-15.jsonl",
+  "country_corpus_counts": {
+    "england_and_wales": 897,
+    "scotland": 103
+  },
+  "country_quotas": {
+    "england_and_wales": 44,
+    "scotland": 6
+  },
+  "country_selected": {
+    "england_and_wales": 44,
+    "scotland": 6
+  },
+  "eligible_cases": 1000,
+  "excluded_missing_metadata": 0,
+  "generated_at": "2026-05-15T12:01:46.392280+00:00",
+  "output": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/worktrees/sha-148-et-gold/data/eval_artifacts/gold_build/employment_et_unfair_dismissal_stratified_50_2026-05-15/selection_manifest.jsonl",
+  "quartile_edges": [
+    "2025-11-14",
+    "2025-12-31",
+    "2026-02-12"
+  ],
+  "quartile_selected": {
+    "1": 12,
+    "2": 13,
+    "3": 13,
+    "4": 12
+  },
+  "sample_size": 50,
+  "schema_version": "employment_et_unfair_dismissal_eval_manifest_v1",
+  "selection_seed": 42,
+  "single_unfair_dismissal_selected": {
+    "True": 50
+  },
+  "source_cases": 1000
+}
