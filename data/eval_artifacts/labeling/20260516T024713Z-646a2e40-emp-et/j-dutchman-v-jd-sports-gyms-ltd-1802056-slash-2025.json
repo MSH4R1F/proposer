@@ -1,0 +1,536 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025",
+  "case_reference": "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-02-05",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "1802056/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "J Dutchman v JD Sports Gyms Ltd: 1802056/2025 - Reserved Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/699efc20532c9ad91ebbccb1/J_Dutchman_v_JD_Sports_Gyms_Ltd_-Reserved_1802056.2025.pdf"
+  },
+  "pdf_sha256": "c90c3bdc5ef0611a0b6e29c17e3b472330ebcec20808a003e09e64f4611c912d",
+  "ocr_text_sha256": "17888add4ad5d5761d5d68a47ff02352a605e8d9ea66f6cd9f7c5286db5587ee",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1476, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 1802056/2025\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\n\\nJodie Dutchman\\n\\n\\nRespondent:\\nJD Sports Gyms Limited\\n\\nHeard at:\\n\\nLeeds (By Video)\\nOn:\\n\\n27th January 2026\\n\\nBefore:\\n\\nEmployment Judge Edwards\\n\\nRepresentation\\nClaimant:\\n\\nMark Gilman (Lay Representative)\\nRespondent:\\nMs L Kaye (Counsel)\\n\\nRESERVED JUDGMENT\\n\\n1. The complaint of unfair dismissal is not well founded and is dismissed.\\n\\nREASONS\\n\\nIntroduction\\n\\n1. This is a claim made by Jodie Dutchman (the Claimant) against her former\\nemployer JD Sports Gyms Limited (the Respondent). I will refer to Ms\\nDutchman as the claimant and JD Gyms as the respondent throughout this\\njudgment. The complaint made by the claimant is constructive unfair dismissal.\\nThe respondent defends the claim.\\n\\n2. The issues were agreed at the outset of the hearing and were as follows:\\n\\nUnfair dismissal\\n\\n1.1\\nWas the claimant dismissed?\\n\\n1.1.1\\nDid the respondent do the following things:\\n\\n1.1.1.1 On 29th October 2024, following an independent\\naudit on 24 October 2024 which resulted in a failure,\\nAshley Bonia told the Claimant she would receive a\\ndisciplinary meeting and it would be likely she would\\nlose her job;\\n\\n1.1.1.2 On 29 October 2024, Ashley Bonia gave the\\nClaimant two options; either go ahead with the\\ndisciplinary or take a lower grade role at a different\\nlocation with a significant reduction in salary. The\\nClaimant was given less than 24 hours to consider\\nthe proposal and Ashley repeatedly called the\\nClaimant for an answer.\"}, {\"char_end\": 2974, \"char_start\": 1476, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"1.1.1.3 Ashley Bonia completed a change of job role form\\nfor the claimant without it being signed by the\\nclaimant or consented to.\\n\\n1.1.2\\nDid that breach the implied term of trust and confidence?\\nThe Tribunal will need to decide:\\n\\n1.1.2.1 Whether,\\nindividually\\nor\\ncumulatively,\\nthe\\nrespondent's behaviour was calculated or likely to\\ndestroy or seriously damage the trust and\\nconfidence\\nbetween\\nthe\\nclaimant\\nand\\nthe\\nrespondent; and\\n\\n1.1.2.2 whether it had reasonable and proper cause for\\ndoing so.\\n\\n1.1.3\\nWas the breach a fundamental one? The Tribunal will need\\nto decide whether the breach was so serious that the\\nclaimant was entitled to treat the contract as being at an\\nend.\\n\\n1.1.4\\nDid the claimant resign in response to the breach? The\\nTribunal will need to decide whether the breach of contract\\nwas a reason for the claimant's resignation.\\n\\n1.1.5\\nDid the claimant affirm the contract before resigning? The\\nTribunal will need to decide whether the claimant's words or\\nactions showed that they chose to keep the contract alive\\neven after the breach.\\n\\n1.2\\nIf the claimant was dismissed, what was the reason or principal\\nreason for dismissal - i.e. what was the reason for the breach of\\ncontract?\\n\\n1.3\\nWas it a potentially fair reason?\\n\\n1.3.1\\nR will say that it was conduct or SOSR\\n\\n1.4\\nDid the respondent act reasonably or unreasonably in all the\\ncircumstances, including the respondent's size and administrative\\nresources, in treating that reason as a sufficient reason to dismiss\\nthe claimant?\"}, {\"char_end\": 4456, \"char_start\": 2974, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"1.4.1\\nGenuine belief\\n1.4.2\\nWhether that belief was held on reasonable ground\\n1.4.3\\nWhether that belief was reached after conducting a fair and\\nreasonable investigation\\n1.4.4\\nDid the respondent other wise act in a procedurally fair\\nmanner\\n1.4.5\\nWas the dismissal within a range of reasonable responses.\\n\\n1.5\\nThe Tribunal's determination whether the dismissal was fair or\\nunfair must be in accordance with equity and the substantial merits\\nof the case.\\n\\nRemedy for unfair dismissal\\n\\n1.6\\nIf there is a compensatory award, how much should it be? The\\nTribunal will decide:\\n\\n1.6.1\\nWhat financial losses has the dismissal caused the\\nclaimant?\\n1.6.2\\nHas the respondent proven that the claimant failed to take\\nreasonable steps to replace their lost earnings, such as by\\nfailing to take reasonable steps to find another job?\\n1.6.3\\nFor what period of loss should the claimant be\\ncompensated?\\n1.6.4\\nIs there a chance that the claimant would have been fairly\\ndismissed anyway if a fair procedure had been followed, or\\nfor some other reason?\\n1.6.5\\nIf so, should the claimant's compensation be reduced? By\\nhow much?\\n1.6.6\\nDid the ACAS Code of Practice on Disciplinary and\\nGrievance Procedures apply?\\n1.6.7\\nDid the respondent or the claimant unreasonably fail to\\ncomply with it by [specify alleged breach]?\\n1.6.8\\nIf so is it just and equitable to increase or decrease any\\naward payable to the claimant? By what proportion, up to\\n25%?\\n1.6.9\\nIf the claimant was unfairly dismissed, did they cause or\"}, {\"char_end\": 5896, \"char_start\": 4456, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"contribute to dismissal by blameworthy conduct?\\n1.6.10 If so, would it be just and equitable to reduce the claimant's\\ncompensatory award? By what proportion?\\n1.6.11 Does the statutory cap of fifty-two weeks' pay or £115,115\\napply?\\n\\n1.7\\nWhat basic award is payable to the claimant, if any?\\n\\n1.8\\nWould it be just and equitable to reduce the basic award because\\nof any conduct of the claimant before the dismissal? If so, to what\\nextent?\\n\\n3. I had the benefit of a joint bundle of documents comprising 326 pages. I was\\nprovided with a witness statements from the claimant, and witness statements\\nfrom Ashley Bonia, Area Manager (the claimant's line manager) and David\\nGoodchild on behalf of the respondent. I heard oral evidence from all three\\nwitnesses.\\n\\n4. The Respondent operates a chain of fitness gyms. The claimant was employed\\nby the respondent as General Manager of their gym in Huddersfield from 1st\\nFebruary 2020 until her employment terminated on 6th January 2025.\\n\\nFindings of Fact\\n\\n5. This judgment does not seek to address every point about which the parties\\nhave disagreed. It only deals with the points which are relevant to the issues\\nthat the tribunal must consider in order to decide if the claim succeeds or fails.\\nIf I have not mentioned a particular point it is not because I have overlooked it,\\nit is simply because it is not relevant to the issues.\\n\\n6. The following findings are made on the balance of probabilities.\"}, {\"char_end\": 7353, \"char_start\": 5896, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"7. As General Manager the claimant had overall responsibility for the operation of\\nher gym. There were checks and audits that needed to be carried out regularly.\\nThe claimant was required to carry out her own monthly audit at the beginning\\nof each month to identify matters that would need to be addressed over the\\ncoming period.\\n\\n8. There were quarterly and spot check audits carried out by the claimant's line\\nManager, Ms Bonia, which I will refer to as Internal Audits. These were to\\nensure that the gym was operating in accordance with processes and\\nprocedures and to assist the claimant in preparing for and passing centralised\\naudits.\\n\\n9. There were quarterly audits carried out by the central team, which I will refer to\\nas External Audits. The external audit covered Member Experience (to assess\\nthe cleanliness of the club and overall member experience), Health and Safety\\nAudit (to assess health and safety including fire exit routes, fire extinguishers,\\nfirst aid stock, AED and paperwork), and a People Audit (to assess that all\\ncorrect paperwork was collected and internal documents signed and present).\\nGeneral Managers, including the claimant, were required to pass all three\\naudits each quarter.\\n\\n10. In April 2023 the claimant was issued with a first written warning for misconduct\\nfollowing failure of an audit. In December 2023, the claimant was issued with\\na final written warning for misconduct for failure to fulfil managerial duties,\"}, {\"char_end\": 8813, \"char_start\": 7353, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"facts\", \"text\": \"specifically, failure to ensure gym standards and Health and Safety checks are\\nmanaged in line with company policy. The warning remained live for a period\\nof 12 months from 7th December 2023. The claimant understood that if there\\nwas any further misconduct, a failure to improve, a repeat of similar misconduct\\nor any other misconduct within that 12 month period, it could lead to her\\ndismissal. The claimant knew that this meant she needed to ensure all checks\\nwere carried out and that audits were passed, otherwise, her job would be at\\nrisk.\\n\\n11. On 13th May 2024, Ms Bonia emailed the respondent's HR department to\\nrequest advice. The claimant had failed a further internal health and safety\\naudit for failing to sign a General Risk Assessment from March 2024, failing to\\ncomplete gym cleaning checklists, failing to record accidents as per company\\nprocess and failing her Member Experience Club standards audit on 13th May\\n2024. Ms Bonia asked HR for advice as to whether she should complete\\nanother investigation under the disciplinary process or take any other steps\\nbefore doing so. Matt Wildblood advised Ms Bonia that as she had issued\\nCounselling forms for other managers in similar circumstances, she should do\\nthe same for the claimant and outline that failure of a further check could result\\nin disciplinary action, which could result in removal from the business. Ms\\nBonia delivered that Counselling statement to the claimant on 22nd May 2024.\"}, {\"char_end\": 10292, \"char_start\": 8813, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"facts\", \"text\": \"12. Following the counselling statement, Ms Bonia attended the claimant's gym\\nmore regularly to provide additional support. On 3rd September 2024 Ms Bonia\\ncarried out an internal People audit and the claimant scored 100%. On 24th\\nSeptember 2024 Ms Bonia carried out and internal Gym Standards and Health\\nand Safety Audit and the claimant scored 97.5%. Ms Bonia emailed the\\nclaimant on 24th September and made some suggestions for follow up actions.\\nShe congratulated the claimant and encouraged her not to \\\"take your foot off\\nthe gas\\\". Following the audit pass Ms Bonia reduced the frequency of her visits\\nto bi-weekly.\\n\\n13. At this time there were some issues with the claimant's gym IT. She did not\\nhave access to stable wi-fi in the gym, which impacted her access to online\\nservices. This was reported to IT but remained an issue for some time. The\\nclaimant did not carry out the follow up actions identified by Ms Bonia in her\\ninternal audit. One reason for not completing follow up actions was the IT\\nissues as the claimant could not get online. However, not all the follow up\\nactions required internet access. The claimant did not carry out her own follow\\nup audit prior to the next external inspection because of staffing issues. The\\nclaimant did not inform Ms Bonia that she was unable to carry out the follow up\\nactions because she could not access the internet. The claimant did not inform\\nthe external auditor that she had been unable to carry out all actions because\"}, {\"char_end\": 11737, \"char_start\": 10292, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"facts\", \"text\": \"of problems with internet access.\\n\\n14. On 24th October 2024 the respondent carried out an external health and safety\\naudit. The claimant scored 44.2% and failed the audit.\\n\\n15. The claimant telephoned Ms Bonia following failure of the audit. The claimant\\nasked Ms Bonia what would happen. Ms Bonia said that she had not reviewed\\nthe audit or carried out an investigation yet and couldn't say what the outcome\\nwould be. The claimant asked Ms Bonia about alternative moves within the\\ncompany as she thought she might be sacked and wanted to stay in the\\nbusiness. Ms Bonia did say to the claimant that dismissal was a possibility\\nbecause she already had a final written warning. Ms Bonia arranged to visit\\nthe claimant at the club on 29th October.\\n\\n16. Ms Bonia received a WhatsApp message from the claimant at 9.22am on 29th\\nOctober asking if Ms Bonia was still visiting that day. Ms Bonia said \\\"I am flower\\nbut I'm off to Bradford first I'll be there late afternoon\\\". Ms Bonia visited the\\nclaimant's gym on 29th October 2024 to review the external audit to check the\\nfindings and confirmed that the external audit findings were correct.\\n\\n17. Ms Bonia started an investigation meeting but the claimant became upset. Ms\\nBonia stopped the investigation discussion and they had a long conversation\\nabout the situation. The claimant asked Ms Bonia what the outcome of the\\ndisciplinary would be. Ms Bonia said she did not know at this stage but it was\"}, {\"char_end\": 13129, \"char_start\": 11737, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"facts\", \"text\": \"possible she would be dismissed because she already had a final written\\nwarning and it didn't look good. Ms Bonia expressed her opinion that she would\\nnot want to on a disciplinary with the evidence they had.\\n\\n18. The claimant asked Ms Bonia what her options were. Ms Bonia informed the\\nclaimant that she could go through the disciplinary process or she could move\\nto an alternative role within the business. The claimant asked Ms Bonia what\\nthat alternative role would look like. Ms Bonia said that the claimant could take\\na step back into an Assistant General Manager (AGM) role so she would have\\na General Manager to learn from and to build her skills.\\n\\n19. The claimant asked if she could be an AGM in her Huddersfield gym. Ms Bonia\\nsaid she could not because they already had an AGM in Huddersfield and she\\nhad been General Manager there. Ms Bonia informed the claimant that she\\nhad two AGM's ready for \\\"next steps\\\", meaning they were ready to move up to\\nthe role of General Manager. Ms Bonia regularly reviewed performance of her\\nemployees and assisted them in developing their skills in order to progress their\\ncareers. Ms Bonia informed the claimant that she had AGM's ready in Halifax\\nand Leeds. She also indicated that she had a Deputy Manager ready in\\nBradford. They discussed that the claimant does not drive and that Halifax\\nwould be easier for the claimant to get to by train.\"}, {\"char_end\": 14564, \"char_start\": 13129, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"facts\", \"text\": \"20. The claimant's evidence in her witness statement was that Ms Bonia told her\\nthat if she valued her degree, her house and her livelihood, she needed to take\\nthe offer of the alternative role. However, in oral evidence the claimant said\\nthat it was said but not in those terms. The claimant gave oral evidence that\\nMs Bonia offered advice and said \\\"if I were you\\\" she should think about her\\ndegree, her house and her bills. I find that Ms Bonia offer her opinion that the\\nclaimant should consider her responsibilities and obligations when making a\\ndecision but did not tell the claimant that if she valued her degree, house an\\nlivelihood she should accept the offer.\\n\\n21. The claimant asked if she could move to an AGM role in Halifax. Ms Bonia said\\nthat it would depend which of the AGM's were successful in securing the\\nGeneral Manager role as the vacancy for the claimant to move to would be to\\nreplace that AGM. The claimant indicated that she wanted to move to the AGM\\nrole in Halifax. Ms Bonia said she was due in Halifax the following day and\\ncould interview then. Ms Bonia suggested to the claimant that she \\\"sleep on it\\\"\\nand call her at 8am to confirm what she wanted to do as Ms Bonia needed to\\ngo back to HR to let them know whether to start a disciplinary process.\\n\\n22. The claimant did not telephone Ms Bonia by 8am on 30th October. Ms Bonia\\nwas due to be in the club in Halifax on 30th October. When she was in Halifax\"}, {\"char_end\": 16023, \"char_start\": 14564, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"facts\", \"text\": \"she interviewed one of the AGM's that she considered was ready for next steps.\\n\\n23. Ms Bonia tried to call the claimant on a number of occasions during the day but\\nthe claimant did not answer. At 1.05pm the claimant messaged Ms Bonia and\\nsaid she would call her in 5 minutes but she did not call. Ms Bonia messaged\\nat 1.34 and said \\\"now?\\\" and then against at 1.54 and said \\\"Do I need to come\\nto club?\\\" The claimant sent a message that said \\\"I'm just on a call I will call you\\nat 2pm I should be finished then.\\\" Ms Bonia messaged shortly after and said\\n\\\"ready?\\\" The claimant said \\\"calling you bk now\\\" but did not do so. She then\\nsent a further message saying \\\"just talking to a member\\\". Ms Bonia sent a\\nmessage to say \\\"I'm about to take this decision out of your hands.\\\" At 2.22 the\\nclaimant sent a message saying \\\"just going outside now\\\". At 2.25 Ms Bonia\\nsaid \\\"are you calling me?\\\"\\n\\n24. The claimant did then telephone Ms Bonia at around 2.30pm. By this point Ms\\nBonia had made a decision that the AGM in Halifax would be suitable to move\\nto the General Manager role in Huddersfield. During the telephone call at\\n2.30pm the claimant and Ms Bonia discussed the claimant's options again. Ms\\nBonia confirmed that the AGM at Halifax would be able to move into the role as\\nGeneral Manager if the claimant wanted to take the alternative position. The\\nclaimant confirmed that she did want to take the AGM role in Halifax instead of\\ngoing through the disciplinary.\"}, {\"char_end\": 17487, \"char_start\": 16023, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"facts\", \"text\": \"25. At 2.44pm Ms Bonia emailed HR with a change of position form confirming that\\nthe claimant wanted to move to the AGM role in Halifax. The claimant was not\\nprovided with a copy of that form as Ms Bonia considered the claimant had\\nalready given authorisation for the request and normal practice was that HR\\nwould follow up with formal notification and documentation. The claimant did\\nnot know the change of position form existed until it was disclosed in these\\nproceedings.\\n\\n26. Shortly after Ms Bonia sent the change of position form, the claimant\\ntelephoned her and said she did not want to transfer to another club and wanted\\nto fight for her job. Ms Bonia said \\\"brilliant, no problem\\\" and sent an email to\\nHR at 5.08pm saying \\\"can you please hang fire with this request\\\" and stopped\\nthe transfer progressing.\\n\\n27. On 31st October Ms Bonia messaged the claimant and asked her to call when\\nshe was in the business. At 1.31 the claimant telephoned Ms Bonia saying she\\nwould call at 2pm. At 2.05pm the claimant messaged Ms Bonia and said \\\"is\\nnow ok?\\\" Ms Bonia said \\\"yeah go for it\\\" and the claimant telephone Ms Bonia.\\nThe claimant informed Ms Bonia that she had been signed off work sick with\\nanxiety for two weeks, with a return date of 12th November 2024. Ms Bonia\\nsent a message to the claimant at 5.02pm and said \\\"you're still allocated under\\nthe Huddersfield club so we will do your RTW on 14th in Huddersfield. I'll meet\\nyou in the club when you return.\\\"\"}, {\"char_end\": 18965, \"char_start\": 17487, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"tribunal_reasoning\", \"text\": \"28. The claimant said in oral evidence that, on 31st October, her job title had been\\nchanged to Assistant General Manager at Huddersfield on the respondent's HR\\nsystem. The claimant provided a screenshot of the relevant screen dated 30th\\nJanuary 2025. I find that this was out of date information that was held on an\\nold system. The claimant was an AGM at Huddersfield prior to being appointed\\nas General Manager. The references to Region 1 on the screenshot were old\\nreferences that the respondent no longer used. The contemporaneous email\\ndocumentation from HR stated that the request for a role change had not been\\nactioned. The claimant's proposed role change would have been to become\\nAGM in Halifax and not Huddersfield. On that basis I find that the claimant's\\njob title had not been changed on the claimant's HR system following the\\nrequest by Ms Bonia to stop the role change.\\n\\n29. The claimant says that she raised a grievance against Ms Bonia on 8th\\nNovember 2024. The claimant produced a Microsoft Word document that\\nraised concerns about Ms Bonia's actions with a date of 8th November at the\\ntop of the page. The claimant says that she prepared the document on a notes\\napp and sent it to her personal email address. She gave evidence that she\\nthen sent it from her personal email address to her work email address and\\nthen from her work email address to the respondent's HR. The claimant did\\nnot produce a copy of any of the emails and the document produced by the\"}, {\"char_end\": 20394, \"char_start\": 18965, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"tribunal_reasoning\", \"text\": \"claimant did not contain any evidence that it was sent by email. The claimant\\nknew the correct HR email address as she had successfully sent her fit note to\\nHR on 31st October. The respondent's HR system automatically creates a\\n\\\"ticket\\\" for all emails received. The respondent could not identify any ticket\\nbeing raised regarding a grievance and did not receive an email containing the\\ngrievance. Further, at no point during any subsequent meetings with Ms Bonia,\\nMs Goodchild or in her resignation message did the claimant say that she had\\nnot received an acknowledgement or a response to her grievance. I therefore\\nfind that the claimant did not send a grievance regarding Ms Bonia to the\\nrespondent on 8th November or at any other time during her employment.\\n\\n30. The claimant was due to return to work on 13th November. Ms Bonia attended\\nthe club to carry out the claimant's return to work meeting. The claimant did\\nnot attend work. Ms Bonia telephoned the claimant but there was no answer.\\nThe claimant called Ms Bonia back and informed her that her fit note had been\\nextended for 3 weeks. The claimant informed Ms Bonia that she was taking\\nsome new medication and if she felt better by the weekend she would attend\\nthe club for a meeting to discuss returning earlier.\\n\\n31. On 18th November the claimant attended a meeting at the Huddersfield club\\nwith Ms Bonia and informed Ms Bonia that she was going to see the doctor on\"}, {\"char_end\": 21861, \"char_start\": 20394, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"tribunal_reasoning\", \"text\": \"19th November to get a fit note to return to work. Ms Bonia emailed HR on 19th\\nNovember to confirm that the claimant wished to go ahead with the disciplinary\\nand wanted to fight for her job. The claimant did not return to work on 19th\\nNovember.\\n\\n32. In mid-December the claimant attended an interview for a new role with a\\ncompetitor of the respondent. The claimant was successful in securing the new\\nrole.\\n\\n33. The claimant returned to work on 16th December 2024 and attended a return to\\nwork meeting with Ms Bonia and explained she was worried about her role. Ms\\nBonia concluded the investigation into the audit failures and informed the\\nclaimant that she would be recommending that there was a case to answer at\\ndisciplinary.\\n\\n34. On 21st December the claimant sent an email to Ms Bonia resigning from her\\nposition with the respondent. It did not raise any concerns regarding Ms\\nBonia's actions. At the point the claimant communicated her resignation, she\\nhad secured new employment with a competitor. The claimant thought she was\\nrequired to give 2 weeks notice. The claimant had a conversation with Ms Bonia\\nwhere she was informed that her notice period was 3 months. The claimant\\nagreed to work her full notice period.\\n\\n35. The respondent wrote to the claimant on 31st December 2024 inviting her to a\\ndisciplinary meeting to take place on 2nd January 2025 and the allegation was\\nfailure to fulfil managerial duties, specifically failure to ensure gym standards\"}, {\"char_end\": 23167, \"char_start\": 21861, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"tribunal_reasoning\", \"text\": \"and Health and Safety checks are managed in line with company policy,\\npotentially bringing the company into disrepute.\\n\\n36. The disciplinary meeting took place on 2nd January 2025 and was chaired by\\nDavid Goodchild. The claimant accepted responsibility for the audit failures.\\nThe claimant's final written warning had expired during her sickness absence.\\nMr Goodchild decided to issue the claimant with a first written warning as a\\nsanction for misconduct and informed the claimant of the outcome in the\\nmeeting.\\n\\n37. On 6th January 2025 the claimant sent a message to Ms Bonia informing her\\nthat she was resigning with immediate effect. The claimant said \\\"I never\\nwanted to leave under these circumstances, but after everything that's\\nhappened I feel I have no other option due to how I feel when I'm in the\\nclub...Please also look after the team for me - I'm honestly sad to be leaving\\nthem and wish there was another way - I handed my resignation in weeks ago\\nand realise there's no way of staying even though the disciplinary went well -\\nfor my own mental health I have to go now I'm sorry! Staying when I can't stay\\nlong term will only impact me negatively.\\\"\\n\\nLaw\\n\\n38. 95 Circumstances in which an employee is dismissed.\\n(1) For the purposes of this Part an employee is dismissed by his employer if-\"}, {\"char_end\": 24666, \"char_start\": 23167, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"tribunal_reasoning\", \"text\": \"(c)\\nthe employee terminates the contract under which he is employed\\n(with or without notice) in circumstances in which he is entitled to terminate\\nit without notice by reason of the employer's conduct.\\n\\n39. 98General.\\n(1) In determining for the purposes of this Part whether the dismissal of an\\nemployee is fair or unfair, it is for the employer to show-\\n\\n(a)\\nthe reason (or, if more than one, the principal reason) for the\\ndismissal, and\\n\\n(b)\\nthat it is either a reason falling within subsection (2) or some other\\nsubstantial reason of a kind such as to justify the dismissal of an\\nemployee holding the position which the employee held.\\n(2) A reason falls within this subsection if it-\\n\\n(b)\\nrelates to the conduct of the employee,\\n(4) Where the employer has fulfilled the requirements of subsection (1), the\\ndetermination of the question whether the dismissal is fair or unfair (having\\nregard to the reason shown by the employer)-\\n\\n(a)\\ndepends on whether in the circumstances (including the size and\\nadministrative resources of the employer's undertaking) the\\nemployer acted reasonably or unreasonably in treating it as a\\nsufficient reason for dismissing the employee, and\\n\\n(b)\\nshall be determined in accordance with equity and the substantial\\nmerits of the case.\\n\\n40. Western Excavating (ECC) Ltd v Sharp 1978 ICR 221, CA, 'If the employer\\nis guilty of conduct which is a significant breach going to the root of the contract\\nof employment, or which shows that the employer no longer intends to be\"}, {\"char_end\": 26118, \"char_start\": 24666, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"tribunal_reasoning\", \"text\": \"bound by one or more of the essential terms of the contract, then the employee\\nis entitled to treat himself as discharged from any further performance. If he\\ndoes so, then he terminates the contract by reason of the employer's conduct.\\nHe is constructively dismissed.'\\n\\n41. In order to claim constructive dismissal, the employee must establish that:\\n41.1.\\nthere was a fundamental breach of contract on the part of the\\nemployer\\n41.2.\\nthe employer's breach caused the employee to resign; and\\n41.3.\\nthe employee did not delay too long before resigning, thus affirming\\nthe contract and losing the right to claim constructive dismissal.\\n\\n42. Lewis v Motorworld Garages Ltd 1986 ICR 157, CA.- A course of conduct\\ncan cumulatively amount to a fundamental breach of contract entitling an\\nemployee to resign and claim constructive dismissal following a 'last straw'\\nincident even though the last straw by itself does not amount to a breach of\\ncontract.\\n\\n43. Malik v Bank of Credit and Commerce International SA (in compulsory\\nliquidation) 1997 ICR 606, HL- the duty is that neither party will, without\\nreasonable and proper cause, conduct itself in a manner calculated or likely to\\ndestroy or seriously damage the relationship of trust and confidence between\\nemployer and employee. There are two questions to be asked when determining\\nwhether the term has, in fact, been breached. These are:\\n43.1.\\nwas there 'reasonable and proper cause' for the conduct?\\n43.2.\"}, {\"char_end\": 27442, \"char_start\": 26118, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"tribunal_reasoning\", \"text\": \"if not, was the conduct 'calculated or likely to destroy or seriously damage\\ntrust and confidence'?\\n\\n44. Woods v WM Car Services (Peterborough) Ltd 1981 ICR 666, EAT. To\\nconstitute a breach of the implied term it is not necessary to show that the\\nemployer intended any repudiation of the contract: the tribunal's function is to\\nlook at the employer's conduct as a whole and determine whether it is such that\\nits effect, judged reasonably and sensibly, is such that the employee cannot be\\nexpected to put up with it.' Further, any breach of that implied term is a\\nfundamental breach amounting to a repudiation since it necessarily goes to the\\nroot of the contract'.\\n\\n45. Morrow v Safeway Stores plc 2002 IRLR 9, EAT - where an employer\\nbreaches the implied term of trust and confidence, the breach is 'inevitably'\\nfundamental.\\n\\n46. Bournemouth University Higher Education Corporation v Buckland 2010\\nICR 908, CA, where the Court upheld the decision of the EAT that the question\\nof whether the employer's conduct fell within the range of reasonable\\nresponses is not relevant when determining whether there has been a\\nconstructive dismissal. The Court of Appeal rejected the notion that a\\nrepudiatory breach of contract can be cured unilaterally by the party in default,\\ntaking away the innocent party's option of acceptance.\"}, {\"char_end\": 28880, \"char_start\": 27442, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"tribunal_reasoning\", \"text\": \"47. Wright v North Ayrshire Council 2014 ICR 77, EAT - Where there are mixed\\nmotives, a tribunal must determine whether the employer's repudiatory breach\\nwas an effective cause of the resignation. However, the breach need not be\\n'the' effective cause -\\n\\n48. Abbycars (West Horndon) Ltd v Ford EAT 0472/07 - 'the crucial question is\\nwhether the repudiatory breach played a part in the dismissal', and even if the\\nemployee leaves for 'a whole host of reasons', he or she can claim constructive\\ndismissal 'if the repudiatory breach is one of the factors relied upon'.\\n\\n49. Weathersfield Ltd t/a Van and Truck Rentals v Sargent 1999 ICR 425, CA,\\n-the Court of Appeal held that it was not necessary for an employee, in order to\\nprove that a resignation was caused by a breach of contract, to inform the\\nemployer immediately of the reasons for his or her resignation. It was for the\\ntribunal in each case to determine, as a matter of fact, whether the employee\\nresigned in response to the employer's breach rather than for some other\\nreason.\\n\\n50. Western Excavating (ECC) Ltd v Sharp 1978 ICR 221, CA, the employee\\n'must make up his mind soon after the conduct of which he complains: for, if he\\ncontinues for any length of time without leaving, he will lose his right to treat\\nhimself as discharged'.\\n\\n51. Subsequent decisions have made clear that the issue of affirmation is\\nessentially one of conduct, not simply passage of time. In Leaney v\"}, {\"char_end\": 30326, \"char_start\": 28880, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Loughborough University 2023 EAT 155, affirmation may be expressly\\ncommunicated or may be implied from conduct.\\n\\n52. WE Cox Toner (International) Ltd v Crook 1981 ICR 823, and Chindove v\\nWilliam Morrison Supermarkets plc EAT 0201/13 have explained, the mere\\npassage of time prior to resignation will not, in itself, amount to affirmation. That\\nsaid, affirmation can be implied by prolonged delay and/or if the innocent party\\ncalls on the guilty party for further performance of the contract by, for example,\\nclaiming sick pay.\\n\\n53. Omilaju v Waltham Forest London Borough Council 2005 ICR 481, CA, the\\nact constituting the last straw does not have to be of the same character as the\\nearlier acts, nor need it constitute unreasonable or blameworthy conduct,\\nalthough in most cases it will do so. But the last straw must contribute, however\\nslightly, to the breach of the implied term of trust and confidence. An entirely\\ninnocuous act on the part of the employer cannot be a final straw, even if the\\nemployee genuinely, but mistakenly, interprets the act as hurtful and\\ndestructive of his or her trust and confidence in the employer. The test of\\nwhether the employee's trust and confidence has been undermined is\\nobjective. And while it is not a prerequisite of a last straw case that the\\nemployer's act should be unreasonable, it will be an unusual case where\\nconduct which is perfectly reasonable and justifiable satisfies the last straw test.\"}, {\"char_end\": 31766, \"char_start\": 30326, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"tribunal_reasoning\", \"text\": \"54. Kaur v Leeds Teaching Hospitals NHS Trust 2019 ICR 1, CA, which held\\nthat, if the last straw incident is part of a course of conduct that cumulatively\\namounts to a breach of the implied term of trust and confidence, it does not\\nmatter that the employee had affirmed the contract by continuing to work after\\nprevious incidents which formed part of the same course of conduct. The effect\\nof the last straw is to revive the employee's right to resign. A five stage test\\nwas set out:\\n54.1.\\nwhat was the most recent act (or omission) on the part of the\\nemployer which the employee says caused, or triggered, his or her\\nresignation?\\n54.2.\\nhas he or she affirmed the contract since that act?\\n54.3.\\nif not, was that act (or omission) by itself a repudiatory breach of\\ncontract?\\n54.4.\\nif not, was it nevertheless a part of a course of conduct comprising\\nseveral acts and omissions which, viewed cumulatively, amounted to\\na repudiatory breach of trust and confidence?\\n54.5.\\ndid the employee resign in response (or partly in response) to that\\nbreach?\\n\\n55. An employer may, by its response to a resignation, turn it into a constructive\\ndismissal. In Ford v Milthorn Toleman Ltd 1980 IRLR 30, CA, for example, F\\ngave three months' notice and the employer promptly demoted him and\\nchanged the basis of his remuneration. He resigned immediately and the Court\\nof Appeal upheld his claim that he had been unfairly constructively dismissed.\\n\\nConclusion\"}, {\"char_end\": 33265, \"char_start\": 31766, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"tribunal_reasoning\", \"text\": \"56. I must determine whether the claimant was constructively dismissed. The\\nclaimant relies on three incidents to establish that there was a breach of the\\nimplied term of mutual trust and confidence:\\n\\n56.1. On 29th October 2024, following an independent audit on 24 October\\n2024 which resulted in a failure, Ashley Bonia told the Claimant she\\nwould receive a disciplinary meeting, and it would be likely she would\\nlose her job ('Incident 1');\\n\\n56.2. On 29th October 2024, Ashley Bonia gave the Claimant two options;\\neither go ahead with the disciplinary or take a lower grade role at a\\ndifferent location with a significant reduction in salary. The Claimant was\\ngiven less than 24 hours to consider the proposal and Ashley repeatedly\\ncalled the Claimant for an answer ('Incident 2'); and\\n\\n56.3. Ashley Bonia completed a change of job role form for the claimant\\nwithout it being signed by the claimant or consented to ('Incident 3').\\n\\n57. When the claimant was informed she had failed the audit on 24th October, the\\nclaimant was aware that she already had a live final written warning on her file\\nfor failing audits. The claimant was also aware that the audit failure on 24th\\nOctober could result in the termination of her employment as she had been\\ninformed of that fact in the disciplinary outcome letter on 7th December 2023.\\nThe claimant gave evidence that she understood that her role would be at risk\\nif she failed further audits during the period in which the final written warning\\nwas live.\"}, {\"char_end\": 34710, \"char_start\": 33265, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"judgment\", \"text\": \"58. During the telephone conversation with Ms Bonia on 24th October, the claimant\\ninformed Ms Bonia that she was worried she would lose her job and asked what\\nmight happen. Ms Bonia did agree with the claimant that dismissal was a\\npossibility because she already had a final warning, but she had not yet had\\nthe chance to review the audit and could not say at this stage.\\n\\n59. On 29th October, Ms Bonia reviewed the external audit and concluded that it\\nwas accurate, and the claimant had failed the audit. The claimant was upset\\nand Ms Bonia paused the investigation to discuss the situation with the\\nclaimant. During that discussion, the claimant asked Ms Bonia what the\\noutcome of the disciplinary was likely to be. Ms Bonia said that, at this point,\\nshe did not know but it did not look good as the claimant was already on a final\\nwritten warning, so it was a possibility that she would be dismissed.\\n\\n60. Ms Bonia did give the claimant two options during the conversation on 29th\\nOctober; go ahead with the disciplinary or move to an alternative role. The\\noption to move to an AGM role was discussed at length, including the potential\\nlocation and the benefits of the move. Ms Bonia did express her opinion that\\nshe would not want to face a disciplinary with the information against her and\\nthat if it were her, she would seriously consider her situation, including her\\ndegree course, house and financial commitments when making a decision.\"}, {\"char_end\": 36013, \"char_start\": 34710, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"judgment\", \"text\": \"The claimant expressed that she would like to move to an AGM role in Halifax\\nand Ms Bonia suggested that the claimant sleep on it and let her know by 8am\\nthe following day as she would need to go back to HR to let them know whether\\nthey needed to begin a disciplinary.\\n\\n61. When the claimant did not contact her as requested, Ms Bonia tried to\\ntelephone the claimant, but the claimant did not answer the phone. However,\\nthe claimant did send messages to Ms Bonia indicating that she would call her\\nat various points throughout the day and they each missed each other several\\ntimes.\\n\\n62. Ms Bonia did complete a change of job role form on 30th October 2024 and it\\nwas not signed by the claimant. However, I do find that the claimant had\\nconsented to the change in job role during her telephone conversation with Ms\\nBonia at 2.30pm on 30th October.\\n\\nDid that breach the implied term of trust and confidence?\\n\\n63. In determining whether the above actions breached the implied term of mutual\\ntrust and confidence, I need to decide, objectively, whether, individually or\\ncumulatively, the respondent's actions were done with reasonable and proper\\ncause, and if not, whether their actions were calculated or likely to destroy or\\nseriously damage the trust and confidence between the claimant and\\nrespondent.\"}, {\"char_end\": 37468, \"char_start\": 36013, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"judgment\", \"text\": \"64. In relation to incident 1, Ms Bonia did inform the claimant that she would face\\na disciplinary hearing. The claimant was herself, already aware that\\ndisciplinary action was the likely outcome of the audit failure on 24th October.\\nThe claimant had faced the same set of circumstances on two previous\\noccasions and was aware that she had a live final written warning on her file.\\nThe claimant had raised concerns with Ms Bonia on 24th October that she might\\nlose her job. Ms Bonia did confirm, after reviewing the audit and confirming it\\nwas accurate, that she would face a disciplinary hearing. She also indicated\\nthat one possible outcome was termination of her employment because of the\\nfinal written warning. Ms Bonia expressed that she would not want to face a\\ndisciplinary in those circumstances and that it did not look good.\\n\\n65. Ms Bonia had reasonable and proper cause for her actions. The claimant had\\nfailed an external audit for matters that were her responsibility as General\\nManager. Ms Bonia was outlining the possible course of events given the\\ncircumstances the claimant found herself in. The claimant was already aware\\nthat the audit failure was likely to result in disciplinary action and possibly\\ndismissal and it was appropriate for Ms Bonia to confirm that the claimant's\\nconcerns were well founded by indicating that she could be dismissed. I do not\\nfind that Ms Bonia said that the claimant would be dismissed and consequently,\"}, {\"char_end\": 38901, \"char_start\": 37468, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"judgment\", \"text\": \"I find there was no pre-determination of the disciplinary outcome. Ms Bonia's\\ndecision to share the possible outcome and her opinion that it did not look good,\\nwas done with reasonable and proper cause in her role as the claimant's line\\nmanager and was not calculated or likely to destroy or seriously damage trust\\nand confidence.\\n\\n66. With regard to incident 2, Ms Bonia did outline two options to the claimant; go\\nahead with the disciplinary or take an alternative role. The claimant had said\\nto Ms Bonia on 24th October that she was worried she would lose her job and\\nasked what options there were. The claimant also asked Ms Bonia what her\\noptions were on 29th October.\\n\\n67. In response to the claimant's query, Ms Bonia outlined the claimant's options.\\nThe option of moving to an AGM role was available and was discussed at length\\nbetween the claimant and Ms Bonia. The options were not an ultimatum, they\\nwere a genuine statement of the routes available to the claimant in the\\ncircumstances. It was accurate to state that she could face the disciplinary and\\nto state that she could change her role as an alternative.\\n\\n68. Ms Bonia did say that she would not want to face a disciplinary in the\\ncircumstances, it did not look good, and, in her opinion, the claimant should\\ngive serious consideration to her circumstances when making a decision. The\\nsituation was, quite naturally, a stressful one for the claimant as she enjoyed\"}, {\"char_end\": 40379, \"char_start\": 38901, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"judgment\", \"text\": \"her job and did not want to lose it. Ms Bonia offered the claimant the option to\\nchange her role as an alternative to going through the disciplinary process with\\na view to securing ongoing employment. The claimant, understandably, felt the\\npressure of the situation, but that pressure was caused by the audit failure and\\npending disciplinary and not Ms Bonia's actions in outlining the claimant's\\noptions.\\n\\n69. In addition to outlining the options, Ms Bonia did inform the claimant that she\\nneeded a decision by 8am the following day. Ms Bonia had a lengthy\\ndiscussion with the claimant about the options available to her, at the end of\\nwhich the claimant indicated that she wanted to change her role to AGM in\\nHalifax. Whilst that could not be guaranteed, Ms Bonia did indicate that she\\nwould interview the current AGM at Halifax the following day given the\\nclaimant's indication that she would like to take that option. However, despite\\nthe claimant indicating that she wanted to move to the role in Halifax, Ms Bonia\\nsuggested that the claimant sleep on it and let her know the following morning.\\nThis action reduced the pressure on the claimant to make and confirm an\\nimmediate decision that day, rather than increasing the pressure on the\\nclaimant.\\n\\n70. The claimant did not contact Ms Bonia the following day. Ms Bonia, quite\\nreasonably, telephoned the claimant to discuss the matter further. The\\nclaimant messaged Ms Bonia to say she would give her a call but did not do\"}, {\"char_end\": 41847, \"char_start\": 40379, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"judgment\", \"text\": \"so. In circumstances where Ms Bonia has requested a call and been informed\\nthat it would be made, when it was not, it was reasonable for Ms Bonia to try\\nand call the claimant. Ms Bonia had offered the alternative role as an option to\\navoid the need for a disciplinary hearing. When the claimant did not contact\\nher to confirm her decision, she indicated that she would need to return to the\\ndefault position, which was disciplinary action and the decision would be taken\\nout of the claimant's hands. At this point, Ms Bonia had waited an additional 6\\nhours beyond the deadline provided to the claimant to confirm her decision and\\nmade several attempts to speak to the claimant.\\n\\n71. I find that Ms Bonia's actions in offering the claimant two paths, disciplinary or\\na change in role, contacting the claimant for an answer, and requesting the\\nclaimant sleep on the decision and call her the next day was done with\\nreasonable and proper cause and was not behaviour that was calculated or\\nlikely to destroy or seriously damage mutual trust and confidence between the\\nclaimant and the respondent..\\n\\n72. Ms Bonia's actions were a support measure for the claimant to secure her\\nfuture employment in circumstances where there was a very real risk that she\\nwould be dismissed for misconduct. Ms Bonia's message stating that she was\\nabout to take the decision out of the claimant's hands, was done with\\nreasonable and proper cause. She had given the claimant an opportunity to\"}, {\"char_end\": 43249, \"char_start\": 41847, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"judgment\", \"text\": \"sleep on her decision, the claimant had not contacted her at the time required,\\nthe claimant had failed to telephone Ms Bonia for a further six and a half hours\\nafter the deadline, despite repeated indications that she would do so and Ms\\nBonia needed to make a decision regarding whether disciplinary action would\\nbe recommended.\\n\\n73. Even if it was not done with reasonable and proper cause, objectively, it was\\nnot, objectively, calculated or likely to destroy or seriously damage trust and\\nconfidence for the same reasons as above.\\n\\n74. The claimant relies on a third incident to establish breach of the implied term of\\nmutual trust and confidence. The claimant says that the submission of a\\nchange of position form that had not been signed or consented to was a breach\\nof contract.\\n\\n75. The claimant was not aware the change of position form existed until it was\\ndisclosed in these proceedings, and she did not know that it had been\\nsubmitted to HR without her signature until that time. During a meeting on 29th\\nOctober and a telephone call on 30th October the claimant informed Ms. Bonia\\nthat she wanted to change her role to AGM in Halifax rather than proceed with\\nthe disciplinary as she was worried she would be dismissed and wanted to stay\\nwith the respondent. This amounted to consent to progress the change of role\\nand was the reason Ms. Bonia submitted the change of position form to HR.\"}, {\"char_end\": 44712, \"char_start\": 43249, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"judgment\", \"text\": \"76. The claimant telephoned Ms. Bonia later on 30th October and informed Ms.\\nBonia that she had changed her mind and wanted to proceed to disciplinary\\nand fight for her job. Immediately upon receiving that message from the\\nclaimant Ms. Bonia contacted HR and put a stop to the change request. It was\\nnot actioned and the claimant's role remained General Manager in\\nHuddersfield. The claimant knew that her role had not changed when she was\\ninformed by Ms. Bonia on 31st October that she continued to be assigned to\\nHuddersfield when her sickness absence started.\\n\\n77. The submission of the change of position form was consented to by the\\nclaimant and was done with reasonable and proper cause.\\n\\n78. I have found that the alleged breaches of contract do not, individually amount\\nto a breach of the implied term of mutual trust and confidence. I must also\\nconsider whether they cumulatively amount to such a breach.\\n\\n79. Given that all three incidents relied upon were done with reasonable and proper\\ncause, even taken together, they would not amount to conduct that was\\ncalculated or likely to destroy or seriously damage trust and confidence.\\n\\nWas the breach a fundamental one?\\n\\n80. As there was no breach of the implied term of mutual trust and confidence,\\nthere could not be a fundamental breach. If I had found there was a breach of\\ntrust and confidence it would, by its very nature, have been fundamental.\\n\\nDid the claimant resign in response to the breach?\"}, {\"char_end\": 46154, \"char_start\": 44712, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"judgment\", \"text\": \"81. Whilst I have found that there's no breach of the implied term of mutual trust\\nand confidence, and therefore no fundamental breach of contract, for\\ncompleteness, I have considered whether, if I had found such a breach, the\\nclaimant resigned in response to that breach.\\n\\n82. The claimant relies on the actions of Ms. Bonia on 29th October 2024 to\\nestablish a breach of contract. On 30th October 2024 the claimant stated that\\nto Ms. Bonia that she wanted to go through the disciplinary process and fight\\nfor her job. The claimant did not raise any complaint regarding Ms. Bonia's\\nactions on 29th October during her employment.\\n\\n83. The claimant returned to work for the respondent after a period of sickness\\nabsence. The claimant's first resignation was on 21st December 2024 and does\\nnot raise any concerns regarding Ms. Bonia's actions. I acknowledge that is\\nnot conclusive. However, the claimant had secured alternative employment\\nwith a competitor during her sickness absence and I find that she resigned\\nbecause she was successful in finding alternative work. The claimant gave oral\\nevidence that if she had not secured a new role she would not have resigned.\\nThe claimant thought she needed to give 2 weeks' notice but, when she was\\ninformed that her contract required 3 months' notice, the claimant agreed to\\nwork it and did not raise any concerns about continuing her employment and\\nworking with Ms. Bonia for that length of time.\"}, {\"char_end\": 47611, \"char_start\": 46154, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"judgment\", \"text\": \"84. I have considered whether the claimant's decision to seek alternative work was\\nbecause of the alleged breach of contract and I find that it was not. The\\nclaimant was worried about her future with the respondent because she was\\nfacing a disciplinary meeting when already on a final written warning for the\\nsame misconduct and understood there was a real risk that her employment\\nwould be terminated. I find the claimant sought alternative work and ultimately\\nresigned because she did not want to be dismissed, and not because of the\\nactions of Ms. Bonia on 29th October.\\n\\n85. Further, the claimant was not aware of the existence of the change of position\\nform until it was disclosed in these proceedings. As such, she could not have\\nresigned because that form was not signed or consented to as she did not know\\nthat it had been submitted.\\n\\n86. The claimant's second resignation, with immediate effect, on 6th January was\\nbecause she did not feel she could continue to work for the respondent when\\nshe would be leaving shortly after, due to the original resignation. The claimant\\nfound it difficult to carry out her role when she knew she was leaving. The\\nclaimant did not raise any concerns regarding the respondent's behaviour\\nbetween her original resignation and the second resignation and has not\\nsuggested that there was any further breach of contract by the respondent after\\n29th October. On that basis, I find that the second resignation was not a\"}, {\"char_end\": 47987, \"char_start\": 47611, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"judgment\", \"text\": \"response to the alleged breach of contract or any breach of contract by the\\nrespondent and was because she wanted to leave to begin her new role before\\nexpiry of her notice period.\\n\\n87. On that basis, even if there had been a fundamental breach of contract, the\\nclaimant did not resign in response to that breach.\\n\\n\\nApproved by:\\n\\n\\nEmployment Judge S Edwards\\n\\n5th February 2026\"}]}",
+  "n_chunks": 34,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 11,
+    "tribunal_reasoning": 11,
+    "judgment": 11
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[{\"name\":\"Western Excavating (ECC) Ltd v Sharp\",\"citation\":\"1978 ICR 221, CA\",\"cited_date\":\"1978\"},{\"name\":\"Lewis v Motorworld Garages Ltd\",\"citation\":\"1986 ICR 157, CA\",\"cited_date\":\"1986\"},{\"name\":\"Malik v Bank of Credit and Commerce International SA (in compulsory liquidation)\",\"citation\":\"1997 ICR 606, HL\",\"cited_date\":\"1997\"},{\"name\":\"Woods v WM Car Services (Peterborough) Ltd\",\"citation\":\"1981 ICR 666, EAT\",\"cited_date\":\"1981\"},{\"name\":\"Morrow v Safeway Stores plc\",\"citation\":\"2002 IRLR 9, EAT\",\"cited_date\":\"2002\"},{\"name\":\"Bournemouth University Higher Education Corporation v Buckland\",\"citation\":\"2010 ICR 908, CA\",\"cited_date\":\"2010\"},{\"name\":\"Wright v North Ayrshire Council\",\"citation\":\"2014 ICR 77, EAT\",\"cited_date\":\"2014\"},{\"name\":\"Weathersfield Ltd t/a Van and Truck Rentals v Sargent\",\"citation\":\"1999 ICR 425, CA\",\"cited_date\":\"1999\"},{\"name\":\"Leaney v Loughborough University\",\"citation\":\"2023 EAT 155\",\"cited_date\":\"2023\"},{\"name\":\"WE Cox Toner (International) Ltd v Crook\",\"citation\":\"1981 ICR 823\",\"cited_date\":\"1981\"},{\"name\":\"Omilaju v Waltham Forest London Borough Council\",\"citation\":\"2005 ICR 481, CA\",\"cited_date\":\"2005\"},{\"name\":\"Kaur v Leeds Teaching Hospitals NHS Trust\",\"citation\":\"2019 ICR 1, CA\",\"cited_date\":\"2019\"},{\"name\":\"Ford v Milthorn Toleman Ltd\",\"citation\":\"1980 IRLR 30, CA\",\"cited_date\":\"1980\"}],\"spans\":[{\"page\":1,\"paragraph\":17,\"text_span\":[23167,24666]},{\"page\":1,\"paragraph\":18,\"text_span\":[24666,26118]},{\"page\":1,\"paragraph\":19,\"text_span\":[26118,27442]},{\"page\":1,\"paragraph\":20,\"text_span\":[27442,28880]},{\"page\":1,\"paragraph\":21,\"text_span\":[28880,30326]},{\"page\":1,\"paragraph\":22,\"text_span\":[30326,31766]}]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"decision_date\":{\"value\":\"2026-02-05\",\"spans\":[{\"page\":1,\"paragraph\":34,\"text_span\":[47611,47987]}]},\"evidence\":{\"value\":\"The tribunal had a 326-page joint bundle, witness statements from the claimant, Ashley Bonia and David Goodchild, and oral evidence from all three witnesses.\",\"spans\":[{\"page\":1,\"paragraph\":4,\"text_span\":[4456,5896]}]},\"facts\":{\"value\":\"The respondent operates fitness gyms and employed the claimant as General Manager of its Huddersfield gym from 1 February 2020 until 6 January 2025. The claimant was responsible for regular audits and had received warnings after previous audit failures. After an external health and safety audit on 24 October 2024, she scored 44.2% and failed. She then discussed with Ms Bonia the possibility of disciplinary action, dismissal because of the live final written warning, and an alternative Assistant General Manager role in Halifax. A change of position form was later sent to HR and then stopped after the claimant said she wanted to fight for her job.\",\"spans\":[{\"page\":1,\"paragraph\":4,\"text_span\":[4456,5896]},{\"page\":1,\"paragraph\":5,\"text_span\":[5896,7353]},{\"page\":1,\"paragraph\":6,\"text_span\":[7353,8813]},{\"page\":1,\"paragraph\":7,\"text_span\":[8813,10292]},{\"page\":1,\"paragraph\":8,\"text_span\":[10292,11737]},{\"page\":1,\"paragraph\":9,\"text_span\":[11737,13129]},{\"page\":1,\"paragraph\":10,\"text_span\":[13129,14564]},{\"page\":1,\"paragraph\":11,\"text_span\":[14564,16023]},{\"page\":1,\"paragraph\":12,\"text_span\":[16023,17487]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]},{\"page\":1,\"paragraph\":31,\"text_span\":[43249,44712]},{\"page\":1,\"paragraph\":34,\"text_span\":[47611,47987]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The complaint of unfair dismissal is not well founded and is dismissed.\",\"I find there was no pre-determination of the disciplinary outcome. Ms Bonia's decision to share the possible outcome and her opinion that it did not look good, was done with reasonable and proper cause in her role as the claimant's line manager and was not calculated or likely to destroy or seriously damage trust and confidence.\",\"I find that Ms Bonia's actions in offering the claimant two paths, disciplinary or a change in role, contacting the claimant for an answer, and requesting the claimant sleep on the decision and call her the next day was done with reasonable and proper cause and was not behaviour that was calculated or likely to destroy or seriously damage mutual trust and confidence between the claimant and the respondent.\",\"As there was no breach of the implied term of mutual trust and confidence, there could not be a fundamental breach.\",\"On that basis, even if there had been a fundamental breach of contract, the claimant did not resign in response to that breach.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]},{\"page\":1,\"paragraph\":27,\"text_span\":[37468,38901]},{\"page\":1,\"paragraph\":29,\"text_span\":[40379,41847]},{\"page\":1,\"paragraph\":31,\"text_span\":[43249,44712]},{\"page\":1,\"paragraph\":34,\"text_span\":[47611,47987]}]},\"matter_type\":{\"value\":\"constructive unfair dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"region\":{\"value\":\"yorkshire_and_humber\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"region_source\":{\"value\":\"Leeds (By Video)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1476]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "Western Excavating (ECC) Ltd v Sharp",
+            "citation": "1978 ICR 221, CA",
+            "cited_date": "1978"
+          },
+          {
+            "name": "Lewis v Motorworld Garages Ltd",
+            "citation": "1986 ICR 157, CA",
+            "cited_date": "1986"
+          },
+          {
+            "name": "Malik v Bank of Credit and Commerce International SA (in compulsory liquidation)",
+            "citation": "1997 ICR 606, HL",
+            "cited_date": "1997"
+          },
+          {
+            "name": "Woods v WM Car Services (Peterborough) Ltd",
+            "citation": "1981 ICR 666, EAT",
+            "cited_date": "1981"
+          },
+          {
+            "name": "Morrow v Safeway Stores plc",
+            "citation": "2002 IRLR 9, EAT",
+            "cited_date": "2002"
+          },
+          {
+            "name": "Bournemouth University Higher Education Corporation v Buckland",
+            "citation": "2010 ICR 908, CA",
+            "cited_date": "2010"
+          },
+          {
+            "name": "Wright v North Ayrshire Council",
+            "citation": "2014 ICR 77, EAT",
+            "cited_date": "2014"
+          },
+          {
+            "name": "Weathersfield Ltd t/a Van and Truck Rentals v Sargent",
+            "citation": "1999 ICR 425, CA",
+            "cited_date": "1999"
+          },
+          {
+            "name": "Leaney v Loughborough University",
+            "citation": "2023 EAT 155",
+            "cited_date": "2023"
+          },
+          {
+            "name": "WE Cox Toner (International) Ltd v Crook",
+            "citation": "1981 ICR 823",
+            "cited_date": "1981"
+          },
+          {
+            "name": "Omilaju v Waltham Forest London Borough Council",
+            "citation": "2005 ICR 481, CA",
+            "cited_date": "2005"
+          },
+          {
+            "name": "Kaur v Leeds Teaching Hospitals NHS Trust",
+            "citation": "2019 ICR 1, CA",
+            "cited_date": "2019"
+          },
+          {
+            "name": "Ford v Milthorn Toleman Ltd",
+            "citation": "1980 IRLR 30, CA",
+            "cited_date": "1980"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 17,
+            "text_span": [
+              23167,
+              24666
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              24666,
+              26118
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              26118,
+              27442
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              27442,
+              28880
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              28880,
+              30326
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              30326,
+              31766
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1476
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-02-05",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              47611,
+              47987
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The tribunal had a 326-page joint bundle, witness statements from the claimant, Ashley Bonia and David Goodchild, and oral evidence from all three witnesses.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4456,
+              5896
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The respondent operates fitness gyms and employed the claimant as General Manager of its Huddersfield gym from 1 February 2020 until 6 January 2025. The claimant was responsible for regular audits and had received warnings after previous audit failures. After an external health and safety audit on 24 October 2024, she scored 44.2% and failed. She then discussed with Ms Bonia the possibility of disciplinary action, dismissal because of the live final written warning, and an alternative Assistant General Manager role in Halifax. A change of position form was later sent to HR and then stopped after the claimant said she wanted to fight for her job.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4456,
+              5896
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5896,
+              7353
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 6,
+            "text_span": [
+              7353,
+              8813
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 7,
+            "text_span": [
+              8813,
+              10292
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 8,
+            "text_span": [
+              10292,
+              11737
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11737,
+              13129
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              13129,
+              14564
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              14564,
+              16023
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              16023,
+              17487
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1476
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1476
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1476
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 31,
+              "text_span": [
+                43249,
+                44712
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 34,
+              "text_span": [
+                47611,
+                47987
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1476
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1476
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The complaint of unfair dismissal is not well founded and is dismissed.",
+          "I find there was no pre-determination of the disciplinary outcome. Ms Bonia's decision to share the possible outcome and her opinion that it did not look good, was done with reasonable and proper cause in her role as the claimant's line manager and was not calculated or likely to destroy or seriously damage trust and confidence.",
+          "I find that Ms Bonia's actions in offering the claimant two paths, disciplinary or a change in role, contacting the claimant for an answer, and requesting the claimant sleep on the decision and call her the next day was done with reasonable and proper cause and was not behaviour that was calculated or likely to destroy or seriously damage mutual trust and confidence between the claimant and the respondent.",
+          "As there was no breach of the implied term of mutual trust and confidence, there could not be a fundamental breach.",
+          "On that basis, even if there had been a fundamental breach of contract, the claimant did not resign in response to that breach."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1476
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 27,
+            "text_span": [
+              37468,
+              38901
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              40379,
+              41847
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              43249,
+              44712
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 34,
+            "text_span": [
+              47611,
+              47987
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "constructive unfair dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1476
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1476
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "yorkshire_and_humber",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1476
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Leeds (By Video)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1476
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "",
+    "parsed": null,
+    "error": "LLMIncompleteResponseError('Response incomplete (reason=max_output_tokens, tokens_out=8192); increase max_output_tokens')"
+  },
+  "labeled_at": "2026-05-16T02:56:27.197538+00:00",
+  "source_pdf_sha256": "c90c3bdc5ef0611a0b6e29c17e3b472330ebcec20808a003e09e64f4611c912d",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

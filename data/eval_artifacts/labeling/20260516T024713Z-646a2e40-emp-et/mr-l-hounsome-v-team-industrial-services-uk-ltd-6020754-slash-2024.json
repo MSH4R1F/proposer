@@ -1,0 +1,949 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024",
+  "case_reference": "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-01-19",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6020754/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr L Hounsome v Team Industrial Services (UK) Ltd: 6020754/2024 - Judgment with Reasons",
+    "url": "https://assets.publishing.service.gov.uk/media/69c67c1443217762153609a4/Mr_L_Hounsome_v_Team_Industrial_Services__UK__Limited_-__6020754_2024_-_Judgment.pdf"
+  },
+  "pdf_sha256": "85ab6dfdc78d083ca218ab7df6e3ec9fd5cb6efceef118d84bfadbb83e338c38",
+  "ocr_text_sha256": "f5d69314e948d64e944dcc56436bb31a9d0fc0b05ac825ea75459c16278b2baf",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1471, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case No: 6020754/2024\\n\\n\\n\\n1\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\nMr L Hounsome\\n\\nRespondent:\\n\\nTeam Industrial Services (UK) Limited\\n\\n\\n\\nHELD AT:\\n\\nLiverpool\\nON:\\n30 & 31 October 2025\\n(& in chambers 15\\nJanuary 2026)\\nBEFORE:\\nEmployment Judge Johnson\\n\\n\\n\\nREPRESENTATION:\\n\\nClaimant:\\nRespondent:\\n\\n\\nUnrepresented\\nMr David Flood (counsel)\\n\\n\\n\\nJUDGMENT\\n\\nThe judgment of the Tribunal is that:\\n\\na) The claimant did not assert a statutory right that was protected by section\\n104 Employment Rights Act 1996; and,\\n\\nb) The claimant was not unfairly dismissed for the reason or principal reason\\nthat he asserted a statutory right that was protected by section 104\\nEmployment Rights Act 1996.\\n\\n\\nREASONS\\n\\nIntroduction\\n\\n1. These proceedings arose from the claimant's employment with the\\nrespondent which began on 12 February 2024, and which ended on 30 July\\n2024. The claimant had been recruited as an 'Internal Process Review\\nCase No: 6020754/2024\\n\\n\\n\\n2\\nManager' (the respondent described the substantive role as Site Manager), at\\nthe respondent's Fawley site but because of business difficulties with a client,\\nthis role was no longer needed. Following an initial period working with this\\nrole but being allocated to other work areas, the claimant's substantive role\\nwas terminated, and no permanent alternative vacancies were available. The\\nclaimant was told by the respondent that he had failed his probationary period.\\nHowever, the claimant was allowed to work for a further period on temporary\"}, {\"char_end\": 2802, \"char_start\": 1471, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"basis when he was told his employment was terminated on 30 July 2024.\\n\\n2. The claimant presented a claim form on 3 December 2024 claiming\\nautomatically unfair dismissal. This was following a period of early conciliation\\nfrom 1 August to 11 September 2024. The attached grounds of complaint\\nidentified as this claim as arising from section 104 Employment Rights Act\\n1996, (ERA 1996). This was because he believed the dismissal was directly\\nlinked to the claimant's assertion of statutory rights. He identified several\\ngrounds and in particular his belief that his dismissal had been influenced by\\nhis assertion of statutory rights relating to redundancy and redeployment\\nprocesses.\\n\\n3. A notice of claim and notice of this final hearing was sent to the parties on 12\\nDecember 2024 and the respondent was permitted until 9 January 2025 to\\npresent a response. Standard case management orders were made.\\n\\n4. On 14 December 2024, the claimant made an application to amend the claim\\nto include a claim that he should receive a 25% uplift to any award because of\\na failure to comply with the ACAS Code of Practice on Disciplinary and\\nGrievance Procedures. He also notified an amendment to the grounds of\\ncomplaint 'timeline' on 19 December 2024. On 2 January 2025, Judge Batten\\nordered that this be treated as an amendment to the claim.\"}, {\"char_end\": 4283, \"char_start\": 2802, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"5. The respondent presented a response and grounds of resistance on 9\\nJanuary 2025. They resisted the complaint and while admitting that the\\nclaimant was dismissed within the meaning of section 95(1)(a) ERA 1996,\\nthey disputed that the claimant had alleged a right protected by section 104\\nand which had been infringed. They disputed that the claimant had the\\nminimum 2 years continuous employment to allow him to bring an 'ordinary'\\nunfair dismissal in accordance with section 108 ERA 1996. In the alternative,\\nthey relied upon the potentially fair reason of some other substantial reason.\\n\\nIssues\\n\\n6. The issues which the Tribunal has been asked to consider under section 104\\nare as follows:\\n\\nUnfair dismissal\\n\\nDismissal\\n\\na) Can the claimant prove that there was a dismissal?\\n\\n\\nCase No: 6020754/2024\\n\\n\\n\\n3\\nReason\\nb) Has the respondent shown the reason or principal reason for dismissal?\\nc) Was it a potentially fair reason under section 98 Employment Rights Act\\n1996?\\nFairness\\nd) Was the reason or principal reason for dismissal that the claimant asserted\\na statutory right in accordance with section 104 Employment Rights Act\\nand described in the section below? If so, the claimant will be regarded\\nas unfairly dismissed.\\ne) If not, applying the test of fairness in section 98(4), did the respondent act\\nreasonably in all the circumstances in treating that reason as sufficient\\nreason to dismiss the claimant?\\nRelevant Statutory Rights (section 104(4) Employment Rights Act 1996\"}, {\"char_end\": 5702, \"char_start\": 4283, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"f) Did the claimant assert one or more of the statutory rights as defined in\\nsection 104(4) of the Employment Rights Act 1996? If so, when was the\\nrights asserted, to whom was it asserted and which right(s) were\\nidentified? The following are relevant statutory rights:\\ni) Any right conferred by the Employment Rights Act 1996 where the remedy\\ninvolves a complaint to the Employment Tribunal?\\nii) The right conferred by section 86 of the Employment Rights Act 1996?\\niii) The rights conferred by sections 68, 86, 145 A & B, 146, 168, 168A, 169\\nand 170 of the Trade Union & Labour Relations (Consolidation) Act 1992?\\n[I noted that these are trade union related rights]\\niv) The rights conferred by the Working Time Regulations 1998? [I noted that\\nthe various maritime related employment protection legislation also\\nreferred to within this subsection was not relevant].\\nv) The rights conferred by the Transfer of Undertakings (Protection of\\nEmployment) Regulations 2006? [It is understood that this case did not\\ninvolve a transfer]\\nRemedy for unfair dismissal\\ng) If there is a compensatory award, how much should it be? The Tribunal\\nwill decide:\\ni) What financial losses has the dismissal caused the claimant?\\nii)\\nHas the claimant taken reasonable steps to replace their lost earnings,\\nfor example by looking for another job?\\niii)\\nIf not, for what period of loss should the claimant be compensated?\\nCase No: 6020754/2024\"}, {\"char_end\": 7190, \"char_start\": 5702, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"4\\niv)\\nIs there a chance that the claimant would have been fairly dismissed\\nanyway if a fair procedure had been followed, or for some other reason?\\nv)\\nIf so, should the claimant's compensation be reduced? By how much?\\nvi)\\nDid the ACAS Code of Practice on Disciplinary and Grievance\\nProcedures apply?\\nvii)\\nDid the respondent or the claimant unreasonably fail to comply with it\\nby?\\nviii) If so, is it just and equitable to increase or decrease any award payable\\nto the claimant? By what proportion, up to 25%?\\nix)\\nIf the claimant was unfairly dismissed, did they cause or contribute to\\ndismissal by blameworthy conduct?\\nx)\\nIf so, would it be just and equitable to reduce the claimant's\\ncompensatory award? By what proportion?\\nxi)\\nDoes the statutory cap of fifty-two weeks' pay apply?\\nh) What basic award is payable to the claimant, if any?\\ni) Would it be just and equitable to reduce the basic award because of any\\nconduct of the claimant before the dismissal? If so, to what extent?\\n\\nEvidence used\\n\\n7. The claimant produced a 12 page witness statement and gave oral evidence\\nfrom 2pm until 3:45pm on Day 1 of the final hearing\\n\\n8. The respondent relied upon 2 witness statements as follows:\\n\\na) Sally Anne Desborough (Region General Manager); and,\\nb) Natalie Mary Clement (HR Business Partner).\\n\\nMrs Clement gave oral evidence from 3:45pm until the end of Day 1 and\\nresumed on Day 2 at 10am and continued until 11:45am. Ms Desborough\\ngave oral evidence from 11:55am until 1:15pm on Day 2.\"}, {\"char_end\": 8634, \"char_start\": 7190, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"facts\", \"text\": \"9. Documents could be found in the respondent's combined final hearing bundle\\nwhich was 194 pages in length and included an index, pagination, copies of\\nthe proceedings and relevant documents.\\n\\nFindings of fact\\n\\n10. The parties should note that the Tribunal's findings of fact do not seek to deal\\nwith every point where the parties disagree, simply what is relevant to the\\nissues which the Tribunal is being asked to consider. If the discussion of an\\nincident or point is not referred to within these findings, it does not mean that it\\nhas not been considered by the Tribunal, simply that it is not relevant to the\\nissues and the findings that we are required to make.\\nCase No: 6020754/2024\\n\\n\\n\\n5\\n\\n11. In terms of the findings that we make, the Tribunal has reached its decision on\\nwhat it considers to be on balance of probabilities the most likely way/reason\\nin which an incident arose.\\n\\nThe respondent\\n\\n12. The respondent (Team Industrial Services (UK) Limited), is part of a group of\\ncompanies providing engineering support, training, maintenance and repair to\\nequipment and infrastructure operated by a wide range of industries. It is\\nunderstood that the respondent company employed at the relevant time more\\nthan 260 employees.\\n\\n13. This case involved the respondent's contract at the Exxon Mobil depot in\\nFawley, where they were engaged as a contractor. I accepted Ms\\nDesborough's evidence that during summer 2023 the respondent's fellow\"}, {\"char_end\": 10042, \"char_start\": 8634, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"facts\", \"text\": \"group member company which operated within the US began to experience\\ndifficulties regarding its relationship with Exxon Mobil and the US Team\\nIndustrial employees were required to leave the Exxon sites there.\\n\\n14. Time passed and by late 2023 these issues reached Exxon's UK sites, and\\nthis had an impact upon the respondent company. It is not necessary to\\ndescribe in detail what happened at this point, but following initial\\nreassurances made by Exxon UK to the respondent company, from January\\n2024 Exxon ceased engaging with them.\\n\\nThe claimant\\n\\n15. These events unfortunately coincided with the respondent's offer of a position\\nto the claimant (Mr Hounsome) of Site Manager at the Fawley site. This was\\ncommunicated to the claimant by letter dated 3 November 2023, (pages 55-6\\nof the bundle). A copy of the job summary was enclosed with the letter. The\\nclaimant accepted the offer, gave notice to his existing employer and agreed a\\nstart date with the respondent for 12 February 2024.\\n\\n16. He signed his contract for this role on 27 November 2023, (p71). In relation to\\nthe contract, (pp 57 to 71), the following sections are relevant:\\n\\na) Section 4.1 confirmed that he was appointed to the Fawley Site Manager\\nrole;\\n\\nb) Sections 3.2 and 3.3 provided for a 6 month probationary period;\\n\\nc) Section 16.1 provided that during an employee's probationary period,\\nnotice of 1 week by either party applied;\"}, {\"char_end\": 11386, \"char_start\": 10042, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"facts\", \"text\": \"d) Section 16.2 provided that once the probationary period had been\\ncompleted, employees must give four weeks' notice and the respondent\\nmust give the same notice for the first four years of continuous\\nemployment, (with their notice increasing for each further year of\\nCase No: 6020754/2024\\n\\n\\n\\n6\\ncontinuous service worked by the employer following this initial four year\\nperiod; and,\\n\\ne) Section 16.3 provided that the notice period would begin from the day after\\nthe notice was given.\\n\\nEvents arising during 2024\\n\\n17. The actions of Exxon UK resulted in the termination of their arrangements with\\nthe respondent's Fawley site. Consequently, the duties that would apply to the\\nclaimant in his contractual as role Site Manager ceased before he even began\\nhis employment in February 2024.\\n\\n18. On 14 February 2024, Daniel Hardy (Regional Operations Manager UK\\nSouth) sent an email to all UK employees announcing claimant as a new\\nstarter as an Internal Process Manager beginning that week. Mr Hardy\\nreferred to the recent events with Exxon, '...we have identified an opportunity\\nto repurpose Leigh's skills in the above interim role', (p74). Consequently, the\\nclaimant remained contracted as a Site Manager but was working in this other\\ninterim role while the Exxon situation resolved in the way that the respondent\\nhoped, with the Fawley site.\"}, {\"char_end\": 12863, \"char_start\": 11386, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"facts\", \"text\": \"19. The claimant confirmed that he agreed to fulfil the interim role, but that\\nmanagement had expressed a feeling that Exxon 'would come back on\\nstream, being no more than 'a temporary blip'. In his evidence he described\\nbeing reassured on many occasions by Mr Hardy, Richard Jackson and Ms\\nDesborough that relations with Exxon UK would be restored. This appeared\\nto be the general optimistic view at the time within the respondent company\\nand Ms Clement acknowledged in her statement that with hindsight, '...some\\nmay say we were naïve...' but went on to say '...but we hoped that Exxon\\nMobil wouldn't be able to continue at Fawley without our services.'\\n\\n20. On 29 April 2024, the claimant sent an email to Ms Desborough and Mr Hardy\\nreferring to a conversation with DH and said '...I guess its fair to say its 50/50\\nif the role will materialise.' He sought a discussion concerning what would\\nhappen to him and where he might be deployed if the Exxon work did not\\n'come on stream'. He appeared concerned that he only had May and June\\nremaining ('This is now only 2 months away (May and June')). I concluded\\nthat this referred to the conclusion of his perceived probation period. This\\nemail suggested that he was happy with his work with the respondent so far\\nbut was clearly concerned that he did not have a formal role and he had\\noccupied a temporary role since he started, (p75). His email sent on 30 April\\n2024 to Ms Desborough and Mr Hardy under the heading 'Fawley site\"}, {\"char_end\": 14360, \"char_start\": 12863, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"facts\", \"text\": \"Manager role', stated 'I am still currently in limbo, as previously advised to\\nboth, as the project scope still to be defined', (p76).\\n\\n21. On balance, I concluded that the claimant was appointed to the substantive\\nrole of Site Manager. But because of a lack of work arising from the Exxon\\nissue, he was instead working to the job description of the Internal Process\\nManager role which was temporary and did not involve formal appointment.\\n\\nCase No: 6020754/2024\\n\\n\\n\\n7\\n22. Discussions took place amongst management on 26 June 2024. Mrs Clement\\nfrom HR emailed Ms Desbororugh and enclosed recent communications\\nregarding the claimant's role and questioned whether it could continue. Her\\nrecommendation was that '...we ultimately need to end the probation on the\\nSite Manager - Fawley role, in that he isn't successfully fulfilling that role as it\\nis no longer available and we have no visibility of when it will be. Even if\\nExxon make contact having the presence of a Site Manger 5 days per week is\\nlikely to be somewhat further down the line.' She proposed offering the\\nclaimant a 3 month '...or whatever appropriate duration' temporary contract as\\nan Internal Process Review manager and issue new paperwork to that effect.\\nshe concluded her email by acknowledging that the claimant may decline and\\nleave. (p84). I concluded that as decision was made to terminate the\\nclaimant's substantive role during this discussion on 26 June 2024. However,\\nit still needed to be communicated to the claimant.\"}, {\"char_end\": 15838, \"char_start\": 14360, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"facts\", \"text\": \"23. An invitation email was sent by Ms Desborough to the claimant under the\\nheading 'Catch Up' on 27 June 2024 to take place the same day. The\\nclaimant noted that Ms Clement was attending and a brief exchange took\\nplace querying whether he needed to prepare himself for 'worrying news'. Ms\\nDesborough explained that Ms Clement's presence was because the claimant\\nhad requested '...an update on Exxon. We have obviously hit a mid-year point\\n& we said that we would assess where we stood regarding the Exxon contract\\nat this point so will discuss in the meeting', (pp85-86). Given Ms Desborough\\nand Mrs Clement's discussions the previous day, it was recognised that the\\nSite Manager role, the claimant's substantive job, was no longer viable.\\n\\n24. The meeting took place the same day on 27 June 2024 between Mrs\\nClement, Ms Desborough and the claimant. It was not surprisingly, an\\nupsetting meeting for the claimant. He was informed that his employment was\\nbeing terminated due to a failed probation. The claimant accepted that he\\nwas offered the temporary Internal Process Review role.\\n\\n25. He believed that he had been made redundant and would have been happy to\\nbe declared redundant. Eventually he conceded that he took issue with being\\ntold that he had failed the probation which he felt was different to ending the\\nprobation. I accepted that the claimant was unhappy with the given reason for\\nthe termination being 'failed probation'. I concluded he believed that this gave\"}, {\"char_end\": 17327, \"char_start\": 15838, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"facts\", \"text\": \"the impression that it ended through his fault rather than the external factors\\nwith Exxon. A discussion took place later that day, after the meeting. This\\nwas between the claimant and Mrs Clement where he challenged the ending\\nof the probationary period. However, she confirmed that he could work in the\\nidentified interim role and he was encouraged to apply for the Quality Manger\\nrole which the respondent was at that stage carrying out a recruitment\\nexercise.\\n\\n26. During his evidence, the claimant confirmed that prior to this meeting on 27\\nJune 2024 when notice was given to end the probationary period, he had not\\nraised any statutory right. Consequently, any statutory right if asserted, took\\nplace following the respondent's decision to terminate the substantive role.\\n\\nCase No: 6020754/2024\\n\\n\\n\\n8\\n27. A letter was sent by Mrs Clement to the claimant following the meeting. It was\\ndated 22 July 2024. The claimant disputed that the reason for its sending\\nbeing delayed until 22 July 2024 was to allow the Quality Manager interviews\\nto be concluded. Whatever the reason for the delay, the letter referred to the\\nmeeting on 27 June 2024 and confirmed that he had been unsuccessful in\\npassing his probation period for the Site Manager role. This permanent\\nposition was terminated with effect on 30 June 2024. It confirmed that the\\nclaimant agreed to continue in the temporary role from 1 July 2024. It also\\nconfirmed that he had been unsuccessful with his application for the Quality\"}, {\"char_end\": 18757, \"char_start\": 17327, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Manager role. The temporary role in the meantime was confirmed with a\\ntemporary contract being provided for the period of 1 July to 29 November\\n2024, followed by it continuing on a month by month basis subject to review,\\n(p89).\\n\\n28. A series of emails were sent by the claimant during the remaining period of his\\nemployment which reflected his general agitation regarding the decision\\ncommunicated to him in the letter dated 22 July 2024.\\n\\n29. Mrs Clement asked the claimant whether he was able to sign the temporary\\ncontract on 24 July 2024. The claimant responded by email on 25 July 2024\\nraising several concerns regarding communications before his employment\\ncommenced, referred to his substantive contract terms, communication since\\nhis employment commenced and the events when his contract was\\nterminated, (pp93-96). The claimant appealed against the termination of the\\nSite Manager role. An email exchange between Mrs Clement and Ms\\nDesborough later that day and the latter stating that they should not be\\nentering, 'into negotiations with him or repeating the same conversation so\\nthat we do end up removing the temporary contract offer pending what he\\nreplies and/or says in the meeting?' (p116). I understood that this related to\\nthe appeal meeting that would follow.\\n\\n30. An appeal hearing was proposed to the claimant by letter dated 25 July 2024\\nand offering 1 August 2024 when it could take place, with Rachel Dixon\"}, {\"char_end\": 20188, \"char_start\": 18757, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"tribunal_reasoning\", \"text\": \"(Finance Director - Eastern Hemisphere) chairing meeting and Mrs Clement\\nbeing present, (p117). Mrs Clement in evidence explained that it was unusual\\nto offer an appeal arising from an unsuccessful probation. However, it was\\nacknowledged that the circumstances surrounding the claimant's recruitment\\nwere unusual and it was felt that the claimant should have an '...opportunity to\\nverbalise his points rather than constantly emailing.' This appeal fell outside\\nthe usual procedures for the termination of probationary periods and it was\\nunclear what powers Ms Dixon would have as appeal hearing manager and it\\nwas not expressly described in the available documentation.\\n\\n31. Prior to the appeal taking place, the claimant sent an email to Mrs Clement\\nand Ms Dixon on 29 July 2024, (pp90-1). He challenged Mrs Clement's\\ninvolvement in the appeal and argued that the Vice President of Global HR be\\nappointed to the appeal hearing instead. He wished to submit new\\ndocumentation and witness evidence and further particularise his complaint.\\nMrs Clement acknowledged that this caused concern because the claimant in\\nher view was spending more time focusing upon the appeal rather than giving\\nattention to his temporary role. It was considered unreasonable for Mrs\\nCase No: 6020754/2024\\n\\n\\n\\n9\\nClement to be replaced as HR manager involved, 'given the nature of the\\nappeal and the amount of time he had been employed with the business.' I\"}, {\"char_end\": 21680, \"char_start\": 20188, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"tribunal_reasoning\", \"text\": \"concluded that while the respondent did not have a procedure in place where\\nunsuccessful probations could be appealed, it had attempted to be\\nreasonable and offer the claimant the means of 'ventilating' his grievances,\\nrather that actually establishing a genuine appeal hearing. Unfortunately, this\\nwas not explained to the claimant, and the 'appeal' emboldened the claimant\\nto treat the hearing as a formal process with the possibility of achieving what\\nhe considered the resolution of the matters raised in his previous\\ncorrespondence.\\n\\n32. Consequently, Ms Dixon concluded that the claimant's email represented a\\nbreakdown in the relationship between the claimant and the respondent. Mrs\\nClement arranged an earlier call with the claimant on 30 July 2024. No formal\\nnotetaker was present. It took place remotely by Teams (or similar platform).\\nIt later transpired that the claimant had covertly recorded the meeting which is\\nbelieved to have been begun 3 minutes into the call when the claimant asked\\nfor a moment to take another call. The transcript begins with the claimant\\nfeeling that the respondent has taken 'offence' because he has 'asked...for\\nsome things to be considered'. Ms Dixon replies as follows:\\n\\n'Leigh [Hounsome], it isn't going to change the outcome. We're in a position\\nultimately where we've had to end...the contract. So we've ended the\\nprobationary period for the original contract that you entered into on the\\ngrounds that there isn't a position there to fulfil.'\"}, {\"char_end\": 23123, \"char_start\": 21680, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The claimant was unwilling to accept this argument and raised a few points\\nwhere Ms Dixon tried to explain that they would not change the outcome\\nbefore saying as follows:\\n\\n'I'm sorry, but I think...the position where we are now in...I think it's clearly\\ndemonstrated that you're not prepared to accept the business decision. And\\nI'm note prepared to move from it. So unfortunately, I'm finishing this...\\n[interrupted by utterances of denial and pleading from the\\nclaimant]...Unfortunately, we are terminating in this relationship.'\\n\\nThe conversation then continued for some time and the transcript suggests\\nthat the claimant was struggling to listen to what was being said and instead\\nwas seeking to suggest several things, one after the other. This included his\\nbelief that he was being blamed for the failure to renew the relationship with\\nExxon, that he was being made redundant, that he wanted to complete the\\nproject he was working on, that failure of probation was being used as an\\nexcuse. These represented a series of unfocused statements and Ms Dixon\\nreminded him that he was being terminated with immediate effect and would\\nbe paid in lieu of notice. The notice pay was stated to be one month's notice.\\n\\n33. The transcript was lengthy and while it appears to have been taken from the\\nclaimant's covert recording, it revealed that Ms Dixon and Mrs Clement were\\nbeing extremely patient and allowed the claimant to speak at length and\"}, {\"char_end\": 24557, \"char_start\": 23123, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"tribunal_reasoning\", \"text\": \"tolerated his numerous interruptions when they were trying to explain their\\nposition. There simply was an unwillingness on the part of the claimant to\\nCase No: 6020754/2024\\n\\n\\n\\n10\\naccept what he was being told. He remained unhappy with the decision that\\nthere had been a failure of probation. He argued on several occasions that the\\nsituation involved redundancy. Ms Dixon eventually decided to end the\\nmeeting and did so after trying to bring matters to an amicable close. The note\\nof the meeting was roughly 1 hour in length, (pp 118 to 147).\\n\\n34. It was a heated meeting The claimant sent an email to Mrs Clement the same\\nday enclosing notice of a grievance which he had sent to Keith Tucker\\n(respondent's CEO) on 31 July 2024, (pp150-151). It was followed by an\\namended version sent on 2 August 2024, (pp152-154). He asserted that the\\nappeal process which he believed he was entitled to had been cancelled and\\nthat he was terminated with immediate effect. He argued that this was\\nretaliatory action because he had mentioned a reference to the respondent's\\n'Ethics Portal' and had outlined his rights in his appeal documentation. He\\nrequested Mr Tucker conduct a review. Although it was not stated what policy\\nor procedure the claimant was raising his concerns under, it appeared that he\\nwas effectively raising a grievance regarding the way in which the meeting on\\n30 July 2024 had been used to cancel his appeal and dismiss him.\"}, {\"char_end\": 25968, \"char_start\": 24557, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"tribunal_reasoning\", \"text\": \"35. On 2 August 2024, Mrs Clement sent a letter to the claimant in response\\nreminding him that his permanent contract was terminated on 27 June and on\\n30 July 2024, the temporary position was terminated because he would not\\naccept the original decision. Termination was confirmed as being with\\nimmediate effect with four weeks' pay in lieu of notice and accrued but\\nuntaken holiday pay being paid through the next payroll, (p155).\\n\\n36. The claimant confirmed in evidence following a lengthy series of questions\\nfrom Mr Flood that he asserted the following statutory rights:\\n\\na) His email sent to Mrs Clement and Ms Dixon on 29 July 2024. In section 5,\\nhe describes a Reminder of Employee's Rights. This includes a right to a\\nfair and impartial appeal process under the ACAS Code of Practice, that\\nhis probationary period was conducted as outlined in his contract and\\nredeployment was not accounted for when assessing his performance, (in\\nrelation to his probationary period).\\nb) His email sent to Mrs Clement on 25 July 2024, included a reference in\\nsection 5 to a failure to provide fair treatment in relation to process, 'such\\nas probation review' or 'redundancy'.\\n\\nWhen further cross examined by Mr Flood, the claimant focused upon his\\nbelief that the respondent knew he was redundant when his permanent\\ncontract ended and he should have been afforded a redundancy process.\\n\\nLaw\\n\\nUnfair dismissal generally\"}, {\"char_end\": 27465, \"char_start\": 25968, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"tribunal_reasoning\", \"text\": \"37. Unfair dismissal is dealt with in Part X of the Employment Rights Act 1996.\\nOrdinary unfair dismissal complaints where the employee is typically\\ndismissed for the asserted (potentially fair) reasons of conduct, capability,\\nredundancy or some other substantial reason required a minimum length of\\nCase No: 6020754/2024\\n\\n\\n\\n11\\nservice. This complaint is subject to a minimum period of two years\\ncontinuous employment with the employer before an unfair dismissal\\ncomplaint can be brought, (see section 108).\\n\\n38. However, dismissals where the asserted reason or principal reason for the\\ndismissal arises from the making of protected disclosures, asserting\\nemployment rights etc', are not subject to this minimum service requirement,\\n(see section 108(3) which includes complaints brought under section 104 -\\nasserting statutory rights).\\n\\nUnfair dismissal - automatically unfair reasons - asserting statutory rights\\n\\n39. It will be automatically unfair to dismiss an employee under section 104(1)\\nERA 1996 if the reason or principal reason is that they have brought\\nproceedings against the employer to enforce, or alleged that the employer had\\ninfringed, a relevant statutory right. The statutory rights are set out in s 104(4):\\n\\na) any right under the ERA 1996 where an ET claim might be brought;\\nb) the right conferred by section 86 of the ERA 1996;\\nc) any right conferred by sections 68, 86, 145A, 145B, 146, 168, 168A, 169\\nand 170 of the Trade Union & Labour Relations (Consolidation) Act 1992,\"}, {\"char_end\": 28912, \"char_start\": 27465, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"tribunal_reasoning\", \"text\": \"i.e. deductions from pay, union activities and time off;\\nd) rights conferred by the Working Time Regulations 1998 (and other\\nmaritime working legislation not relevant to this claim); and,\\ne) rights conferred by the Transfer of Undertakings (Protection of\\nEmployment) Regulations 2006.\\n\\nIt appears that those rights which might be relevant in this case are a) and b),\\nwith the other rights seemingly not applying to this claim under section 104.\\nThe claimant did not assert union related rights, working time rights and the\\ncomplaint did not arise from a relevant transfer.\\n\\n40. It is specifically provided in section 104(2) that if the employee's claim is made\\nin good faith, it does not matter whether or not he had the right or it was\\ninfringed. The employee must, nonetheless, make it reasonably clear what\\nright he claims has been infringed. In Mennell v Newell & Wright (Transport\\nContractors) Ltd [1997] IRLR 519, CA at [28] Mummery LJ said:\\na) It is sufficient if the employee has alleged that his employer has infringed\\nhis statutory right and that the making of that allegation was the reason or\\nthe principal reason for his dismissal.\\nb) The allegation need not be specific, provided it has been made reasonably\\nclear to the employer what right was claimed to have been infringed.\\nc) The allegation need not be correct, either as to the entitlement to the right\\nor as to its infringement, provided that the claim was made in good faith.\"}, {\"char_end\": 30226, \"char_start\": 28912, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"tribunal_reasoning\", \"text\": \"d) The important point for present purposes is that the employee must have\\nmade an allegation of the kind protected by section 104; if he had not, the\\nmaking of such an allegation could not have been the reason for his\\ndismissal.\\nCase No: 6020754/2024\\n\\n\\n\\n12\\n41. Because section 104(1)(b) says 'alleged that the employer had infringed a\\nright ...', the protection does not extend to an allegation that the\\nemployer threatened to infringe the right in the future. This interpretation was\\napplied in Spaceman v ISS Mediclean Ltd UKEAT/0142.\\n\\n42. Simoes v De Sede UK Ltd [2021] IRLR 974, emphasises the need to\\ndetermine just what the alleged infringement of rights was under section 104.\\nThe Court of Appeal held that in this case the claimant had been instructed to\\nwork a disputed period, and she had alleged that the instruction constituted a\\nbreach of her statutory rights. It was not a case of \\\"If you ask me to do that\\nthen it will be a breach of my rights\\\" as the instruction had already been given.\\nShe had been asked and the instruction was repeated after her concerns had\\nbeen raised. In Simoes it is the instruction which was alleged to breach the\\nclaimant's working time rights. The claimant did not have to wait until she had\\ncompleted the rota that she had asserted in good faith infringed her rights.\"}, {\"char_end\": 31604, \"char_start\": 30226, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"tribunal_reasoning\", \"text\": \"43. The claimant referred to the following cases in his closing arguments, (which\\nrequired some additional enquiry during my deliberation as copies of the\\nauthorities were not provided by him at the hearing in accordance with good\\npractice and out of consideration for the Tribunal and other party):\\n\\na) Spaceman v ISS Mediclean Ltd UKEAT/0142/18 (see above).\\n\\nb) Ennion v Secretary of State for Work and Pensions - no citation provided\\nby the claimant, but in my notes Mr Flood suggested it may have [2007]\\nIRLR 450. However, this citation referred to the case of Revenue and\\nCustoms Commissioners v Leisure Employment Services Ltd, which\\nrelated to the unlawfulness of employers deducting gas and electricity\\ncharges from employees at holiday resorts which caused their hourly rate\\nof pay to fall below statutory minimum wage. A search against the case\\nname did not yield a positive search outcome.\\n\\nc) Lewis v Motorworld Garages Ltd [1986] ICR 157 - when an employee is\\ndismissed and the objective test for repudiatory conduct, (see paragraph\\nbelow).\\n\\nd) Ferguson v Prestwick Circuits Ltd [2019] IRLR 415. However, my\\nenquiries yielded a citation of [1992] IRLR 266. In any event, this case\\ninvolved large scale redundancy plans and consultation not being required\\nfollowing a previous plan where the workforce had indicated they preferred\\nnot to proceed with consultation.\"}, {\"char_end\": 32957, \"char_start\": 31604, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"tribunal_reasoning\", \"text\": \"e) Murray v Foyle Meats [1999] ICR 827 HL. A key redundancy case\\nregarding circumstances when a dismissal arises from a redundancy.\\n\\nf) Safeway Stores v Burrell [1997] ICR 523. Consideration of the test to apply\\nwhen determining whether or not that there was a redundancy situation.\\n\\ng) Berkeley Catering Ltd v Jackson [2020] EAT 0074/20. An unreported case\\napplying the test described in Safeway (above), relating to redundancy\\nsituations.\\n\\nCase No: 6020754/2024\\n\\n\\n\\n13\\nh) Kuzel v Roche Products Ltd [2008] EWCA Civ 380. In protected disclosure\\ncases applied in unfair dismissal law under Part X ERA 1996, it is for the\\nemployer to show the reason or principal reason for the dismissal.\\n\\ni) Masiak v City Restaurants (UK) Ltd [1999] IRLR 780. Considered the\\napplication of section 100(1)(e) ERA 1996 (automatic unfair dismissal in\\nhealth and safety cases) and that no continuous employment was required\\nfor wrongful dismissal cases.\\n\\n44. While not specifically referring me to cases in his submissions, in reply to the\\nclaimant's submissions, Mr Flood commented upon some of the cases raised\\nby the claimant. I agreed that some of the cases referred to by the claimant\\nwere not relevant to my consideration under section 104. For example, Lewis\\nrelated to constructive unfair dismissal and Ferguson related to unfair\\ndismissal.\\n\\nDecision\\n\\nJurisdiction\"}, {\"char_end\": 34430, \"char_start\": 32957, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"judgment\", \"text\": \"45. Firstly, the claimant had worked fewer than 2 years when his employment\\nterminated. He does not have sufficient service in which to bring a complaint\\nof ordinary unfair dismissal in accordance with section 108 Employment\\nRights Act 1996 (ERA 1996).\\n\\n46. The claimant can rely upon his complaint of automatic unfair dismissal\\ncontrary to section 104 ERA 1996 for the reason of asserting a statutory right\\nwith his brief period of employment.\\n\\n\\nWas any right asserted that was protected by section 104?\\n\\n47. The Tribunal must consider what were the asserted statutory rights, when\\nwere they made and to whom they were made and whether they satisfy the\\ntest under s104(4) ERA 1996.\\n\\n48. If I conclude that one or more statutory rights were asserted that are protected\\nby section 104(4) ERA 1996, I must then consider whether they were the\\nreason or the principal reason for the decision to dismiss the claimant.\\n\\n49. The claimant had not provided a clear list of issues including the alleged\\nstatutory rights asserted, but during cross examination by Mr Flood, he was\\nable to confirm the following:\\n\\na) He did not assert a statutory right before or during the events on 27 June\\n2024 when his substantive role of Site Manager at Fawley site was ended.\\n\\nb) He referred to email sent on 25 July 2024 to Mrs Clement and paragraphs\\n9, 10, 11 and 12 at the foot of the email. This referred to matters of\\nfairness, transparency, due process, lack of consultation process, events\"}, {\"char_end\": 35871, \"char_start\": 34430, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"judgment\", \"text\": \"being paused while he applied for the internal Quality Control role.\\nCase No: 6020754/2024\\n\\n\\n\\n14\\n\\nc) He also referred to email sent on 29 July 2024 and paragraph 5 where he\\nreferred to employee rights in relation to procedural fairness using the\\nACAS Code of Practice of (presumably) disciplinary and grievance\\nprocedures and/or redeployment.\\n\\n50. Section 104(4) ERA provides details of those statutory rights protected by this\\nsection. Having considered the rights asserted by the claimant to the\\nrespondent, I could only see section 104(4)(a) and (b) being potentially\\nrelevant as they focus upon ERA 1996 rights. These are (a), any right\\nconferred by the ERA 1996 and (b), the right conferred by section 86 ERA\\n1996.\\n\\n51. Dealing with these matters in reverse order, I noted that in respect of grounds\\nsection 104(4)(b), section 86 deals with rights of the employer and the\\nemployee to minimum notice. The claimant's email dated 25 July 2024,\\nsections 9, 10, 11 & 12 of this correspondence fails to address anything\\nrelating to notice periods under section 86. It certainly cannot be considered\\nreasonably clear from its ordinary reading that this was a right being claimed\\nby the claimant. During this hearing, the claimant did not seek to argue that\\nthis was a relevant ground.\\n\\n52. The email of 29 July 2024 provided by the claimant, stated to the respondent\\nhis employee rights and referred to a failure to follow procedural fairness\"}, {\"char_end\": 37335, \"char_start\": 35871, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"judgment\", \"text\": \"under the ACAS Code of Practice. He said in paragraph 5 of this email that\\nhis primary complaint is a 'breach of contract'. This was because the\\nprobationary period was not conducted in accordance with his contract of\\nemployment and that redeployment should have counted negatively against\\nthe failure of the probation and 'other procedural issues', that were not\\nspecified. None of these complaints could be considered applicable to section\\n104(4)(b).\\n\\n53. I now turn to section 104(4)(a) and the more general ground of infringements\\nunder ERA 1996 being remedied by a complaint to the Employment Tribunal.\\nFirstly, I noted that the claimant appeared to be making allegations of breach\\nof contract which in terms of the application of the probationary period, would\\nnot be actionable as a claim under the ERA 1996.\\n\\n54. In terms of the claimant's actions following the termination of the substantive\\ncontract of employment which gave rise to these emails, I agreed with Mr\\nFlood that the claimant was primarily unhappy with the description used of a\\nfailure of the probation period and also his view that, he should have been\\ntreated as redundant.\\n\\n55. In relation to the application of section 104(4)(a), I have been unable to\\nidentify that the claimant is identifying a complaint where remedy is provided\\nwithin the ERA 1996. For example, the claimant is not identifying potential\\nrights that can be brought under section 11 (Part I ERA), section 23 (Part II),\"}, {\"char_end\": 38771, \"char_start\": 37335, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"judgment\", \"text\": \"section 48 (Part IVA), etc'. I also considered whether he is effectively seeking\\na right to a redundancy payment. However, he appears to be unhappy with\\nCase No: 6020754/2024\\n\\n\\n\\n15\\nthe decision to say that the probation period was unsuccessful and was not\\nseeking to assert that he was entitled to a statutory redundancy payment.\\n\\n56. It is understandable that the claimant was unhappy with the language used in\\nrelation to probation and this was reflected in his correspondence and during\\nthe interview where his temporary contract was terminated. But in a sense,\\nthe respondent was correct in saying that the probation had been\\nunsuccessful or had been failed. This was because the claimant had been\\nunable to work in the substantive role of Site Manager which he was originally\\nappointed to.\\n\\n57. However, while the claimant made an arguable point to the respondent that\\nhis substantive role had been made redundant (in the sense that the need for\\nthat work had ceased or diminished), he was not asserting nor could he assert\\nthat he was denied a redundancy payment given his limited service. He did\\nnot suggest during his engagement with the respondent that his limited\\nservice (of what was a matter of months), would have entitled him to such a\\npayment. Consequently, it was not a case where the claimant was\\nerroneously asserting a right to which he believed could bring under the ERA\\n1996 and in accordance with section 104(2).\"}, {\"char_end\": 40080, \"char_start\": 38771, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"judgment\", \"text\": \"58. Nor did he attempt to argue that he had been unfairly dismissed by there not\\nbeing a genuine redundancy situation, (despite having insufficient service to\\nbring such a claim).\\n\\n59. But in any event, the dismissal of the substantive role and redeployment into\\nthe temporary role did not take place after any alleged assertion of a right\\nunder section 104 had taken place. It was simply treated as a failed probation\\nunder the contract of employment and while the claimant was unhappy with\\nthe application of the provision from the contract, it was not triggered by any\\nassertion on his part regarding statutory rights.\\n\\n60. In terms of the rights being asserted by the claimant, I concluded that he was\\neffectively complaining of a failure by the respondent to comply with the ACAS\\nCode of Practice on disciplinary and grievance procedures and which was\\nissued under section 199 of the Trade Union and Labour Relations\\n(Consolidation) Act 1992, ('TULRCA'). It is interesting to note that the Code\\ndoes not apply to redundancy situations. More importantly though, a failure to\\nfollow the Code does not, make a person liable to proceedings. Instead,\\nEmployment Tribunals will take the Code into account when considering\\nrelevant cases as listed within Schedule A2 of TULRCA and as provided by\\nsection 207A.\"}, {\"char_end\": 41426, \"char_start\": 40080, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"judgment\", \"text\": \"61. Consequently, the claimant was not asserting a right in accordance with\\nsection 104(4)(a), or indeed any other of the subsections. As I explained\\nabove, the claimant was unable to give any indication of a right under section\\n104(4) which he believed that he might have, or whether the employee had\\nbreached that right.\\n\\n\\n\\nCase No: 6020754/2024\\n\\n\\n\\n16\\nThe reason for the dismissal\\n\\n62. While this first 'hurdle' of the complaint is therefore unsuccessful and the claim\\nmust fail, I have given some consideration regarding the employer's reason\\nfor terminating the claimant's employment absolutely by ending the temporary\\nrole.\\n\\n63. I accepted from the evidence of the respondent witnesses that there was a\\nsense of regret that they had continued with the initial recruitment of the\\nclaimant when they were aware the Exxon situation was in difficulties. I\\naccepted that they had hoped matters with Exxon would resolve and\\nconsequently, that the Site Manager role at Fawley would remain viable.\\nEfforts were made to keep the claimant engaged in some sort of role in the\\ninterim (which involved the claimant working on tasks not part of his\\nsubstantive role job description. Eventually though, the unhappy situation\\narose where all parties were reaching the conclusion that the substantive role,\\nwhich was not being worked, was no longer viable.\"}, {\"char_end\": 42900, \"char_start\": 41426, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"judgment\", \"text\": \"64. In many ways it was creditable that the respondent sought to find a way of\\nretaining the claimant when the substantive role was terminated in June 2024.\\nThey had initially promised to keep the claimant in the temporary role until\\nNovember 2024 but ended it on 29 July 2024 following their concerns about\\nthe claimant's continuing and considerable work being spent challenging to\\nthe original termination and the appeal relating to the failed probation.\\n\\n65. While made with good intentions, the respondent had offered the claimant an\\nappeal against the failed probation decision contrary to its usual procedures. I\\ndid not find that it was amounted to a genuine appeal because the respondent\\ndid not consider that the meeting would change the outcome. They were\\nclearly happy with the decision to fail the probation and had no intention of a\\nrevoking or varying their decision. I did not hear evidence from the nominated\\n'chair' Ms Dixon but based upon what Mrs Clement said (as HR advisor), the\\npurpose of the 'appeal' was to 'verbalise his points', because he was\\n'constantly emailing'. The aim was to allow the claimant to ventilate his\\nissues. The respondent did not explore offering a grievance process to the\\nclaimant as an alternative.\\n\\n66. The decision to finally terminate the temporary role was that the claimant\\nembraced the 'appeal' to a degree that far more than what was anticipated by\\nthe respondent. He approached the process as a genuine appeal against\"}, {\"char_end\": 44359, \"char_start\": 42900, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"judgment\", \"text\": \"dismissal where he sought to overturn the original decision regarding the\\nsubstantive role As Mrs Clement described, Ms Dixon when confronted with\\nproposals to obtain further witnesses and documents decided the employment\\nrelationship had broken down and it was decided to terminate the temporary\\nrole before the initial period ending in November 2024 had been reached.\\n\\n67. If this was an ordinary unfair dismissal complaint, the respondent may have\\nasserted some other substantial reason as a potentially fair reasons for\\nending the contract with the claimant before the appeal was due to take place.\\nBut this was not a case where the claimant had sufficient service to bring such\\na claim, and the respondent's managers did not approach this employment\\nCase No: 6020754/2024\\n\\n\\n\\n17\\nrelations matter as if this was relevant. As an aside, had the claimant had\\nsufficient service to bring an ordinary unfair dismissal, he could have\\nchallenged any potentially fair reason for the decision to dismiss and rely upon\\nprocedural failures as amounting to unfairness as well. This did not apply\\nhere of course and instead Ms Dixon (supported by Mrs Clement), attended\\nthe meeting in July 2024, gave notice of his dismissal with notice.\\n\\n68. Had the claimant asserted rights which were protected by section 104 ERA\\n1996 (and I have concluded that he did not have this right), he would have\\nbeen able to argue that the decision to dismiss in July 2024 was for the sole\"}, {\"char_end\": 45823, \"char_start\": 44359, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"judgment\", \"text\": \"or principal reason was his assertion of those rights. Having considered the\\nreasons identified from the evidence before me in this case however, I\\nconcluded that they related to the claimant seeking to rely upon the ACAS\\nCode and believing he could rely upon these provisions. These are not rights\\nprotected by section 104 ERA 1996 and therefore the dismissal was not for\\nreasons which infringed this section.\\n\\nConclusion\\n\\n69. Accordingly, I must conclude that:\\n\\nj) The claimant did not assert a statutory right that was protected by\\nsection 104 Employment Rights Act 1996; and,\\n\\nk) The claimant was not unfairly dismissed for the reason or principal\\nreason that he asserted a statutory right that was protected by section\\n104 Employment Rights Act 1996.\\n\\n70. I recognised that the claimant approached his new job with the respondent\\nwith great hopes and optimism. But in terms of timing, his recruitment took\\nplace just at the time when the need for this role was being brought into\\nquestion.\\n\\n71. It is easy to look at the circumstances existing at the time with the benefit of\\nhindsight and suggest that the respondent would have been wiser to withdraw\\nthe offer or terminate the employment relationship once and for all at a much\\nearlier stage than they did. But I accepted that the respondent was aware and\\nworried that the claimant had resigned from his old position and hoped that\\nthe problems with Exxon would resolve. Especially, as I understand was the\"}, {\"char_end\": 47321, \"char_start\": 45823, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"judgment\", \"text\": \"case, its origins related to disputes in the USA rather than the UK. It is\\nunfortunate that things did not improve in the way that had been hoped.\\n\\n72. Nonetheless, while it could be argued that the claimant's role had become\\nredundant, the decision that the probation failed while sounding unattractive to\\nthe claimant, was not incorrect. The problem was that the respondent then\\noffered an appeal which did not form part of the probation process and which\\ndid not assume the genuine function of an appeal.\\n\\n\\n\\n\\nCase No: 6020754/2024\\n\\n\\n\\n18\\n\\n\\n\\n\\n\\n_____________________________\\n\\n\\n\\n\\n\\n\\nEmployment Judge Johnson\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nDate____19 January 2026_________\\n\\n\\n\\n\\n\\n\\nJUDGMENT SENT TO THE PARTIES ON\\n\\n6 March 2026\\n\\n\\n\\n\\n\\n\\nFOR THE TRIBUNAL OFFICE\\n\\n\\n\\n\\nNotes\\n\\nPublic access to employment tribunal decisions\\n\\nJudgments\\nand\\nreasons\\nfor the\\njudgments\\nare\\npublished,\\nin\\nfull,\\nonline\\nat\\nwww.gov.uk/employment-tribunal-decisions shortly after a copy has been sent to the\\nclaimant(s) and respondent(s) in a case.\\n\\nRecording and Transcription\\n\\nPlease note that if a Tribunal hearing has been recorded you may request a transcript of the\\nrecording, for which a charge may be payable. If a transcript is produced it will not include any\\noral judgment or reasons given at the hearing. The transcript will not be checked, approved or\\nverified by a judge. There is more information in the joint Presidential Practice Direction on the\\nRecording and Transcription of Hearings, and accompanying Guidance, which can be found\\nhere:\"}, {\"char_end\": 47423, \"char_start\": 47321, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"judgment\", \"text\": \"https://www.judiciary.uk/guidance-and-resources/employment-rules-and-legislation-practice-\\ndirections/\"}]}",
+  "n_chunks": 34,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 11,
+    "tribunal_reasoning": 11,
+    "judgment": 11
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      {\n        \"name\": \"Mennell v Newell & Wright (Transport Contractors) Ltd\",\n        \"citation\": \"[1997] IRLR 519, CA\",\n        \"cited_date\": \"1997\"\n      },\n      {\n        \"name\": \"Spaceman v ISS Mediclean Ltd\",\n        \"citation\": \"UKEAT/0142/18\",\n        \"cited_date\": \"2018\"\n      },\n      {\n        \"name\": \"Simoes v De Sede UK Ltd\",\n        \"citation\": \"[2021] IRLR 974\",\n        \"cited_date\": \"2021\"\n      },\n      {\n        \"name\": \"Lewis v Motorworld Garages Ltd\",\n        \"citation\": \"[1986] ICR 157\",\n        \"cited_date\": \"1986\"\n      },\n      {\n        \"name\": \"Ferguson v Prestwick Circuits Ltd\",\n        \"citation\": \"[1992] IRLR 266\",\n        \"cited_date\": \"1992\"\n      },\n      {\n        \"name\": \"Murray v Foyle Meats\",\n        \"citation\": \"[1999] ICR 827 HL\",\n        \"cited_date\": \"1999\"\n      },\n      {\n        \"name\": \"Safeway Stores v Burrell\",\n        \"citation\": \"[1997] ICR 523\",\n        \"cited_date\": \"1997\"\n      },\n      {\n        \"name\": \"Berkeley Catering Ltd v Jackson\",\n        \"citation\": \"[2020] EAT 0074/20\",\n        \"cited_date\": \"2020\"\n      },\n      {\n        \"name\": \"Kuzel v Roche Products Ltd\",\n        \"citation\": \"[2008] EWCA Civ 380\",\n        \"cited_date\": \"2008\"\n      },\n      {\n        \"name\": \"Masiak v City Restaurants (UK) Ltd\",\n        \"citation\": \"[1999] IRLR 780\",\n        \"cited_date\": \"1999\"\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 20,\n        \"text_span\": [\n          27465,\n          28912\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 21,\n        \"text_span\": [\n          28912,\n          30226\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 22,\n        \"text_span\": [\n          30226,\n          31604\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 23,\n        \"text_span\": [\n          31604,\n          32957\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          2802,\n          4283\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"2026-01-19\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 33,\n        \"text_span\": [\n          45823,\n          47321\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": \"The claimant produced a 12-page witness statement and gave oral evidence. The respondent relied on witness statements from Sally Anne Desborough and Natalie Mary Clement, both of whom gave oral evidence. The documentary bundle was 194 pages.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 5,\n        \"text_span\": [\n          5702,\n          7190\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 6,\n        \"text_span\": [\n          7190,\n          8634\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The claimant brought an automatically unfair dismissal claim under section 104 Employment Rights Act 1996, alleging that dismissal was linked to asserted statutory rights concerning redundancy and redeployment processes. The respondent admitted dismissal but disputed that any protected section 104 right had been asserted and said the claimant lacked two years' service for ordinary unfair dismissal. The claimant had accepted a Site Manager role at Fawley starting 12 February 2024, but Exxon-related business difficulties meant the role was unavailable and he worked in an interim role. On 27 June 2024 he was told his employment was being terminated due to failed probation and was offered a temporary Internal Process Review role.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 2,\n        \"text_span\": [\n          1471,\n          2802\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          2802,\n          4283\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 7,\n        \"text_span\": [\n          8634,\n          10042\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 8,\n        \"text_span\": [\n          10042,\n          11386\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 11,\n        \"text_span\": [\n          14360,\n          15838\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 32,\n          \"text_span\": [\n            44359,\n            45823\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"0.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 32,\n          \"text_span\": [\n            44359,\n            45823\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"respondent_success\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 32,\n          \"text_span\": [\n            44359,\n            45823\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"respondent\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 32,\n              \"text_span\": [\n                44359,\n                45823\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": \"0.00\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 32,\n              \"text_span\": [\n                44359,\n                45823\n              ]\n            }\n          ]\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The claimant had worked fewer than 2 years when his employment terminated. He does not have sufficient service in which to bring a complaint of ordinary unfair dismissal in accordance with section 108 Employment Rights Act 1996 (ERA 1996).\",\n      \"Consequently, the claimant was not asserting a right in accordance with section 104(4)(a), or indeed any other of the subsections.\",\n      \"Having considered the reasons identified from the evidence before me in this case however, I concluded that they related to the claimant seeking to rely upon the ACAS Code and believing he could rely upon these provisions. These are not rights protected by section 104 ERA 1996 and therefore the dismissal was not for reasons which infringed this section.\",\n      \"The claimant did not assert a statutory right that was protected by section 104 Employment Rights Act 1996; and, The claimant was not unfairly dismissed for the reason or principal reason that he asserted a statutory right that was protected by section 104 Employment Rights Act 1996.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 24,\n        \"text_span\": [\n          32957,\n          34430\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 29,\n        \"text_span\": [\n          40080,\n          41426\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 32,\n        \"text_span\": [\n          44359,\n          45823\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          2802,\n          4283\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1471\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"north_west\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1471\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Liverpool\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1471\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.104\"\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.95\"\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.98\"\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.86\"\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.108\"\n      },\n      {\n        \"statute\": \"Trade Union and Labour Relations (Consolidation) Act 1992\",\n        \"section\": \"s.207A\"\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          2802,\n          4283\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 19,\n        \"text_span\": [\n          25968,\n          27465\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 25,\n        \"text_span\": [\n          34430,\n          35871\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 28,\n        \"text_span\": [\n          38771,\n          40080\n        ]\n      }\n    ]\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "Mennell v Newell & Wright (Transport Contractors) Ltd",
+            "citation": "[1997] IRLR 519, CA",
+            "cited_date": "1997"
+          },
+          {
+            "name": "Spaceman v ISS Mediclean Ltd",
+            "citation": "UKEAT/0142/18",
+            "cited_date": "2018"
+          },
+          {
+            "name": "Simoes v De Sede UK Ltd",
+            "citation": "[2021] IRLR 974",
+            "cited_date": "2021"
+          },
+          {
+            "name": "Lewis v Motorworld Garages Ltd",
+            "citation": "[1986] ICR 157",
+            "cited_date": "1986"
+          },
+          {
+            "name": "Ferguson v Prestwick Circuits Ltd",
+            "citation": "[1992] IRLR 266",
+            "cited_date": "1992"
+          },
+          {
+            "name": "Murray v Foyle Meats",
+            "citation": "[1999] ICR 827 HL",
+            "cited_date": "1999"
+          },
+          {
+            "name": "Safeway Stores v Burrell",
+            "citation": "[1997] ICR 523",
+            "cited_date": "1997"
+          },
+          {
+            "name": "Berkeley Catering Ltd v Jackson",
+            "citation": "[2020] EAT 0074/20",
+            "cited_date": "2020"
+          },
+          {
+            "name": "Kuzel v Roche Products Ltd",
+            "citation": "[2008] EWCA Civ 380",
+            "cited_date": "2008"
+          },
+          {
+            "name": "Masiak v City Restaurants (UK) Ltd",
+            "citation": "[1999] IRLR 780",
+            "cited_date": "1999"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              27465,
+              28912
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              28912,
+              30226
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              30226,
+              31604
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              31604,
+              32957
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2802,
+              4283
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-01-19",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 33,
+            "text_span": [
+              45823,
+              47321
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The claimant produced a 12-page witness statement and gave oral evidence. The respondent relied on witness statements from Sally Anne Desborough and Natalie Mary Clement, both of whom gave oral evidence. The documentary bundle was 194 pages.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5702,
+              7190
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 6,
+            "text_span": [
+              7190,
+              8634
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant brought an automatically unfair dismissal claim under section 104 Employment Rights Act 1996, alleging that dismissal was linked to asserted statutory rights concerning redundancy and redeployment processes. The respondent admitted dismissal but disputed that any protected section 104 right had been asserted and said the claimant lacked two years' service for ordinary unfair dismissal. The claimant had accepted a Site Manager role at Fawley starting 12 February 2024, but Exxon-related business difficulties meant the role was unavailable and he worked in an interim role. On 27 June 2024 he was told his employment was being terminated due to failed probation and was offered a temporary Internal Process Review role.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1471,
+              2802
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2802,
+              4283
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 7,
+            "text_span": [
+              8634,
+              10042
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 8,
+            "text_span": [
+              10042,
+              11386
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              14360,
+              15838
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 32,
+              "text_span": [
+                44359,
+                45823
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 32,
+              "text_span": [
+                44359,
+                45823
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 32,
+              "text_span": [
+                44359,
+                45823
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 32,
+                  "text_span": [
+                    44359,
+                    45823
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 32,
+                  "text_span": [
+                    44359,
+                    45823
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The claimant had worked fewer than 2 years when his employment terminated. He does not have sufficient service in which to bring a complaint of ordinary unfair dismissal in accordance with section 108 Employment Rights Act 1996 (ERA 1996).",
+          "Consequently, the claimant was not asserting a right in accordance with section 104(4)(a), or indeed any other of the subsections.",
+          "Having considered the reasons identified from the evidence before me in this case however, I concluded that they related to the claimant seeking to rely upon the ACAS Code and believing he could rely upon these provisions. These are not rights protected by section 104 ERA 1996 and therefore the dismissal was not for reasons which infringed this section.",
+          "The claimant did not assert a statutory right that was protected by section 104 Employment Rights Act 1996; and, The claimant was not unfairly dismissed for the reason or principal reason that he asserted a statutory right that was protected by section 104 Employment Rights Act 1996."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              32957,
+              34430
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              40080,
+              41426
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              44359,
+              45823
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2802,
+              4283
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1471
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "north_west",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1471
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Liverpool",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1471
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.104"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.95"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.86"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.108"
+          },
+          {
+            "statute": "Trade Union and Labour Relations (Consolidation) Act 1992",
+            "section": "s.207A"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2802,
+              4283
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 19,
+            "text_span": [
+              25968,
+              27465
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              34430,
+              35871
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 28,
+            "text_span": [
+              38771,
+              40080
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      {\n        \"authority\": \"Mennell v Newell & Wright\",\n        \"citation\": \"[1997] IRLR 519\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 20,\n            \"text_span\": [\n              27465,\n              28912\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Simoes v De Sede UK Ltd\",\n        \"citation\": \"[2021] IRLR 974\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 22,\n            \"text_span\": [\n              30226,\n              31604\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Kuzel v Roche Products Ltd\",\n        \"citation\": \"[2008] EWCA Civ 380\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 23,\n            \"text_span\": [\n              31604,\n              32957\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Murray v Foyle Meats\",\n        \"citation\": \"[1999] ICR 827 HL\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 23,\n            \"text_span\": [\n              31604,\n              32957\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Safeway Stores v Burrell\",\n        \"citation\": \"[1997] ICR 523\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 23,\n            \"text_span\": [\n              31604,\n              32957\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 20,\n        \"text_span\": [\n          27465,\n          28912\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 2,\n        \"text_span\": [\n          1471,\n          2802\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"2026-01-19\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 33,\n        \"text_span\": [\n          45823,\n          47321\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"source text contains no spans tagged 'evidence'\"\n  },\n  \"facts\": {\n    \"value\": \"Claimant employed as Site Manager from February 2024; substantive Site Manager role ceased due to loss of client work and claimant was placed into a temporary Internal Process Review role; parties met and claimant was informed his probation had failed and permanent role was terminated, with temporary role continuing until later terminated on 30 July 2024; claimant presented a claim on 3 December 2024 alleging automatically unfair dismissal under section 104 ERA 1996 and relied on emails of 25 and 29 July 2024 asserting procedural/ACAS Code concerns.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 9,\n        \"text_span\": [\n          11386,\n          12863\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 2,\n        \"text_span\": [\n          1471,\n          2802\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 12,\n        \"text_span\": [\n          15838,\n          17327\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 32,\n          \"text_span\": [\n            44359,\n            45823\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"0.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 32,\n          \"text_span\": [\n            44359,\n            45823\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"respondent_success\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 32,\n          \"text_span\": [\n            44359,\n            45823\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"respondent\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 32,\n              \"text_span\": [\n                44359,\n                45823\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": \"0.00\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 32,\n              \"text_span\": [\n                44359,\n                45823\n              ]\n            }\n          ]\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"The claimant did not assert a statutory right that was protected by section 104 Employment Rights Act 1996; and, The claimant was not unfairly dismissed for the reason or principal reason that he asserted a statutory right that was protected by section 104 Employment Rights Act 1996.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 32,\n            \"text_span\": [\n              44359,\n              45823\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"Consequently, the claimant was not asserting a right in accordance with section 104(4)(a), or indeed any other of the subsections.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 29,\n            \"text_span\": [\n              40080,\n              41426\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"He did not assert a statutory right before or during the events on 27 June 2024 when his substantive role of Site Manager at Fawley site was ended.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 25,\n            \"text_span\": [\n              34430,\n              35871\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 32,\n        \"text_span\": [\n          44359,\n          45823\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 2,\n        \"text_span\": [\n          1471,\n          2802\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1471\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"north_west\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1471\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Liverpool\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1471\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.104\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 20,\n            \"text_span\": [\n              27465,\n              28912\n            ]\n          }\n        ]\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.98\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 4,\n            \"text_span\": [\n              4283,\n              5702\n            ]\n          }\n        ]\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.108\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 37,\n            \"text_span\": [\n              25968,\n              27465\n            ]\n          }\n        ]\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.86\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 51,\n            \"text_span\": [\n              32957,\n              34430\n            ]\n          }\n        ]\n      },\n      {\n        \"statute\": \"Trade Union and Labour Relations (Consolidation) Act 1992\",\n        \"section\": \"s.207A\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 60,\n            \"text_span\": [\n              40080,\n              41426\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 20,\n        \"text_span\": [\n          27465,\n          28912\n        ]\n      }\n    ]\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "authority": "Mennell v Newell & Wright",
+            "citation": "[1997] IRLR 519",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 20,
+                "text_span": [
+                  27465,
+                  28912
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Simoes v De Sede UK Ltd",
+            "citation": "[2021] IRLR 974",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 22,
+                "text_span": [
+                  30226,
+                  31604
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Kuzel v Roche Products Ltd",
+            "citation": "[2008] EWCA Civ 380",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 23,
+                "text_span": [
+                  31604,
+                  32957
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Murray v Foyle Meats",
+            "citation": "[1999] ICR 827 HL",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 23,
+                "text_span": [
+                  31604,
+                  32957
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Safeway Stores v Burrell",
+            "citation": "[1997] ICR 523",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 23,
+                "text_span": [
+                  31604,
+                  32957
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              27465,
+              28912
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1471,
+              2802
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-01-19",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 33,
+            "text_span": [
+              45823,
+              47321
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "source text contains no spans tagged 'evidence'"
+      },
+      "facts": {
+        "value": "Claimant employed as Site Manager from February 2024; substantive Site Manager role ceased due to loss of client work and claimant was placed into a temporary Internal Process Review role; parties met and claimant was informed his probation had failed and permanent role was terminated, with temporary role continuing until later terminated on 30 July 2024; claimant presented a claim on 3 December 2024 alleging automatically unfair dismissal under section 104 ERA 1996 and relied on emails of 25 and 29 July 2024 asserting procedural/ACAS Code concerns.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11386,
+              12863
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1471,
+              2802
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              15838,
+              17327
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 32,
+              "text_span": [
+                44359,
+                45823
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 32,
+              "text_span": [
+                44359,
+                45823
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 32,
+              "text_span": [
+                44359,
+                45823
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 32,
+                  "text_span": [
+                    44359,
+                    45823
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 32,
+                  "text_span": [
+                    44359,
+                    45823
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The claimant did not assert a statutory right that was protected by section 104 Employment Rights Act 1996; and, The claimant was not unfairly dismissed for the reason or principal reason that he asserted a statutory right that was protected by section 104 Employment Rights Act 1996.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 32,
+                "text_span": [
+                  44359,
+                  45823
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "Consequently, the claimant was not asserting a right in accordance with section 104(4)(a), or indeed any other of the subsections.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 29,
+                "text_span": [
+                  40080,
+                  41426
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "He did not assert a statutory right before or during the events on 27 June 2024 when his substantive role of Site Manager at Fawley site was ended.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 25,
+                "text_span": [
+                  34430,
+                  35871
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 32,
+            "text_span": [
+              44359,
+              45823
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1471,
+              2802
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1471
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "north_west",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1471
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Liverpool",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1471
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.104",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 20,
+                "text_span": [
+                  27465,
+                  28912
+                ]
+              }
+            ]
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 4,
+                "text_span": [
+                  4283,
+                  5702
+                ]
+              }
+            ]
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.108",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 37,
+                "text_span": [
+                  25968,
+                  27465
+                ]
+              }
+            ]
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.86",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 51,
+                "text_span": [
+                  32957,
+                  34430
+                ]
+              }
+            ]
+          },
+          {
+            "statute": "Trade Union and Labour Relations (Consolidation) Act 1992",
+            "section": "s.207A",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 60,
+                "text_span": [
+                  40080,
+                  41426
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 20,
+            "text_span": [
+              27465,
+              28912
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:54:22.076248+00:00",
+  "source_pdf_sha256": "85ab6dfdc78d083ca218ab7df6e3ec9fd5cb6efceef118d84bfadbb83e338c38",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

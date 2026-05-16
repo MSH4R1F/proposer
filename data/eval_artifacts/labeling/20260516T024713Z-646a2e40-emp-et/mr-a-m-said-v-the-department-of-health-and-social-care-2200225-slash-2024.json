@@ -1,0 +1,469 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024",
+  "case_reference": "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-11-14",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "2200225/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr A M Said v The Department of Health and Social Care: 2200225/2024 - Judgment with Reasons",
+    "url": "https://assets.publishing.service.gov.uk/media/698a163bcfe7ccf77efbc859/Mr_A_M_Said_v_The_Department_of_Health_and_Social_Care_-_2200225-2024.pdf"
+  },
+  "pdf_sha256": "248c133dbf8f61d9f7f1b55209a426b3afeb708b05bdcad9e573a735b6fa9eb2",
+  "ocr_text_sha256": "45be679b3dc4c5f585d92a9d784b040195e1b98b62985f9f73e00b0e0e9c3693",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1357, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case number: 2200225/2024\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\nMr A M Said\\n\\nRespondent:\\n\\nThe Department of Health and Social Care\\n\\n\\n\\nHeard at:\\n\\nLondon Central (by CVP)\\nOn: 10-14 November 2025\\nBefore:\\nEmployment Judge Forde\\n\\n\\nREPRESENTATION:\\n\\nClaimant:\\nMiss T Jones, Barrister\\nRespondent:\\nMr M Harris, Barrister\\n\\nJUDGMENT\\nThe judgment of the Tribunal is as follows:\\nUnfair Dismissal\\n1.\\nThe complaint of unfair dismissal is not well-founded and is dismissed. The\\nclaimant was fairly dismissed following a fair procedure.\\n\\n\\nReasons\\nBackground\\n\\n1. By way of a claim form dated 5 January 2024, the claimant pursued claims of\\nunfair dismissal, direct disability discrimination, discrimination arising out of\\nthe disability, indirect disability discrimination and failure to make reasonable\\nadjustments.\\n\\n2. In summary, the claimant says that after starting his employment with the Civil\\nService on 25 March 2002 he transferred to the respondent on 18 January\\n2021 and to the position of financial business partner grade 7. Prior to his\\n\\nCase number: 2200225/2024\\nappointment, it is the claimant's position that he held a similar position within\\nthe respondent on an interim basis from December 2018 until his\\nappointment. Prior to that appointment, it held the position of senior executive\\nofficer and within the Ministry of Justice, another government department.\"}, {\"char_end\": 2758, \"char_start\": 1357, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"3. The claimant's case is that following the inception of a performance\\nimprovement process instigated by the respondent primarily arising from\\nconcerns held about the claimant's performance by his line manager, Hannah\\nStout. Prior to coming under Ms Stout's line management, the claimant says\\nthat he was managed by Shereen Jabeer who left the first respondent in April\\n2021.\\n\\n\\n4. The claimant says that Ms Stout was overly critical of him, told him that he did\\nnot speak properly, took over all of his tasks and required him to seek\\npermission prior to responding to emails. The claimant alleges that his role\\nhad changed and that regular, formal performance health checks would\\ncommence. This conduct alleged against Ms stout is described as harassing\\nand bullying and led to the claimant raising first and informal grievance in late\\nOctober 2021 and thereafter further grievances.\\n\\n5. In time, the claimant moved through the respondent's performance\\nmanagement process which evolved from being an informal process to a\\nformal one. There are three levels to the respondent's performance\\nmanagement process and it is the case that each review of the claimant's\\nprogress against a number of performance objectives, the claimant was\\nassessed as underperforming by the respondent. The claimant says that he\\nwas performing there are a number of reasons why the assessment of his\\nperformance was wrong.\"}, {\"char_end\": 4218, \"char_start\": 2758, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"6. The outcome of the claimant's final grievance lay in the hands of Mr Tritton,\\ndeputy director, investment appraisals, major projects and capital delivery\\nportfolios as decision manager. He did not uphold the claimant's grievance\\nand the claimant asserts that this decision was not justified.\\n\\n7. On 9 February 2023 the claimant's line manager changed to Mr James\\nVallance, grade 6 head of NHS financial policy, accountability and briefing and\\nhe remained the claimant's manager until 6 September 2023, the date of the\\nclaimant's dismissal.\\n\\n8. Upon the conclusion of the claimant's grievance conducted by Mr Tritton, Mr\\nVallance recommenced the claimant's performance improvement plan, a\\ndecision the claimant contends was unreasonable. On 16 February 2023, Mr\\n\\nCase number: 2200225/2024\\nVallance commenced stage 3 of the performance process which was paused\\nmomentarily due to the claimant sickness absence between 27 February 2003\\nand 20 March 2023. There were further breaks in the progression of the\\nprocess. However on 31 August 2023, the claimant attended a stage three\\nperformance management meeting with Mr Vallance the outcome of which\\nwas that he decided that the claimant should be dismissed on the grounds of\\npoor performance.\\n\\n9. There was a case management conference before Employment Judge Salter\\non 8 November 2024. At that hearing, and after hearing submissions from\\nboth parties and with reasons given at the time, he determined that the\"}, {\"char_end\": 5669, \"char_start\": 4218, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"claimant was disabled within the meaning of the Equality Act 2010.\\nAccordingly, the only claim to be considered is unfair dismissal.\\n\\nEvidence\\n\\n10. The tribunal had the benefit of two bundles namely a witness statement\\nbundle of 138 pages and a documents bundle numbering just over 2000\\npages. Witness statements have been prepared on behalf of the claimant, Ms\\nStout, Mr Vallance, Mr Ed Jewell, deputy director NHS finance and the\\nclaimant's countersigning manager throughout, Mr Tritton and Ms Jude\\nHoward, head of reward and employee relations and the appeal manager in\\nrespect of the claimant's appeal against dismissal.\\n\\n11. All witnesses gave sworn evidence to the tribunal.\\n\\n12. The claimant gave evidence first across approximately two days. This is a\\nlong time in my opinion for a case of this. It is my finding that the reasons\\nbehind this lengthy period is due to English not being the claimant's first\\nlanguage, the claimant's propensity to answer his own questions as opposed\\nto the questions put to him, and the claimant's inability to engage with the\\nquestions that in a way consistent with the contents of the questions\\nconcerned.\\n\\n13. As to the reasons why the claimant was unable to engage with the questions\\nin the way that he would have been expected to. I consider that at some\\npoints the claimant simply did not want to engage with the more difficult\\naspects of his claim. It appeared lost on the claimant that he had to provide\"}, {\"char_end\": 7158, \"char_start\": 5669, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"evidence to support his case. At various points in his evidence, the claimant\\nappeared diffident, unengaged and performative.\\n\\n\\n\\nCase number: 2200225/[BANK_DETAILS]. At times I was concerned as to whether or not the claimant the claimant\\nunderstood either the words contained within a document or the question\\nbeing put to him. Such an example arose during his cross-examination when\\nhe was referred to an email sent by him to Manuela Solera- Deuchar dated 28\\nOctober 2022 (p.620) in which the claimant says, 'I was told I would be would\\nsomewhere else...'. During cross-examination, the claimant conceded that he\\nhad been told that it might be possible or in other words that he could be\\nmoved as opposed to would be moved. The claimant offered his opinion that\\nboth form of words i.e. would and could amount to the same thing and\\nexpressed surprise when I explained to him that they mean different things.\\nThis alone supports my view that the claimant is not a reliable historian\\nbecause he is prone to reaching views or opinions based upon a\\nmisconceived understanding or interpretation of facts, events and words.\\nThere were other examples provided by the claimant in his evidence.\\n\\n15. At paragraph 23 of her witness statement, Ms Stout says the following:\\n\\n\\\"As time went on however, I realised that the reason Abdallah had not been\\nforthcoming or detailed about his work and his views on it, was because he\\nunfortunately did not have the skills needed to do the role effectively and\"}, {\"char_end\": 8553, \"char_start\": 7158, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"facts\", \"text\": \"describe his portfolio and assessment of the actions needed. His comments\\nand description of his work demonstrated that he viewed the role as one that\\nwas transactional,...\\\"\\n\\n16. In short, Ms Stout's observations of the claimant are the same as mine; the\\nclaimant was not forthcoming or detailed at critical times in his evidence and it\\nappeared to the tribunal that the claimant saw his participation in the cross\\nexamination process as being transactional in that he was prone to providing\\nshort answers without any detail to explain his position.\\n\\n17. At other times, I found the claimant's evidence to lack credibility and\\nplausibility. Time and again during the course of his cross-examination he was\\ntaken to documents that he referred to as evidencing his documentary\\nrecording of allegations of bullying and harassment. For example, the\\nclaimant relies on page 2030 of the bundle which contains an email to him\\nfrom Ms Stout dated 31 March 2021. In evidence, he maintained his position\\nthat this amounted to an example of Ms Stout being overly critical of him. It is\\nmy finding that it is impossible to detect any criticism whatsoever from this\\nemail and this leads me to wonder whether this would have been obvious to\\nthe claimant.\\n\\n18. Further, when asked whether Ms Stout was supportive of him he told the\\ntribunal replied that she was not. When taken to various pages in the bundle\"}, {\"char_end\": 10035, \"char_start\": 8553, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"facts\", \"text\": \"Case number: 2200225/2024\\ncontaining email correspondence between the two, and in which it can be\\nclearly seen that Ms Stout is offering support to the claimant, the tribunal\\nnoted that begrudgingly but inevitably the claimant accepted that Ms Stout\\nhad indeed been offering him support. Eventually, the claimant was forced to\\nconcede during evidence that Ms Stout was supportive and had not harassed\\nand bullied him when he was asked to consider an email dated 21 October\\n2022 (p.524) sent by Ms Stout.\\n\\n19. An example of a document relied upon by the claimant which does not assist\\nhim can be seen at page 397 of the bundle which the claimant relies upon as\\nevidencing Ms Stout's alleged bullying and harassment of him on the basis of\\nher taking over all of his tasks. The page shows a chat over Microsoft Teams\\nbetween 25 and 26 October 2021 and specifically the claimant relies on these\\nwords:\\n\\nClaimant: 26/10/2021 at 12:06: Hi Hannah, would you like me to respond to\\nSimon Reiss's email. It is in relation to the south we cleared a few he months\\nback. At the time, we did not have an estimate for the Covid costs. The Covid\\ncosts would be financed from the existing BSA budgets.\\n\\nMs Stout: 26/10/2021 at 12:16: yes please if you could pick that up\\n20. This is a clear example of an anodyne communication between a line\\nmanager and subordinate of the kind that happens up and down the country\\nevery day of the week. It is difficult to fathom how the claimant says that this is\"}, {\"char_end\": 11526, \"char_start\": 10035, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"facts\", \"text\": \"evidence of work being taken from him. When asked why he considered this\\nto be harassment or bullying, the claimant said that he had been intimidated\\nby Ms Stout as a consequence of him being subjected to an 'elevated level of\\nscrutiny' a form of words that can be seen in an email from Ms Stout to the\\nclaimant dated 24 October 2022 (page 629).\\n\\n21. My interpretation and finding of this document was that Ms Stout was merely\\nreiterating that the claimant was being performance managed, that he would\\nbe (a) supported and (b) subject to observation and monitoring. The claimant\\nwill not have liked this and certainly did not accept it but it is nonetheless the\\ncase that what Ms Stout was telling him was obvious and essential and\\ntherefore it is difficult for me to understand how the claimant could assert that\\nhe was harassed, bullied, and intimidated by Ms Stout in these circumstances\\nor at any time.\\n\\n22. Consequently, I found the claimant at times to be unreliable but in the main he\\nprovided evidence consistent with his claim. When I consider the totality of his\\nevidence I find the claimant to be a witness whose evidence lacked credibility.\\n\\nCase number: 2200225/2024\\n\\n23. Ms Stout was cross-examined for approximately one day. I found her to be a\\nhighly impressive witness. Not only did she have a very good grasp of the\\nfactual matrix relevant to the claim but she was able to qualify her answers\\nwith thoughtful, credible and honest answers. I have no difficulty in accepting\"}, {\"char_end\": 13005, \"char_start\": 11526, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"facts\", \"text\": \"her evidence in its entirety.\\n\\n24. Mr Vallance gave evidence after Ms Stout. Again, he retained a good grasp of\\nthe factual matrix relevant to the claim and was able to provide robust,\\ncredible and honest answers to the questions put to him.\\n\\n25. Mr Jewell gave evidence to the tribunal which was straightforward, relevant\\nand credible. I have no difficulty in accepting his evidence in its entirety.\\n\\n26. Mr Tritton and Ms Howard provided evidence briefly to the tribunal covering\\ntheir relatively modest involvement in the factual matrix relevant to this claim. I\\nhave no reason to doubt their evidence whatsoever as both were able to\\nprovide straightforward and credible answers to the tribunal.\\n\\n\\nIssues to be determined\\n\\nUnfair Dismissal\\n\\n1. Was the claimant dismissed pursuant to section 95(1) ERA 1996?\\n\\n2. Did the respondent have a potentially fair reason to dismiss the Claimant\\npursuant to section 98(1) and (2) ERA 1996? R1's case is that the\\nClaimant was dismissed for capability.\\n\\n3. If so, did the respondent act reasonably in the circumstances in treating\\nthat reason as a sufficient reason for dismissing the claimant as required\\nby S98(4) ERA 1996?\\n\\n4. The claimant asserts that his dismissal was unfair by reason of the matters\\nset out in his paragraph 48, namely that the Performance Management\\nprocess was not justified.\\n\\n5. Did the claimant's dismissal fall within the band of reasonable responses\\navailable to the respondent at the time of the dismissal?\"}, {\"char_end\": 14494, \"char_start\": 13005, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"facts\", \"text\": \"Case number: 2200225/2024\\n6. Did the respondent follow a fair procedure when dismissing the claimant?\\n\\n7. If the Tribunal finds that the claimant was unfairly dismissed:\\n\\n7.1 Did the claimant contribute to his dismissal by any culpable conduct?\\n7.2 If the Tribunal finds that the dismissal was procedurally flawed in any\\nway, would the claimant have been dismissed in any event had the correct\\nprocedure been followed?\\n\\nLaw and procedure\\n\\nUnfair dismissal - section 94 ERA 1996\\n\\n27. The dismissal of the Claimant will be unfair unless the Respondent can show\\nthat the reason (or principal reason) for the dismissal was one of the potentially\\nfair reasons. The fair reasons are found in section 98 ERA 1996 and read as\\nfollows:\\na. relates to the capability or qualifications of the employee for performing\\nwork of the kind which he was employed by the employer to do so,\\nb. relates to the conduct of the employee,\\nc. is that the employee was redundant, or\\nd. is that the employee could not continue to work in the position which he\\nheld without contravention (either on his part or on that of his employer)\\nof a duty or restriction imposed by or under an enactment.\\n\\n28. For the purposes of \\\"capability\\\" this should be assessed with reference to the\\nClaimant's skill, aptitude, health or any other physical or mental quality. The\\ncapability must relate to the work that the Claimant was employed to do (section\\n98(2) ERA 1996). In practice, capability dismissals fall into two main groups:\"}, {\"char_end\": 15991, \"char_start\": 14494, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"facts\", \"text\": \"dismissal because of employees' poor performance or because of employee's\\nill health.\\n\\n29. Once the employer has established that capability in the form of poor\\nperformance is the reason for an employer's dismissal under Section 98(1) ERA\\n1996 , the tribunal must then decide if the employer acted reasonably in\\n\\nCase number: 2200225/2024\\ndismissing the employee for that reason. The determination of this question\\ndepends on whether in the circumstances the employer acted reasonably or\\nunreasonably in treating the poor performance as a sufficient reason for\\ndismissing the employee, and shall be determine in accordance with the\\nsubstantial merits of the case.\\n\\n30. The tribunal will have to be satisfied that the employer honestly believed, on\\nreasonable grounds, that the employee was incapable of performing their job\\nbut, with regard to the overall reasonableness of that decision, will consider\\nwhether management failed to discharge its own responsibilities towards the\\nemployee. An important element of this is whether the employer has\\ncommunicated what is expected of the employee and whether the employer\\nhave provided the necessary support and training.\\n\\n31. Capability is defined in section 98(3)(a) ERA 1996 as 'capability assessed by\\nreference to skill, aptitude, health or any other physical or mental quality'. In all\\ncases, this case included, the incapability alleged must relate to the 'work of the\\nkind which the [employee] was employed by the employer to do close '(section\"}, {\"char_end\": 17456, \"char_start\": 15991, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"facts\", \"text\": \"98(2)(a) ERA). That said, a dismissal for incapacity may be fair even though\\nthe employee can still perform some of his or her contractual duties (see Shook\\nv Ealing London Borough Council 1986 ICR 314, EAT).\\n\\n32. It is for the employer to set the standards. Employees and the tribunal cannot\\nsubstitute their own view of an employee's competence. Further, employers can\\ninsist on levels of performance that are higher than those of comparable\\ninstitutions (see for example Fletcher v St Leonard's School of EAT 25/87). One\\nof the issues arises in this case was whether or not the duties of the claimant\\nchanged meaningfully or significantly or at all and whether this impacted the\\nassessment of his performance.\\n\\n33. That said, standards of performance are not static and are liable to change as\\nthe business or the role involves a new technology or equipment becomes\\navailable.\\n\\n\\nCase number: 2200225/[BANK_DETAILS]. Where an employer seeks to rely on incapability as the grounds for dismissal\\nas is the case here, the onus is on the respondent to show that it was the actual\\nreason or principal reason for dismissal. As per Lord Denning MR in the case\\nof Alidair Ltd V Taylor 1978 ICR 445, CA: 'whenever a man is dismissed\\nincapability or incompetence it is sufficient that the employer honestly believes\\non reasonable grounds that the man is incapable or incompetence. It is not\\nnecessary for the employer to prove that he is in fact incapable or incompetent.'\"}, {\"char_end\": 18917, \"char_start\": 17456, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"facts\", \"text\": \"Putting it another way, and from the same case, the test of a fair capability\\ndismissal (aside from procedure) has two elements namely does the employer\\nhonestly believe that its employees are incompetent or unsuitable for the job\\nand are the grounds for that belief reasonable. Alidair remains good law\\nirrespective of its vintage.\\n\\n35. The practical implications in terms of the modern interpretation of the law in\\nrespect of establishing capability is that the tribunal has decide whether there\\nwas material in front of the employer at the time of the employee's inadequacy\\nor unsuitability and on which it was reasonable to dismiss.\\n\\n36. The incompetence of managers is often difficult to measure and prove. In Cook\\nv Thomas Linnell and Sons Ltd 1977 ICR 770, EAT, the EAT said that if an\\nemployer has genuinely come to believe over a period of time that a manager\\nis incompetent, that in itself is evidence of incapability. However, it will be\\nnecessary to see whether there is supporting evidence. This may include\\nevidence of a fall-off in trade or complaints from customers or colleagues.\\n\\n37. Dismissal for poor performance will not be fair unless the following key\\nelements are present:\\n\\na. A proper investigation into the problem has taken place,\\nb. The employee has been made aware of the problems and been given\\nan opportunity to improve within a realist timescale,\\nc. The employee has been provided with appropriate support and possible\\ntraining,\"}, {\"char_end\": 20225, \"char_start\": 18917, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"tribunal_reasoning\", \"text\": \"d. The employee's progress is reviewed during the review period, and\\n\\nCase number: 2200225/2024\\ne. The employee is offered a right of appeal against the decision to dismiss.\\n\\n38. The aspect of fairness will usually be split into two parts. Firstly, did the\\nemployer follow a fair procedure and secondly, did the employer act reasonably\\nin treating the reason as a sufficient reason for dismissal. In Polkey v AE Dayton\\nServices Ltd [1987] IRLR 503 (HL) , it was established that: where a dismissal\\nis procedurally unfair, the employer cannot invoke a \\\"no difference rule\\\" to\\nestablish that the dismissal is fair, which argues that the dismissal should be\\nregarded as fair because it would have made no difference to the outcome.\\n\\n39. The test as to whether the Respondent acted reasonably in section 98(4) of the\\nERA 1996 is an objective one. It is for the Tribunal to decide whether the\\nemployer's decision fell within the reasonable responses that a reasonable\\nemployer would have made given the circumstances of the case. Failing to\\nfollow the ACAS Code of Practice on Disciplinary and Grievance Procedures\\nmay result in compensation being increased by up to 25% if the employer has\\nfailed to consider the code when deciding whether a dismissal is fair and\\nwhether that fair procedure has been followed.\"}, {\"char_end\": 21689, \"char_start\": 20225, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"tribunal_reasoning\", \"text\": \"40. There is no obligation upon an employer to offer employment in a subsidiary\\nposition, even where the employee has reached his or her position through\\npromotion. In other words, there is no automatic right to return to an old job\\nunless there is a provision to that effect in the contract. The employer's duty to\\nconsider redeploying the employee will depend upon the circumstances in each\\nand every case (see Bevan Harris Ltd (t/a The Clyde Leather Co) v Gair 1981\\nIRLR 520, EAT).\\n\\nFindings and decision\\n\\n\\n41. I make the following findings of fact based upon the evidence presented to the\\ntribunal during the course of the hearing and have made findings on the\\nbalance of probabilities in all cases.\\n\\n42. In my finding, the vast majority of the respondent's response is made out. This\\nin part reflects the substantial challenge that any claimant faces in disputing a\\n\\nCase number: 2200225/2024\\ncapability dismissal. But it also reflects my findings as to the credibility and\\nacceptability of the respective witnesses, the extensive documentary evidence\\ncontained within the bundle that supports the respondent's case and by\\ncontrast, the paucity of evidence presented in support of the claimant's case\\nas alluded to above.\\n\\n43. I find on the evidence placed before the tribunal, that at all stages that are\\nrelevant to the decision to dismiss the claimant including the provision of\\nwarnings to the claimant and the assessment of the claimant's performance at\"}, {\"char_end\": 23173, \"char_start\": 21689, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the various stages of informal PIP and thereafter the MPP, to have been\\nreasonable, that they were acquired following a reasonable enquiry and\\nbased upon honest beliefs and reasonable grounds in light of the\\ncircumstances and evidence presented to Ms Stout and thereafter to Mr\\nVallance at the material times.\\n\\n44. On 18 January 2022 Ms Stout held a Performance Health Check with the\\nclaimant where she raised concerns about his performance in accordance\\nwith the Managing Poor Performance Process (\\\"the MPP Process\\\"). Ms Stout\\nsubsequently sought to address the claimant's poor performance during daily\\nconversations, regular 121 meetings, and through the implementation of an\\ninformal Performance Improvement Plan (\\\"PIP\\\").\\n\\n\\n45. On 15 February 2022 Ms Stout met with the claimant to discuss his progress\\nagainst the informal PIP. It was at this meeting that the claimant raised\\nconcerns about his health, claiming that it was a result of the stress caused by\\nthe MPP Process, and requested a managed move which Ms Stout agreed to\\nexplore. The claimant declined Ms Stout's offer to refer him Occupational\\nHealth (\\\"OH\\\").\\n\\n46. On 28 February 2022 Ms Stout met with the claimant again to discuss his\\nprogress. Ms Stout identified the areas where the claimant's performance\\nneeded significant improvement and I have found this assessment to have\\nbeen reasonable and honestly held. Ms Stout explained to the claimant that a\\nmanaged move was not appropriate given he was being performance\"}, {\"char_end\": 24554, \"char_start\": 23173, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"tribunal_reasoning\", \"text\": \"managed but that he could apply for any vacancies. The claimant\\nsubsequently applied for three Grade 7 roles without success.\\n\\n47. On 17 May 2022 Ms Stout met with the claimant again to review progress\\nagainst the informal PIP. The claimant was provided with detailed feedback,\\nincluding from a wide range of stakeholders, and was given the opportunity to\\nrespond. Ms Stout reasonably determined that the claimant's performance\\n\\nCase number: 2200225/2024\\nremained unsatisfactory and invited him to a stage 1 formal performance\\nmeeting in line with the MPP Process.\\n\\n48. On 24 May 2022 the claimant raised an informal grievance against Ms Stout,\\nalleging bullying and harassment. Mr Jewell met with the claimant to discuss\\nhis complaint and subsequently conducted a thorough investigation.\\n\\n49. On 25 May 2022 Ms Stout held a formal stage 1 performance meeting with\\nthe Claimant in line with the MPP Process. Ms Stout reiterated the areas of\\nconcern about the claimant's performance, and he was given the opportunity\\nto respond. The areas where the claimant was falling below the standard at\\nthis time are set out at paragraph 98 of Ms Stout's witness statement. I note\\nthat what Ms Stout says here was not challenged during the course of her\\ncross-examination. Specifically, she identifies the following areas where she\\nobserves the claimant was falling short in his performance:\"}, {\"char_end\": 25889, \"char_start\": 24554, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"tribunal_reasoning\", \"text\": \"(i)\\nI had to regularly step in to address gaps in the quality of his work, or to\\nattend key meetings with him due to his limitations at managing\\nstakeholders, i.e. the ringfencing paper referred to in paragraph 95 above\\nis an example of the where the draft was so limited and missed some of\\nthe strategic fundamentals, that I needed to invest significant time in\\nreview to go over all the areas he had missed and explain why, essentially\\ndoing the thinking on his behalf and undertake that key element of his\\nrole. This was a frequent occurrence, and this is just an illustrative\\nexample. It is not a sustainable model to function effectively as a team\\nand it meant resources were distributed very thinly.\\n\\n(ii)\\nIn key meetings with stakeholders, Abdallah could not remember the key\\nissues that were discussed when summarising the content of meetings\\nafterwards or be able to describe how it would impact his work and the\\nactions he would take. This meant it was impossible for me to be\\nconfident he could effectively operate independently of me.\\n\\n(iii)\\nHis briefings in stakeholder meetings were confused and very rambling to\\nsuch an extent that I could see clearly that stakeholders could not\\nunderstand the points he was trying to make, which required both me and\\nJulia to step in and to explain the issues and draw out the links.\"}, {\"char_end\": 27373, \"char_start\": 25889, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"tribunal_reasoning\", \"text\": \"(iv)\\nI also had real concerns that Abdallah was not thinking ahead and\\nmanaging his portfolio in a strategic workplan, rather he was preparing a\\nlist of simple transactional tasks.\\n\\n\\nCase number: 2200225/2024\\n(v)\\nAbdallah's inability to look ahead and plan delivery and manage risk was\\nalso an issue as it meant he needed an amount of direction from me that\\nwas not appropriate at G7 level, where the expectation is that the G7 to\\nsome extent owns and drives forward their own portfolio.\\n\\n(vi)\\nI also had concerns about how he was leading and managing Julia. She\\nreported to me that she felt very unsupported with minimal discussion of\\nthe work and her role.\\n\\nAnd further at paragraph 99:\\n\\n\\\"Abdallah's underperformance also had a real impact on the distribution\\nof work as it meant I had to step in and do much more of the G7 work that\\nshould have been picked up by him. It also meant that Julia had to step\\ninto Abdallah's G7 responsibilities. This resulted in resources being\\nspread thinly, less time allocated across portfolios and an impact on\\nstakeholders and service to customers. I was also concerned about the\\nimpact on wellbeing of the team regarding the persistent\\nunderperformance. It was simply not sustainable. (My emphasis)\\\"\\n\\n50. In my finding, Ms Stout sets out significant and extensive performance failings\\non behalf of the claimant. These are observations that are almost identical to\\nthe ones that she brought to the claimant's attention at the material time. They\"}, {\"char_end\": 28821, \"char_start\": 27373, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"tribunal_reasoning\", \"text\": \"are clearly explained, reasoned and detailed. In my finding, it simply is not\\nopen to the claimant to say that it was not clear where and how he was failing\\nto meet the levels of performance expected of him.\\n\\n51. I find that Ms Stout's concerns as set out above came about as a result of a\\nreasonable investigation based upon reasonable and honest evaluations of\\nthe claimant's performance. In reaching this finding, I reject the claimant's\\ncriticisms and his assessment of her performance, criticisms which I find to be\\nwholly unsupported by any evidence whatsoever within the bundle and\\ninadequately supported by the claimant's evidence which I found to be\\ninconsistent, lacking in credibility and at points to have been misconceived.\\n\\n\\n52. The claimant was absent due to sickness from 6 - 7 July 2022 due to chest\\npains. On 22 July 2022 the Claimant was informed that his grievance against\\nMs Stout was not upheld and I find that it was entirely reasonable for this\\nfinding to have been reached. Mr Jewell concluded that Ms Stout's conduct\\nwas consistent with the MPP Process, and he found no evidence of bullying\\nor harassment. Mr Jewell noted that Ms Stout had offered the claimant\\n\\nCase number: 2200225/2024\\nsupport to improve his performance including coaching and a buddy/peer\\nsupport.\\n\\n53. On 29 July 2022 the claimant was issued with a first written warning on the\\ngrounds of poor performance. The claimant entered a 4-week review period\"}, {\"char_end\": 30291, \"char_start\": 28821, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"tribunal_reasoning\", \"text\": \"during which his performance continued to be monitored against a stage 1\\ndevelopment plan. As I have already stated, this decision was entirely\\nreasonable and was based on a thorough, reasonable determination of the\\nclaimant's performance.\\n\\n54. The claimant appealed the decision to issue him with a first written warning\\nand on 3 August 2022 he raised a grievance against Ms Stout's application of\\nthe MPP Process. The respondent's Civil Service HR department (\\\"CSHR\\\")\\nadvised to consider the appeal and grievance together given that they both\\nconcerned the application of the MPP Process. The review period was paused\\npending resolution of the appeal.\\n\\n55. The appeal was referred to Mr Ben Widdicombe (Deputy Director - Covid-19\\nInquiry Response Unit). On 16 September 2022 Mr Widdicombe informed the\\nclaimant that his appeal was not upheld. I not been able to find that there this\\ndecision was not justified as asserted by the claimant. I find that Mr\\nWiddicombe reasonably determined that Ms Stout had behaved reasonably\\nfollowing a full and thorough investigation and I reach this finding on the basis\\nthat it is not challenged at all by the claimant and from my own review.\\n\\n56. The review period recommenced, and Ms Stout continued to hold meetings\\nwith the claimant to discuss and improve his performance. Ms Stout again\\nsuggested that the claimant be referred to OH to which he agreed. The OH\\nreport dated 7 October 2022 advised that the claimant had recently\"}, {\"char_end\": 31663, \"char_start\": 30291, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"tribunal_reasoning\", \"text\": \"experienced anxiety, insomnia and mood changes that he attributed to stress\\nin the workplace and that he had no history of poor mental health prior to this.\\nThe claimant was considered to be suffering from situational stress that was\\nnot linked to a long-term mental health condition. The claimant was deemed fit\\nfor work, but the advisor recommended mediation and an early resolution to\\nthe workplace issues. The claimant subsequently rejected Ms Stout's offer of\\nmediation.\\n\\n57. Ms Stout continued to assess the claimant's performance as unsatisfactory,\\nand invited him to a stage two formal performance meeting in line with the\\nMPP Process. This meeting took place on 12 October 2022 and the claimant\\nwas given the opportunity to respond to the feedback on his performance.\\n\\n\\nCase number: 2200225/[BANK_DETAILS]. On 19 October 2022 the claimant was issued with a final written warning on\\nthe grounds of poor performance. He entered a 4-week review period during\\nwhich his performance continued to be monitored against a stage 2\\ndevelopment plan. Again, I find that the claimant has failed to provide any\\nevidence to undermine my assessment that this was a reasonable step for the\\nrespondent having regard to the evidence before the tribunal. Further, it is\\nclear that on the evidence available, the claimant's performance had failed to\\nimprove to the required extent.\"}, {\"char_end\": 33131, \"char_start\": 31663, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"tribunal_reasoning\", \"text\": \"59. Within the bundle there is a clear trail of documents that detail the\\nexpectations that the claimant was subject to, and the areas required for\\nimprovement. The claimant's criticisms can be summarised as being the\\nevaluation criteria utilised by Ms Stout was wrong and wrongly applied on the\\nbasis that it was subjective. However, when asked to explain what this meant\\non a practical level the claimant's answers were often brief and repetitive with\\nhis basic position being that Ms Stout was subjective in her assessment. The\\nclaimant did not appeal this decision.\\n\\n60. The claimant subsequently refused to attend any 1-2-1 meetings with Ms\\nStout and on 28 October 2022 he raised a further grievance against her,\\nalleging bullying and harassment. The MPP Process was again paused\\npending the resolution of this grievance.\\n\\n61. The claimant's grievance was investigated by Gareth Young (Deputy Director)\\nwho determined that there was no evidence of bullying or harassment. Mr\\nYoung determined that Ms Stout should be commended \\\"for the rigorous and\\nsupportive way she has conducted herself\\\" throughout the MPP Process.\\n\\n62. The grievance was referred to the Decision Maker; Paul Tritton (see details\\nabove), who informed the claimant on 24 January 2023 that his grievance was\\nnot upheld. Mr Tritton gave evidence to the tribunal and his evidence was\\naccepted in full. His witness statement sets out the fours terms of reference\\n(see p.125 of the witness bundle).\"}, {\"char_end\": 34526, \"char_start\": 33131, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"tribunal_reasoning\", \"text\": \"63. Mr Tritton's decision to not uphold the grievance is recorded in his witness\\nstatement in the following way:\\n\\n\\\"26. Firstly, whilst Mr Said felt the performance improvement plan was not\\njustified, I felt differently and that it was justified. I made this decision based on\\nthe investigation report and I had not seen any further evidence to change the\\nconclusion of Gareth's investigation report. I am aware that this point forms part\\nof his claim in that he felt he was capable to carry out the core behaviours as\\nstated in his ET claim form on page 36.\\n\\nCase number: 2200225/2024\\n\\n27. Gareth's investigation report had concluded that the performance\\nmanagement process had been conducted rigorously and fairly, and that\\nHannah had conducted herself in a supportive way. Again, I had not seen any\\nfurther evidence to change the conclusion of the investigation report.\\n\\n28. I appreciate that in my outcome letter I could have addressed his appeal\\npoint that the tasks in the improvement plan were too subjective, with too much\\nscope for differences of view on whether they were being met. However, I felt that\\nGareth's investigation report was very thorough and clear on that issue and Ed\\nJewell had previously concluded the improvement plan was fair and reasonable.\\nIn hindsight, I accept I could have addressed this specifically in the outcome\\nletter, but it felt quite clearcut to me.\\\"\"}, {\"char_end\": 36014, \"char_start\": 34526, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"tribunal_reasoning\", \"text\": \"64. I accept this evidence. Mr Tritton determined that there was no evidence to\\nindicate that the PIP was not justified or that the MPP Process had been\\nconducted anything but rigorously, fairly and supportively. Mr Tritton found no\\nevidence of bullying or harassment. The claimant did not appeal this decision.\\n\\n65. In cross-examination, Mr Tritton was asked about the point that he addresses\\nhead-on in paragraph 28 of his witness statement, specifically whether or not\\nthe tasks in the improvement plan were too subjective. In short, it was his\\nview that they were not in that they reflected the reality of the claimant's role\\nand the necessity for senior operatives such as the claimant to adapt to the\\nchanging needs of the role arising from the demands of ministers, such as the\\nsituation arose as a consequence of the merger of the departments of health\\nand social care. In any event, he felt that Mr Young had adequately\\ninvestigated the issues that the allegations raised by the claimant simply were\\nnot made out on the facts and evidence presented to both him and Mr Young.\\nI have no reason to disagree with Mr Tritton's assessment on the basis that I\\nfind it was reasonably acquired.\\n\\n66. On 9 February 2023 Mr Vallance replaced Ms Stout as the claimant's line\\nmanager. He explained that, despite the claimant's desire for the process to\\nbe dispensed with, the MPP Process would continue in accordance with the\\nrespondent's Managing Poor Performance Advice Policy. Mr Vallance\"}, {\"char_end\": 37473, \"char_start\": 36014, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"tribunal_reasoning\", \"text\": \"provided the claimant with an updated PIP to reflect the work that needed to\\nbe delivered at that time, against which his performance would be assessed.\\n\\n\\nCase number: 2200225/[BANK_DETAILS]. On 14 February 2023 the claimant asked Mr Vallance to withdraw the PIP and\\nstop the MPP Process. While the claimant says that he ignored this request, I\\nfind that he did not and this is evidenced by the meeting between the two men\\non 15 February 2023 to discuss his request during which Mr Vallance\\nexplained that the MPP Process would continue as there remained evidence\\nof his poor performance. The review period recommenced on 17 February\\n2023 and the claimant stated on 21 February 2023 that he would not engage\\nwith the PIP.\\n\\n68. The claimant was absent due to sickness from 28 February - 20 March 2023\\ndue to anxiety / stress at work, during which time the MPP Process was\\npaused. The claimant had been absent for 16 working days over the previous\\n12 month rolling period thereby exceeding the 14-day trigger point under the\\nFirst Respondent's Attendance Management Procedure (\\\"AMP\\\").\\n\\n69. On 21 March 2023 the claimant returned to work. The claimant again asked\\nMr Vallance to stop the MPP Process which was refused with the explanation\\nthat while evidence of poor performance existed, the MPP Process would\\ncontinue. In order to assist the claimant Mr Vallance paused the remainder of\\nthe review period until after Ramadan (22 March - 20 April) and suggested\"}, {\"char_end\": 38961, \"char_start\": 37473, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"judgment\", \"text\": \"that the claimant be re-referred to OH. The claimant was informed that he\\nwould be invited to an attendance management meeting in line with the AMP\\nas he had exceeded the 14-day tigger point. This meeting was intended to\\ntake place on 11 April 2023 but was postponed pending the OH report. It took\\nplace on 1 June 2023 (below).\\n\\n70. On 28 March 2023 the claimant declined to attend any 1-2-1 meetings or\\nPerformance Health Checks with Mr Vallance and asked for any future\\ncommunications to be in writing which was agreed.\\n\\n71. On 13 April 2023 Mr Vallance shared the claimant's objectives with him again\\nand asked him to review them and advise if he had any concerns. The\\nclaimant did not respond.\\n\\n72. On 17 April 2023 the claimant raised a grievance against Mr Vallance, alleging\\nthat he had ignored his health concerns and continued to pursue the MPP\\nProcess. However, the respondent's Grievance Policy states that the policy is\\nnot to be used to deal with complaints arising from the application of other\\npolicies and procedures that include an appeal mechanism, for example poor\\nperformance.\\n\\n73. The Claimant was absent due to sickness from 24 - 26 April 2023 and 4 - 10\\nMay 2023 due to facial cellulitis. This delayed the recommencement of the\\n\\nCase number: 2200225/2024\\nreview period. On 9 May 2023 the claimant attended a telephone OH\\nappointment. The OH advisor recommended a stress risk assessment, clear\\nobjectives in the claimant's PIP, the ability to take ad hoc breaks and\"}, {\"char_end\": 40411, \"char_start\": 38961, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"judgment\", \"text\": \"additional management support with a pastoral focus. On 24 May 2023, upon\\nthe claimant's return to work, Mr Vallance conducted a stress risk assessment\\nwith the claimant and offered him support from the Grade 7 who had covered\\nhis workload in his absence.\\n\\n74. On 1 June 2023 the Mr Vallance conducted a formal unsatisfactory\\nattendance meeting with the claimant in line with the AMP. The claimant\\nstated that he did not need any reasonable adjustments, just for the MPP\\nProcess to be stopped. Mr Vallance explained to the claimant that it was not\\npossible to stop the MPP Process and suggested the following adjustments in\\nline with OH advice: (1) adhoc breaks; (2) changes to his working pattern; and\\n(3) a Grade 6 to offer pastoral support. The claimant was not however\\nreceptive to any of them. Mr Vallance suggested to the claimant that he\\nmanages his annual leave so that he has regular breaks throughout the year,\\nbut the claimant said he was unable to do this. The claimant was encouraged\\nto utilise the First Respondent's Employee Assistance Programme.\\n\\n75. At this meeting, Mr Vallance queried whether the claimant would benefit from\\nany further clarification of his performance objectives and suggested that the\\nPIP and objectives could be reviewed by email or MS Teams if he did not wish\\nto discuss face to face. The claimant stated that he was reluctant to look at his\\nobjectives because he did not agree with the PIP. On 6 June 2023 Mr\"}, {\"char_end\": 41902, \"char_start\": 40411, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"judgment\", \"text\": \"Vallance wrote to the Claimant with the outcome of the attendance\\nmanagement meeting on 1 June 2023. While the claimant was not issued with\\na written warning for unsatisfactory attendance he was encouraged to\\nconsider adjustments.\\n\\n76. On 15 June 2023 the MPP Process recommenced. On 21 June 2023 the\\nclaimant wrote to Mr Vallance requesting the removal of the MPP Process and\\na move to a different role. Mr Vallance replied on 23 June 2023 to confirm that\\nit would continue subject to some adjustments including an extension of the\\nreview period and late start times, and that he would explore his request to\\nmove to a different role. Mr Vallance also offered to discuss the PIP again to\\nclarify any areas that the claimant considered to be ambiguous, and to\\nprovide weekly feedback. The claimant continued to refuse to attend any\\nmeetings as he had done with Ms Stout. On 30 June 2023 the claimant\\nconfirmed to the Mr Vallance that his request to move to a different role was to\\nstop the MPP Process stating, 'Obviously this is not going to happen so no\\npoint discussing this any further,'\\n\\n\\nCase number: 2200225/[BANK_DETAILS]. On 3 August 2023, Mr Vallance provided the claimant with a detailed\\nassessment of his performance and invited him to a formal stage 3\\nperformance management meeting in line with the MPP Process. In turn, this\\nled to the formal stage 3 (capability) meeting on 31 August 2023. Mr Vallance\\nconducted a detailed assessment of the claimant's performance during the\"}, {\"char_end\": 43390, \"char_start\": 41902, \"page\": 1, \"paragraph\": 30, \"section_tag\": \"judgment\", \"text\": \"review period and the claimant was given the opportunity to respond. While\\nthe men did discuss the possibility of the claimant being downgraded. The\\nClaimant was resistant to this stating that this \\\"would not be right\\\" and that he\\nwould not consider being downgraded. This led to the claimant's dismissal on\\n5 September, taking effect 6 September 2023 with Mr Vallance justifying the\\ndecision to dismiss in the following way at paragraph 123 of his witness\\nstatement:\\n\\n\\\"I can see that Abdallah alleges in his ET1 that he was capable of carrying out\\nthe Core Behaviours used to justify the MPP Process (page 36, paragraph\\n48.1). This is incorrect. As covered in the meetings with Abdallah and\\nlengthy emails detailed above, there was substantial evidence of poor\\nperformance dating back to late 2021. Abdallah was well aware of his\\nunderperformance, including feedback from me, Hannah and senior\\nstakeholders. The limited 'positive' feedback Abdallah had obtained, which\\nhe refers to in his ET1 at page 36 paragraph 48.3, had been superficial\\n(pages 144-150) and contradicts feedback that Hannah and I both obtained\\non the basis of anonymity. I think that this reflects that people can find it more\\ndifficult to provide constructive feedback in person and that more accurate\\nfeedback can be obtained when people can do it anonymously. Hannah and I\\nboth provided summaries of the feedback we obtained (pages 245-246 and\\n1984 - 1986). The feedback summarised in those documents supports the\"}, {\"char_end\": 44885, \"char_start\": 43390, \"page\": 1, \"paragraph\": 31, \"section_tag\": \"judgment\", \"text\": \"weaknesses we identified in Abdallah's performance.\\\"\\n\\nAnd further at paragraph 124:\\n\\n\\\"I can see that Abdallah suggests in his ET1 that we acted unreasonably\\nthroughout the MPP process when satisfactorily completing objectives, giving\\ndifferent objectives (page 36 paragraph 48.4). He also alleges that we failed\\nto set clear/specific objectives that he could work towards and be measured\\nagainst, and that we set him up to fail (page 36, paragraph 48.6). These\\nallegations are categorically false.\\\"\\n\\n78. I accept this evidence in its entirety and in so doing, I find that the respondent\\nhad undertaken a detailed, thorough, reasonable and responsible process\\nthat had determined that the claimant was unsuitable for the role to which he\\nhad been appointed.\\n\\n\\nCase number: 2200225/[BANK_DETAILS]. The claimant was informed that he would not receive efficiency compensation\\nunder the Civil Service Compensation Scheme (\\\"CSCS\\\"), which is intended to\\ncompensate employees for loss of employment that is beyond their control\\nand not to compensate for poor performance. This was a not an issue\\npursued at all before me but in any event I find this was a finding clearly open\\nto Mr Vallance to make namely that the claimant was not eligible to apply\\nunder the terms of the scheme.\\n\\n80. On 19 September 2023 the claimant appealed the decision to dismiss him\\nand not to award him any compensation under the CSCS. The appeal fell to\\nMs Howard to determine and which she rejected. Save for paragraph 14 of\"}, {\"char_end\": 46326, \"char_start\": 44885, \"page\": 1, \"paragraph\": 32, \"section_tag\": \"judgment\", \"text\": \"her statement, her evidence was unchallenged. In respect of her decision she\\nsays the following:\\n\\n\\\"27. I did not agree with Mr Said's position that he should not have been\\nplaced on a Performance Improvement Plan as the evidence I reviewed\\nshowed that there was stakeholder feedback which justified the improvement\\nplan (pages 209 - 213, 215 - 216, 220 - 221, 232 - 242, 454 - 461, 465 -\\n483 and 535 - 537). I also felt it was clear that the assessment of his\\nperformance was not solely based on the opinion of one manager and there\\nwas no evidence to suggest the Performance Improvement Plan should have\\nstopped because his manager changed. I pointed Mr Said to 'Managing Poor\\nPerformance Advice' available on the DHSC internet which confirms that\\nwhere there is a change of line manager it is important there is a handover\\nand that performance action being taken is not disrupted (pages 1930 - 1937).\\nThis was also clearly set out to Mr Said in several emails in February 2023\\n(page 759, 762). Therefore, I could not find any evidence that the PIP was\\nunfair or that it was invoked because of his employer's actions which harmed\\nhis health.\\n\\n28. I also disagreed that Mr Said's managers were hostile towards him and\\nnitpicking. I had reviewed written correspondence between Mr Said and his\\nmanagers, an example of this is on pages 910 - 912 and pages 1235 - 1237\\nwhich detailed constructive feedback on his performance and were supportive\"}, {\"char_end\": 47759, \"char_start\": 46326, \"page\": 1, \"paragraph\": 33, \"section_tag\": \"judgment\", \"text\": \"of him. I felt all of Mr Said's managers; James, Hannah and Ed were polite\\nand professional with him.\\n\\n29. I also felt his objectives were drafted in a consistent way with other Grade\\n7 objectives, and I could not see any evidence that his objectives were sent in\\na way to deliberately ensure he could not achieve them. I reviewed the Grade\\n7 success profiles and performance framework. I also thought about the\\nGrade 7s I manage and although the roles are different, I felt the standard\\nexpected would be broadly consistent. There were also weekly feedback\\n\\nCase number: 2200225/2024\\nemails from James Vallance with lots of detail against both overarching\\nobjectives and specific tasks, so I felt there was appropriate training and\\ncoaching towards Mr Said.\\n\\n30. I disagreed that DHSC had not put in place adjustments for Mr Said; both\\nlater starts of 10am and an extension of the performance review period were\\nimplemented. I was aware that Mr Said felt an adjustment would be to remove\\nthe Performance Improvement Plan, but I was in agreement with his manager\\nthat it is not reasonable where there is evidence of poor performance.\\n\\n31. I also considered the decision not to award Mr Said efficiency\\ncompensation and rejected this point of appeal. I explained in my letter my\\nreasoning and that my view was that it was not appropriate to award efficiency\\ncompensation. Although he experienced situational stress leading to anxiety\"}, {\"char_end\": 49236, \"char_start\": 47759, \"page\": 1, \"paragraph\": 34, \"section_tag\": \"judgment\", \"text\": \"through the performance process, I could see no evidence of any underlying\\nhealth condition which predated concerns about his performance which were\\nfirst highlighted by management in January 2022. Additionally, the guidance is\\nclear that compensation may only be made where the employee is making\\nefforts to comply with policies and co-operate with Occupational Health. Here,\\nthere was evidence that Mr Said had not fully engaged as he had refused to\\ntake short breaks and make us of additional wellbeing/pastoral support both of\\nwhich were specifically recommended in the OH reports. Ultimately, the\\ncompensation is there to compensate employees for loss of employment that\\nis beyond their control and not to compensate for poor performance when\\nthere is no underlying health condition.\\\"\\n\\n81. I find Ms Howard's investigation to have been detailed, balanced and\\nreasonable and her decision in respect of the claimant's appeal to be\\nimpeccable. I accept her evidence as set out in the paragraphs above in its\\nentirety.\\n\\n82. Based upon these findings, I find that the claimant was dismissed on the\\ngrounds of capability on the basis that it was a reasonable dismissal of an\\nemployee holding the claimant's position, but the dismissal was fair because\\nthe respondent acted reasonably in treating it a sufficient reason for\\ndismissing the claimant, and that dismissal is a reasonable sanction in the\\ncircumstances is within the range of reasonable responses. Lastly, I find that\"}, {\"char_end\": 50676, \"char_start\": 49236, \"page\": 1, \"paragraph\": 35, \"section_tag\": \"judgment\", \"text\": \"the procedure adopted by the respondent was fair and reasonable. In\\nreaching these findings, I find that the respondent had good cause to\\ncommence and continue the MPP process and acted reasonably, responsibly,\\nproportionately and honestly throughout. There was evidence of ineffective\\nperformance by the claimant that justifies the imposition of the MPP. I find that\\n\\nCase number: 2200225/2024\\nthe MPP generally is a fair, and effective mechanism utilised in this case to\\nmanage the claimant's perceived poor performance.\\n\\n83. I expressly find that the MPP was not implemented or continued because the\\nclaimant raised grievances about Ms Stout or Mr Vallance, or because the\\nclaimant was not set clear objectives; on the contrary, I expressly find that the\\nclaimant had been set clear objectives, that he was supported throughout the\\nperformance management process, but that the claimant was incapable or\\nunwilling to engage with the need to improve and the process generally.\\nFurther, I find that both Ms Stout and Mr Vallance took account of the\\nclaimant's ill-health at relevant times and made adjustments. Any allegation of\\nprocedural impropriety or unfairness of the respondent's part are not made\\nout.\\n\\n84. Addressing the claimant's contentions as to the respondent's decision to\\ndismiss him and not reinstate him, I find from the evidence presented to the\\ntribunal principally provided by Ms Stout and Mr Vallance, together with Mr\"}, {\"char_end\": 52014, \"char_start\": 50676, \"page\": 1, \"paragraph\": 36, \"section_tag\": \"judgment\", \"text\": \"Jewell that the claimant was reasonably assessed as being incapable of\\ncarrying out the core behaviours relevant to his role.\\n\\n85. I disagree with the claimant and agree with Mr Harris's submission that it is\\nirrelevant for my consideration that he may have worked satisfactorily in a\\ngrade 7 role prior to commencing his employment with the respondent.\\n\\n86. I find that while claimant did receive positive feedback from colleagues about\\nhis performance, if find that the scope of those comments were limited and did\\nnot cover the full range of comments required in order to provide rounded,\\ncommercially viable feedback and therefore it was right for Ms Stout to seek\\nfurther feedback in the way that she did. It was important to receive feedback\\nfrom a relevant spectrum of peers and stakeholders.\\n\\n87. I am unable to reach a finding that the respondent acted unreasonably\\nthroughout the process by setting different objectives to the claimant to the\\nones that he expected to complete. I find that the claimant's objectives hardly\\nchanged across the two years that he was subject to performance\\nmanagement and any changes that occurred were either minor or negligible\\nand were requirements that reflected the business need of the Ministry and of\\nministers. It is my finding that the respondent acted reasonably throughout the\\nprocess.\"}, {\"char_end\": 53473, \"char_start\": 52014, \"page\": 1, \"paragraph\": 37, \"section_tag\": \"judgment\", \"text\": \"88. I find that the claimant's motivation for raising grievances about Ms Stout\\nVallance were entirely related to the claimant's knowledge that the\\nperformance management processes would continue and were intended by\\n\\nCase number: 2200225/2024\\nthe claimant to stand down those processes, an approach which was entirely\\nmisconceived in light of the reasonable findings reached by both managers of\\nthe claimant's performance failings. I reject the allegation of conspiracy made\\nagainst Ms Stout and Mr Jewell namely that they had commenced the MPP\\nbecause he had raised an informal grievance to Mr Jewell around Ms Stout's\\nconduct. This allegation is wholly unsupported by evidence and was not\\npursued with any vigour before the tribunal.\\n\\n\\n89. I repeat my finding that the respondent did set the claimant specific and clear\\nobjectives that he could work towards and that the claimant was aware of\\nthose objectives and how his performance will be evaluated. I reject the\\ncontention that the respondent set him up to fail.\\n\\n90. I find upon considering the evidence that the respondent was not able to\\nredeploy the claimant as an alternative to dismissal. I accept Ms Stout's\\nevidence as to why the respondent would not countenance such a measure. I\\nfind that the claimant would not have accepted being moved to a lower grade\\nas an alternative had this been open to him and I reach this finding based\\nupon his response to Mr Vallance in this regard (see above).\"}, {\"char_end\": 54363, \"char_start\": 53473, \"page\": 1, \"paragraph\": 38, \"section_tag\": \"judgment\", \"text\": \"91. I find the respondent made adjustments in the MPP process with a view to\\navoiding the claimant's dismissal and took account for the fact that the\\nclaimant's health impacted his performance during the MPP. As to the\\nallegation of bias, there is simply no evidence before the tribunal that relates\\nto this allegation and therefore it must fail.\\n\\n92. Lastly, the allegation that the respondent had no intention of keeping the\\nclaimant in his current role because a role was advertised on 29 September\\n2023 advertising the claimant's role as split into two is simply not made out on\\nthe facts and it is unchallenged by the claimant that these roles are\\nadvertised 23 days after the claimant's dismissal.\\n\\n93. Accordingly, I find that the claim fails and is dismissed.\\n\\nApproved by:\\nEmployment Judge Forde\\n14 November 2025\\n\\nJudgment sent to the parties on:\\n16 January 2026\\n\\nFor the Tribunal:\"}]}",
+  "n_chunks": 38,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 12,
+    "tribunal_reasoning": 13,
+    "judgment": 12
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[{\"name\":\"Shook v Ealing London Borough Council\",\"citation\":\"1986 ICR 314, EAT\",\"cited_date\":\"1986\"},{\"name\":\"Alidair Ltd V Taylor\",\"citation\":\"1978 ICR 445, CA\",\"cited_date\":\"1978\"},{\"name\":\"Cook v Thomas Linnell and Sons Ltd\",\"citation\":\"1977 ICR 770, EAT\",\"cited_date\":\"1977\"},{\"name\":\"Polkey v AE Dayton Services Ltd\",\"citation\":\"[1987] IRLR 503 (HL)\",\"cited_date\":\"1987\"},{\"name\":\"Bevan Harris Ltd (t/a The Clyde Leather Co) v Gair\",\"citation\":\"1981 IRLR 520, EAT\",\"cited_date\":\"1981\"}],\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[15991,17456]},{\"page\":1,\"paragraph\":13,\"text_span\":[17456,18917]},{\"page\":1,\"paragraph\":14,\"text_span\":[18917,20225]},{\"page\":1,\"paragraph\":15,\"text_span\":[20225,21689]}]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]}]},\"decision_date\":{\"value\":\"14 November 2025\",\"spans\":[{\"page\":1,\"paragraph\":38,\"text_span\":[53473,54363]}]},\"evidence\":{\"value\":\"The tribunal considered two bundles, including a witness-statement bundle of 138 pages and a documents bundle of just over 2000 pages. Witness statements were prepared for the claimant, Ms Stout, Mr Vallance, Mr Jewell, Mr Tritton and Ms Howard, and all witnesses gave sworn evidence.\",\"spans\":[{\"page\":1,\"paragraph\":4,\"text_span\":[4218,5669]}]},\"facts\":{\"value\":\"The claimant said he had been subject to a performance improvement process arising from concerns about his performance by his line manager, Hannah Stout. He alleged Ms Stout was overly critical, changed his role, and that her conduct led him to raise grievances. The respondent progressed the claimant through informal and formal performance-management stages, and on 31 August 2023 he attended a stage-three performance management meeting which led to his dismissal on grounds of poor performance, taking effect on 6 September 2023.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1357,2758]},{\"page\":1,\"paragraph\":3,\"text_span\":[2758,4218]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]},{\"page\":1,\"paragraph\":38,\"text_span\":[53473,54363]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]},{\"page\":1,\"paragraph\":38,\"text_span\":[53473,54363]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]},{\"page\":1,\"paragraph\":35,\"text_span\":[49236,50676]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]},{\"page\":1,\"paragraph\":38,\"text_span\":[53473,54363]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]},{\"page\":1,\"paragraph\":38,\"text_span\":[53473,54363]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"I find on the evidence placed before the tribunal, that at all stages that are relevant to the decision to dismiss the claimant including the provision of warnings to the claimant and the assessment of the claimant's performance at the various stages of informal PIP and thereafter the MPP, to have been reasonable, that they were acquired following a reasonable enquiry and based upon honest beliefs and reasonable grounds in light of the circumstances and evidence presented to Ms Stout and thereafter to Mr Vallance at the material times.\",\"I accept this evidence in its entirety and in so doing, I find that the respondent had undertaken a detailed, thorough, reasonable and responsible process that had determined that the claimant was unsuitable for the role to which he had been appointed.\",\"Based upon these findings, I find that the claimant was dismissed on the grounds of capability on the basis that it was a reasonable dismissal of an employee holding the claimant's position, but the dismissal was fair because the respondent acted reasonably in treating it a sufficient reason for dismissing the claimant, and that dismissal is a reasonable sanction in the circumstances is within the range of reasonable responses.\",\"Accordingly, I find that the claim fails and is dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":16,\"text_span\":[21689,23173]},{\"page\":1,\"paragraph\":31,\"text_span\":[43390,44885]},{\"page\":1,\"paragraph\":35,\"text_span\":[49236,50676]},{\"page\":1,\"paragraph\":38,\"text_span\":[53473,54363]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]}]},\"region\":{\"value\":\"london\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]}]},\"region_source\":{\"value\":\"London Central (by CVP)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1357]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.95\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.98\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.94\"}],\"spans\":[{\"page\":1,\"paragraph\":9,\"text_span\":[11526,13005]},{\"page\":1,\"paragraph\":10,\"text_span\":[13005,14494]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "Shook v Ealing London Borough Council",
+            "citation": "1986 ICR 314, EAT",
+            "cited_date": "1986"
+          },
+          {
+            "name": "Alidair Ltd V Taylor",
+            "citation": "1978 ICR 445, CA",
+            "cited_date": "1978"
+          },
+          {
+            "name": "Cook v Thomas Linnell and Sons Ltd",
+            "citation": "1977 ICR 770, EAT",
+            "cited_date": "1977"
+          },
+          {
+            "name": "Polkey v AE Dayton Services Ltd",
+            "citation": "[1987] IRLR 503 (HL)",
+            "cited_date": "1987"
+          },
+          {
+            "name": "Bevan Harris Ltd (t/a The Clyde Leather Co) v Gair",
+            "citation": "1981 IRLR 520, EAT",
+            "cited_date": "1981"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              15991,
+              17456
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 13,
+            "text_span": [
+              17456,
+              18917
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              18917,
+              20225
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              20225,
+              21689
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1357
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "14 November 2025",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              53473,
+              54363
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The tribunal considered two bundles, including a witness-statement bundle of 138 pages and a documents bundle of just over 2000 pages. Witness statements were prepared for the claimant, Ms Stout, Mr Vallance, Mr Jewell, Mr Tritton and Ms Howard, and all witnesses gave sworn evidence.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4218,
+              5669
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant said he had been subject to a performance improvement process arising from concerns about his performance by his line manager, Hannah Stout. He alleged Ms Stout was overly critical, changed his role, and that her conduct led him to raise grievances. The respondent progressed the claimant through informal and formal performance-management stages, and on 31 August 2023 he attended a stage-three performance management meeting which led to his dismissal on grounds of poor performance, taking effect on 6 September 2023.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1357,
+              2758
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2758,
+              4218
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1357
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 38,
+              "text_span": [
+                53473,
+                54363
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1357
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 38,
+              "text_span": [
+                53473,
+                54363
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1357
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 35,
+              "text_span": [
+                49236,
+                50676
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1357
+                  ]
+                },
+                {
+                  "page": 1,
+                  "paragraph": 38,
+                  "text_span": [
+                    53473,
+                    54363
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1357
+                  ]
+                },
+                {
+                  "page": 1,
+                  "paragraph": 38,
+                  "text_span": [
+                    53473,
+                    54363
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "I find on the evidence placed before the tribunal, that at all stages that are relevant to the decision to dismiss the claimant including the provision of warnings to the claimant and the assessment of the claimant's performance at the various stages of informal PIP and thereafter the MPP, to have been reasonable, that they were acquired following a reasonable enquiry and based upon honest beliefs and reasonable grounds in light of the circumstances and evidence presented to Ms Stout and thereafter to Mr Vallance at the material times.",
+          "I accept this evidence in its entirety and in so doing, I find that the respondent had undertaken a detailed, thorough, reasonable and responsible process that had determined that the claimant was unsuitable for the role to which he had been appointed.",
+          "Based upon these findings, I find that the claimant was dismissed on the grounds of capability on the basis that it was a reasonable dismissal of an employee holding the claimant's position, but the dismissal was fair because the respondent acted reasonably in treating it a sufficient reason for dismissing the claimant, and that dismissal is a reasonable sanction in the circumstances is within the range of reasonable responses.",
+          "Accordingly, I find that the claim fails and is dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              21689,
+              23173
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 31,
+            "text_span": [
+              43390,
+              44885
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 35,
+            "text_span": [
+              49236,
+              50676
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 38,
+            "text_span": [
+              53473,
+              54363
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1357
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1357
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1357
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London Central (by CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1357
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.95"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.94"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11526,
+              13005
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              13005,
+              14494
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "",
+    "parsed": null,
+    "error": "LLMIncompleteResponseError('Response incomplete (reason=max_output_tokens, tokens_out=8192); increase max_output_tokens')"
+  },
+  "labeled_at": "2026-05-16T02:50:28.906932+00:00",
+  "source_pdf_sha256": "248c133dbf8f61d9f7f1b55209a426b3afeb708b05bdcad9e573a735b6fa9eb2",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

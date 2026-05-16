@@ -1,0 +1,423 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025",
+  "case_reference": "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-03-04",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6034122/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr S Bennett v The Compass Partnership of Schools: 6034122/2025 - Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/69c93915471d520038d0f7f4/Mr_Stephen_Bennett_v_The_Compass_Partnership_of_Schools_-_6034122_2025_-_Judgment.pdf"
+  },
+  "pdf_sha256": "179f94aa130ef4dbeca46c5df72a2ac847216c4b55179bcbcfcdb154195db104",
+  "ocr_text_sha256": "64a0f8e301152636e992c74307e71806ce73b73d2eaac3630a6576f42889b1d7",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1453, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 6034122/2025\\n\\n\\n\\n\\n\\n1\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\n\\n\\nMr Stephen Bennett\\n\\n\\n\\n\\n\\nRespondent:\\nThe Compass Partnership of Schools\\n\\n\\nHeard at:\\n\\nEast London Hearing Centre\\n\\n\\n\\n\\n\\nOn:\\n\\n\\n\\n04 March 2026 (By Cloud Video Platform)\\n\\n\\n\\n\\n\\n\\n\\nBefore:\\n\\nEmployment Judge B Beyzade\\n\\n\\n\\n\\n\\n\\n\\nRepresentation\\n\\nClaimant:\\n\\nNot present or represented\\n\\nRespondent: Mr Gareth Graham, Counsel\\n\\n\\n\\nJUDGMENT\\n\\nThe Judgment of the Tribunal is that:\\n\\n\\n1)\\nThe claimant being neither present nor represented during the Final Hearing\\nlisted at 10am on 04 March 2026 at the East London Hearing Centre by Cloud\\nVideo Platform and at a point in excess of 25 minutes after the time set for the\\nFinal Hearing, on the Clerk to the Tribunal having contacted the claimant by\\ntelephone at 10.07am on 04 March 2026, and on the claimant not having\\nresponded to email correspondence sent by the Clerk to the Tribunal at 10.09am\\non 04 March 2026, and the claimant not having otherwise communicated with\\nthe Tribunal in relation to their non attendance at the Final Hearing thereafter; on\\nthe claimant's non-attendance; and on the respondent's application made at the\\nBar, and having considered the content of the Tribunal file, the Tribunal\\ndismisses the claimant's claim in terms of Rule 47 of The Employment Tribunal\\nProcedure Rules 2024.\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nCase Number: 6034122/2025\\n\\n\\n\\n\\n\\n\\n\\n2\\n\\n\\n\\n\\n\\n\\n\\nApproved By:\\n\\n\\n\\n\\n\\n\\nEmployment Judge Beyzade\\n\\n\\n\\n\\n\\n\\nDated: 04 March 2026\\n\\n\\n\\n\\n\\n\\n\\n\\nNotes\"}, {\"char_end\": 2591, \"char_start\": 1453, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Reasons for the judgment having been given orally at the hearing, written reasons will not be provided unless\\na request was made by either party at the hearing or a written request is presented by either party within 14\\ndays of the sending of this written record of the decision.\\n\\nPublic access to employment tribunal decisions\\n\\nJudgments and reasons for the judgments are published, in full, online at www.gov.uk/employment-tribunal-\\ndecisions shortly after a copy has been sent to the claimant(s) and respondent(s) in a case.\\n\\nRecording and Transcription\\n\\nPlease note that if a Tribunal hearing has been recorded you may request a transcript of the recording, for\\nwhich a charge may be payable. If a transcript is produced it will not include any oral judgment or reasons\\ngiven at the hearing. The transcript will not be checked, approved or verified by a judge. There is more\\ninformation in the joint Presidential Practice Direction on the Recording and Transcription of Hearings, and\\naccompanying Guidance, which can be found here:\\n\\nhttps://www.judiciary.uk/guidance-and-resources/employment-rules-and-legislation-practice-directions/\"}]}",
+  "n_chunks": 2,
+  "section_tag_counts": {
+    "case_header": 1,
+    "tribunal_reasoning": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [],\n    \"spans\": []\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": []\n  },\n  \"decision_date\": {\n    \"value\": \"2026-03-04\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No evidence summary is provided in the source text.\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No facts or issues section is provided in the source text.\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1453\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": null\n    },\n    \"unapportioned_reason\": {\n      \"value\": \"The claim was dismissed under Rule 47 for the claimant's non-attendance; no award is stated.\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1453\n          ]\n        }\n      ]\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1453\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The Tribunal dismisses the claimant's claim in terms of Rule 47 of The Employment Tribunal Procedure Rules 2024.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": []\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"london\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"East London Hearing Centre\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [],\n    \"spans\": []\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": []
+      },
+      "decision_date": {
+        "value": "2026-03-04",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1453
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": "The claim was dismissed under Rule 47 for the claimant's non-attendance; no award is stated.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1453
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1453
+              ]
+            }
+          ]
+        },
+        "per_issue": [],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The Tribunal dismisses the claimant's claim in terms of Rule 47 of The Employment Tribunal Procedure Rules 2024."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": []
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "East London Hearing Centre",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [],\n    \"spans\": []\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": []\n  },\n  \"decision_date\": {\n    \"value\": \"04 March 2026\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No evidence section in source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No facts or issues section in source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1453\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": null,\n      \"unavailable_reason\": \"No monetary award stated in source text\"\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1453\n          ]\n        }\n      ]\n    },\n    \"per_issue\": {\n      \"value\": [],\n      \"spans\": []\n    },\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The Tribunal dismisses the claimant's claim in terms of Rule 47 of The Employment Tribunal Procedure Rules 2024.\",\n      \"The Clerk to the Tribunal having contacted the claimant by telephone at 10.07am on 04 March 2026, and on the claimant not having responded to email correspondence sent by the Clerk to the Tribunal at 10.09am on 04 March 2026, and the claimant not having otherwise communicated with the Tribunal in relation to their non attendance at the Final Hearing thereafter; on the claimant's non-attendance; and on the respondent's application made at the Bar, and having considered the content of the Tribunal file, the Tribunal dismisses the claimant's claim.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": []\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1453\n            ]\n          }\n        ]\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1453\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": []\n  },\n  \"region\": {\n    \"value\": \"london\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"East London Hearing Centre\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1453\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [],\n    \"spans\": []\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": []
+      },
+      "decision_date": {
+        "value": "04 March 2026",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1453
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null,
+          "unavailable_reason": "No monetary award stated in source text"
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1453
+              ]
+            }
+          ]
+        },
+        "per_issue": {
+          "value": [],
+          "spans": []
+        },
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The Tribunal dismisses the claimant's claim in terms of Rule 47 of The Employment Tribunal Procedure Rules 2024.",
+          "The Clerk to the Tribunal having contacted the claimant by telephone at 10.07am on 04 March 2026, and on the claimant not having responded to email correspondence sent by the Clerk to the Tribunal at 10.09am on 04 March 2026, and the claimant not having otherwise communicated with the Tribunal in relation to their non attendance at the Final Hearing thereafter; on the claimant's non-attendance; and on the respondent's application made at the Bar, and having considered the content of the Tribunal file, the Tribunal dismisses the claimant's claim."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": []
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1453
+                ]
+              }
+            ]
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1453
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": []
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "East London Hearing Centre",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1453
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:57:33.434998+00:00",
+  "source_pdf_sha256": "179f94aa130ef4dbeca46c5df72a2ac847216c4b55179bcbcfcdb154195db104",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

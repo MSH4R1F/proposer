@@ -1,0 +1,365 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "ms-m-mackinnon-v-voneus-broadband-ltd-8001155-slash-2025",
+  "case_reference": "ms-m-mackinnon-v-voneus-broadband-ltd-8001155-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-12-23",
+  "country": "scotland",
+  "case_numbers": [
+    "8001155/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/ms-m-mackinnon-v-voneus-broadband-ltd-8001155-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Ms M Mackinnon v Voneus Broadband Ltd: 8001155/2025 - Judgment with Reasons",
+    "url": "https://assets.publishing.service.gov.uk/media/6980dbc7edc921ef1a24535c/Ms_M_Mackinnon_v_Voneus_Broadband_Ltd_-_8001155.2025_-_Judgment.pdf"
+  },
+  "pdf_sha256": "7abec8296299d0b6f86dbeb4f51dda992125d0ceb63101dc940b425080f33a6e",
+  "ocr_text_sha256": "86e553221bcf1f2de83d37b64232302e137ce1b6d4986f5c20adad98413a634c",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"ms-m-mackinnon-v-voneus-broadband-ltd-8001155-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1492, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"EMPLOYMENT TRIBUNALS (SCOTLAND)\\nCase No: 8001155/2025\\nHeld in Glasgow on 17, 18, 19 September and 15 October 2025\\nEmployment Judge S MacLean\\nMs M Mackinnon\\nClaimant\\nIn person\\nVoneus Broadband Ltd\\nRespondent\\nRepresented by:\\nMr R Bradley -\\nAdvocate\\nJUDGMENT OF THE EMPLOYMENT TRIBUNAL\\nThe judgment of the Employment Tribunal is that the claim of unfair dismissal under\\nthe Employment Rights Act 1996 is dismissed.\\nREASONS\\nIntroduction\\n1.\\nThe claimant initiated early conciliation on 17 March 2025, and a certificate\\nwas issued on 10 April 2025. She submitted a claim to the Tribunal on 8 May\\n2025 alleging unfair dismissal following the termination of her employment on\\n28 March 2025. She seeks compensation.\\n2.\\nThe respondent admits dismissal but contends that it was due to redundancy\\nand it was fair and reasonable in all the circumstances.\\n3.\\nAt the final hearing, the following issues were identified for determination:\\na. What was the reason or principal reason for the claimant's dismissal?\\nb. Was it a potentially fair reason? The respondent asserts redundancy.\\nc. If the reason was redundancy, did the respondent act reasonably or\\nunreasonably in all the circumstances, including the respondent's size\\nand administrative resources in treating that as a sufficient reason to\\ndismiss the claimant. Specifically: 8001155/2025\\nPage 2\\n(i)\\nWas the claimant adequately warned and consulted?\\n(ii)\\nWas a reasonable selection process adopted, including\\nthe approach to the selection pool?\\n(iii)\"}, {\"char_end\": 2931, \"char_start\": 1492, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"Were reasonable steps take to identify suitable alternative\\nemployment?\\n(iv)\\nWas dismissal within the reasonable range of responses.\\n4.\\nEvidence was heard from Julie Partridge, the respondent's Chief People\\nOfficer at the relevant time and from the claimant. A joint set of documents\\nwas also considered.\\n5.\\nFollowing the evidence the respondent provided outline submissions to the\\nclaimant. By agreement both parties presented oral submissions on 15\\nOctober 2025 and the written outline to which they referred.\\n6.\\nI have set out the findings in fact essential to my reasoning and understanding\\nof the evidence. The parties' submissions have been considered in the\\ncontext of these findings, the relevant legal framework and its application to\\nthe facts.\\nFindings in fact\\n7.\\nThe respondent operates in the telecommunications sector, manufacturing\\ntelecommunications equipment and providing wireless services, including\\nbroadband. The claimant commenced employment on 3 January 2022 as\\nBuilding Support Manager under a contract dated 2 December 2022 which\\nincluded a job description.\\n8.\\nOn 6 March 2024, the claimant was promoted to Head of Build-Scotland\\nreporting to the Head of Build-North. The new role took effect from 1 March\\n2024 with an increased salary and an extended notice period from one to\\nthree months. The claimant accepted these revised terms.\\n9.\\nHead of Build-Scotland was one of several regional Heads of Build including\"}, {\"char_end\": 4376, \"char_start\": 2931, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"North, South and Wales. The regional heads North and South, amongst\\nothers reported to the Director of Deployment.\\n10.\\nIn summer 2024, network build activity declined significantly due to reduced\\ninvestor funding. To mitigate this, the respondent explored mergers,\\nrefinancing, and alternative investment sources, and paused new build\\nprojects.\\n11.\\nThe Director of Deployment advised the claimant on 1 July 2024 that she\\nwould assume a building operations role, providing lead support to the\\ninstallations team and coordinating build responses to meet installation 8001155/2025\\nPage 3\\ntargets. Other regional heads were tasked with focusing on L2C activities and\\npre-enabling installations where possible to avoid resource wastage.\\n12.\\nOn 8 July 2024, the Director of Deployment assigned the claimant as the\\nprimary build contact, responsible for coordinating with the installations team\\nand addressing build and design issues to clear installation backlogs. Other\\nbuild leads were working with the Head of Wireless to explore how the\\nsupervisors' team could support installation engineers and increase capacity.\\n13.\\nOn 26 July 2024, the Director of Deployment thanked the claimant for her\\nefforts and encouraged her to continue. He acknowledged that the role\\ndiffered from her original expectations but noted that her contribution was\\nmaking a significant impact.\\n14.\\nWhile the Director of Deployment was on annual leave the claimant contacted\"}, {\"char_end\": 5805, \"char_start\": 4376, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"him regarding an issue raised in a team conference call on 14 August 2024.\\nHe was copied related email correspondence. The Director of Deployment\\nprovided guidance and stated that these matters should not be escalated in\\nthis manner.\\n15.\\nOn 19 August 2024, the claimant emailed the Head of People Experience and\\nJulie Partridge, Chief People Officer, indicating her intention to raise a\\ngrievance for bullying. The claimant reported multiple incidents during the\\nprevious week, including being scapegoated, treated unfairly, mobbed, and\\nultimately demoted via email. The claimant specified that her grievance\\nconcerned the Head of Build-South and Head of Build-Wales. The grievance\\nwas acknowledged. The claimant confirmed that she had informed the Head\\nof Build-North, her line manager.\\n16.\\nAs the Director of Deployment was on annual leave until 28 August 2024, Ms\\nPartridge advised the claimant that, before invoking the grievance policy, an\\ninformal resolution should be attempted upon both parties' return from\\nholiday.\\n17.\\nThe claimant was on leave from 30 August to 2 September 2024. She\\nexpected the investigation to progress during her absence but believed it had\\nnot. Upon returning, she anticipated resuming work with the installation team;\\nhowever, she was informally advised this would not occur, though alternative\\ntasks were available.\\n18.\\nOn 5 September 2024, the Director of Deployment informed her the claimant\"}, {\"char_end\": 7234, \"char_start\": 5805, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"would be reassigned to support the Arran Tiger Team and report directly to\\nhim. That same day, the claimant wrote to Ms Partridge requesting that the\\ngrievance be progressed. 8001155/2025\\nPage 4\\n19.\\nThe claimant commenced sick leave on 9 September 2024 due to workplace\\nstress.\\n20.\\nOn 16 September 2024, Ms Partridge wrote to the claimant noting her four-\\nweek medical certificate and asking whether she wished to postpone the\\ngrievance hearing until her anticipated return on 7 October 2024, or if\\nattending sooner might reduce stress. At that time, the claimant was informed\\nthe grievance would be heard by an independent manager with no prior\\ninvolvement. The claimant responded that she expected to return on 14\\nOctober 2024 and preferred to wait until then. Her absence continued, and\\nshe ultimately returned on 28 October 2024.\\n21.\\nDuring the claimant's sick absence, another colleague was assigned to the\\nArran Tiger team.\\n22.\\nOn 29 October 2024, the claimant was one of a number of recipients of an\\nemail inviting applications for a six-month secondment to the customer's\\ninstallation team, commencing 4 November 2024. The claimant did not apply\\nor express interest in the secondment.\\n23.\\nOn 6 November 2024, the respondent met with the claimant to conduct the\\ngrievance hearing and interviewed nine relevant individuals as part of the\\ninvestigation.\\n24.\\nOn 9 December 2024, the respondent informed the claimant that her\"}, {\"char_end\": 8728, \"char_start\": 7234, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"tribunal_reasoning\", \"text\": \"grievance was not upheld, citing no evidence of bullying, unfair treatment, or\\nunauthorised changes to her duties. The respondent noted the claimant's\\ninvolvement in accepting her role as Build's point of contact (8 July 2024),\\njoining the Arran Tiger Team (4 September 2024), and being included in the\\n29 October 2024 email regarding a secondment opportunity, which she did\\nnot pursue.\\n25.\\nThe claimant appealed the grievance outcome on 30 December 2024. The\\nrespondent acknowledged the appeal on 2 January 2025 and scheduled a\\nhearing for 10 January 2025. After review, the appeal was dismissed due to\\ninsufficient evidence, and the claimant was notified in writing on 19 January\\n2025.\\n26.\\nOn 17 February 2025, the respondent submitted an HR1 to the Secretary of\\nState, citing a significant reduction in Network Build activities and external\\ninvestment, which necessitated a collective redundancy process affecting 93\\nroles, including the Heads of Build positions.\\n27.\\nCollective consultation with the employee representative body (including a\\nrepresentatives for the claimant's team) began on 18 February 2025 and\\ncontinued for at least 30 days before any dismissals. 8001155/2025\\nPage 5\\n28.\\nOn 6 March 2025, the claimant met with Ms Partridge who outlined the\\nredundancy situation, its impact on the claimant, and the consultation\\nprocess. The claimant was advised that her Head of Build-Scotland role was\\nat risk due to a significant reduction in duties and responsibilities, and that the\"}, {\"char_end\": 10155, \"char_start\": 8728, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"tribunal_reasoning\", \"text\": \"respondent would explore options to avoid redundancy, including suitable\\nalternative employment. The discussion was confirmed in writing and the\\nclaimant was provided with a list of alternative roles\\n29.\\nThe Arran Tiger Team role was not a substantive position but a set of tasks\\nto be addressed at the relevant time and was therefore not a viable alternative\\nrole for the claimant. She had previously been offered the opportunity to apply\\nfor a customer installations secondment but chose not to do so, resulting in\\nthat role being filled by another employee, initially on a temporary basis and\\npermanently on 1 April 2025. Consequently, the role was not vacant when\\nthe claimant was placed at risk of redundancy and was not offered as a\\nsuitable alternative.\\n30.\\nOn 10 March 2025, during a further consultation meeting with Ms Partridge,\\nthe claimant said that she did not feel that there was any point in applying for\\njobs as she would not be treated fairly. She had no issue with the process\\nbut did not intend to apply for any alternative roles.\\n31.\\nAfterwards Ms Partridge sent an email to the claimant encouraging her to\\nconsider the Head of Regional Delivery (North) position. Ms Partridge\\nacknowledge what the claimant said but reassured that she would have a fair\\nand transparent interview process as previously discussed with the workplace\\nrepresentatives. The claimant did not apply for that or any other role.\\n32.\"}, {\"char_end\": 11624, \"char_start\": 10155, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"tribunal_reasoning\", \"text\": \"On 19 March 2025, the respondent invited the claimant to a final consultation\\nmeeting, advising that she could be accompanied by a colleague or trade\\nunion representative and that the possible outcome was termination of\\nemployment on grounds of redundancy with notice or pay in lieu of notice.\\n33.\\nThe claimant attended the final meeting on 24 March 2025 unaccompanied,\\nand, having considered the circumstances and her decision not to apply for\\nalternative roles, the respondent dismissed her on grounds of redundancy.\\n34.\\nThe decision was confirmed in writing, and the claimant was informed of her\\nright to appeal, which she did not exercise. She was provided with a\\nredundancy statement detailing payments due, and her employment\\nterminated on 28 March 2025.\\n35.\\nIn April 2025, she received a payment in lieu of notice of £21,250 and a\\nredundancy payment of £2,100. At the date of termination, her gross annual\\nsalary was £85,000, equating to a net monthly payment of £4,578.89, with\\nmonthly pension contributions of £283.33. 8001155/2025\\nPage 6\\n36.\\nSince termination of employment, the claimant has not found alternative\\nemployment despite all of her efforts to mitigate her loss.\\nObservations on witnesses and conflict of evidence\\n37.\\nIn my view, there was little dispute regarding the material facts of this case;\\nrather, the difference lay in the perspective through which those facts were\\ninterpreted. The claimant gave her evidence based on her recollection of\"}, {\"char_end\": 13087, \"char_start\": 11624, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"tribunal_reasoning\", \"text\": \"events, viewed against the background of having unsuccessfully raised a\\ngrievance. She understandably focused on her personal experience. By\\ncontrast, Ms Partridge, who no longer worked for the respondent, recalled\\nevents through the lens of managing employees during a period of uncertainty\\nabout future funding, followed by a mass redundancy exercise. Her approach\\nappeared more objective, although I do not underestimate the challenges she\\nfaced.\\n38.\\nMs Partridge was not directly involved in the claimant's grievance process,\\nand I detected no animosity between them. On the contrary, my impression\\nwas that Ms Partridge encouraged the claimant to apply for alternative roles.\\nThe claimant did not appear to have any issue with Ms Partridge but rather\\nwith those who would have been involved in interviewing, whom she believed\\nwere not impartial. This concern was never tested, as the claimant did not\\napply for any roles, and some of the views she expressed at the hearing were\\nnot communicated to Ms Partridge during the consultation process.\\nDeliberations\\n39.\\nThis is a claim for unfair dismissal. The claimant contends that her dismissal\\nwas a pretext for having raised a grievance. She asserts that the customer\\ninstallations role was allocated to another colleague who was retained and\\nthat her designation as Build point of contact was removed without notice or\\nexplanation. The respondent maintains that the dismissal was by reason of\\nredundancy.\\n40.\"}, {\"char_end\": 14537, \"char_start\": 13087, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"tribunal_reasoning\", \"text\": \"I referred to section 98 of the Employment Rights Act 1996 (ERA). The initial\\nquestion is whether the respondent has established a reason for dismissal.\\nThe respondent asserts that the reason was redundancy and must therefore\\ndemonstrate that this assertion is correct, namely that the claimant was\\nredundant within the meaning of the statute. The claimant accepts that a\\nredundancy situation existed but contends that her dismissal was motivated\\nby an intention to remove her from the business following the grievance\\nprocess initiated in August 2024.\\n41.\\nSection 139(1)(b) of the ERA provides that an employee shall be regarded as\\ndismissed by reason of redundancy if the dismissal is wholly or mainly\\nattributable to the fact that the requirements of the business for employees to 8001155/2025\\nPage 7\\ncarry out work of a particular kind have ceased or diminished or are expected\\nto cease or diminish.\\n42.\\nThe claimant's position is that her contract of employment permitted the\\nallocation of other duties as required. She states that from July 2024 she\\nmoved to installations and returned there in October 2024 following a period\\nof sickness absence. She further asserts that all Build teams pivoted to\\ninstallations in October 2024. She argues that this contradicts the\\nrespondent's position that her role was standalone and that she was outside\\nthe pool for selection.\\n43.\\nThis issue was not raised during the consultation process. The evidence\"}, {\"char_end\": 16035, \"char_start\": 14537, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"judgment\", \"text\": \"demonstrates that from July 2024 Network Build activity declined significantly\\ndue to reduced investor funding, and new build projects were paused. At that\\nstage the respondent anticipated that this would be temporary and that new\\ninvestor funding would be secured. In the interim, employees, including the\\nclaimant and other regional Heads of Build, were temporarily reassigned to\\nsupport the installation team and other projects such as the Arran Tiger Team.\\nI do not consider these to have been new roles; if and when new investor\\nfunding was secured, these employees would have been reassigned to new\\nbuild projects. This is supported in my view by the requirement for\\nexpressions of interest for secondment to the installations team in October\\n2024. The claimant did not apply for secondment. There was no evidence\\nthat she did not do so because she understood that she had already been\\nredeployed to that role. There was no evidence of the other Heas of Build\\napplying for secondment. If they did so they were not appointed.\\n44.\\nI concluded that by February 2025, having exhausted all avenues for securing\\nnew investor funding, the requirements of the business for employees to carry\\nout network build activity in respect of new build projects had ceased or\\ndiminished, or were expected to cease or diminish. This resulted in a reduced\\nrequirement for employees to carry out work of that kind and led to a collective\\nredundancy process affecting 93 roles, including the requirements for Head\"}, {\"char_end\": 17512, \"char_start\": 16035, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"judgment\", \"text\": \"of Build including the claimant's position as Head of Build-Scotland.\\n45.\\nI was satisfied that the reason for the claimant's dismissal was redundancy\\nwhich is a potentially fair reason\\n46.\\nThe next issue is whether the respondent acted reasonably in treating\\nredundancy as a sufficient reason for dismissal, as required by section 98(4)\\nERA. This involves assessing both the procedure followed and the\\nsubstantive decision to dismiss.\\n47.\\nI was mindful that my role is not to substitute my own view as to the course of\\naction the respondent ought to have taken. My function is to determine 8001155/2025\\nPage 8\\nwhether, in the circumstances of this case, the decision to dismiss the\\nclaimant fell within the band of reasonable responses which a reasonable\\nemployer might have adopted.\\n48.\\nIn assessing procedural fairness, I have considered whether a fair procedure\\nwas followed, including: whether the claimant was adequately warned and\\nconsulted; whether a reasonable selection process was adopted, particularly\\nin relation to the composition of the selection pool; whether reasonable steps\\nwere taken to identify suitable alternative employment; and whether dismissal\\nfell within the band of reasonable responses open to an employer in the\\ncircumstances.\\n49.\\nThe evidence establishes that the respondent proposed to dismiss 93\\nemployees. Collective consultation with workforce representatives\\ncommenced on 18 February 2025 and continued for the statutory minimum\\nperiod.\\n50.\"}, {\"char_end\": 19006, \"char_start\": 17512, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"judgment\", \"text\": \"There was no longer any requirement for the role of Head of Build in any\\nregion. Employees occupying these positions were therefore placed at risk\\nof redundancy. The respondent treated each regional Head of Build as a\\nsingle, standalone role. The single role selection was the same for all the\\nregional Heads of Build. I could not conclude that this approach was not a\\nreasonable approach open to an employer in these circumstances.\\n51.\\nThe claimant was notified that her role was at risk, invited to individual\\nconsultation meetings, and given clear information about the redundancy\\nsituation and its impact. It was confirmed to the claimant in writing that the\\nrole of Head of Build-Scotland would cease to exist. The claimant was\\nadvised of the alternative roles available. She indicated that she did not\\nconsider it worthwhile to apply. Ms Partridge sought to reassure the claimant\\nand encouraged her to apply, but the claimant did not do so. The claimant\\nalso offered the opportunity to be accompanied at the final consultation\\nmeeting and the decision confirmed in writing, including the right of appeal,\\nwhich the claimant did not exercise. In my judgment, the consultation process\\nwas meaningful and afforded the claimant a genuine opportunity to engage.\\n52.\\nOn substance, the claimant contends that her dismissal was a pretext for\\nhaving raised a grievance. I have considered this argument carefully. While\\nthe claimant's perception is understandable given the timing of events, there\"}, {\"char_end\": 20028, \"char_start\": 19006, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"judgment\", \"text\": \"is no evidence that the redundancy process was manipulated to target her.\\nThe evidence demonstrates that the redundancy exercise was driven by a\\nsignificant and genuine reduction in Network Build activity and external\\ninvestment, affecting 93 roles, including all Heads of Build positions. The\\nclaimant's grievance was unrelated to the financial and operational\\ncircumstances that led to the redundancy process. I detected no animosity 8001155/2025\\nPage 9\\nfrom Ms Partridge, who encouraged the claimant to apply for alternative roles.\\nThe claimant's concerns about impartiality in interviews were never tested, as\\nshe did not apply for any roles.\\n53.\\nHaving considered all the evidence, I find that the respondent acted\\nreasonably in treating redundancy as a sufficient reason for dismissal. The\\ndecision to dismiss fell within the range of reasonable responses open to an\\nemployer in the circumstances. Accordingly, the claim of unfair dismissal is\\nnot well-founded and is dismissed.\\nDate sent to parties\\n23 December 2025\"}]}",
+  "n_chunks": 14,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 4,
+    "tribunal_reasoning": 5,
+    "judgment": 4
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1492]}]},\"decision_date\":{\"value\":\"2025-12-23\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]},\"evidence\":{\"value\":\"Evidence was heard from Julie Partridge, the respondent's Chief People Officer at the relevant time, and from the claimant. A joint set of documents was also considered.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1492,2931]}]},\"facts\":{\"value\":\"The respondent operates in the telecommunications sector. The claimant commenced employment on 3 January 2022 as Building Support Manager and was promoted to Head of Build-Scotland from 1 March 2024. In summer 2024 network build activity declined significantly due to reduced investor funding and new build projects were paused. The claimant was assigned as primary build contact in July 2024, later raised a grievance alleging bullying and unfair treatment in August 2024, commenced sick leave in September 2024, returned in October 2024, did not apply for a customer installation team secondment, and attended a grievance hearing on 6 November 2024.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1492,2931]},{\"page\":1,\"paragraph\":3,\"text_span\":[2931,4376]},{\"page\":1,\"paragraph\":4,\"text_span\":[4376,5805]},{\"page\":1,\"paragraph\":5,\"text_span\":[5805,7234]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"I was satisfied that the reason for the claimant's dismissal was redundancy which is a potentially fair reason\",\"I find that the respondent acted reasonably in treating redundancy as a sufficient reason for dismissal.\",\"The decision to dismiss fell within the range of reasonable responses open to an employer in the circumstances. Accordingly, the claim of unfair dismissal is not well-founded and is dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[16035,17512]},{\"page\":1,\"paragraph\":14,\"text_span\":[19006,20028]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":9,\"text_span\":[11624,13087]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1492]}]},\"region\":{\"value\":\"scotland\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1492]}]},\"region_source\":{\"value\":\"Glasgow\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1492]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.98\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.139\"}],\"spans\":[{\"page\":1,\"paragraph\":10,\"text_span\":[13087,14537]},{\"page\":1,\"paragraph\":12,\"text_span\":[16035,17512]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1492
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-12-23",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19006,
+              20028
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "Evidence was heard from Julie Partridge, the respondent's Chief People Officer at the relevant time, and from the claimant. A joint set of documents was also considered.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1492,
+              2931
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The respondent operates in the telecommunications sector. The claimant commenced employment on 3 January 2022 as Building Support Manager and was promoted to Head of Build-Scotland from 1 March 2024. In summer 2024 network build activity declined significantly due to reduced investor funding and new build projects were paused. The claimant was assigned as primary build contact in July 2024, later raised a grievance alleging bullying and unfair treatment in August 2024, commenced sick leave in September 2024, returned in October 2024, did not apply for a customer installation team secondment, and attended a grievance hearing on 6 November 2024.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1492,
+              2931
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2931,
+              4376
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4376,
+              5805
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5805,
+              7234
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 14,
+              "text_span": [
+                19006,
+                20028
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 14,
+              "text_span": [
+                19006,
+                20028
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 14,
+              "text_span": [
+                19006,
+                20028
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 14,
+                  "text_span": [
+                    19006,
+                    20028
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 14,
+                  "text_span": [
+                    19006,
+                    20028
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "I was satisfied that the reason for the claimant's dismissal was redundancy which is a potentially fair reason",
+          "I find that the respondent acted reasonably in treating redundancy as a sufficient reason for dismissal.",
+          "The decision to dismiss fell within the range of reasonable responses open to an employer in the circumstances. Accordingly, the claim of unfair dismissal is not well-founded and is dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              16035,
+              17512
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19006,
+              20028
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11624,
+              13087
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1492
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "scotland",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1492
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Glasgow",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1492
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.139"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              13087,
+              14537
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              16035,
+              17512
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\": {\"value\": null, \"unavailable_reason\": \"no case-law authorities with citation or date are cited in the source text\"}, \"claim_types\": {\"value\": [\"unfair_dismissal\"], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}]}, \"decision_date\": {\"value\": \"23 December 2025\", \"spans\": [{\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}]}, \"evidence\": {\"value\": \"Evidence was heard from Julie Partridge, the respondent's Chief People Officer at the relevant time and from the claimant. A joint set of documents was also considered.\", \"spans\": [{\"page\": 1, \"paragraph\": 2, \"text_span\": [1492, 2931]}]}, \"facts\": {\"value\": \"The claimant commenced employment on 3 January 2022 and was promoted to Head of Build-Scotland with effect from 1 March 2024. In summer 2024 network build activity declined significantly and employees, including the claimant, were temporarily reassigned to support the installation team. The claimant raised a grievance for bullying on 19 August 2024, and commenced sick leave on 9 September 2024. On 29 October 2024 the claimant was invited to apply for a six-month secondment to the customer's installation team but did not apply, and a grievance hearing was held on 6 November 2024.\", \"spans\": [{\"page\": 1, \"paragraph\": 3, \"text_span\": [2931, 4376]}, {\"page\": 1, \"paragraph\": 4, \"text_span\": [4376, 5805]}, {\"page\": 1, \"paragraph\": 5, \"text_span\": [5805, 7234]}, {\"page\": 1, \"paragraph\": 2, \"text_span\": [1492, 2931]}]}, \"ground_truth_outcome\": {\"overall_winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}, {\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}]}, \"total_awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}]}, \"unapportioned_reason\": {\"value\": null}, \"determination\": {\"value\": \"respondent_success\", \"spans\": [{\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}, {\"page\": 1, \"paragraph\": 10, \"text_span\": [13087, 14537]}]}, \"per_issue\": [{\"issue\": \"unfair_dismissal\", \"winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}]}, \"awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}]}}], \"basic_award_gbp\": {\"value\": null}, \"compensatory_award_gbp\": {\"value\": null}, \"deductions_pct\": {\"value\": null}, \"uplifts_pct\": {\"value\": null}, \"reinstatement_sought\": {\"value\": null}, \"reinstatement_granted\": {\"value\": null}, \"re_engagement_sought\": {\"value\": null}, \"re_engagement_granted\": {\"value\": null}}, \"key_reasoning_quotes\": [{\"value\": \"I was satisfied that the reason for the claimant's dismissal was redundancy which is a potentially fair reason\", \"spans\": [{\"page\": 1, \"paragraph\": 12, \"text_span\": [16035, 17512]}]}, {\"value\": \"Having considered all the evidence, I find that the respondent acted reasonably in treating redundancy as a sufficient reason for dismissal. The decision to dismiss fell within the range of reasonable responses open to an employer in the circumstances. Accordingly, the claim of unfair dismissal is not well-founded and is dismissed.\", \"spans\": [{\"page\": 1, \"paragraph\": 14, \"text_span\": [19006, 20028]}]}], \"matter_type\": {\"value\": \"unfair_dismissal\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}]}, \"parties\": [{\"role\": \"claimant\", \"represented\": false, \"unavailable_reason\": null, \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}]}, {\"role\": \"respondent_employer\", \"represented\": true, \"unavailable_reason\": null, \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}]}, \"region\": {\"value\": \"scotland\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}]}, \"region_source\": {\"value\": \"Held in Glasgow on 17, 18, 19 September and 15 October 2025\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1492]}]}, \"statutory_basis\": {\"value\": [{\"statute\": \"Employment Rights Act 1996\", \"section\": \"s.98\", \"spans\": [{\"page\": 1, \"paragraph\": 10, \"text_span\": [13087, 14537]}]}, {\"statute\": \"Employment Rights Act 1996\", \"section\": \"s.139\", \"spans\": [{\"page\": 1, \"paragraph\": 11, \"text_span\": [14537, 16035]}]}], \"spans\": [{\"page\": 1, \"paragraph\": 10, \"text_span\": [13087, 14537]}, {\"page\": 1, \"paragraph\": 11, \"text_span\": [14537, 16035]}]}}",
+    "parsed": null,
+    "error": null
+  },
+  "labeled_at": "2026-05-16T03:00:27.745974+00:00",
+  "source_pdf_sha256": "7abec8296299d0b6f86dbeb4f51dda992125d0ceb63101dc940b425080f33a6e",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

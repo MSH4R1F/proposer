@@ -1,0 +1,53 @@
+{
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "selection_manifest": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/gold_build/employment_et_unfair_dismissal_stratified_50_2026-05-15/selection_manifest.jsonl",
+  "run_dir": "/Users/msharif/Documents/Projects/proposer/legal-mediation-system/data/eval_artifacts/labeling/20260516T024713Z-646a2e40-emp-et",
+  "started_at": "2026-05-16T02:47:13.433987+00:00",
+  "finished_at": "2026-05-16T03:01:57.867934+00:00",
+  "labeler_a": {
+    "provider": "openai",
+    "model": "gpt-5.5",
+    "api_version": null,
+    "reasoning_effort": null,
+    "text_verbosity": null,
+    "store": false
+  },
+  "labeler_b": {
+    "provider": "openai",
+    "model": "gpt-5-mini",
+    "api_version": null,
+    "reasoning_effort": null,
+    "text_verbosity": null,
+    "store": false
+  },
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "n_cases": 50,
+  "n_both_ok": 43,
+  "n_partial": 7,
+  "n_both_failed": 0,
+  "stats_a": {
+    "calls": 50,
+    "tokens_in": 276746,
+    "tokens_out": 206824,
+    "cached_tokens_in": 132352,
+    "reasoning_tokens_out": 165245,
+    "errors": 0,
+    "fallback_uses": 0,
+    "provider": "openai",
+    "model": "gpt-5.5",
+    "estimated_cost_usd": 3.794225
+  },
+  "stats_b": {
+    "calls": 50,
+    "tokens_in": 276746,
+    "tokens_out": 261220,
+    "cached_tokens_in": 137984,
+    "reasoning_tokens_out": 202048,
+    "errors": 6,
+    "fallback_uses": 0,
+    "provider": "openai",
+    "model": "gpt-5-mini",
+    "estimated_cost_usd": null
+  }
+}

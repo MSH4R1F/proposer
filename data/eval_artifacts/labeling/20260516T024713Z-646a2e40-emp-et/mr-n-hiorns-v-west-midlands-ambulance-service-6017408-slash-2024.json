@@ -1,0 +1,699 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024",
+  "case_reference": "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-10-27",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6017408/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr N Hiorns v West Midlands Ambulance Service: 6017408/2024 - Reserved Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/69da099f96c86b751317024b/Mr_N_Hiorns_v_West_Midlands_Ambulance_Service_6017408.2024_.pdf"
+  },
+  "pdf_sha256": "34b546440488049d836e63806340617f8e3bd38d2a1289ab8920cac6b635541d",
+  "ocr_text_sha256": "604f5547b8b5d571afaf4812f2695ffdf0e3355e5f2854c3bdef1926379ff913",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1404, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case No: 6017408/2024\\n\\n\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\n\\nClaimant:\\n\\n\\nMr N Hiorns\\n\\nRespondent:\\nWest Midlands Ambulance Service\\n\\nHeard at:\\n\\n\\nBirmingham (by CVP)\\n\\n\\nOn:\\n\\n\\n\\n\\n\\n31 July - 1 August 2025\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nBefore:\\n\\n\\n\\n\\nEmployment Judge Wright\\n\\nRepresentation:\\n\\nClaimant:\\n\\n\\nMr Stenson (of Counsel)\\n\\nRespondent:\\n\\nMr Crow (of Counsel)\\n\\nParticipants:\\n\\nWitnesses for Respondent: Nathan Hudson (disciplinary officer), Michelle\\nBrotherton (appeal officer)\\n\\nWitness for Claimant: Mr Hiorns\\n\\nRESERVED JUDGMENT AND REASONS\\n\\nJUDGMENT:\\n\\n1. The judgment of the Tribunal is that the Claimant's claim for unfair\\ndismissal is not well-founded, and is dismissed.\\n\\nREASONS:\\n\\nBackground\\n\\n2. The Claimant, Mr Hiorns, was dismissed by the Respondent following\\nallegations of sexual harassment involving three female colleagues as set\\nout in the Respondent's letter to the Claimant dated 24 May [630-632].\\n\\n3. The Respondent cited gross misconduct as the reason for dismissal.\\n\\n4. The Claimant admitted the conduct but argued that the context, including\\nprior friendships and interactions with the complainants, was relevant to\\nthe sanction imposed. He raised concerns about procedural fairness, Case No: 6017408/2024\\n\\n\\n\\n\\n\\nincluding the refusal to adjourn the disciplinary hearing to obtain further\\nevidence, and avers that this has resulted in the decision to dismiss him\\nbeing both procedurally and substantively unfair.\\n\\nDocuments\"}, {\"char_end\": 2895, \"char_start\": 1404, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"5. I had before me a witness bundle of 28 pages, a substantive hearing\\nbundle of 714 pages, a chronology of events, and a reading list. All page\\nreferences in this judgment and reasons are to the substantive hearing\\nbundle.\\n\\nApplication\\n\\n6. At the start of the hearing an application was made by the Respondent for\\nan anonymity order in respect of the three employees who had raised\\ncomplaints of sexual harassment against the Claimant.\\n\\n7. This was refused, with brief reasons provided orally. It was however\\nagreed that it was unnecessary to refer to the complainants by their\\nnames and that they would be referred to, both in the hearing and in any\\njudgment, by their initials only.\\n\\nIssues\\n\\n8. The only complaint is one of ordinary unfair dismissal.\\n\\n9. As the reason for dismissal is not in dispute and the conduct is admitted,\\nthe only issue in this case is whether the decision to dismiss fell within the\\nrange of reasonable responses open to the employer. The Issues for the\\ntribunal to consider were therefore:\\n\\n10. Was the dismissal substantively and/or procedurally unfair?\\n\\n11. Did the Respondent reasonably conclude that dismissal was within the\\nrange of reasonable responses?\\n\\nRelevant Law:\\n\\n12. The relevant sections of the ERA the Tribunal considered was therefore\\nlimited to S.98(4):\\n12.1\\nWhere the employer has fulfilled the requirements of\\nsubsection (1), the determination of the question whether the\\ndismissal is fair or unfair (having regard to the reason shown by the\"}, {\"char_end\": 4331, \"char_start\": 2895, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"employer)-\\n12.2\\ndepends on whether in the circumstances (including the size\\nand administrative resources of the employer's undertaking) the\\nemployer acted reasonably or unreasonably in treating it as a\\nsufficient reason for dismissing the employee, and Case No: 6017408/2024\\n\\n\\n\\n\\n\\n12.3\\nshall be determined in accordance with equity and the\\nsubstantial merits of the case.\\nSummary of the evidence and finding of facts\\n\\n13. The Claimant attended to give evidence as did, on behalf of the\\nRespondent, Nathan Hudson (disciplinary officer) and Michelle Brotherton\\n(appeal officer).\\n\\n14. There are several findings of fact that could be made purely from the\\ndocumentation that I was referred to. These are as set out below and,\\nwhen adopted by the Tribunal, as copied from the Respondent's written\\nsubmissions.\\n\\n15. The Claimant was employed by the Respondent from 1 July\\n2012\\nuntil his dismissal on 7 July 2024.\\n\\n16. He was dismissed by the Respondent for sexual misconduct in respect of\\nallegations raised by three female colleagues against him, concerning\\nconduct of a sexualised nature.\\n\\n17. Historically, UK ambulance services had developed a reputation for\\n\\nfailing to sufficiently protect against sexual harassment, as\\nrecognised by the Care Quality Commission (CQC) [450]. In response to\\nthe concerns raised \\\"both nationally and locally\\\" the Trust confirmed it was\\n\\\"undertaking a number of actions\\\" as listed in bullet points at 450.\"}, {\"char_end\": 5763, \"char_start\": 4331, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"18. This included in 2022 the Respondent introduced a Sexual Safety Charter\\n[450, 190] and publishing materials to highlight what amounts to\\nunacceptable behaviour and to encourage the reporting of such behaviour.\\n\\n19. The Respondent introduced training in relation to sexual safety, which the\\nClaimant attended and acknowledges he attended [441, 700, 414 at Q62].\\n\\n20. Employees, via the Code of Conduct, were encouraged to avoid\\n\\\"circumstances which might give cause for complaint\\\" [69] and the Code\\nemphasised the difference between banter and unreciprocated/unwanted\\nremarks [75].\\n\\n21. The Respondent's Dignity at Work policy set out the rights and duties in\\nthis area, and gave a non-exhaustive list of examples of what would be\\nconsidered harassment and sexual harassment including: sexual remarks\\nand unwanted conduct of a sexual nature, such as, unwelcome physical,\\nverbal or non-verbal conduct [124-5], and unwanted verbal or physical\\nadvances, unwanted physical contact including unnecessary touching,\\nleering, suggestions of sexual favours, suggestive remarks, lewd\\ncomments, etc [125-6]. It also warned employees that harassment \\\"will\\nnot be tolerated\\\" and warned of the effects of harassment on individuals\\nand on the organisation [128-130]. Case No: 6017408/2024\\n\\n\\n\\n\\n\\n\\n22. In 2023, posters were published [489-490] to highlight the issues [449] and\\ninformation was provided in the weekly bulletin [447, 446, 445]. The\"}, {\"char_end\": 7100, \"char_start\": 5763, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Association of Ambulance Chief Executives (AACE) and the Chief Allied\\nHealth Professions Officer (CAHPO) launched publications noted in the\\nbulletin as serving to \\\"underline our commitment and result in the cultural\\nshift needed to ensure that all our employees... feel safe and fairly treated,\\nregardless of gender\\\" and to ensure there was no ignoring of \\\"what could\\nbe called 'casual or everyday' types of behaviours that can lead to harmful\\npower imbalances amongst colleagues\\\" because of the need to \\\"move\\naway from discrimination masked as banter and an outdated culture\\\" [444-\\n445].\\n\\n23. In respect of the allegations related to the complaint LH, the Claimant\\nadmitted at the time of the investigations into this conducted by the\\nRespondent to:\\n\\na. making comments about LH's breasts and touching her hands [410\\nat Q22, Q24], his conduct was 'sexualised' [413],\\n\\nb. he shouldn't be making comments about people's anatomy [415 at\\nQ67];\\n\\nc. At the disciplinary hearing the Claimant admits to all three\\nallegations and states: 'I put my hands up and that's not my normal\\ninteraction with staff. I misjudged it.\\\" [649];\\n\\nd. The Claimant agreed at the appeal hearing that he was admitting to\\nall three allegations that had been raised by the complaints and that\\nwere the subject of the disciplinary: complaints by LH, SH and MG\\n[678].\"}, {\"char_end\": 8507, \"char_start\": 7100, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"tribunal_reasoning\", \"text\": \"e. The Claimant further confirmed that he was aware of the sexual\\ncharter and posters and that they were \\\"everywhere\\\" including\\nbehind the toilet doors, and accepted that he was aware of the\\nRespondent's drive to change the historic culture of the service so\\nthat previous incidents which may have wrongly been dismissed as\\n\\\"banter\\\", would not be tolerated moving forward.\\n\\n24. In Mr Hudson's cross-examination he was questioned about the\\nRespondent's decision to suspend the Claimant whilst it undertook the\\ninvestigation. The Respondent's witnesses could not assist with this\\ndecision beyond what was contained in the documents in the bundle. The\\nClaimant's counsel took me to 154 and the policy on suspension and\\nhighlighted that suspension is a last resort. Mr Hudson confirmed he was\\nnot involved in this decision.\\n\\n25. In Mr Hudson's re-examination, I was taken to a further document at 623\\nentitled:\\nRisk\\nassessment\\nfor\\nsuspension\\nor\\ntemporary Case No: 6017408/2024\\n\\n\\n\\n\\n\\nredeployment/adjustment of duties. In this document it poses a question\\nfor assessment: \\\"Is there a risk to patient safety?\\\" it is recorded that the\\nrisk here is high and that: \\\"there is a potential transferable risk to\\nfemale/vulnerable patients due to the serious nature of the concerns\\nraised. This concerns three allegations of a similar nature over a period of\\ntime\\\". This was dated 2 April 2024 and was kept under review.\"}, {\"char_end\": 9941, \"char_start\": 8507, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"tribunal_reasoning\", \"text\": \"26. At this stage, the Respondent would not have had the information from the\\nClaimant regarding his reasoning for why he misjudged his interactions\\nwith these colleagues - this being the friendly nature of the relationship he\\nclaimed to have with the three individual concerned which resulted in him\\nacting in this way with them, when he would not have with other staff\\nmembers.\\n\\n27. The Respondent could not therefore have taken this explanation into\\naccount when considering whether the Claimant could be redeployed to\\nanother location, or adjustments could have been made to his duties.\\nHowever, given the fact that he was under investigation, the risk that he\\nwould repeat offences of this nature with fresh employees at another\\nlocation would appear to be low. Also, in this section it refers again to the\\nrisk of him encountering \\\"patients and other service users\\\". The Claimant\\ngave uncontested evidence that he had worked for the Ambulance Service\\nfor 20 years, and he had never had any complaints raised against him by\\na patient. I therefore find that the Respondent's conclusion that he was a\\n\\\"risk to patients\\\" to be unsound as it is unfounded. However, this decision\\nto suspend him was totally separate from the decision to dismiss him and\\nwas not made by the disciplinary panel. I further find that it was not\\nconsidered by the panel and accordingly had no bearing on the\\nRespondent's decision to dismiss the Claimant.\"}, {\"char_end\": 11394, \"char_start\": 9941, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"tribunal_reasoning\", \"text\": \"28. In the Claimant's dismissal letter, the panel records that it had found the\\nupheld allegations to collectively constitute gross misconduct [656].\\n\\n29. In cross-examination of Mr Hudson, the three allegations together being\\ngross misconduct and the disciplinary panel's decision not to adjourn the\\nhearing to enable the Claimant to review a substantial amount of\\ninformation that he had just recovered from an old phone to find a picture\\nthat he stated LH sent him in 2019 of her skinny dipping (which LH denies\\nsending) was a particular focus. The Claimant's position was that this gave\\ncontext to the relationship between LH and him and was therefore relevant\\nto the incident in February 2024 where he made comments about her\\nbreasts and touched her wrist.\\n\\n30. The Claimant had also stated that LH had flashed her chest in her bra at\\nhim following a conversation in which he expressed his reluctance to have\\na flu jab, but then said that he would for a \\\"boob flash\\\". In the investigation\\ninto these incidents it was recorded that there were different accounts\\ngiven by the Claimant as to how the conversation had started and whose\\nsuggestion the \\\"boob flash\\\" was, but he was clear LH had pulled up her Case No: 6017408/2024\\n\\n\\n\\n\\n\\ntop and flashed her chest in her bra at him in 2016, after administering the\\nflu jab to him. LH denies this ever happened, but brought up when\\nreporting this incident, that this was not the first time the Claimant had\"}, {\"char_end\": 12871, \"char_start\": 11394, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"tribunal_reasoning\", \"text\": \"been inappropriate stating that he had asked her for a \\\"boob flash\\\" in\\nexchange for having the flu jab, which she had refused. Given the differing\\naccount of events, it is clear why the Claimant would have wanted more\\ntime to support his version of events and bring into question LH's\\ntestimony on this.\\n\\n31. Mr Hudson, however, was clear in his evidence that the panel had\\ndeliberated on this point, but that they had decided not to adjourn. Mr\\nHudson was asked by the Claimant's counsel whether there was a\\ndifference between seemingly inappropriate behaviour if it were one-way\\nor if it were two-way. Whilst Mr Hudson was clear that this might be\\nrelevant, he did then confirm that, in the context of this matter, he and the\\npanel did not consider whether LH sent the Claimant this photo to be\\nrelevant to the issues before them, which concerned incidents and\\nallegation in February 2024.\\n\\n32. In Mr Hudson's evidence, and in re-examination, he focused on the fact\\nthat there were three instances of inappropriate behaviour of a sexualised\\nnature before the panel involving three different individuals. He highlighted\\nthat the flu jab incident concerning LH had been in 2016, and we are now\\nin 2024. It was accepted that the incidences that the Claimant referred to\\nwould be inappropriate behaviour, would contravene the sexual charter\\nintroduced and fall within the conduct mentioned in the posters about\\nsexual harassment. Mr Hudson however stressed that since 2016 there\"}, {\"char_end\": 14317, \"char_start\": 12871, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"judgment\", \"text\": \"had been a focus on the Respondent's culture, training had been given\\nand a Sexual Charter introduced to ensure that everyone was aware of the\\nstandards of behaviour expected and what would be considered sexual\\nharassment.\\n\\n33. Mr Hudson gave clear evidence that, in respect of the February 2024\\nincident involving LH in the locker room, there was no indication that there\\nhad been any conversations or incidents leading up to it which would\\ncontextualise it. Considering the training, introduction of the Sexual\\nCharter and shift in culture since 2016, whilst that would not have been\\nacceptable then, it was even less so now. He and the panel therefore did\\nnot consider an incident in 2016 and a photo in 2019 would be relevant to\\ntheir decision on sanction and therefore did not adjourn.\\n\\n34. I remind myself that this hearing is not a re-trial or an opportunity for me to\\nsubstitute my decision for that of the panel, and to do so would be an error\\nof law. I am satisfied that the disciplinary panel had considered the\\nposition and, whilst another employer may have adjourned, based on the\\nreasoning provided, I do not find there to have been any procedural flaw in\\nchoosing not to do so.\\nCase No: 6017408/2024\\n\\n\\n\\n\\n\\n35. We returned to the issue of the evidence of the skinny-dipping photo again\\nin the cross examination of Michelle Brotherton (appeal officer). She again\\nstated that this was \\\"irrelevant\\\", but her reasoning was that this was\"}, {\"char_end\": 15669, \"char_start\": 14317, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"judgment\", \"text\": \"because the Claimant had not provided this evidence for the appeal\\nhearing and there was therefore nothing to take into account. It is not\\ndisputed that the Claimant did not provide the evidence at this hearing. He\\nhad 2.5 months to do so and his reasoning that he did not have LH's\\nnumber to search for it, the cost of recovering it and thinking it irrelevant\\nare not accepted. Ms Brotherton was clear that had it been provided, the\\nevidence would have been considered. I accept Ms Botherton's evidence\\non this point.\\n\\n36. Another matter that was the subject of cross-examination of the\\nRespondent's witnesses was the extent to which they had considered the\\nClaimant's remorse for his actions when determining the sanction to apply.\\nThe Claimant's counsel invited me to find that the Respondent had\\ndiscounted the Claimant's remorse because they considered his\\nmotivation for this was that he was facing disciplinary proceedings, as\\nopposed to him being genuinely sorry, and that the disciplinary panel had\\nerred in doing so.\\n\\n37. In this respect, I find that the disciplinary panel had considered that the\\nClaimant was sorry for his actions and the fact that he had made\\napologies. However, they were not confident that the Claimant would be\\nable to judge what was inappropriate behaviour going forward, despite the\\ntraining that he had been given.\"}, {\"char_end\": 16739, \"char_start\": 15669, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"judgment\", \"text\": \"38. Mr Hudson was clear in his evidence that the panel had considered that\\nthis was not a one-off act but that it related to three separate individuals\\nand three separate incidents. I accept Mr Hudson's evidence that the\\npanel had taken the Claimant's remorse into consideration as one of the\\nfactors when determining whether an outcome other than dismissal should\\nbe made, rather than applying a blanket dismissal policy for this conduct\\nor focusing on the motivation for his remorse, and that their decision to\\ndismiss him as oppose to deciding on a lesser sanction, was within the\\nrange of reasonable responses open to it.\\n\\nConclusion\\n\\nUnfair dismissal\\n\\n39. Based on the above findings of fact, I find that there were no procedural\\nerrors in the Respondent's process that would have made the decision\\nthat they came to substantively unfair. I find, considering all the\\ncircumstances, the decision to dismissal the Claimant to be within the\\nrange of reasonable responses open to the Respondent.\\nCase No: 6017408/2024\\n\\n\\n\\n\\n\\n\\nEmployment Judge Wright\\nDated 27 October 2025\"}]}",
+  "n_chunks": 12,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 3,
+    "tribunal_reasoning": 5,
+    "judgment": 3
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1404,2895]}]},\"decision_date\":{\"value\":\"2025-10-27\",\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[15669,16739]}]},\"evidence\":{\"value\":\"The Tribunal had a witness bundle, substantive hearing bundle, chronology and reading list. The Claimant gave evidence, as did Nathan Hudson, the disciplinary officer, and Michelle Brotherton, the appeal officer, for the Respondent.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1404,2895]},{\"page\":1,\"paragraph\":3,\"text_span\":[2895,4331]}]},\"facts\":{\"value\":\"The only complaint was ordinary unfair dismissal. The reason for dismissal was not in dispute and the conduct was admitted; the issue was whether dismissal fell within the range of reasonable responses. The Claimant was employed from 1 July 2012 until dismissal on 7 July 2024 and was dismissed for sexual misconduct concerning allegations raised by three female colleagues. The Respondent had introduced sexual safety training, a Sexual Safety Charter, a Code of Conduct and a Dignity at Work policy addressing sexual harassment.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1404,2895]},{\"page\":1,\"paragraph\":3,\"text_span\":[2895,4331]},{\"page\":1,\"paragraph\":4,\"text_span\":[4331,5763]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[15669,16739]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1404]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[15669,16739]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[15669,16739]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1404]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The judgment of the Tribunal is that the Claimant's claim for unfair dismissal is not well-founded, and is dismissed.\",\"As the reason for dismissal is not in dispute and the conduct is admitted, the only issue in this case is whether the decision to dismiss fell within the range of reasonable responses open to the employer.\",\"I find, considering all the circumstances, the decision to dismissal the Claimant to be within the range of reasonable responses open to the Respondent.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1404]},{\"page\":1,\"paragraph\":2,\"text_span\":[1404,2895]},{\"page\":1,\"paragraph\":12,\"text_span\":[15669,16739]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1404,2895]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1404]}]},\"region\":{\"value\":\"west_midlands\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1404]}]},\"region_source\":{\"value\":\"Birmingham (by CVP)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1404]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.98\"}],\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1404,2895]},{\"page\":1,\"paragraph\":3,\"text_span\":[2895,4331]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-10-27",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              15669,
+              16739
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The Tribunal had a witness bundle, substantive hearing bundle, chronology and reading list. The Claimant gave evidence, as did Nathan Hudson, the disciplinary officer, and Michelle Brotherton, the appeal officer, for the Respondent.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2895,
+              4331
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The only complaint was ordinary unfair dismissal. The reason for dismissal was not in dispute and the conduct was admitted; the issue was whether dismissal fell within the range of reasonable responses. The Claimant was employed from 1 July 2012 until dismissal on 7 July 2024 and was dismissed for sexual misconduct concerning allegations raised by three female colleagues. The Respondent had introduced sexual safety training, a Sexual Safety Charter, a Code of Conduct and a Dignity at Work policy addressing sexual harassment.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2895,
+              4331
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4331,
+              5763
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 12,
+              "text_span": [
+                15669,
+                16739
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1404
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 12,
+              "text_span": [
+                15669,
+                16739
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 12,
+                  "text_span": [
+                    15669,
+                    16739
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1404
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The judgment of the Tribunal is that the Claimant's claim for unfair dismissal is not well-founded, and is dismissed.",
+          "As the reason for dismissal is not in dispute and the conduct is admitted, the only issue in this case is whether the decision to dismiss fell within the range of reasonable responses open to the employer.",
+          "I find, considering all the circumstances, the decision to dismissal the Claimant to be within the range of reasonable responses open to the Respondent."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              15669,
+              16739
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "west_midlands",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Birmingham (by CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2895,
+              4331
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\": {\"value\": [], \"spans\": []}, \"claim_types\": {\"value\": [\"unfair_dismissal\"], \"spans\": [{\"page\": 1, \"paragraph\": 2, \"text_span\": [1404, 2895]}]}, \"decision_date\": {\"value\": \"2025-10-27\", \"spans\": [{\"page\": 1, \"paragraph\": 12, \"text_span\": [15669, 16739]}]}, \"evidence\": {\"value\": \"Witnesses for Respondent: Nathan Hudson (disciplinary officer), Michelle Brotherton (appeal officer); Witness for Claimant: Mr Hiorns; Documents: witness bundle of 28 pages, substantive hearing bundle of 714 pages, a chronology of events and a reading list.\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}, {\"page\": 1, \"paragraph\": 2, \"text_span\": [1404, 2895]}]}, \"facts\": {\"value\": \"The claimant was employed from 1 July 2012 until dismissal on 7 July 2024 following allegations of sexualised conduct by three female colleagues; the respondent cited gross misconduct; the claimant admitted the conduct but raised contextual and procedural fairness concerns; the only complaint is of ordinary unfair dismissal and the issue is whether dismissal fell within the range of reasonable responses under s.98(4).\", \"spans\": [{\"page\": 1, \"paragraph\": 3, \"text_span\": [2895, 4331]}, {\"page\": 1, \"paragraph\": 2, \"text_span\": [1404, 2895]}]}, \"ground_truth_outcome\": {\"overall_winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}, {\"page\": 1, \"paragraph\": 12, \"text_span\": [15669, 16739]}]}, \"total_awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}]}, \"unapportioned_reason\": {\"value\": null}, \"determination\": {\"value\": \"respondent_success\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}, {\"page\": 1, \"paragraph\": 12, \"text_span\": [15669, 16739]}]}, \"per_issue\": [{\"issue\": \"unfair_dismissal\", \"winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}, {\"page\": 1, \"paragraph\": 12, \"text_span\": [15669, 16739]}]}, \"awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}] } }], \"basic_award_gbp\": {\"value\": null}, \"compensatory_award_gbp\": {\"value\": null}, \"deductions_pct\": {\"value\": null}, \"uplifts_pct\": {\"value\": null}, \"reinstatement_sought\": {\"value\": null}, \"reinstatement_granted\": {\"value\": null}, \"re_engagement_sought\": {\"value\": null}, \"re_engagement_granted\": {\"value\": null}}, \"key_reasoning_quotes\": {\"value\": [{\"quote\": \"The judgment of the Tribunal is that the Claimant's claim for unfair dismissal is not well-founded, and is dismissed.\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}]}, {\"quote\": \"The relevant sections of the ERA the Tribunal considered was therefore limited to S.98(4):\", \"spans\": [{\"page\": 1, \"paragraph\": 2, \"text_span\": [1404, 2895]}]}, {\"quote\": \"Based on the above findings of fact, I find that there were no procedural errors in the Respondent's process that would have made the decision that they came to substantively unfair. I find, considering all the circumstances, the decision to dismissal the Claimant to be within the range of reasonable responses open to the Respondent.\", \"spans\": [{\"page\": 1, \"paragraph\": 12, \"text_span\": [15669, 16739]}]}], \"spans\": [{\"page\": 1, \"paragraph\": 12, \"text_span\": [15669, 16739]}]}, \"matter_type\": {\"value\": \"unfair_dismissal\", \"spans\": [{\"page\": 1, \"paragraph\": 2, \"text_span\": [1404, 2895]}]}, \"parties\": {\"value\": [{\"role\": \"claimant\", \"represented\": true}, {\"role\": \"respondent_employer\", \"represented\": true}], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}]}, \"region\": {\"value\": \"west_midlands\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}]}, \"region_source\": {\"value\": \"Birmingham (by CVP)\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1404]}]}, \"statutory_basis\": {\"value\": [{\"statute\": \"Employment Rights Act 1996\", \"section\": \"s.98\"}], \"spans\": [{\"page\": 1, \"paragraph\": 2, \"text_span\": [1404, 2895]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-10-27",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              15669,
+              16739
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "Witnesses for Respondent: Nathan Hudson (disciplinary officer), Michelle Brotherton (appeal officer); Witness for Claimant: Mr Hiorns; Documents: witness bundle of 28 pages, substantive hearing bundle of 714 pages, a chronology of events and a reading list.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant was employed from 1 July 2012 until dismissal on 7 July 2024 following allegations of sexualised conduct by three female colleagues; the respondent cited gross misconduct; the claimant admitted the conduct but raised contextual and procedural fairness concerns; the only complaint is of ordinary unfair dismissal and the issue is whether dismissal fell within the range of reasonable responses under s.98(4).",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2895,
+              4331
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1404
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 12,
+              "text_span": [
+                15669,
+                16739
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1404
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1404
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 12,
+              "text_span": [
+                15669,
+                16739
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1404
+                  ]
+                },
+                {
+                  "page": 1,
+                  "paragraph": 12,
+                  "text_span": [
+                    15669,
+                    16739
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1404
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The judgment of the Tribunal is that the Claimant's claim for unfair dismissal is not well-founded, and is dismissed.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1404
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The relevant sections of the ERA the Tribunal considered was therefore limited to S.98(4):",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 2,
+                "text_span": [
+                  1404,
+                  2895
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "Based on the above findings of fact, I find that there were no procedural errors in the Respondent's process that would have made the decision that they came to substantively unfair. I find, considering all the circumstances, the decision to dismissal the Claimant to be within the range of reasonable responses open to the Respondent.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 12,
+                "text_span": [
+                  15669,
+                  16739
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              15669,
+              16739
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "west_midlands",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Birmingham (by CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1404
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1404,
+              2895
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:49:15.462972+00:00",
+  "source_pdf_sha256": "34b546440488049d836e63806340617f8e3bd38d2a1289ab8920cac6b635541d",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

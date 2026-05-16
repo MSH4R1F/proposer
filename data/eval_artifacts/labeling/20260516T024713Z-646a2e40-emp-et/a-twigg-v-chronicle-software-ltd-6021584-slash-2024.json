@@ -1,0 +1,493 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "a-twigg-v-chronicle-software-ltd-6021584-slash-2024",
+  "case_reference": "a-twigg-v-chronicle-software-ltd-6021584-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-02-17",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6021584/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/a-twigg-v-chronicle-software-ltd-6021584-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "A Twigg v Chronicle Software Ltd: 6021584/2024 - Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/69bab5f3a09c5b4c73dad7f9/A_Twigg_v_Chronicles_Software_Limited-6021584-2024-Judgment.pdf"
+  },
+  "pdf_sha256": "218f0fd30e3df477770a0562e49c3eed714ebc7785da1c5cb7e6778d413ca6eb",
+  "ocr_text_sha256": "b8f7e8b998ed39cd14290f9beb4fe10ee410888144bf3fbcf49d35c00b11cdbe",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"a-twigg-v-chronicle-software-ltd-6021584-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1437, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 6021584/2024\\n\\nNote\\nReasons for the judgment having been given orally at the hearing, written reasons will not be provided\\nunless a request was made by either party at the hearing or a written request is presented by either party\\nwithin 14 days of the sending of this written record of the decision.\\n\\n1\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant\\nRespondent\\nA Twigg\\nv\\nChronicle Software\\nLimited\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nHeard at: Reading (by video)\\n\\n\\nOn: 12 and 13 February 2026\\nBefore: Employment Judge W Anderson\\n\\nAppearances\\nFor the claimant: D Robinson-Young (counsel)\\nFor the respondent: Dr M Ahmad (counsel)\\n\\n\\nJUDGMENT\\n\\n\\n1. The claimant's claim of unfair dismissal is dismissed.\\n\\n2. The respondent must pay the claimant £2100, being the costs of a wasted\\nhearing on 22 September 2025, within 21 days from the date that this\\njudgment is sent to the parties.\\n\\n\\nApproved by:\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nEmployment Judge W Anderson\\n\\n\\n\\n\\n\\n\\nDate: 17 February 2026\\n\\n\\n\\n\\n\\n\\nSent to the parties on:\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n....3 March 2026 .......................\\n\\n\\n\\n\\n\\n\\n\\n............................................................\\n\\n\\n\\n\\n\\nFor the Tribunal Office Case Number: 6021584/2024\\n\\nNote\\nReasons for the judgment having been given orally at the hearing, written reasons will not be provided\\nunless a request was made by either party at the hearing or a written request is presented by either party\\nwithin 14 days of the sending of this written record of the decision.\\n\\n2\"}]}",
+  "n_chunks": 1,
+  "section_tag_counts": {
+    "case_header": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":[],\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"decision_date\":{\"value\":\"2026-02-17\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence section is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":null,\"unavailable_reason\":\"The written record dismisses the unfair dismissal claim but gives no written reasons showing the s98 merits determination.\"},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":[],\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"region\":{\"value\":\"south_east\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"region_source\":{\"value\":\"Reading (by video)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1437]}]},\"statutory_basis\":[]}",
+    "parsed": {
+      "cited_authorities": [],
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-02-17",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1437
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": null,
+          "unavailable_reason": "The written record dismisses the unfair dismissal claim but gives no written reasons showing the s98 merits determination."
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1437
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": [],
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "south_east",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Reading (by video)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "statutory_basis": []
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"17 February 2026\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No section tagged 'evidence' present in the source text.\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No sections tagged 'facts' or 'issues' present in the source text.\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1437\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"2100.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1437\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"respondent_success\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1437\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"respondent\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1437\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": \"0.00\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1437\n              ]\n            }\n          ]\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"1. The claimant's claim of unfair dismissal is dismissed.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1437\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"2. The respondent must pay the claimant \\u00a32100, being the costs of a wasted hearing on 22 September 2025, within 21 days from the date that this judgment is sent to the parties.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1437\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": true\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"south_east\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Heard at: Reading (by video)\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1437\n        ]\n      }\n    ]\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "17 February 2026",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No section tagged 'evidence' present in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No sections tagged 'facts' or 'issues' present in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1437
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "2100.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1437
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1437
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1437
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1437
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "1. The claimant's claim of unfair dismissal is dismissed.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1437
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "2. The respondent must pay the claimant £2100, being the costs of a wasted hearing on 22 September 2025, within 21 days from the date that this judgment is sent to the parties.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1437
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "south_east",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Heard at: Reading (by video)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1437
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:57:18.527489+00:00"
+}

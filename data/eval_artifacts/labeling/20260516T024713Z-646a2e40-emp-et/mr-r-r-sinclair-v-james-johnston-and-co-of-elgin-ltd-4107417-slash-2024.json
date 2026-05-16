@@ -1,0 +1,500 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024",
+  "case_reference": "mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-02-19",
+  "country": "scotland",
+  "case_numbers": [
+    "4107417/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr R R Sinclair v James Johnston & Co. of Elgin Ltd: 4107417/2024 - Judgment with Reasons",
+    "url": "https://assets.publishing.service.gov.uk/media/69c53f43cdfd19de13d0f6fa/4107417.2024__-_Mr_Roy_Reid_Sinclair_v_James_Johnston___Co._of_Elgin_Limited_-_Judgment_Issued_19.02.2026.pdf"
+  },
+  "pdf_sha256": "a142e92db7d71d7cc095c883ecb50fe24c912a6c7f506d96647d0bb99243e42c",
+  "ocr_text_sha256": "32af01f8fb6dd5c5e1ab32ff0b07b67f5f617d5efb8d12512d9ce30db7a7d0df",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1432, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"EMPLOYMENT TRIBUNALS (SCOTLAND)\\n\\nCase No: 4107417/2024\\n\\nHeld in Aberdeen on 22 and 23 January 2026\\n\\nEmployment Judge J M Hendry\\n\\n\\n\\n\\nMr Roy Reid Sinclair\\n\\n\\n\\n\\nClaimant\\n\\n\\n\\n\\n\\nRepresented by\\n\\n\\n\\n\\n\\n\\n\\nMr D Adams\\n\\n\\n\\n\\n\\n\\n\\nSolicitor\\nJames Johnston & Co. of Elgin Limited Respondent\\nRepresented by\\n\\n\\n\\n\\n\\n\\n\\nMs F Herrell,\\n\\n\\n\\n\\n\\n\\n\\nSolicitor\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nJUDGMENT OF THE EMPLOYMENT TRIBUNAL\\n\\nThe claim for unfair dismissal not being well founded is dismissed.\\n\\nREASONS\\n\\n1.\\nThe claimant in his ET1 seeks a finding that he was unfairly dismissed from\\nhis position as a Carding Operative with the respondents. The respondent's\\nposition was that the claimant was fairly dismissed on the grounds of\\ncapability (a potentially fair ground for dismissal), because the claimant,\\nbecause of health difficulties could no longer work night shift and no other\\nrole could be found for him.\\n\\n4107417/2024\\nPage 2\\nIssues\\n\\n2.\\nParties had prepared an Agreed List of Issues in relation to both the merits\\nand remedy.\\n\\nEvidence\\n\\n3.\\nThe Tribunal heard evidence from Mr Julian Hilal, the respondent's Head of\\nYarn, from Mr David Alistair Garrow, Head of Fabric. The claimant gave\\nevidence on his own behalf.\\n\\nFacts\\n\\n4.\\nThe respondent company are a long-established business involved in the\\nmanufacture of wholesaling and retailing of luxury cashmere, fine wool and\\ncloth, knitwear and accessories. The respondent has a mill at Elgin and in\\nHawick.\"}, {\"char_end\": 2911, \"char_start\": 1432, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"5.\\nThe claimant had extensive experience as a Carding Operative in the\\nrespondent's mill. He had started work with them in December 1996. He had\\nleft their employment some years later but rejoined on 3 November 2009 and\\nremained as a Carding Operative until his employment ended on 4\\nSeptember 2024.\\n\\n6.\\nThe claimant was given a statement of terms and conditions of employment\\n(JBp.34-40) in or about January 2021. He had been given previous iterations\\nof the terms and conditions of employment earlier in his employment. The\\ncontract indicated that he was to work on a three shift rotation (JBp.34). On\\n2 September 2021 the claimant received a letter from Julia McGlashan, the\\nrespondent's People Director confirming the three week rotation shift pattern\\n(JBp.41).\\n\\n7.\\nThe claimant always worked in the \\\"Yarn\\\" Department. He was highly\\nexperienced, hard-working and well thought of. He would often train or mentor\\nnew employees.\\n\\n8.\\nThe Yarn Department was located in various buildings marked 36, 37, 38 and\\n39 on the site plan (JBp.114). The claimant's job was to work as part of a five\\nperson team operating carding machines. There was a three-shift rotation\\nwhich involves employees working day shift, back shift and night shift.\\nAccordingly, the claimant worked night shift for a week every three weeks and\\n4107417/2024\\nPage 3\\nhad done so for some time. This was the pattern other than during the COVID\\npandemic when Carding Operatives were only required to work two shifts\"}, {\"char_end\": 4277, \"char_start\": 2911, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"(early and late). From 6 September 2021, the Carding Operatives including\\nthe claimant were contractually obliged to resume working a three-shift\\npattern which included a nightshift.\\n\\n9.\\nOver the years the respondents have not found it easy to recruit or retain\\nstaff. Accordingly, they try and retain experienced staff such as the claimant.\\nEvery team operates eight carding machines. The respondents try and\\noperate what they call a \\\"balanced scheme\\\". They have an member of the\\nteam that they refer to as a \\\"floater\\\". There are a number of reasons for this,\\none of which is that although the machines can operate with fewer employees\\nand in the past sometimes operated relatively regularly with four employees\\nthis was not deemed to be efficient. The respondent produces high quality\\nyarn and the yarn being produced has regular colour changes requiring the\\nmachines to be cleaned down between changes. A full team can achieve this\\nmore quickly than fewer numbers could. The additional staff member also\\nallows for situations where someone else in the team does not turn up for a\\nshift. It allows the team when fully staffed to work more quickly and efficiently\\nand with less strain on the individual members of the team.\\n\\n10.\\nThere are no Carding Operatives that only work during the day or work part\\ntime.\\n\\nNightshift working and occupational health referrals\"}, {\"char_end\": 5719, \"char_start\": 4277, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"11.\\nEvery year the respondent asks those on nightshift to submit a questionnaire\\nabout their health. This questionnaire is then passed to an independent\\noccupational health adviser to assess.\\n12.\\nIn or around December 2022 the claimant completed his annual\\nquestionnaire and attended an appointment with an occupational health\\nadvisor on 7 December 2022. The claimant explained that he was struggling\\nwith nightshift working.\\n\\n13.\\nThe claimant was referred to NHS Borders who provided occupational health\\nservices to the company in December 2022 because of concerns over\\nnightshift working. Their assessment (JBp.44) was:\\n\\n\\\"I can confirm that Roy does not have any medical underlying health issues\\nthat would prevent him working nightshift. However, Roy reports he has been\\nstruggling with the nightshift pattern. He reports that he is only managing to\\n4107417/2024\\nPage 4\\nhave three-four hours sleep on a nightshift, his appetite is reduced, low in\\nmood and he is tired when he undertakes his nightshift. Roy reports that he\\nhas been using AL (annual leave) on his nightshift and this has helped. I\\nwould advise to have a discussion with Roy to consider reducing his\\nnightshifts to a minimum. Co-operation will be feasible. Roy reports he is\\nhappy to discuss this with his manager.\\\"\\n\\n14.\\nAfter discussion with the Manager, Mr Hilal, the claimant was allowed to use\\nannual leave to take a day's holiday on the first Sunday of nightshift. The\"}, {\"char_end\": 7135, \"char_start\": 5719, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"claimant found this of some help but his problems working nights did not\\nimprove long-term. He would suffer from disrupted sleep and became\\nanxious.\\n\\n15.\\nThe respondent prepared a note of various shifts the claimant had worked\\nfrom 8 January 2023 until 9 January 2024.\\n\\n16.\\nThe claimant consulted his G.P. and produced his G.P. records. On 16\\nFebruary 2024 it is recorded:\\n\\n\\\"Stress at work. Generally fit and healthy. PTHR told his Manager PT not to\\nwork nightshifts anymore. Manager not happy and saying PT may need to\\nmove departments or even not have a job any more. Understandably\\nstressed.\\\" (JBp.120)\\n\\n17.\\nThe claimant's average weekly pay amounted to £429.38 per week.\\n\\n18.\\nFollowing this consultation the claimant was sent to the respondent's\\noccupational health advisor \\\"Sirona\\\". The referral (JBp.53/54) stated the\\nreason for the referral as being \\\"Roy had completed his required nightshift\\nassessment and on his report it said he would benefit a full face-to-face\\nappointment to discuss his overall wellbeing as he discussed having poor\\nhealth related to working nights.\\\"\\n\\n19.\\nThe respondents received a report from Sirona (JBp.55/56) following an\\nassessment on 23 January 2024. The report is of even date. A copy of the\\nreport was copied to the respondents with the claimant's consent. The report\\nhighlighted the dangers which was chronic fatigue when working nightshift.\\nThe report noted the following:\"}, {\"char_end\": 8581, \"char_start\": 7135, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"facts\", \"text\": \"\\\"Roy has given cause for concern regarding his fitness to work nightshift\\nowing to discuss low mood, fatigue (a) and sleeping difficulties..... His sleep\\n4107417/2024\\nPage 5\\nis short and disturbed (perhaps only 3-4 hours in total) and this is adversely\\naffecting his focus and concentration whilst at work. He feels his mood\\nlowering as his nightshift week progresses and his appetite alters.\\\"\\n\\n20.\\nThe recommendation of the report was to discuss with the claimant the\\noperational adjustments that were available and would not involve nightshift\\nworking. The report noted:\\n\\n\\\"I understand he has already tried to approach his manager to discuss\\nworking less hours - ultimately it would be a company decision as to what\\nsolutions are available to assist him.\\\"\\n\\n21.\\nThe matter was passed to Julian Hilal the Head of Yarn. He was concerned\\nat the terms of the report and keen to try and find an accommodation with the\\nclaimant. The claimant was taken off nightshift working and a volunteer from\\nanother team agreed to cover his night shifts on a temporary basis. As there\\nwas no one available to cover for the claimant on the 4 February he agreed\\nto work that night.\\n\\n22.\\nMr Hilal wrote to the claimant on 23 February (JBp.57/58) inviting the claimant\\nto a meeting on 26 February. He set out the purposes of the meeting was:\\n\\\"1. To discuss your occupational health report;\\n2. To confirm what the change could mean for you, identify your needs during\"}, {\"char_end\": 10073, \"char_start\": 8581, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"facts\", \"text\": \"the process and provide you with any necessary support or assistance;\\n3. To discuss suggestions and/or alternatives;\\n4. To discuss next steps;\\n5. To discuss the timeline of the process;\\n6. To answer any questions you may have.\\\"\\n\\n23.\\nThe letter also stated:\\n\\\"In advance of the meeting please have a think about anything specifically\\nthat you'd like to discuss in more detail and let me know if there is anything\\nyou wish to raise prior to the meeting.\\\"\\n\\n24.\\nThere is a Trade Union representative on site. The claimant was aware that\\nhe could have been represented at the consultation meetings but choose not\\nto seek assistance from the Trade Union.\\n\\n25.\\nMr Hilal met the claimant on 26 February as arranged. Mr Hilal was\\naccompanied by Mr Callum Mathieson, an HR representative. Notes of the\\nmeeting were taken (JBp.59-62). The claimant accepted the terms of the\\nreport and confirmed that he had difficulty with nightshift as he found it difficult\\n4107417/2024\\nPage 6\\nto sleep during the day. This had an impact on his focus and concentration at\\nwork. Mr Hilal explained that the company had a duty of care and had to\\nensure that no additional detriment to his health occurred. He was asked if\\nhe had spoken to his own G.P. and he indicated that he had contacted his\\nG.P. for medication to help him sleep. It was envisaged that there had to be\\na consultation period of 30 days and this should be extended. Mr Hilal\\nexplained that he could get cover on the next rota'd nightshift. The claimant\"}, {\"char_end\": 11517, \"char_start\": 10073, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"facts\", \"text\": \"was told that he could if he wanted to use his holidays to cover any nightshift\\nto discuss alternative work. Mr Hilal explained that there were no other jobs\\nat present in the Yarn Department that would accommodate a two shift\\nrotation i.e. one with no nightshift. The claimant asked about \\\"picking cones\\\".\\nThis is where cone shaped objects (called yarn cones) used in the spinning\\nprocess have internal labels to show the colour of the yarn used. They have\\nto be removed before the cone can be reused. Mr Hilal explained that the\\nposition was filled at present and would in any event be part-time. The\\nclaimant explained that he would like to go down to part-time work (24 hours)\\nand asked to look at vacancies available company wide. He was given a\\ncopy of current vacancies. It was noted:\\n\\\"Julian explained that as Roy is unable to complete a three shift rotation, and\\ncould 'sub' people in to cover Roy's next nightshift pattern, he would be able\\nto accommodate an extension of this consultation period. Especially given\\nhis performance, as well as his long service. However, explained that this\\ncould not be sustained due to the current demands of the business. Julian\\nexplained that he wished to find a resolution that would benefit both the\\ncompany and Roy.\\\"\\n\\n26.\\nAt this point the company was facing a period of financial stringency and\\nredundancies ultimately took place in other parts of the business but not in\\nthe Yarn Department.\"}, {\"char_end\": 13017, \"char_start\": 11517, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"facts\", \"text\": \"27.\\nFurther referrals made to occupational health as the claimant was absent\\nthough illness from work on 25 March 2024. The reason given for absence\\nwas \\\"Mental Health-Stress\\\". The reasons for the referral (JBp.63-66) were\\ngiven as:\\n\\n\\\"Since the last meeting with yourselves Roy has come off nightshift and\\nbeen completing a two-shift rotation instead. However, unfortunately the\\nDepartment and business are unable to sustain this long-term within his role,\\nas he is currently going through a consultation period with the Company for\\nhis role as a Carding operative. We worked closely with Roy regarding\\nadditional roles that he could work in a two-shift rotation, but he has chosen\\nnot to apply for these. We have come to the end of the consultation period,\\nand we were due to have a final meeting with Roy with his manager to\\n4107417/2024\\nPage 7\\ndiscuss next steps and the consultation process in general. However, Roy\\nmade us aware that the consultation period has had a detrimental effect on\\nhis mental health and has subsequently been signed off with a statement of\\nfitness for work until 28.04.24. Before the meeting was scheduled to take\\nplace, I spoke to Roy, and he made me aware that he feels he is unable to\\ncontinue with the process due to his mental health at the moment. As such\\nhe has discussed with me the support available to him where we discussed\\nhaving an appointment with yourselves to assess the ability to attend\\nconsultation meeting. As we were aware that the consultation has\"}, {\"char_end\": 14351, \"char_start\": 13017, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"facts\", \"text\": \"influenced his mental health, we want to ensure that we are supporting him.\\nHowever, we are concerned that the longer the consultation process draws\\non, the worse his mental health will get.\\\"\\n\\n28.\\nThe claimant was assessed by telephone by the occupational health provider\\non 16 April 2024 and a report provided which, with the consent of the\\nclaimant, was sent to the respondents on 22 April 2024 (JBp.69-71). The\\nreport recorded the claimant's view that his recent mental health has declined\\nbecause of the ongoing consultation process. He described symptoms of\\nanxiety and disrupted sleep. The report recorded:\\n\\n\\\"Roy is experiencing an entirely normal situation of anxiety with low mood\\nrelating to the way in which he feels that he is being treated at work; and as\\nsuch, I would anticipate a complete and full recovery in due course once his\\nwork-related stressers have been addressed and resolved.\\n\\nHe has sought appropriate help from his own General Practitioner and has\\nrecently commenced treatment for his symptoms however, it is likely that\\nthis will take several weeks for his medication to reach a therapeutic level.\\\"\\n\\n29.\\nThe opinion given was that he remained unfit for work. It was estimated that\\nhe should be able to return to work between two and four weeks' time but was\\nnot yet fit to attend a consultation meeting.\"}, {\"char_end\": 15845, \"char_start\": 14351, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"tribunal_reasoning\", \"text\": \"30.\\nMr Hilal delayed the consultation period. He wrote to the claimant on 4 June\\ninviting him to a meeting on 12 June. He indicated that the claimant could\\ntake a work colleague or trade union representative with him. The claimant\\ndecided against taking someone to the meeting but he noted the purpose of\\nthe meeting as follows:\\n\\n\\\"1. To discuss your occupational health report;\\n2. To confirm what the changes could mean for you and identify your needs\\nduring the process and provide you with any necessary support or assistance;\\n3. To discuss suggestions and/or alternatives;\\n4. To discuss the next steps;\\n5. To discuss the timeline of the process;\\n4107417/2024\\nPage 8\\n6. To answer any other questions you may have.\\\"\\n\\n31.\\nThe letter warned the claimant that although they would investigate all options\\navailable a possible outcome of the meeting could be termination of his\\nemployment.\\n\\n32.\\nThe meeting took place as scheduled. Notes were prepared following the\\nmeeting. (JBp.78-82). Mr Hilal indicated that the person picking cones was\\nstill in employment and there was no vacancy. Mr Hilal offered a post in the\\nYarn store but the claimant indicated that he was not interested in that. He\\nsaid that he did not want to move departments and said that he could not\\ncontinue on nightshift. Mr Hilal noted that the claimant could not work\\nnightshift. In his view this precluded him returning to his old role or any role\\nthat involved nightshift. He was asked if he would consider working in back-\"}, {\"char_end\": 17306, \"char_start\": 15845, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"tribunal_reasoning\", \"text\": \"winding as the Dye House currently needed help and this would be a day shift\\npost. The claimant refused this and said he didn't want to move departments.\\nMr Hilal explained that he wanted Roy to stay in the company but if there were\\nany roles in the department that would fit his needs then a transfer could be\\ndiscussed allowing him to return to that department. Mr Sinclair did not want\\nto do this and didn't want to leave the Yarn Department. He was not prepared\\nto consider any other role. The meeting notes record:\\n\\n\\\"Roy stated that if he comes back, he still wants to complete a dayshift at 24\\nhours but within the Yarn Manufacturing Department. Julian explained this is\\nnot currently available which is why we are looking at current vacancies.\\nJulian explained that a new role could not be made for Roy and Roy confirmed\\nhe understands this.\\\"\\n\\n33.\\nIt was also recorded that medication the claimant was on meant that he could\\nnot work with heavy machinery. He was taking medication for anti-anxiety\\nand depression.\\n\\n34.\\nMr Hilal summarised the position and finally Mr Mathieson asked if there was\\nsomething that would ''work for Roy'' in another shift but he would only do\\ndayshift and with reduced hours. He was asked to consider the other options\\nbut indicated that he wouldn't (JBp.80).\\n\\n35.\\nThere was a recess. Mr Hilal felt that he had run out of options. Following the\\nrecess Mr Hilal indicated to the claimant that he was to be dismissed. Mr Hilal\"}, {\"char_end\": 18727, \"char_start\": 17306, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"tribunal_reasoning\", \"text\": \"hoped that this would make the claimant change his mind about the other\\nroles. It was recorded that the dismissal was not a decision he was making\\nlightly. He mentioned the claimant's good performance and long service but\\n4107417/2024\\nPage 9\\nexplained that he could not put him back into a three shift pattern because\\nthe company had a duty of care towards him. They could not sustain a\\npermanent two shift pattern. He said that his role needs to work three shifts\\ndue to the current business needs. It was noted:\\n\\\"\\n•\\nRoy confirmed he understood this;\\n•\\nCallum reminded Roy of the additional opportunities currently available\\nand currently wide, but Roy refused;\\n•\\nJulian reminded Roy of his right of appeal;\\n•\\nRoy confirmed he understood this.\\\"\\n\\n36.\\nThe respondent company wrote to the claimant on 17 June detailing what had\\noccurred between the consultation period and explaining their reasons why\\nthe claimant was being dismissed. He was given 12 weeks' notice but also\\nfor the right of appeal. The letter recorded (JBp.86/87):\\n\\n\\\"As agreed, during your 12 weeks' notice period, if there are any new\\nopportunities within the department that fit into your requirements that I am\\nmade aware of, I will contact you to discuss if this is something you would like\\nto explore so you may apply.\\\"\\n\\n37.\\nThe claimant consulted solicitors. They wrote to the respondent on 21 June\\n(JBp.90) in relation to the appeal. They stated:\"}, {\"char_end\": 20226, \"char_start\": 18727, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"tribunal_reasoning\", \"text\": \"\\\"Our client's appeal is based on the company's failure to make reasonable\\nadjustments with his mental health difficulties. As acknowledged in the letter\\nof 17 June, our client's performance throughout his lengthy period of\\nemployment with your company has been exemplary..... Our client has\\nproposed that he be accommodated on dayshift or by reduced hours either\\nof which would avoid nightshift work but the position of the company appears\\nto be that it is impossible for him to complete his duties as a Carding Operative\\nout with a three shift rota. Our client does not accept that this is the case and\\nseeks to appeal the decision to dismiss him and require the company to make\\nreasonable adjustments and respect his medical difficulties.\\\"\\n\\n38.\\nThe appeal was passed to David Garrow, the Head of Fabric. He had\\npreviously been involved in the consultation process. He was of the same\\nlevel in the company as Mr Hilal and was told that he had discretion to allow\\nthe appeal in full if he was so minded. Mr Garrow met the claimant on 27\\nJune 2024. Detailed notes were kept of the meeting (JBp.98-103). The\\nclaimant had been offered the right to be accompanied. The claimant\\nexplained that another colleague had tried out the claimant's nightshift for a\\nperiod of six weeks and that Mr Hilal had said that this could not continue and\\nwas not sustainable. The claimant asked for reasonable adjustments namely\\nto be taken off nightshift and to work less hours. He explained that he had 27\\n4107417/2024\"}, {\"char_end\": 21659, \"char_start\": 20226, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Page 10\\nyears' experience in Carding. He explained that in the past shift patterns\\nwere all staffed differently and there was no necessity to have five operators.\\nHe indicated that he thought his experience could be used in another way\\nsuch as by having a post for carrying out training. He was asked if he'd work\\nin the Yarn store. The claimant confirmed he wasn't interested and he wasn't\\nprepared to move departments (JBp.99). Mr Garrow said that he would see\\nif other departments had made similar allowances in the past. The claimant\\nstressed that he was only interested in returning as a Carding Operative\\nunless the part time cleaning cones role became available.\\n\\n39.\\nMr Garrow considered the appeal. He considered carefully the grounds for\\nappeal set out by the claimant's solicitors he wrote setting out his outcome on\\n22 July 2024 (JBp.104-107). He noted that a job in the Yarn store and in\\nBack Winding had been offered (both roles did not have nightshift working)\\nbut had been refused as had other job opportunities. After considering the\\nmatter he accepted Mr Hilal's view that being part of the Yarn Manufacturing\\nTeam meant that employees were required to rotate shifts to ensure there\\nwas a balanced resource available over 24 hours and it would not be possible\\nto take the claimant off nightshifts permanently as this would result in the shift\\nrunning short. He discounted creating a brand new post for the claimant\"}, {\"char_end\": 23074, \"char_start\": 21659, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"tribunal_reasoning\", \"text\": \"working permanent dayshifts. He did not believe he could justify the cost.\\nThis would result in an additional cost for the business during a period where\\nthe company had to reduce costs where possible. He summarised the\\nposition that the Carding machines require five operatives in each shift to\\nallow cover for holidays and sickness absence. This ensured that enough\\noperatives are available for processing small batches of fast running yarn and\\ncleaning the machines when different colours of yarn were being processed.\\nHe did not uphold the appeal and indicated that the decision to dismiss was\\nsustained.\\n\\n40.\\nFollowing his dismissal the claimant remained unwell through low mood,\\nstress and anxiety. He continued to be signed off work. In August 2025 he\\nwas successful in a claim for employment in Sport Allowance and on 17\\nDecember 2025 he was advised that he was entitled to Adult Disability\\nPayment (JBp.165-167).\\n\\nWitnesses\\n\\n41.\\nI found the two witnesses called for the respondent company to be wholly\\ncredible and reliable in their testimony. They gave their evidence in a clear\\nand professional manner and they had fully engaged with the issues and with\\n4107417/2024\\nPage 11\\nthe considerable responsibility laid on them in deciding whether or not to\\ndismiss the claimant. I detected no animosity towards the claimant. They\\nboth wanted to try and keep his extensive experience and skills in the\\ncompany.\"}, {\"char_end\": 24435, \"char_start\": 23074, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"tribunal_reasoning\", \"text\": \"42.\\nThe claimant is an honest witness. My view was that the anxiety and\\ndepression he was suffering appears to have made it difficult for him to be\\nobjective and I offer no criticism of him for this. He faced the end of a lengthy\\ncareer in a job he enjoyed and was proud of. Where his evidence deviated\\nwith the evidence of the other witnesses, I preferred their evidence as being\\nlikely to be the more objective and reliable.\\n\\nSubmissions\\nClaimant\\n\\n43.\\nMr Adams started by confirming that the claimant asserted that he was\\nunfairly dismissed. He accepted that the respondent company relied on\\nsection 98(2)(a), namely capability related to health, specifically his inability\\nto undertake the three-shift rota required in the carding department as being\\nthe reason for dismissal. However, the claimant's evidence was that he\\nremained capable of performing \\\"work of the kind which he was employed to\\ndo\\\" notwithstanding his inability to work nights.\\n\\n44.\\nThe claimant gave evidence of his long experience in the carding department,\\nhis loyalty, and his history of training other operatives. He maintained that the\\ndepartment could and did function effectively with fewer than five operatives\\non nightshift. He accepted that night working was no longer medically\\npossible for him but argued that this did not prevent him doing his core job on\\nan adjusted basis.\"}, {\"char_end\": 25789, \"char_start\": 24435, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"tribunal_reasoning\", \"text\": \"45.\\nThe claimant had advanced two proposals during the process. Firstly, he\\nsought redeployment to cone picking within his department, which he\\nbelieved required additional staffing. The respondent had responded by\\nsaying that no such post was available. Secondly, he proposed remaining in\\nhis post as an Operative on a part-time basis but not working night shifts. He\\ncould cover holidays and absences. The respondent contended that there\\nwas no business case for creating a part-time post. The claimant, however,\\nhighlighted the concession by Mr Hilal that this proposal was never taken to\\nsenior management because he himself could not justify it.\\n\\n4107417/2024\\nPage 12\\n46.\\nThe claimant accepted that the respondent offered alternative roles he could\\nbe redeployed into. One was in the dyehouse; he did not consider this viable,\\nstating that it was a single-person role already adequately staffed. Another\\nwas in the yarn store. He accepted he had refused this post, stating that the\\njob description required a three-shift pattern. The respondent asserted that\\nsuch a pattern would not have applied to him, but the claimant maintained\\nthis was never fully explained to him. The parties' evidence diverged on this\\nissue. He accepted that other vacancies existed within the organisation but\\nthese would not utilise his specialist skills or experience.\"}, {\"char_end\": 27273, \"char_start\": 25789, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"tribunal_reasoning\", \"text\": \"47.\\nOn his behalf, it is submitted that dismissal was not necessary and that his\\nrequest for part-time work was capable of accommodation, either by creating\\na new part-time role or by reducing his hours within his existing post. The\\nrespondent later invoked an economic argument based on a downturn in\\nproduction, stating that a part-time role could not be justified. The claimant\\nsubmits that, given his long service, experience and skills, he should have\\nbeen accommodated and that dismissal was unreasonable.\\n\\n48.\\nIn relation to remedy the claimant gave evidence that he remains unfit for\\nwork, that his medication has recently been increased, and that he doubts he\\nwill find work in the foreseeable future. He seeks a basic award,\\ncompensation for past loss, and an award for future loss.\\n\\nRespondent\\n\\n49.\\nThe submissions assert that capability is a potentially 'fair' reason for\\ndismissal.The respondent's solicitor reviewed the essential facts of the case.\\nThe claimant worked as a Carding Operative, a role contractually requiring a\\nthree-shift pattern including nights. The COVID pandemic had led to\\ntemporary two-shift working, but the three-shift pattern resumed from\\nSeptember 2021. This was the most efficient way of working according to the\\nrespondent's evidence. They carried out annual health surveillance for night\\nworkers and in 2022, the Occupational Health providers could not establish\\nwhether the claimant was fit for night work. A report in December 2022 stated\"}, {\"char_end\": 28755, \"char_start\": 27273, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"tribunal_reasoning\", \"text\": \"there was no underlying medical condition barring nightshift but noted the\\nclaimant struggled with nightworking and recommended minimising\\nnightshifts if feasible.\\n\\n50.\\nAfter this report the claimant's manager introduced several adjustments,\\nincluding allowing flexible use of annual leave and his movement to a floater\\nrole to allow the claimant to avoid or minimise nightwork. In 2023 the claimant\\n4107417/2024\\nPage 13\\nmissed one week with back pain. His first GP engagement on work-related\\nmatters occurred in February 2024 (JBp.120). A further health check led to a\\nreferral on 9 January 2024. The Occupational Health report dated 23 January\\n2024 concluded that the claimant was not fit for nightshift and that permanent\\nexclusion from nights would benefit his wellbeing. It advised that continued\\nthree-shift working (i.e including night work) was likely detrimental (JBp55-\\n56).\\n\\n51.\\nFollowing this, the respondent arranged cover for most of the claimant's\\nforthcoming nightshifts. They had to ask a volunteer from another shift to do\\nthis. The claimant worked his final nightshift in early February 2024.\\n\\n52.\\nThe respondent's management believed that the arrangement could not be\\nsustained long term. Accordingly, they began a formal consultation process.\\nA meeting on 26 February considered the Occupational Health findings, the\\npossibility of dismissal, adjustments, and alternatives. The claimant\\nexpressed a wish to work permanent dayshift of approximately 24 hours per\"}, {\"char_end\": 30248, \"char_start\": 28755, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"judgment\", \"text\": \"week. Mr Hilal explained that a permanent day-only Carding Operative role\\ndid not exist, and nightshift cover could not be sustained indefinitely. The\\nrespondent explored alternatives. This included identifying a Yarn Store\\nOperative role on equivalent pay, with full training and no detriment. The\\nclaimant rejected this role, stating he wanted to remain in Yarn Manufacturing.\\nHe also declined to consider company-wide vacancies. A later GP\\nappointment on 28 March 2024 resulted in him being certified unfit with\\nwork-related stress for one month.\\n\\n53.\\nA further Occupational Health report (dated 22 April 2024) was obtained and\\nthis diagnosed situational anxiety but anticipated full recovery once workplace\\nstressors were resolved. It advised he was not fit to attend consultation at that\\npoint but would be likely to be able to do so in two to four weeks. The\\nrespondent delayed the second consultation meeting until 12 June 2024. The\\nclaimant attended the meeting on his own.\\n\\n54.\\nAt that meeting, he rejected both the Yarn Store role and a backwinding role\\nin the Dye House, the latter being day-shift only. He stated he would only\\naccept a dayshift role of about 24 hours per week within Yarn Manufacturing.\\nNo such role existed. The meeting adjourned, after which the respondent\\ndecided dismissal was unavoidable, given his inability to restart a three-shift\\nrota and the rejection of alternatives. A letter of 17 June 2024 confirmed the\\ndecision and the claimant's right of appeal.\"}, {\"char_end\": 31679, \"char_start\": 30248, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"judgment\", \"text\": \"4107417/2024\\nPage 14\\n55.\\nAn appeal followed. It was conducted by Mr Garrow, who had taken no\\nprevious part in the matter. He was head of another department. He had full\\npower to allow the appeal and reverse the original decision. The claimant\\nagain attended on his own. He maintained that the respondent ought to have\\nfound a part-time dayshift Carding Operative job for him. He refused\\ndepartmental moves, and said that he would only take a cone-picking role\\nwithin Yarn Manufacturing. Mr Garrow made further enquiries for\\nvacancies/possible roles but ultimately rejected the appeal. Ms Herrell then\\naddressed the legal framework. She submitted that the Tribunal must\\ndetermine the fairness according to the band of reasonable responses. It was\\nshe said sufficient for the employer to honestly believe that the employee is\\nincapable (Alidair Limited v Taylor 1978 ICR 445). The Tribunal should not\\nsubstitute it's opinion for that of the employer (Iceland Frozen Foods Ltd v\\nJones (1982) IRLR 439).\\n\\n56.\\nMs Herrell also referred to the case of East Lindsey District Council v\\nDaubney (1977) ICR 566 which emphasised the importance of making\\ndecisions with up-to-date medical information. The case of Taylorplan\\nCatering (Scotland) Ltd v McInally (1980) IRLR 53 EAT stated that\\nalthough the employer had a duty to consider alternative employment this did\\nnot go so far as to require them to create a special job for them. This was\"}, {\"char_end\": 33105, \"char_start\": 31679, \"page\": 1, \"paragraph\": 23, \"section_tag\": \"judgment\", \"text\": \"also the ratio in the case of Merseyside and North Wales Electricity Board\\nv Taylor (1975) IRLR 60.\\n\\n57. The respondent's solicitor also quoted a passage from the case of Garricks\\n(Caterers) Ltd v Nolan (1980) IRLR 259:\\n\\n\\\"Clearly employers cannot be expected to go to unreasonable lengths in\\nseeking to accommodate someone who is not able to carry out his job to the\\nfull extent. What is reasonable is very largely a question of fact and degree\\nfor the industrial tribunal.\\\"\\n58.\\nThe respondent's position was that the principal reason for dismissal was\\nmedical incapacity to perform contractual nightshifts. It asserts that it acted\\nreasonably: it obtained occupational medical advice, consulted over several\\nmonths, made temporary accommodations, explored alternative roles, and\\nafforded the claimant the opportunity to be accompanied. It argued that it had\\nno obligation to create a new role, nor to convert a three-shift post to\\npermanent day-shift working. At the time of the dismissal business conditions,\\nhad suddenly altered and there was a downturn in work and cost-control\\nmeasures in place which limited flexibility. The dismissal was in her\\nsubmission fair.\\n4107417/2024\\nPage 15\\n\\n59.\\nIt was noted that the claimant did not seek reinstatement. The claimant failed\\nto mitigate his losses by rejecting suitable alternative roles and undertaking\\nno job search efforts after dismissal. Any losses were caused not by the\"}, {\"char_end\": 34554, \"char_start\": 33105, \"page\": 1, \"paragraph\": 24, \"section_tag\": \"judgment\", \"text\": \"dismissal but by the claimant's reaction to the process, and that, applying\\nChagger v Abbey National and Polkey v AE Dayton Servoces,\\ncompensation should be substantially reduced or extinguished. The\\nrespondent also argued that he was guilty of contributory fault under sections\\n122(2) and 123(6) ERA 1996, (Nelson v BBC and Slaughter v C Brewer)\\non the basis that the claimant accepted dismissal could have been avoided\\nhad he accepted reasonable alternatives.\\n\\nDiscussion and Decision\\n\\n60.\\nThe Tribunal firstly had regard to the terms of section 98 of the Employment\\nRights Act 1996 which provides that in determining whether the dismissal of\\nan employee is fair or unfair, it is for the employer to show the reason, or\\nprincipal reason, for the dismissal and that it is a potentially fair reason for\\ndismissal.\\n\\n61.\\nI noted in this case that the respondent argued that it had dismissed the\\nclaimant for reasons of capability (a potentially fair reason falling within\\nsection 98(2)(a) Employment Rights Act). The claimant accepted this had\\nbeen the reason for his dismissal. The issue, accordingly, for the tribunal was\\nto determine whether dismissal for that reason was fair or unfair in terms of\\nsection 98(4) of the Act.\\n\\n62.\\nI next had regard to the cases to which we were referred. In the well-known\\ncase of Spencer v Paragon Wallpapers Ltd [1977] ICR 301 in which the\\nEAT held that where an employee has been absent from work for some time,\"}, {\"char_end\": 36049, \"char_start\": 34554, \"page\": 1, \"paragraph\": 25, \"section_tag\": \"judgment\", \"text\": \"it is essential to consider whether the employer can be expected to wait any\\nlonger for the employee to return. In Spencer Phillips J emphasised the\\nimportance of scrutinising all the relevant factors in an ill-health capability\\ncase:\\n\\\"Every case depends on its own circumstances. The basic question which\\nhas to be determined in every case is whether, in all the circumstances,\\nthe employer can be expected to wait any longer and, if so, how much\\nlonger.\\\" He added that the relevant circumstances include \\\"the nature of\\nthe illness, the likely length of the continuing absence, the need of the\\nemployers to have done the work which the employee was engaged to do.\\\"\\n\\n4107417/2024\\nPage 16\\n63.\\nThe Inner House of the Court of Session, in the case of SS v Dundee City\\nCouncil [2014] IRLR 131 stated that the Tribunal must address this question\\nand balance the relevant factors in all the circumstances of the case. Such\\nfactors include whether other staff are available to cover the absent\\nemployee's work; the nature of the employee's illness; the likely length of the\\nabsence; the cost of continuing to employ the employee; the size of the\\nemploying organisation; and the employee's sick leave.\\n\\n64.\\nThe Tribunal was also referred to the case of East Lindsay District Council\\nv Daubney [1977] ICR 566 where the EAT stressed the need for a fair\\nprocedure to be followed, which included consultation with the employee, a\\nthorough medical investigation and consideration of alternative employment.\"}, {\"char_end\": 37474, \"char_start\": 36049, \"page\": 1, \"paragraph\": 26, \"section_tag\": \"judgment\", \"text\": \"65.\\nThe background to the claim is in many ways not contentious. The claimant\\naccepted that he was no longer able to work nightshifts as he was required\\nto do and that this situation was likely to be either permanent or long lasting.\\nHe was not prepared to move from the Yarn department and consider other\\nposts away from that department. It is how the respondent company then\\napproached this situation and the decisions it made which formed the\\nsubstance of the case.\\n\\n66.\\nAn unusual feature in this case is the apparent lack of written policies and\\nprocedures in relation to ill health dismissal available to help both the\\nmanagers and employees involved in such processes. Tribunals are used to\\ncompany's which have created what is often referred to as a ''policy rich''\\nenvironment. No written policies were produced but it seems that there was\\nan understanding, at least at management level, that the first step was to\\nhave a thirty day consultation period. The claimant was told that this was to\\noccur and what the issues were for the company.\\n\\n67.\\nThis was not a situation that led to any unfairness as under the guidance of\\nthe company HR department, Mr Hilal (who was accompanied at meetings by\\na HR Adviser) entered into a consultation process with the claimant, took\\nappropriate occupational health advice and explained the process to the\\nclaimant. He was warned for example that his job was at risk but given the\"}, {\"char_end\": 38923, \"char_start\": 37474, \"page\": 1, \"paragraph\": 27, \"section_tag\": \"judgment\", \"text\": \"circumstances here it is not clear that this warning had 'sunk in'. Otherwise,\\nit is difficult to explain the claimant's persistent hope that his employers would\\ncome up with a role that allowed him to stay in the Yarn department as a\\nCarding Operative but not having to work nightshift and at less hours.\\n\\n68.\\nThe evidence shows that the claimant was offered other posts of comparable\\nstatus and remuneration but turned these down. He restricted Mr Hilal's\\nfreedom of manoeuvre despite it being made apparent that any such\\n4107417/2024\\nPage 17\\nredeployment might be temporary until a more suitable (for the claimant) post\\ncame up. In effect he tied their hands by insisting on remaining in the\\ndepartment, wanting to work 24 hours per week and refusing redeployment.\\n\\n69.\\nIn general, how an employer organises their business is not a matter that\\nTribunals can intervene in unless some employment or other right is\\ntransgressed. The respondent was entitled to organise their shifts in\\naccordance with their understanding of the most efficient way to do so.\\nEssential to his was the requirement for staff to be able to carry out nightshift.\\nThe claimant criticised the requirement for five on a shift pointing to past\\nsituations where less staff were used. Mr Hilal is an experienced manager\\nand he explained the clear rationale for the adoption of the five person shift.\\nHe conceded that in a pinch the shift could operate the machines with four or\"}, {\"char_end\": 40412, \"char_start\": 38923, \"page\": 1, \"paragraph\": 28, \"section_tag\": \"judgment\", \"text\": \"even three staff. This was he said unsatisfactory. It was not efficient and led\\nto more mistakes and more pressure on the remaining staff.\\n\\n70.\\nThe respondent demonstrated a clear and reasonable basis for their\\ninsistence that Carding Operatives must be able to take part in the cycle of\\nshifts including nightshift. He explained that it would be impossible to use the\\nclaimant on a part time basis. He would be supernumerary and it would be\\ncostly in a time where the company was looking to cut costs. In practice he\\nsaid it was often only when someone failed to turn up for a shift, for example\\nthrough illness, that the need would arise for someone to fill in. The company\\ncould give no advance notice of these situations and could not guarantee a\\nminimum number of paid hours to any ad hoc employee.\\n\\n71.\\nThe procedure adopted by way of consultation was thorough and fair as was\\nthe appeal dealt with by Mr Garrow. The claimant accepted that in retrospect\\nhe should have considered getting Trade Union assistance at the meetings if\\nfor no other purpose than to get a more objective view of his position and the\\ndanger he was running in restricting his options to remaining in the Yarn\\ndepartment. He found it difficult to understand how the company could\\nconsider dismissing him given his loyal service and experience. The one\\ncriticism that can be made of the respondent is that their position in evidence\\nis that they did not want to lose the claimant's services. He was experienced\"}, {\"char_end\": 41672, \"char_start\": 40412, \"page\": 1, \"paragraph\": 29, \"section_tag\": \"judgment\", \"text\": \"and reliable and the respondent did not always find it easy to get staff.\\n\\n72.\\nIf as Mr Hilal suggested in evidence he wanted the dismissal letter to be a\\nwake-up call to the claimant to engage with the offers of continued\\nemployment it did not have that effect. Given the claimant's state of mind and\\nwhat seems to have been a loss of confidence in moving to another role a\\nless drastic method engaging with him and persuading him that the company\\nwas seriously considering terminating his employment might have been\\n4107417/2024\\nPage 18\\nexplored. This however is viewing matters with the benefit of hindsight. It\\nwould be fair to say that both Mr Hilal and Mr Garrow seemed genuinely\\nsurprised that the claimant showed no interest in redeployment and it is\\nunfortunate for all concerned that some accommodation could not be found.\\n\\n73.\\nHaving expressed these views I should make it clear that the employer did\\nact reasonably here, they had consulted and offered alternative work to the\\nclaimant and the claimant should have been aware that his job was at risk as\\nhe could no longer work nightshifts.\\n\\n74.\\nThe dismissal was, in all the circumstances, a fair dismissal on the grounds\\nof capability.\\n\\n\\nEntered in register: 19 February 2026\\nand copied to parties\"}]}",
+  "n_chunks": 29,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 9,
+    "tribunal_reasoning": 10,
+    "judgment": 9
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[{\"name\":\"Alidair Limited v Taylor\",\"citation\":\"1978 ICR 445\",\"cited_date\":\"1978\"},{\"name\":\"Iceland Frozen Foods Ltd v Jones\",\"citation\":\"(1982) IRLR 439\",\"cited_date\":\"1982\"},{\"name\":\"East Lindsey District Council v Daubney\",\"citation\":\"(1977) ICR 566\",\"cited_date\":\"1977\"},{\"name\":\"Taylorplan Catering (Scotland) Ltd v McInally\",\"citation\":\"(1980) IRLR 53 EAT\",\"cited_date\":\"1980\"},{\"name\":\"Merseyside and North Wales Electricity Board v Taylor\",\"citation\":\"(1975) IRLR 60\",\"cited_date\":\"1975\"},{\"name\":\"Garricks (Caterers) Ltd v Nolan\",\"citation\":\"(1980) IRLR 259\",\"cited_date\":\"1980\"},{\"name\":\"Spencer v Paragon Wallpapers Ltd\",\"citation\":\"[1977] ICR 301\",\"cited_date\":\"1977\"},{\"name\":\"SS v Dundee City Council\",\"citation\":\"[2014] IRLR 131\",\"cited_date\":\"2014\"},{\"name\":\"East Lindsay District Council v Daubney\",\"citation\":\"[1977] ICR 566\",\"cited_date\":\"1977\"}],\"spans\":[{\"page\":1,\"paragraph\":22,\"text_span\":[30248,31679]},{\"page\":1,\"paragraph\":23,\"text_span\":[31679,33105]},{\"page\":1,\"paragraph\":24,\"text_span\":[33105,34554]},{\"page\":1,\"paragraph\":25,\"text_span\":[34554,36049]}]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]}]},\"decision_date\":{\"value\":\"2026-02-19\",\"spans\":[{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]},\"evidence\":{\"value\":\"The Tribunal heard evidence from Mr Julian Hilal, the respondent's Head of Yarn, Mr David Alistair Garrow, Head of Fabric, and the claimant on his own behalf.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]}]},\"facts\":{\"value\":\"The claimant was an experienced Carding Operative who rejoined the respondent on 3 November 2009 and whose employment ended on 4 September 2024. His contract involved a three-shift rotation including night shift. Occupational health material recorded that he was struggling with night-shift work, with sleep, mood and fatigue issues, and advised discussion of operational adjustments. The claimant was taken off night-shift working temporarily while consultation and occupational-health review continued.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1432,2911]},{\"page\":1,\"paragraph\":3,\"text_span\":[2911,4277]},{\"page\":1,\"paragraph\":4,\"text_span\":[4277,5719]},{\"page\":1,\"paragraph\":5,\"text_span\":[5719,7135]},{\"page\":1,\"paragraph\":6,\"text_span\":[7135,8581]},{\"page\":1,\"paragraph\":9,\"text_span\":[11517,13017]},{\"page\":1,\"paragraph\":10,\"text_span\":[13017,14351]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]},{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]},{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":false,\"spans\":[{\"page\":1,\"paragraph\":23,\"text_span\":[31679,33105]}]},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The respondent's position was that the claimant was fairly dismissed on the grounds of capability (a potentially fair ground for dismissal), because the claimant, because of health difficulties could no longer work night shift and no other role could be found for him.\",\"The issue, accordingly, for the tribunal was to determine whether dismissal for that reason was fair or unfair in terms of section 98(4) of the Act.\",\"The employer did act reasonably here, they had consulted and offered alternative work to the claimant and the claimant should have been aware that his job was at risk as he could no longer work nightshifts.\",\"The dismissal was, in all the circumstances, a fair dismissal on the grounds of capability.\",\"The respondent also argued that he was guilty of contributory fault under sections 122(2) and 123(6) ERA 1996.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]},{\"page\":1,\"paragraph\":24,\"text_span\":[33105,34554]},{\"page\":1,\"paragraph\":29,\"text_span\":[40412,41672]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]}]},\"region\":{\"value\":\"scotland\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]}]},\"region_source\":{\"value\":\"Aberdeen\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1432]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.98\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.122\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.123\"}],\"spans\":[{\"page\":1,\"paragraph\":24,\"text_span\":[33105,34554]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "Alidair Limited v Taylor",
+            "citation": "1978 ICR 445",
+            "cited_date": "1978"
+          },
+          {
+            "name": "Iceland Frozen Foods Ltd v Jones",
+            "citation": "(1982) IRLR 439",
+            "cited_date": "1982"
+          },
+          {
+            "name": "East Lindsey District Council v Daubney",
+            "citation": "(1977) ICR 566",
+            "cited_date": "1977"
+          },
+          {
+            "name": "Taylorplan Catering (Scotland) Ltd v McInally",
+            "citation": "(1980) IRLR 53 EAT",
+            "cited_date": "1980"
+          },
+          {
+            "name": "Merseyside and North Wales Electricity Board v Taylor",
+            "citation": "(1975) IRLR 60",
+            "cited_date": "1975"
+          },
+          {
+            "name": "Garricks (Caterers) Ltd v Nolan",
+            "citation": "(1980) IRLR 259",
+            "cited_date": "1980"
+          },
+          {
+            "name": "Spencer v Paragon Wallpapers Ltd",
+            "citation": "[1977] ICR 301",
+            "cited_date": "1977"
+          },
+          {
+            "name": "SS v Dundee City Council",
+            "citation": "[2014] IRLR 131",
+            "cited_date": "2014"
+          },
+          {
+            "name": "East Lindsay District Council v Daubney",
+            "citation": "[1977] ICR 566",
+            "cited_date": "1977"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 22,
+            "text_span": [
+              30248,
+              31679
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 23,
+            "text_span": [
+              31679,
+              33105
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              33105,
+              34554
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 25,
+            "text_span": [
+              34554,
+              36049
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-02-19",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              40412,
+              41672
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The Tribunal heard evidence from Mr Julian Hilal, the respondent's Head of Yarn, Mr David Alistair Garrow, Head of Fabric, and the claimant on his own behalf.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant was an experienced Carding Operative who rejoined the respondent on 3 November 2009 and whose employment ended on 4 September 2024. His contract involved a three-shift rotation including night shift. Occupational health material recorded that he was struggling with night-shift work, with sleep, mood and fatigue issues, and advised discussion of operational adjustments. The claimant was taken off night-shift working temporarily while consultation and occupational-health review continued.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1432,
+              2911
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2911,
+              4277
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4277,
+              5719
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5719,
+              7135
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 6,
+            "text_span": [
+              7135,
+              8581
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11517,
+              13017
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              13017,
+              14351
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 29,
+              "text_span": [
+                40412,
+                41672
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1432
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 29,
+              "text_span": [
+                40412,
+                41672
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 29,
+              "text_span": [
+                40412,
+                41672
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 29,
+                  "text_span": [
+                    40412,
+                    41672
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1432
+                  ]
+                },
+                {
+                  "page": 1,
+                  "paragraph": 29,
+                  "text_span": [
+                    40412,
+                    41672
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": false,
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 23,
+              "text_span": [
+                31679,
+                33105
+              ]
+            }
+          ]
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The respondent's position was that the claimant was fairly dismissed on the grounds of capability (a potentially fair ground for dismissal), because the claimant, because of health difficulties could no longer work night shift and no other role could be found for him.",
+          "The issue, accordingly, for the tribunal was to determine whether dismissal for that reason was fair or unfair in terms of section 98(4) of the Act.",
+          "The employer did act reasonably here, they had consulted and offered alternative work to the claimant and the claimant should have been aware that his job was at risk as he could no longer work nightshifts.",
+          "The dismissal was, in all the circumstances, a fair dismissal on the grounds of capability.",
+          "The respondent also argued that he was guilty of contributory fault under sections 122(2) and 123(6) ERA 1996."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              33105,
+              34554
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 29,
+            "text_span": [
+              40412,
+              41672
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "scotland",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Aberdeen",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1432
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.122"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.123"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 24,
+            "text_span": [
+              33105,
+              34554
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "",
+    "parsed": null,
+    "error": "LLMIncompleteResponseError('Response incomplete (reason=max_output_tokens, tokens_out=8192); increase max_output_tokens')"
+  },
+  "labeled_at": "2026-05-16T03:01:57.865100+00:00",
+  "source_pdf_sha256": "a142e92db7d71d7cc095c883ecb50fe24c912a6c7f506d96647d0bb99243e42c",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

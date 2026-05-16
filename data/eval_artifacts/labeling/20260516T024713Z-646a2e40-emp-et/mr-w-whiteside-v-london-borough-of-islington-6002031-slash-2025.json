@@ -1,0 +1,501 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025",
+  "case_reference": "mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-12-18",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6002031/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr W Whiteside v London Borough of Islington: 6002031/2025 - Dismissal",
+    "url": "https://assets.publishing.service.gov.uk/media/6978e98a128d9c1d09a98c49/Mr_William_Whiteside_v_London_Borough_of_Islington_-_6002031-2025.pdf"
+  },
+  "pdf_sha256": "f536cbb33a9abf1a1a901af3acc3515a9187f5b2abe0dffa29bac5539be5bf83",
+  "ocr_text_sha256": "f06459165281ecb6cc227c25078009506bb11f31b3356696dec0f823406ad066",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 872, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number 6002031/2025\\n\\n1\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant\\n\\n\\n\\n\\n\\n\\nRespondent\\n\\nMR WILLIAM WHITESIDE\\n\\nv\\nLONDON BOROUGH OF ISLINGTON\\nHeard at:\\nLondon Central (in public; in person)\\n\\n\\nOn:\\n17-18 December 2025\\n\\nBefore:\\nEmployment Judge P Klimov (sitting alone)\\n\\n\\n\\n\\n\\nAppearances:\\n\\nFor the claimant: in person\\n\\nFor the respondent: Mr A Line, counsel\\n\\n\\nJUDGMENT\\n\\n\\nThe judgment of the Tribunal is that the claimant's complaint of unfair (constructive)\\ndismissal is not well-founded. The respondent was not in breach of the implied term\\nof trust and confidence. The claim fails and is dismissed.\\n\\n\\nEmployment Judge Klimov\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n18 December 2025\\n\\n\\n\\n\\n\\n\\n\\nSent to the parties on:\\n\\n\\n\\n22 December 2025\\n......................................................................\\n\\n\\n\\n\\n......................................................................\\n\\n\\n\\n\\n\\n\\nFor the Tribunals Office\"}]}",
+  "n_chunks": 1,
+  "section_tag_counts": {
+    "case_header": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[422,453]}]},\"decision_date\":{\"value\":\"2025-12-18\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[626,642]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence section is present in source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is present in source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[357,586]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[528,586]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[357,586]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[357,586]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[528,586]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The judgment of the Tribunal is that the claimant's complaint of unfair (constructive) dismissal is not well-founded. The respondent was not in breach of the implied term of trust and confidence. The claim fails and is dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[357,586]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[422,453]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[276,303]},{\"page\":1,\"paragraph\":1,\"text_span\":[305,343]}]},\"region\":{\"value\":\"london\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[141,178]}]},\"region_source\":{\"value\":\"London Central (in public; in person)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[141,178]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              422,
+              453
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-12-18",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              626,
+              642
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section is present in source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is present in source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                357,
+                586
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                528,
+                586
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                357,
+                586
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    357,
+                    586
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    528,
+                    586
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The judgment of the Tribunal is that the claimant's complaint of unfair (constructive) dismissal is not well-founded. The respondent was not in breach of the implied term of trust and confidence. The claim fails and is dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              357,
+              586
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              422,
+              453
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              276,
+              303
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              305,
+              343
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              141,
+              178
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London Central (in public; in person)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              141,
+              178
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\": {\"value\": null, \"unavailable_reason\": \"No case-law authorities with dates or citations are cited in the source text.\"}, \"claim_types\": {\"value\": [\"unfair_dismissal\"], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"decision_date\": {\"value\": \"2025-12-18\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"evidence\": {\"value\": null, \"unavailable_reason\": \"No evidence section present in the source text.\"}, \"facts\": {\"value\": null, \"unavailable_reason\": \"No facts or issues section present in the source text to draw from.\"}, \"ground_truth_outcome\": {\"overall_winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"total_awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"unapportioned_reason\": {\"value\": null}, \"determination\": {\"value\": \"respondent_success\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"per_issue\": [{\"issue\": \"unfair_dismissal\", \"winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}}], \"basic_award_gbp\": {\"value\": null}, \"compensatory_award_gbp\": {\"value\": null}, \"deductions_pct\": {\"value\": null}, \"uplifts_pct\": {\"value\": null}, \"reinstatement_sought\": {\"value\": null}, \"reinstatement_granted\": {\"value\": null}, \"re_engagement_sought\": {\"value\": null}, \"re_engagement_granted\": {\"value\": null}}, \"key_reasoning_quotes\": {\"value\": null, \"unavailable_reason\": \"No tribunal reasoning section parsed separately; key quotes not extracted from the header.\"}, \"matter_type\": {\"value\": \"unfair_dismissal\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"parties\": {\"value\": [{\"role\": \"claimant\", \"represented\": false}, {\"role\": \"respondent_employer\", \"represented\": true}], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"region\": {\"value\": \"london\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"region_source\": {\"value\": \"London Central (in public; in person)\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 872]}]}, \"statutory_basis\": {\"value\": null, \"unavailable_reason\": \"No statute and section are explicitly cited in the source text.\"}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": null,
+        "unavailable_reason": "No case-law authorities with dates or citations are cited in the source text."
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              872
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-12-18",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              872
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section present in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section present in the source text to draw from."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                872
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                872
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                872
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    872
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    872
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": null,
+        "unavailable_reason": "No tribunal reasoning section parsed separately; key quotes not extracted from the header."
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              872
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              872
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              872
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London Central (in public; in person)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              872
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": null,
+        "unavailable_reason": "No statute and section are explicitly cited in the source text."
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:52:52.108638+00:00",
+  "source_pdf_sha256": "f536cbb33a9abf1a1a901af3acc3515a9187f5b2abe0dffa29bac5539be5bf83",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

@@ -1,0 +1,537 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-j-walsh-v-hmp-portland-6020501-slash-2024",
+  "case_reference": "mr-j-walsh-v-hmp-portland-6020501-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-01-06",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6020501/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-j-walsh-v-hmp-portland-6020501-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr J Walsh v HMP Portland: 6020501/2024 - Dismissal",
+    "url": "https://assets.publishing.service.gov.uk/media/6996fbaca58a315dbe72c00e/Mr._J._Walsh_-vs-_HMP_Portland_-_6020501.2024_-_Judgment.pdf"
+  },
+  "pdf_sha256": "8672cfa9ab2ec279cb52a93e725d47bac0cd55a633a6fed1fbd9cc6e64338ef7",
+  "ocr_text_sha256": "f5dc9a005bbab5183909425249891c5d15098b26a9e9faf96ed38585456f030f",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-j-walsh-v-hmp-portland-6020501-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1121, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case No: 6020501/2024\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\n\\n\\nMr. J. Walsh\\n\\n\\nRespondent:\\nHMP Portland\\n\\nHeard at:\\nBristol (in public, by CVP)\\nOn: 6 January 2026\\n\\nBefore:\\n\\nEmployment Judge Bowen\\n\\nAppearances\\nFor the Claimant:\\n\\nIn person\\nFor the Respondent:\\nMr. S. Healey, Counsel\\n\\n\\nJUDGMENT\\n\\n1. The claim of unfair dismissal was not presented within the applicable time\\nlimit under s.111 Employment Rights Act 1996. It was reasonably\\npracticable to do so. The claim is therefore dismissed.\\n\\n\\n\\n\\n\\n\\n\\n\\n_____________________________\\n\\n\\n\\n\\n\\n\\nEmployment Judge Bowen (approved judgment)\\n\\n\\n\\n\\n\\n06 January 2026\\n\\n\\n\\n\\n\\n\\nJUDGMENT SENT TO THE PARTIES ON\\n\\n\\n\\n\\n\\n02 February 2026\\n\\n\\n\\nNote\\nOral reasons were provided at the hearing. Written reasons will not be provided unless a written\\nrequest is presented by either party within 14 days of the sending of this written record of the\\ndecision.\\n\\nPublic access to employment tribunal decisions\\n\\nJudgments and reasons for the judgments are published, in full, online at www.gov.uk/employment-\\ntribunal-decisions shortly after a copy has been sent to the claimant(s) and respondent(s) in a case.\"}]}",
+  "n_chunks": 1,
+  "section_tag_counts": {
+    "case_header": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[303,328]}]},\"decision_date\":{\"value\":\"2026-01-06\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[587,602]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[460,494]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[460,494]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"non_merits\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[303,418]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[460,494]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[460,494]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The claim of unfair dismissal was not presented within the applicable time limit under s.111 Employment Rights Act 1996. It was reasonably practicable to do so. The claim is therefore dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[299,494]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[312,328]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[212,240]},{\"page\":1,\"paragraph\":1,\"text_span\":[241,283]}]},\"region\":{\"value\":\"south_west\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[119,146]}]},\"region_source\":{\"value\":\"Bristol (in public, by CVP)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[119,146]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.111\"}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[386,418]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              303,
+              328
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-01-06",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              587,
+              602
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                460,
+                494
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                460,
+                494
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                303,
+                418
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    460,
+                    494
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    460,
+                    494
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The claim of unfair dismissal was not presented within the applicable time limit under s.111 Employment Rights Act 1996. It was reasonably practicable to do so. The claim is therefore dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              299,
+              494
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              312,
+              328
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              212,
+              240
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              241,
+              283
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "south_west",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              119,
+              146
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Bristol (in public, by CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              119,
+              146
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.111"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              386,
+              418
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [],\n    \"spans\": []\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1121\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"06 January 2026\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1121\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no evidence-tagged material in source text to summarise\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no facts- or issues-tagged material in source text to summarise\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1121\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": null,\n      \"unavailable_reason\": \"no remedy or award stated in the decision\"\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1121\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"respondent\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1121\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": null,\n          \"unavailable_reason\": \"no award stated for the issue in the decision\"\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"The claim of unfair dismissal was not presented within the applicable time limit under s.111 Employment Rights Act 1996. It was reasonably practicable to do so. The claim is therefore dismissed.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1121\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": []\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1121\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1121\n            ]\n          }\n        ]\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1121\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": []\n  },\n  \"region\": {\n    \"value\": \"south_west\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1121\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Bristol (in public, by CVP)\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1121\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.111\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1121\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": []\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1121
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "06 January 2026",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1121
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence-tagged material in source text to summarise"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts- or issues-tagged material in source text to summarise"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1121
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null,
+          "unavailable_reason": "no remedy or award stated in the decision"
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1121
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1121
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null,
+              "unavailable_reason": "no award stated for the issue in the decision"
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The claim of unfair dismissal was not presented within the applicable time limit under s.111 Employment Rights Act 1996. It was reasonably practicable to do so. The claim is therefore dismissed.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1121
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": []
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1121
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1121
+                ]
+              }
+            ]
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1121
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": []
+      },
+      "region": {
+        "value": "south_west",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1121
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Bristol (in public, by CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1121
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.111",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1121
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:53:04.189900+00:00",
+  "source_pdf_sha256": "8672cfa9ab2ec279cb52a93e725d47bac0cd55a633a6fed1fbd9cc6e64338ef7",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}
