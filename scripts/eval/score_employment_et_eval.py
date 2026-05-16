@@ -579,6 +579,20 @@ def _render_report(
             f"Determination-accuracy = **{_fmt_pct(hybrid.determination_accuracy)}**."
         )
 
+    # Synthesis: if rag_only > hybrid, flag the empty-KG-noise hypothesis.
+    if rag_only is not None and hybrid is not None and rag_only.accuracy > hybrid.accuracy:
+        out.append(
+            f"- **Synthesis**: `rag_only` outperforms `hybrid` "
+            f"(+{(rag_only.accuracy - hybrid.accuracy) * 100:.1f} pp accuracy, "
+            f"Brier Δ {hybrid.respondent_brier - rag_only.respondent_brier:+.4f}). "
+            f"The empty employment KG digest (3-node housing-adapter stub on "
+            f"every case) acts as prompt-context noise that dilutes attention "
+            f"away from the precedent chunks. Until SHA-149 lands a real "
+            f"employment factor catalog, `rag_only` is the production-relevant "
+            f"mode for this domain. `hybrid` becomes the right mode once the "
+            f"KG carries case-distinct factor assertions."
+        )
+
     out.append("")
     out.append("## Caveats")
     out.append("")

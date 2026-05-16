@@ -1,8 +1,8 @@
 # Employment Tribunal eval — `employment.unfair_dismissal.v1`
 
 **Gold:** [`data/gold_standard/employment_unfair_dismissal_v1.jsonl`](../../data/gold_standard/employment_unfair_dismissal_v1.jsonl)
-**Run dir:** `data/eval_artifacts/runs/employment_unfair_dismissal_v1/20260516T143151Z-bc3ed9bb-emp-et-predict`
-**Run ID:** `20260516T143151Z-bc3ed9bb-emp-et-predict`
+**Run dir:** `data/eval_artifacts/runs/employment_unfair_dismissal_v1/20260516T153132Z-83b8a1ec-emp-et-predict`
+**Run ID:** `20260516T153132Z-83b8a1ec-emp-et-predict`
 **Predictor:** `openai:gpt-5-mini`
 **Gold n:** 49
 
@@ -23,10 +23,10 @@
 
 | Mode | n | Accuracy | Bal-Accuracy | Brier (R) | ECE | LogLoss | Det-Accuracy | Abstain |
 |---|---|---|---|---|---|---|---|---|
-| `llm_only` | 49 | 0.8571 | 0.6631 | 0.1183 | 0.0665 | 0.3999 | 0.5510 | 0.0% |
-| `rag_only` | 49 | 0.8571 | 0.6631 | 0.1178 | 0.0535 | 0.3966 | 0.5510 | 0.0% |
-| `kg_only` | 49 | 0.8367 | 0.5503 | 0.1315 | 0.0241 | 0.4298 | 0.4694 | 0.0% |
-| `hybrid` | 49 | 0.8776 | 0.6753 | 0.1047 | 0.0559 | 0.3627 | 0.5306 | 0.0% |
+| `llm_only` | 49 | 0.8571 | 0.6631 | 0.1207 | 0.0671 | 0.4007 | 0.5306 | 0.0% |
+| `rag_only` | 49 | 0.8776 | 0.6753 | 0.1135 | 0.0739 | 0.3895 | 0.5306 | 0.0% |
+| `kg_only` | 49 | 0.8571 | 0.6631 | 0.1178 | 0.0590 | 0.3968 | 0.5306 | 0.0% |
+| `hybrid` | 49 | 0.8367 | 0.6006 | 0.1330 | 0.0537 | 0.4348 | 0.5306 | 0.0% |
 
 *Brier reading: 0.0 = perfect, 0.25 = coin flip, ≥ 0.25 = worse than chance.*
 
@@ -35,39 +35,39 @@
 | Mode | claimant | respondent |
 |---|---|---|
 | `llm_only` | 0.3750 (n=8) | 0.9512 (n=41) |
-| `rag_only` | 0.3750 (n=8) | 0.9512 (n=41) |
-| `kg_only` | 0.1250 (n=8) | 0.9756 (n=41) |
-| `hybrid` | 0.3750 (n=8) | 0.9756 (n=41) |
+| `rag_only` | 0.3750 (n=8) | 0.9756 (n=41) |
+| `kg_only` | 0.3750 (n=8) | 0.9512 (n=41) |
+| `hybrid` | 0.2500 (n=8) | 0.9512 (n=41) |
 
 ## Stratified — by gold `determination`
 
 ### `llm_only`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.3750 | 0.4591 |
-| non_merits | 19 | 0.8947 | 0.0842 |
-| respondent_success | 22 | 1.0000 | 0.0239 |
+| claimant_success | 8 | 0.3750 | 0.4622 |
+| non_merits | 19 | 0.8947 | 0.0918 |
+| respondent_success | 22 | 1.0000 | 0.0214 |
 
 ### `rag_only`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.3750 | 0.4671 |
-| non_merits | 19 | 0.8947 | 0.0794 |
-| respondent_success | 22 | 1.0000 | 0.0238 |
+| claimant_success | 8 | 0.3750 | 0.4608 |
+| non_merits | 19 | 0.9474 | 0.0691 |
+| respondent_success | 22 | 1.0000 | 0.0255 |
 
 ### `kg_only`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.1250 | 0.6244 |
-| non_merits | 19 | 0.9474 | 0.0479 |
-| respondent_success | 22 | 1.0000 | 0.0243 |
+| claimant_success | 8 | 0.3750 | 0.4509 |
+| non_merits | 19 | 0.8947 | 0.0841 |
+| respondent_success | 22 | 1.0000 | 0.0257 |
 
 ### `hybrid`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.3750 | 0.4528 |
-| non_merits | 19 | 0.9474 | 0.0512 |
-| respondent_success | 22 | 1.0000 | 0.0243 |
+| claimant_success | 8 | 0.2500 | 0.5545 |
+| non_merits | 19 | 0.8947 | 0.0810 |
+| respondent_success | 22 | 1.0000 | 0.0246 |
 
 ## Stratified — by region (top 8)
 
@@ -86,7 +86,7 @@
 ### `rag_only`
 | Region | n | Accuracy |
 |---|---|---|
-| london | 16 | 0.9375 |
+| london | 16 | 1.0000 |
 | north_west | 7 | 0.7143 |
 | scotland | 6 | 0.8333 |
 | south_west | 4 | 1.0000 |
@@ -98,10 +98,10 @@
 ### `kg_only`
 | Region | n | Accuracy |
 |---|---|---|
-| london | 16 | 0.8750 |
+| london | 16 | 0.9375 |
 | north_west | 7 | 0.7143 |
-| scotland | 6 | 1.0000 |
-| south_west | 4 | 0.7500 |
+| scotland | 6 | 0.8333 |
+| south_west | 4 | 1.0000 |
 | south_east | 3 | 0.6667 |
 | wales | 3 | 0.6667 |
 | yorkshire_and_humber | 3 | 1.0000 |
@@ -110,10 +110,10 @@
 ### `hybrid`
 | Region | n | Accuracy |
 |---|---|---|
-| london | 16 | 1.0000 |
+| london | 16 | 0.9375 |
 | north_west | 7 | 0.7143 |
 | scotland | 6 | 0.8333 |
-| south_west | 4 | 1.0000 |
+| south_west | 4 | 0.7500 |
 | south_east | 3 | 0.6667 |
 | wales | 3 | 0.6667 |
 | yorkshire_and_humber | 3 | 1.0000 |
@@ -124,46 +124,47 @@
 ### `llm_only`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | The respondent did not file a response or attend the hearing, so the Tribunal is |
-| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8500 | 0.85 | The file supplies no substantive facts about the reasonableness or procedural de |
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive facts or indicators of procedural or substantive unfairness were  |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | The provided file contains no substantive facts showing unfairness or procedural |
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive factual or legal material was provided on the merits; absent evid |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1500 | 0.85 | Respondent's non-attendance and failure to file any response is the strongest si |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive facts or KG/precedent signals showing procedural or substantive u |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | There are no substantive case facts, KG features, or matching precedents supplie |
+| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive facts about the reason or procedure for dismissal and no preceden |
+| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8400 | 0.84 | No substantive dismissal facts or retrieved precedents were provided in the file |
 
 ### `rag_only`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8600 | 0.86 | No substantive factual indicators of a sustainable unfair‑dismissal breach were  |
-| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8600 | 0.86 | The file contains no substantive merits or procedural facts favoring the claiman |
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive merits or evidence of unfair procedure or qualifying-service issu |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | No case-specific facts or indicia of unfair procedure/substantive fault were pro |
-| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8300 | 0.83 | The provided facts contain no evidence of procedural or substantive unfairness ( |
+| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.9000 | 0.9 | Closest retrieved precedent is A Twigg v Chronicle Software Ltd (6021584/2024) w |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Tribunal is likely to find for the claimant because the respondent did not file  |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | There are no substantive facts on the merits and the retrieved precedents provid |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | No substantive dismissal facts or KG factors were provided and the retrieved pre |
+| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8400 | 0.84 | No retrieved precedent chunk shares a meaningful fact pattern with this file and |
 
 ### `kg_only`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8500 | 0.85 | The knowledge graph contains no substantive facts or asserted factors to support |
-| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8500 | 0.85 | The knowledge graph is minimal with no asserted adverse factors or procedural fa |
-| k-bal-v-the-sofa-and-chair-company-in-voluntary- | claimant | respondent | 0.8400 | 0.84 | The knowledge graph contains minimal factual or factor assertions and no support |
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | The knowledge graph contains minimal, non-specific information and no factor ass |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | The knowledge‑graph contains no substantive facts or adverse factor assertions a |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | The respondent’s failure to file a response or attend the hearing while the clai |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive facts about the dismissal or comparable precedents and the knowle |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | No substantive factual or procedural details are provided (knowledge_graph.data_ |
+| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive case facts or matching precedents were provided and the knowledge |
+| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8400 | 0.84 | There are no substantive facts or precedents to assess (knowledge_graph.data_qua |
 
 ### `hybrid`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8500 | 0.85 | No substantive factual or legal detail was supplied and the knowledge graph is m |
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | The case file contains no substantive factual or legal indicators supporting unf |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | No substantive factual or legal signals of claimant success are provided and, ab |
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive facts or issues were provided and, given the minimal case record  |
-| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8400 | 0.84 | With only a redundancy dismissal pleaded, no detailed allegations of procedural  |
+| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8800 | 0.88 | No retrieved precedent closely matches and the file contains no pleaded procedur |
+| r-pyman-v-alitex-ltd-1400384-slash-2025 | claimant | respondent | 0.8800 | 0.88 | The claimant admitted driving an intoxicated colleague who fell and was injured— |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1500 | 0.85 | The respondent did not file an ET3 or attend the hearing (facts), so the Tribuna |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | There are no substantive case facts (knowledge_graph.data_quality_tier = 'minima |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | There are no substantive case facts and the knowledge_graph reports data_quality |
 
 ## Findings
 
 - **Prior P(respondent)** in this gold set is **0.84** — a majority-class predictor would already hit ~83% raw accuracy. Use **balanced accuracy** and **Brier** as the non-degenerate signals.
-- **`llm_only`** (facts only — no retrieval, no KG) reaches **85.7%** accuracy / Brier **0.1183** / balanced **0.6631**. This is the floor for the ablation.
-- **`rag_only`** (facts + retrieved precedents, leave-one-out) at **85.7%** / Brier **0.1178**. Marginal value of retrieval over llm_only: accuracy +0.0 pp, Brier +0.0006.
-- **`kg_only`** (facts + structured KG digest) at **83.7%** / Brier **0.1315**. Marginal value of KG over llm_only: accuracy -2.0 pp, Brier -0.0131. The employment KG is data-quality `minimal` today (the SHA-149 factor catalog has not been built so the digest is a 3-node housing-adapter stub for every case). A flat-or-negative result here is the expected null — the LLM treats the empty KG digest as anti-signal and anchors toward the corpus prior.
-- **`hybrid`** (facts + retrieved precedents + KG digest) at **87.8%** / Brier **0.1047** / balanced **0.6753**. Lift over llm_only: accuracy +2.0 pp, Brier +0.0137. Determination-accuracy = **53.1%**.
+- **`llm_only`** (facts only — no retrieval, no KG) reaches **85.7%** accuracy / Brier **0.1207** / balanced **0.6631**. This is the floor for the ablation.
+- **`rag_only`** (facts + retrieved precedents, leave-one-out) at **87.8%** / Brier **0.1135**. Marginal value of retrieval over llm_only: accuracy +2.0 pp, Brier +0.0072.
+- **`kg_only`** (facts + structured KG digest) at **85.7%** / Brier **0.1178**. Marginal value of KG over llm_only: accuracy +0.0 pp, Brier +0.0029. The employment KG is data-quality `minimal` today (the SHA-149 factor catalog has not been built so the digest is a 3-node housing-adapter stub for every case). A flat-or-negative result here is the expected null — the LLM treats the empty KG digest as anti-signal and anchors toward the corpus prior.
+- **`hybrid`** (facts + retrieved precedents + KG digest) at **83.7%** / Brier **0.1330** / balanced **0.6006**. Lift over llm_only: accuracy -2.0 pp, Brier -0.0123. Determination-accuracy = **53.1%**.
+- **Synthesis**: `rag_only` outperforms `hybrid` (+4.1 pp accuracy, Brier Δ +0.0195). The empty employment KG digest (3-node housing-adapter stub on every case) acts as prompt-context noise that dilutes attention away from the precedent chunks. Until SHA-149 lands a real employment factor catalog, `rag_only` is the production-relevant mode for this domain. `hybrid` becomes the right mode once the KG carries case-distinct factor assertions.
 
 ## Caveats
 
