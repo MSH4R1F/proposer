@@ -512,43 +512,68 @@ def _render_report(
     # Findings / caveats
     out.append("## Findings")
     out.append("")
-    facts_mode = next((r for r in results if r.mode == "facts_llm"), None)
-    blind_mode = next((r for r in results if r.mode == "blind_llm"), None)
-    prior_mode = next((r for r in results if r.mode == "prior_baseline"), None)
+    by_mode = {r.mode: r for r in results}
+    llm_only = by_mode.get("llm_only")
+    rag_only = by_mode.get("rag_only")
+    kg_only = by_mode.get("kg_only")
+    hybrid = by_mode.get("hybrid")
 
-    if facts_mode and blind_mode and prior_mode:
+    def _delta(a: _ModeResult | None, b: _ModeResult | None, attr: str, *, fmt: str = "delta") -> str:
+        if a is None or b is None:
+            return "—"
+        va = getattr(a, attr, None)
+        vb = getattr(b, attr, None)
+        if va is None or vb is None or math.isnan(va) or math.isnan(vb):
+            return "—"
+        d = va - vb
+        if fmt == "pp":
+            return f"{d * 100:+.1f} pp"
+        return f"{d:+.4f}"
+
+    if llm_only is not None:
         out.append(
-            f"- **Prior baseline** (always predict majority class respondent at "
-            f"P={prior_mode.prior_p_respondent:.2f}) lands at "
-            f"**{_fmt_pct(prior_mode.accuracy)}** accuracy and Brier "
-            f"**{_fmt(prior_mode.respondent_brier)}**. Any meaningful predictor "
-            f"must beat both."
+            f"- **Prior P(respondent)** in this gold set is "
+            f"**{llm_only.prior_p_respondent:.2f}** — a majority-class predictor "
+            f"would already hit ~{int(llm_only.prior_p_respondent * 100)}% raw "
+            f"accuracy. Use **balanced accuracy** and **Brier** as the "
+            f"non-degenerate signals."
         )
+    if llm_only is not None:
         out.append(
-            f"- **Blind LLM** (metadata only — no facts narrative) at "
-            f"**{_fmt_pct(blind_mode.accuracy)}** accuracy / Brier "
-            f"**{_fmt(blind_mode.respondent_brier)}**. Marginal lift over prior: "
-            f"accuracy Δ = **{(blind_mode.accuracy - prior_mode.accuracy) * 100:+.1f} pp**, "
-            f"Brier Δ = **{prior_mode.respondent_brier - blind_mode.respondent_brier:+.4f}**."
+            f"- **`llm_only`** (facts only — no retrieval, no KG) reaches "
+            f"**{_fmt_pct(llm_only.accuracy)}** accuracy / Brier "
+            f"**{_fmt(llm_only.respondent_brier)}** / balanced "
+            f"**{_fmt(llm_only.balanced_accuracy)}**. This is the floor for the "
+            f"ablation."
         )
+    if rag_only is not None:
         out.append(
-            f"- **Facts LLM** (metadata + grounded facts) at "
-            f"**{_fmt_pct(facts_mode.accuracy)}** accuracy / Brier "
-            f"**{_fmt(facts_mode.respondent_brier)}**. Marginal lift over blind: "
-            f"accuracy Δ = **{(facts_mode.accuracy - blind_mode.accuracy) * 100:+.1f} pp**, "
-            f"Brier Δ = **{blind_mode.respondent_brier - facts_mode.respondent_brier:+.4f}**."
+            f"- **`rag_only`** (facts + retrieved precedents, leave-one-out) at "
+            f"**{_fmt_pct(rag_only.accuracy)}** / Brier "
+            f"**{_fmt(rag_only.respondent_brier)}**. Marginal value of retrieval "
+            f"over llm_only: accuracy {_delta(rag_only, llm_only, 'accuracy', fmt='pp')}, "
+            f"Brier {_delta(llm_only, rag_only, 'respondent_brier')}."
         )
+    if kg_only is not None:
         out.append(
-            f"- **Balanced accuracy** (macro-averaged per-class) at facts_llm = "
-            f"**{_fmt(facts_mode.balanced_accuracy)}** — the relevant number "
-            f"when the 84/16 winner skew is suspect of inflating raw accuracy."
+            f"- **`kg_only`** (facts + structured KG digest) at "
+            f"**{_fmt_pct(kg_only.accuracy)}** / Brier "
+            f"**{_fmt(kg_only.respondent_brier)}**. Marginal value of KG over "
+            f"llm_only: accuracy {_delta(kg_only, llm_only, 'accuracy', fmt='pp')}, "
+            f"Brier {_delta(llm_only, kg_only, 'respondent_brier')}. The "
+            f"employment KG is data-quality `minimal` today (SHA-149 factor "
+            f"catalog deferred), so a flat result here is the expected null."
         )
+    if hybrid is not None:
+        best_baseline = llm_only
         out.append(
-            f"- **Determination accuracy** at facts_llm = "
-            f"**{_fmt_pct(facts_mode.determination_accuracy)}**. This is the "
-            f"4-class task (claimant_success / respondent_success / "
-            f"partial_success / non_merits), which carries more signal than "
-            f"the binary winner."
+            f"- **`hybrid`** (facts + retrieved precedents + KG digest) at "
+            f"**{_fmt_pct(hybrid.accuracy)}** / Brier "
+            f"**{_fmt(hybrid.respondent_brier)}** / balanced "
+            f"**{_fmt(hybrid.balanced_accuracy)}**. Lift over llm_only: "
+            f"accuracy {_delta(hybrid, best_baseline, 'accuracy', fmt='pp')}, "
+            f"Brier {_delta(best_baseline, hybrid, 'respondent_brier') if best_baseline else '—'}. "
+            f"Determination-accuracy = **{_fmt_pct(hybrid.determination_accuracy)}**."
         )
 
     out.append("")
@@ -574,10 +599,13 @@ def _render_report(
         "carries any split rows the calibration n will drop accordingly."
     )
     out.append(
-        "- This eval intentionally does NOT use RAG / KG retrieval. SHA-147 "
-        "deferred vector ingestion; SHA-149 (employment factor catalog) has "
-        "not been built. The contrast is prior vs blind vs facts only — not "
-        "the housing four-mode ablation."
+        "- Retrieval pool: the 50-doc SHA-148 ET corpus (47-49 peers per "
+        "query under leave-one-out). RAG modes use production "
+        "`RAGPipeline` (BM25 + embeddings + RRF + reranker); KG modes use "
+        "production `GraphBuilder`. SHA-149 (employment factor catalog) is "
+        "not built yet, so the KG digest is structurally minimal "
+        "(party roles, claim types, no factor assertions). `kg_only` is "
+        "expected to land close to `llm_only` until SHA-149 lands."
     )
     out.append(
         "- The corpus is heavily skewed to 2025-2026 decisions (97% of gold). "
