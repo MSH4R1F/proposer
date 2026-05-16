@@ -561,8 +561,11 @@ def _render_report(
             f"**{_fmt(kg_only.respondent_brier)}**. Marginal value of KG over "
             f"llm_only: accuracy {_delta(kg_only, llm_only, 'accuracy', fmt='pp')}, "
             f"Brier {_delta(llm_only, kg_only, 'respondent_brier')}. The "
-            f"employment KG is data-quality `minimal` today (SHA-149 factor "
-            f"catalog deferred), so a flat result here is the expected null."
+            f"employment KG is data-quality `minimal` today (the SHA-149 factor "
+            f"catalog has not been built so the digest is a 3-node housing-"
+            f"adapter stub for every case). A flat-or-negative result here is "
+            f"the expected null — the LLM treats the empty KG digest as anti-"
+            f"signal and anchors toward the corpus prior."
         )
     if hybrid is not None:
         best_baseline = llm_only
@@ -585,6 +588,16 @@ def _render_report(
         "the user's 2026-05-16 decision. Predictions vs gold therefore measure "
         "predictor agreement with an LLM-derived label, NOT agreement with "
         "human-adjudicated ground truth. Phase D refinement would tighten this."
+    )
+    out.append(
+        "- The ``facts`` field on 39/49 rows was the Phase D auto-promote "
+        "placeholder until 2026-05-16, at which point the gold was re-extracted "
+        "via ``scripts/eval/extract_employment_et_facts.py``. The re-extractor "
+        "runs gpt-5-mini against the redacted PDF text with a leakage guard "
+        "that blocks tribunal-voice, outcome verdicts, remedy-stage references, "
+        "and statutory-award names. Every row was audited against the formal "
+        "guard plus an adversarial-phrase sweep before promotion (0 placeholder "
+        "/ 0 formal-leak / 0 adversarial)."
     )
     out.append(
         "- Same-provider LLM stack across labelers AND predictor introduces "
