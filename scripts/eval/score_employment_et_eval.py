@@ -579,18 +579,31 @@ def _render_report(
             f"Determination-accuracy = **{_fmt_pct(hybrid.determination_accuracy)}**."
         )
 
-    # Synthesis: if rag_only > hybrid, flag the empty-KG-noise hypothesis.
-    if rag_only is not None and hybrid is not None and rag_only.accuracy > hybrid.accuracy:
+    # Synthesis: contextualise single-run accuracy on a small minority
+    # class and point to the multi-run aggregator.
+    if rag_only is not None and llm_only is not None:
         out.append(
-            f"- **Synthesis**: `rag_only` outperforms `hybrid` "
-            f"(+{(rag_only.accuracy - hybrid.accuracy) * 100:.1f} pp accuracy, "
-            f"Brier Δ {hybrid.respondent_brier - rag_only.respondent_brier:+.4f}). "
-            f"The empty employment KG digest (3-node housing-adapter stub on "
-            f"every case) acts as prompt-context noise that dilutes attention "
-            f"away from the precedent chunks. Until SHA-149 lands a real "
-            f"employment factor catalog, `rag_only` is the production-relevant "
-            f"mode for this domain. `hybrid` becomes the right mode once the "
-            f"KG carries case-distinct factor assertions."
+            f"- **Single-run noise warning**: with 8 minority-class claimant "
+            f"cases in n=49, one Pyman/Spencer-shaped LLM flip moves headline "
+            f"accuracy ~2pp. Treat single-run accuracy gaps under 4pp as "
+            f"likely-noise and prefer **balanced accuracy**, **Brier**, and "
+            f"**determination accuracy** as the signal-bearing metrics. "
+            f"`scripts/eval/aggregate_employment_et_runs.py` produces mean ± "
+            f"std across multiple runs."
+        )
+    if rag_only is not None and hybrid is not None and rag_only.accuracy >= hybrid.accuracy:
+        out.append(
+            f"- **Synthesis**: `rag_only` remains the production-relevant "
+            f"mode on this corpus. Empirically (3-run mean): rag_only carries "
+            f"the strongest per-class signal — best balanced accuracy (0.676 "
+            f"vs 0.642 for llm_only/kg_only), best determination accuracy "
+            f"(56.5% vs 53.1-53.7%). `hybrid` ties on raw accuracy within "
+            f"noise but consistently carries 5-8% higher Brier across runs — "
+            f"the LLM appears to hedge more when both retrieval and KG "
+            f"inputs are present. `hybrid` should overtake `rag_only` once "
+            f"SHA-149 lands case-distinct factor assertions; the current "
+            f"enriched-but-thin KG digest (parties_by_role + region) is too "
+            f"weak to add net signal on top of retrieval."
         )
 
     out.append("")
@@ -629,10 +642,31 @@ def _render_report(
         "- Retrieval pool: the 50-doc SHA-148 ET corpus (47-49 peers per "
         "query under leave-one-out). RAG modes use production "
         "`RAGPipeline` (BM25 + embeddings + RRF + reranker); KG modes use "
-        "production `GraphBuilder`. SHA-149 (employment factor catalog) is "
-        "not built yet, so the KG digest is structurally minimal "
-        "(party roles, claim types, no factor assertions). `kg_only` is "
-        "expected to land close to `llm_only` until SHA-149 lands."
+        "production `GraphBuilder`. Retrieved chunks carry parent-case "
+        "outcomes (`precedent_outcome_winner`, "
+        "`precedent_outcome_determination`) joined from the gold itself, "
+        "so the LLM has case-based-reasoning material per chunk."
+    )
+    out.append(
+        "- The KG digest contains case-distinct procedural metadata only "
+        "(`parties_by_role` representation status, `region`) plus the "
+        "structural KG-build counts. Before 2026-05-16 the digest was "
+        "byte-identical across all 49 cases (`data_quality_tier=minimal`, "
+        "`factor_assertions=[]`, etc.); the LLM read those constant flags "
+        "as 'no signal, fall back to prior' which structurally hurt "
+        "`hybrid`. The enriched digest produces 22/49 unique digests and "
+        "no longer acts as anti-signal. SHA-149 (employment factor catalog) "
+        "is needed for the digest to carry merits signal beyond procedural "
+        "metadata."
+    )
+    out.append(
+        "- LLM determinism: gpt-5-mini is a reasoning model and produces "
+        "1-2 case flips per run even at temperature=0 (thinking-token "
+        "drift). Across 3 independent runs on the same gold set, raw "
+        "accuracy varies by ±1-2pp per mode. The numbers in this report "
+        "are from one of those runs; see "
+        "`data/eval_artifacts/runs/employment_unfair_dismissal_v1/_aggregate_3runs_2026-05-16.json` "
+        "for the multi-run mean ± std."
     )
     out.append(
         "- The corpus is heavily skewed to 2025-2026 decisions (97% of gold). "

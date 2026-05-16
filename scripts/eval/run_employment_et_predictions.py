@@ -91,9 +91,14 @@ one or more of:
     determination label
   - ``text``: the chunk excerpt
   The precedents are NOT the case under prediction.
-* ``knowledge_graph`` — structured digest of the case file: party
-  roles, identified issues, factor assertions (if any), evidence
-  references.
+* ``knowledge_graph`` — structured digest of the case file. Includes
+  ``parties_by_role`` (representation status per role — claimant LIP
+  vs counsel-represented is a meaningful procedural signal),
+  ``region`` (hearing centre region), ``matter_types`` and
+  ``claim_types`` (always ``unfair_dismissal`` on this corpus),
+  ``factor_assertions`` (only populated once SHA-149 ships an ET
+  factor catalog — empty list until then), and KG-graph counts
+  (``n_kg_nodes``, ``n_kg_edges``, ``kg_node_kinds``).
 
 Your job: predict the outcome of the unfair-dismissal claim.
 
@@ -133,6 +138,24 @@ How to reason with retrieved precedents:
 * If no retrieved chunk shares a meaningful fact pattern with the
   query case, say so in the rationale and fall back to facts-only
   reasoning — do not let a poor retrieval push you toward the prior.
+
+How to reason with the knowledge_graph digest:
+
+* ``parties_by_role.claimant.represented`` and
+  ``parties_by_role.respondent.represented`` capture whether each
+  party had counsel — a known procedural-outcome correlate. Cases
+  where the claimant has counsel and the respondent does not are
+  more often won by the claimant, though this is weaker than fact
+  evidence.
+* ``region`` is procedural metadata — interpret only as venue, not
+  as merits signal.
+* ``factor_assertions`` will be EMPTY on this domain until SHA-149
+  ships an ET factor catalog. Empty does NOT mean "no signal" —
+  facts and precedents remain the dominant inputs; treat the empty
+  list as silence on factor extraction, not as evidence of weakness.
+* ``n_kg_nodes`` / ``n_kg_edges`` / ``kg_node_kinds`` are diagnostic
+  counts about the structured-graph build; they are NOT signals
+  about the case itself. Ignore them when forming your prediction.
 
 Calibration rules:
 
@@ -294,13 +317,50 @@ async def _retrieve_precedents(
 
 
 def _build_kg_digest(gc: GoldCase) -> dict[str, Any]:
+    """Build a per-case KG digest for ``kg_only`` and ``hybrid`` modes.
+
+    Design history (post-2026-05-16 adversarial review):
+
+    The previous digest was byte-identical across all 49 ET cases — a
+    3-node housing-adapter stub with ``data_quality_tier=minimal``,
+    ``factor_assertions=[]``, ``n_edges=0``, ``matter_type=None``,
+    ``claim_types=[]``. The agents found this acted as a coherent
+    "no signal" gate: the LLM read those five empty/minimal flags as
+    "no evidence, fall back to corpus prior", which drove the
+    Pyman/Spencer regressions in ``hybrid`` mode.
+
+    This rewrite fixes three issues:
+
+    1. Two latent bugs surfaced in the audit:
+       * ``case_file.matter_type`` does not exist (the field is
+         ``matter_types``, plural). The old digest returned ``None``
+         for all cases.
+       * ``gold_issue_labels_by_claim_type`` returns ``{}`` for ET
+         rows because the claim_types/claimed_amounts arity check
+         fails (ET cases never have ``claimed_amounts`` populated).
+         The old digest returned an empty ``claim_types`` list.
+
+    2. Add case-distinct, non-outcome-leaking enrichment from the
+       gold itself: ``parties_by_role`` (claimant/respondent
+       representation status — 6+ unique combos across 49 cases) and
+       ``region`` (11 unique values). Both are observable pre-decision
+       and don't contain tribunal findings.
+
+    3. Drop the ``data_quality_tier`` and ``is_consistent`` fields.
+       Both were byte-identical across 49 cases and read as
+       "minimal / no signal" anti-signal. The factor catalog itself
+       (``factor_assertions``) remains explicit so a future SHA-149
+       run can populate it; until then the field is just empty list.
+
+    The digest STILL must not leak outcomes — no
+    ``ground_truth_outcome``, ``total_awarded_gbp``, or
+    ``determination``. ``statutory_basis`` and ``cited_authorities``
+    are excluded too (the housing case_file_adapter flags both as
+    post-decision artefacts).
+    """
     recon = gold_case_to_case_file(gc)
     builder = GraphBuilder(validate=False, domain_id=DOMAIN_ID)
     kg = builder.build(recon.case_file)
-    # Flatten the KG into a compact JSON-friendly digest. Employment
-    # currently lacks a factor catalog (SHA-149 deferred), so most
-    # fields are empty — keep them explicit so the LLM can see what's
-    # missing rather than infer.
     nodes = list(getattr(kg, "nodes", []) or [])
     edges = list(getattr(kg, "edges", []) or [])
     node_kinds: dict[str, int] = {}
@@ -310,19 +370,45 @@ def _build_kg_digest(gc: GoldCase) -> dict[str, Any]:
         )
         node_kinds[kind] = node_kinds.get(kind, 0) + 1
     factor_assertions = list(getattr(kg, "factor_assertions", []) or [])
+
+    parties_by_role: dict[str, dict[str, Any]] = {}
+    for p in list(getattr(gc, "parties", []) or []):
+        role_raw = getattr(p, "role", None)
+        role = getattr(role_raw, "value", None) or str(role_raw or "").strip()
+        if not role:
+            continue
+        represented = getattr(p, "represented", None)
+        parties_by_role[role] = {
+            "represented": (
+                bool(represented) if represented is not None else None
+            ),
+        }
+
+    region_value = None
+    region_raw = getattr(gc, "region", None)
+    if region_raw is not None:
+        region_value = getattr(region_raw, "value", None) or str(region_raw)
+
+    matter_types = list(getattr(recon.case_file, "matter_types", []) or [])
+    claim_types_raw = list(getattr(gc, "claim_types", []) or [])
+    claim_types = [
+        getattr(ct, "value", None) or str(ct) for ct in claim_types_raw
+    ]
+
     return {
         "domain_id": DOMAIN_ID,
-        "data_quality_tier": getattr(kg, "data_quality_tier", None),
-        "is_consistent": bool(getattr(kg, "is_consistent", True)),
-        "n_nodes": len(nodes),
-        "n_edges": len(edges),
-        "node_kinds": node_kinds,
+        "n_kg_nodes": len(nodes),
+        "n_kg_edges": len(edges),
+        "kg_node_kinds": node_kinds,
         "factor_assertions": [
             getattr(fa, "model_dump", lambda mode=None: fa)(mode="json")
             for fa in factor_assertions
         ],
-        "matter_type": getattr(recon.case_file, "matter_type", None),
-        "claim_types": list(recon.gold_issue_labels_by_claim_type.keys()),
+        "matter_types": matter_types,
+        "claim_types": claim_types,
+        # Case-distinct enrichment (non-leaking — see docstring).
+        "parties_by_role": parties_by_role,
+        "region": region_value,
     }
 
 
