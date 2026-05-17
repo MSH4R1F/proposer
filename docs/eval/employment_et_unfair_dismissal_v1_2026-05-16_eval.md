@@ -1,8 +1,8 @@
 # Employment Tribunal eval — `employment.unfair_dismissal.v1`
 
 **Gold:** [`data/gold_standard/employment_unfair_dismissal_v1.jsonl`](../../data/gold_standard/employment_unfair_dismissal_v1.jsonl)
-**Run dir:** `data/eval_artifacts/runs/employment_unfair_dismissal_v1/20260516T160316Z-4bbe35f2-emp-et-predict`
-**Run ID:** `20260516T160316Z-4bbe35f2-emp-et-predict`
+**Run dir:** `data/eval_artifacts/runs/employment_unfair_dismissal_v1/sha149-run-a-1779018524`
+**Run ID:** `sha149-run-a-1779018524`
 **Predictor:** `openai:gpt-5-mini`
 **Gold n:** 49
 
@@ -23,10 +23,10 @@
 
 | Mode | n | Accuracy | Bal-Accuracy | Brier (R) | ECE | LogLoss | Det-Accuracy | Abstain |
 |---|---|---|---|---|---|---|---|---|
-| `llm_only` | 49 | 0.8571 | 0.6631 | 0.1229 | 0.0696 | 0.4073 | 0.5306 | 0.0% |
-| `rag_only` | 49 | 0.8571 | 0.7134 | 0.1238 | 0.0845 | 0.4095 | 0.5918 | 0.0% |
-| `kg_only` | 49 | 0.8367 | 0.6006 | 0.1293 | 0.0616 | 0.4224 | 0.5102 | 0.0% |
-| `hybrid` | 49 | 0.8163 | 0.6387 | 0.1387 | 0.0896 | 0.4470 | 0.5510 | 0.0% |
+| `llm_only` | 49 | 0.8571 | 0.6631 | 0.1211 | 0.0471 | 0.4059 | 0.5918 | 0.0% |
+| `rag_only` | 49 | 0.8571 | 0.6631 | 0.1209 | 0.0659 | 0.4029 | 0.5510 | 0.0% |
+| `kg_only` | 49 | 0.8571 | 0.6631 | 0.1108 | 0.0922 | 0.3722 | 0.6327 | 0.0% |
+| `hybrid` | 49 | 0.8367 | 0.6006 | 0.1295 | 0.0743 | 0.4257 | 0.6122 | 0.0% |
 
 *Brier reading: 0.0 = perfect, 0.25 = coin flip, ≥ 0.25 = worse than chance.*
 
@@ -35,39 +35,39 @@
 | Mode | claimant | respondent |
 |---|---|---|
 | `llm_only` | 0.3750 (n=8) | 0.9512 (n=41) |
-| `rag_only` | 0.5000 (n=8) | 0.9268 (n=41) |
-| `kg_only` | 0.2500 (n=8) | 0.9512 (n=41) |
-| `hybrid` | 0.3750 (n=8) | 0.9024 (n=41) |
+| `rag_only` | 0.3750 (n=8) | 0.9512 (n=41) |
+| `kg_only` | 0.3750 (n=8) | 0.9512 (n=41) |
+| `hybrid` | 0.2500 (n=8) | 0.9512 (n=41) |
 
 ## Stratified — by gold `determination`
 
 ### `llm_only`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.3750 | 0.4508 |
-| non_merits | 19 | 0.8947 | 0.0986 |
-| respondent_success | 22 | 1.0000 | 0.0247 |
+| claimant_success | 8 | 0.3750 | 0.4736 |
+| non_merits | 19 | 0.8947 | 0.0897 |
+| respondent_success | 22 | 1.0000 | 0.0200 |
 
 ### `rag_only`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.5000 | 0.4133 |
-| non_merits | 19 | 0.8421 | 0.1173 |
-| respondent_success | 22 | 1.0000 | 0.0241 |
+| claimant_success | 8 | 0.3750 | 0.4491 |
+| non_merits | 19 | 0.8947 | 0.0979 |
+| respondent_success | 22 | 1.0000 | 0.0214 |
 
 ### `kg_only`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.2500 | 0.5128 |
-| non_merits | 19 | 0.8947 | 0.0931 |
-| respondent_success | 22 | 1.0000 | 0.0212 |
+| claimant_success | 8 | 0.3750 | 0.3769 |
+| non_merits | 19 | 0.8947 | 0.0981 |
+| respondent_success | 22 | 1.0000 | 0.0249 |
 
 ### `hybrid`
 | Determination | n | Accuracy | Brier (R) |
 |---|---|---|---|
-| claimant_success | 8 | 0.3750 | 0.4811 |
-| non_merits | 19 | 0.8421 | 0.1085 |
-| respondent_success | 22 | 0.9545 | 0.0403 |
+| claimant_success | 8 | 0.2500 | 0.5285 |
+| non_merits | 19 | 0.8947 | 0.0880 |
+| respondent_success | 22 | 1.0000 | 0.0202 |
 
 ## Stratified — by region (top 8)
 
@@ -101,7 +101,7 @@
 | london | 16 | 0.9375 |
 | north_west | 7 | 0.7143 |
 | scotland | 6 | 0.8333 |
-| south_west | 4 | 0.7500 |
+| south_west | 4 | 1.0000 |
 | south_east | 3 | 0.6667 |
 | wales | 3 | 0.6667 |
 | yorkshire_and_humber | 3 | 1.0000 |
@@ -110,9 +110,9 @@
 ### `hybrid`
 | Region | n | Accuracy |
 |---|---|---|
-| london | 16 | 0.8750 |
-| north_west | 7 | 0.5714 |
-| scotland | 6 | 0.8333 |
+| london | 16 | 0.9375 |
+| north_west | 7 | 0.7143 |
+| scotland | 6 | 0.6667 |
 | south_west | 4 | 1.0000 |
 | south_east | 3 | 0.6667 |
 | wales | 3 | 0.6667 |
@@ -124,48 +124,48 @@
 ### `llm_only`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8800 | 0.88 | Strongest signal is that the claimant was self-represented while the respondent  |
-| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent filed no response and did not attend the hearing whereas the claimant |
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive dismissal facts were provided and the claimant appeared unreprese |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | No substantive facts or matching precedents were provided and the respondent was |
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive merits or factual detail were supplied and both parties were lega |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8800 | 0.88 | No substantive merits facts were provided and the respondent was legally represe |
+| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8800 | 0.88 | Most persuasive signal is that the dismissal was for redundancy and the responde |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent did not file any response and failed to attend the hearing (default), |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive merits facts were provided and the respondent was represented by  |
+| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | Both parties were legally represented and the file contains no substantive factu |
 
 ### `rag_only`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8800 | 0.88 | The claimant attended unrepresented (assisted only by an interpreter) while the  |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8800 | 0.88 | Respondent was legally represented (Miss C Nicolaou, solicitor) while no retriev |
-| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent did not file an ET3 and did not attend the merits hearing (strong def |
-| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.8500 | 0.85 | No substantive merits facts were provided and the closest retrieved precedent (m |
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No retrieved precedent shares a meaningful fact pattern with this file and, with |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8800 | 0.88 | Respondent represented by counsel while the claimant only participated with an i |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent’s complete failure to file an ET3 or attend the hearing (no response  |
+| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8600 | 0.86 | Closest matching precedent Mr L Hounsome v Team Industrial Services UK Ltd (resp |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | There are no substantive merits facts or SHA-149 factor assertions (only hearing |
+| d-spencer-v-deckhouse-sevenoaks-ltd-6021339-slas | respondent | claimant | 0.1800 | 0.82 | Strongest signal is that the respondent did not attend the hearing (respondent f |
 
 ### `kg_only`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8800 | 0.88 | No substantive facts or matching precedents were provided and the knowledge_grap |
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8800 | 0.88 | Prediction driven by KG signal that the claimant was unrepresented while the res |
-| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8800 | 0.88 | Strongest signal: claimant was self‑represented (knowledge_graph parties_by_role |
-| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent's failure to file any response and non-attendance at the hearing (cla |
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No substantive case facts or retrieved precedents were provided and both parties |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8800 | 0.88 | Respondent was legally represented while the KG shows respondent_failed_to_engag |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent failed to engage (no response filed and did not attend the hearing) — |
+| d-spencer-v-deckhouse-sevenoaks-ltd-6021339-slas | respondent | claimant | 0.1800 | 0.82 | The strongest signal is the respondent's failure to engage and non‑attendance at |
+| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8200 | 0.82 | The strongest signal is the KG assertion that the dismissal was for redundancy ( |
+| mr-r-thomas-v-mid-and-west-wales-fire-and-rescue | claimant | respondent | 0.7200 | 0.72 | The only clear structured signal is claimant_represented_at_hearing=true (knowle |
 
 ### `hybrid`
 | case_id | gold | predicted | P(resp) | |err| | rationale |
 |---|---|---|---|---|---|
-| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.9000 | 0.9 | Closest precedent ms-jones-v-birmingham-city-council (precedent_outcome_winner:  |
-| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8800 | 0.88 | No substantive merits facts and the knowledge-graph signal that the claimant was |
-| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.8800 | 0.88 | No factual material shows an unfair redundancy procedure and the respondent was  |
-| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Strongest signal: the respondent did not file a response and did not attend the  |
-| mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024 | claimant | respondent | 0.8400 | 0.84 | No retrieved precedent shares meaningful merits facts and the case file gives no |
+| mrs-s-begum-v-design-clinics-ltd-6000457-slash-2 | claimant | respondent | 0.9200 | 0.92 | The KG identifies the fair reason as redundancy (pro_respondent) and the respond |
+| m-elnaem-v-serco-ltd-2403227-slash-2024 | claimant | respondent | 0.8800 | 0.88 | Prediction driven by the procedural signals in the knowledge graph — the claiman |
+| s-struthers-v-hamilton-academical-football-club- | respondent | claimant | 0.1200 | 0.88 | Respondent did not file an ET3 or attend the merits hearing (knowledge_graph fac |
+| s-okan-v-global-edge-consultant-uk-ltd-8002882-s | claimant | respondent | 0.8500 | 0.85 | The SHA-149 sidecar flags is_preliminary_or_strike_out_hearing=true (confidence  |
+| mr-a-tomescu-v-metroline-travel-ltd-3302505-slas | claimant | respondent | 0.8400 | 0.84 | No substantive merits facts or matching precedents were retrieved and the KG sho |
 
 ## Findings
 
 - **Prior P(respondent)** in this gold set is **0.84** — a majority-class predictor would already hit ~83% raw accuracy. Use **balanced accuracy** and **Brier** as the non-degenerate signals.
-- **`llm_only`** (facts only — no retrieval, no KG) reaches **85.7%** accuracy / Brier **0.1229** / balanced **0.6631**. This is the floor for the ablation.
-- **`rag_only`** (facts + retrieved precedents, leave-one-out) at **85.7%** / Brier **0.1238**. Marginal value of retrieval over llm_only: accuracy +0.0 pp, Brier -0.0009.
-- **`kg_only`** (facts + structured KG digest) at **83.7%** / Brier **0.1293**. Marginal value of KG over llm_only: accuracy -2.0 pp, Brier -0.0064. The employment KG is data-quality `minimal` today (the SHA-149 factor catalog has not been built so the digest is a 3-node housing-adapter stub for every case). A flat-or-negative result here is the expected null — the LLM treats the empty KG digest as anti-signal and anchors toward the corpus prior.
-- **`hybrid`** (facts + retrieved precedents + KG digest) at **81.6%** / Brier **0.1387** / balanced **0.6387**. Lift over llm_only: accuracy -4.1 pp, Brier -0.0158. Determination-accuracy = **55.1%**.
+- **`llm_only`** (facts only — no retrieval, no KG) reaches **85.7%** accuracy / Brier **0.1211** / balanced **0.6631**. This is the floor for the ablation.
+- **`rag_only`** (facts + retrieved precedents, leave-one-out) at **85.7%** / Brier **0.1209**. Marginal value of retrieval over llm_only: accuracy +0.0 pp, Brier +0.0002.
+- **`kg_only`** (facts + SHA-149 factor digest) at **85.7%** / Brier **0.1108** / det-acc **63.3%**. Marginal value of structured factors over llm_only: accuracy +0.0 pp, Brier +0.0103, det-acc +4.1 pp. The SHA-149 factor sidecar provides 108 typed factor assertions (12 distinct factor_ids, mean 2.2/case) extracted by gpt-5-mini against the leakage-cleaned facts narrative.
+- **`hybrid`** (facts + retrieved precedents + KG digest) at **83.7%** / Brier **0.1295** / balanced **0.6006**. Lift over llm_only: accuracy -2.0 pp, Brier -0.0084. Determination-accuracy = **61.2%**.
 - **Single-run noise warning**: with 8 minority-class claimant cases in n=49, one Pyman/Spencer-shaped LLM flip moves headline accuracy ~2pp. Treat single-run accuracy gaps under 4pp as likely-noise and prefer **balanced accuracy**, **Brier**, and **determination accuracy** as the signal-bearing metrics. `scripts/eval/aggregate_employment_et_runs.py` produces mean ± std across multiple runs.
-- **Synthesis**: `rag_only` remains the production-relevant mode on this corpus. Empirically (3-run mean): rag_only carries the strongest per-class signal — best balanced accuracy (0.676 vs 0.642 for llm_only/kg_only), best determination accuracy (56.5% vs 53.1-53.7%). `hybrid` ties on raw accuracy within noise but consistently carries 5-8% higher Brier across runs — the LLM appears to hedge more when both retrieval and KG inputs are present. `hybrid` should overtake `rag_only` once SHA-149 lands case-distinct factor assertions; the current enriched-but-thin KG digest (parties_by_role + region) is too weak to add net signal on top of retrieval.
+- **Post-SHA-149 synthesis**: with the factor sidecar wired into kg_only and hybrid, the strongest mode by **Brier** is **`kg_only`** (0.1108); strongest by **determination accuracy** is **`kg_only`** (63.3%). The 12-factor SHA-149 catalog provides real merits signal — the digest is no longer the empty 3-node housing-adapter stub it was pre-SHA-149. `hybrid` still pays a Brier overhead over kg_only/rag_only on this n=49 corpus because the LLM hedges more when given both retrieval and factor inputs; a larger gold set is needed to resolve sub-0.02 Brier differences.
 
 ## Caveats
 
@@ -174,6 +174,6 @@
 - Same-provider LLM stack across labelers AND predictor introduces correlated bias — both sides may share the same blind spots (e.g. over-emitting `non_merits` on cases where the s98 framework isn't visible in the chunked PDF text).
 - Brier/ECE are computed only over rows where the gold winner is claimant or respondent (binary). `Winner.SPLIT` is excluded from calibration because the actual is neither 0 nor 1; if a future run carries any split rows the calibration n will drop accordingly.
 - Retrieval pool: the 50-doc SHA-148 ET corpus (47-49 peers per query under leave-one-out). RAG modes use production `RAGPipeline` (BM25 + embeddings + RRF + reranker); KG modes use production `GraphBuilder`. Retrieved chunks carry parent-case outcomes (`precedent_outcome_winner`, `precedent_outcome_determination`) joined from the gold itself, so the LLM has case-based-reasoning material per chunk.
-- The KG digest contains case-distinct procedural metadata only (`parties_by_role` representation status, `region`) plus the structural KG-build counts. Before 2026-05-16 the digest was byte-identical across all 49 cases (`data_quality_tier=minimal`, `factor_assertions=[]`, etc.); the LLM read those constant flags as 'no signal, fall back to prior' which structurally hurt `hybrid`. The enriched digest produces 22/49 unique digests and no longer acts as anti-signal. SHA-149 (employment factor catalog) is needed for the digest to carry merits signal beyond procedural metadata.
+- The KG digest carries (a) SHA-149 typed factor assertions (12-factor closed catalog at `packages/domain_packs/employment/unfair_dismissal/factors.yaml`; 108 total assertions across 49 cases, mean 2.2/case, extracted by `scripts/eval/extract_employment_et_factors.py` with leakage guard); (b) case-distinct procedural metadata (`parties_by_role` representation status, `region`); and (c) structural KG-build counts. Pre-SHA-149 the digest was byte-identical across 49 cases (1/49 unique hashes); post-SHA-149 the digest is 49/49 unique by factor profile.
 - LLM determinism: gpt-5-mini is a reasoning model and produces 1-2 case flips per run even at temperature=0 (thinking-token drift). Across 3 independent runs on the same gold set, raw accuracy varies by ±1-2pp per mode. The numbers in this report are from one of those runs; see `data/eval_artifacts/runs/employment_unfair_dismissal_v1/_aggregate_3runs_2026-05-16.json` for the multi-run mean ± std.
 - The corpus is heavily skewed to 2025-2026 decisions (97% of gold). Train/test temporal-split conclusions would need a multi-year corpus which GOV.UK's ET listing does not currently support (the date filter is unhonoured server-side and pagination caps at ~3 years).

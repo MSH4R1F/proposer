@@ -141,18 +141,35 @@ How to reason with retrieved precedents:
 
 How to reason with the knowledge_graph digest:
 
+* ``factor_assertions`` carries the SHA-149 typed legal factors. Each
+  entry has:
+  - ``factor_id``: one of investigation_conducted,
+    disciplinary_hearing_held, appeal_offered, prior_warnings_given,
+    fair_reason_category (capability/conduct/redundancy/sosr/
+    statutory_bar/none_stated), dismissal_was_summary,
+    gross_misconduct_alleged, length_of_service_years, et1_in_time,
+    is_preliminary_or_strike_out_hearing, respondent_failed_to_engage,
+    claimant_represented_at_hearing
+  - ``polarity``: ``pro_claimant``, ``pro_respondent``, or ``neutral``
+  - ``value``: the typed value (boolean / enum / number)
+  - ``confidence``: the extractor's confidence in the assertion
+  Use these as STRUCTURED EVIDENCE alongside the facts narrative.
+  Pro-respondent True factors (investigation_conducted=True,
+  disciplinary_hearing_held=True, appeal_offered=True,
+  prior_warnings_given=True) shift toward respondent_success.
+  Pro-claimant True factors (dismissal_was_summary=True,
+  respondent_failed_to_engage=True) shift toward claimant_success.
+  is_preliminary_or_strike_out_hearing=True strongly indicates
+  non_merits.
+* ``factor_assertions_source`` tells you whether the assertions came
+  from the SHA-149 sidecar (``sha149_sidecar``) or from an empty
+  GraphBuilder run (``graph_builder_only``). When ``graph_builder_only``,
+  treat the empty factors list as silence, not evidence.
 * ``parties_by_role.claimant.represented`` and
   ``parties_by_role.respondent.represented`` capture whether each
-  party had counsel — a known procedural-outcome correlate. Cases
-  where the claimant has counsel and the respondent does not are
-  more often won by the claimant, though this is weaker than fact
-  evidence.
+  party had counsel — a known procedural-outcome correlate.
 * ``region`` is procedural metadata — interpret only as venue, not
   as merits signal.
-* ``factor_assertions`` will be EMPTY on this domain until SHA-149
-  ships an ET factor catalog. Empty does NOT mean "no signal" —
-  facts and precedents remain the dominant inputs; treat the empty
-  list as silence on factor extraction, not as evidence of weakness.
 * ``n_kg_nodes`` / ``n_kg_edges`` / ``kg_node_kinds`` are diagnostic
   counts about the structured-graph build; they are NOT signals
   about the case itself. Ignore them when forming your prediction.
@@ -316,7 +333,77 @@ async def _retrieve_precedents(
 # ---------------------------------------------------------------------------
 
 
-def _build_kg_digest(gc: GoldCase) -> dict[str, Any]:
+FACTOR_SIDECAR_PATH = (
+    REPO_ROOT
+    / "data"
+    / "eval_artifacts"
+    / "factor_assertions"
+    / "employment_unfair_dismissal_v1.factor_assertions.json"
+)
+
+
+def _load_factor_sidecar() -> dict[str, list[dict[str, Any]]]:
+    """case_id -> list[factor_assertion dict].
+
+    Returns an empty dict if the sidecar is missing — that keeps the
+    eval running with the procedural-metadata-only digest (kg_only and
+    hybrid match their pre-SHA-149 behaviour) so the script remains
+    portable when shipped without the artifact.
+    """
+    if not FACTOR_SIDECAR_PATH.exists():
+        logger.warning(
+            "ET factor sidecar not found at %s; KG digest will run without "
+            "SHA-149 factor assertions (kg_only and hybrid will fall back to "
+            "procedural-metadata-only mode).",
+            FACTOR_SIDECAR_PATH,
+        )
+        return {}
+    payload = json.loads(FACTOR_SIDECAR_PATH.read_text(encoding="utf-8"))
+    return payload.get("factor_assertions_by_case_id", {}) or {}
+
+
+def _compact_factor_for_digest(fa: dict[str, Any]) -> dict[str, Any]:
+    """Strip the FactorAssertion dict to the fields the LLM needs.
+
+    The full FactorAssertion has 18 fields including provenance UUIDs
+    that are noise to the predictor. The compact form keeps:
+    factor_id, polarity, the typed value, and the confidence —
+    everything else (extractor_version, evidence span ids, etc.) is
+    audit metadata the LLM doesn't need.
+    """
+    value = fa.get("value") or {}
+    vtype = value.get("value_type")
+    if vtype == "boolean":
+        compact_value = value.get("boolean")
+    elif vtype == "enum":
+        compact_value = value.get("enum")
+    elif vtype == "number":
+        compact_value = value.get("number")
+    elif vtype == "duration":
+        compact_value = value.get("duration_days")
+    elif vtype == "date":
+        compact_value = value.get("date")
+    elif vtype == "money":
+        compact_value = {
+            "amount_minor_units": value.get("money_minor_units"),
+            "currency": value.get("money_currency"),
+        }
+    else:
+        compact_value = None
+    return {
+        "factor_id": fa.get("factor_id"),
+        "polarity": fa.get("polarity"),
+        "value_type": vtype,
+        "value": compact_value,
+        "confidence": fa.get("confidence"),
+    }
+
+
+def _build_kg_digest(
+    gc: GoldCase,
+    *,
+    factor_sidecar: dict[str, list[dict[str, Any]]] | None = None,
+) -> dict[str, Any]:
     """Build a per-case KG digest for ``kg_only`` and ``hybrid`` modes.
 
     Design history (post-2026-05-16 adversarial review):
@@ -369,7 +456,26 @@ def _build_kg_digest(gc: GoldCase) -> dict[str, Any]:
             getattr(n, "node_type", "")
         )
         node_kinds[kind] = node_kinds.get(kind, 0) + 1
-    factor_assertions = list(getattr(kg, "factor_assertions", []) or [])
+
+    # SHA-149 sidecar hydration. Prefer the sidecar's factor assertions
+    # (LLM-extracted, leakage-guarded, schema-validated) over the empty
+    # list GraphBuilder produces for ET (no factor extractor registered
+    # for the domain).
+    sidecar_factors: list[dict[str, Any]] = []
+    if factor_sidecar is not None and gc.case_id in factor_sidecar:
+        sidecar_factors = factor_sidecar[gc.case_id]
+    builder_factors = list(getattr(kg, "factor_assertions", []) or [])
+    if sidecar_factors:
+        compact_factors = [
+            _compact_factor_for_digest(fa) for fa in sidecar_factors
+        ]
+    else:
+        compact_factors = [
+            _compact_factor_for_digest(
+                getattr(fa, "model_dump", lambda mode=None: fa)(mode="json")
+            )
+            for fa in builder_factors
+        ]
 
     parties_by_role: dict[str, dict[str, Any]] = {}
     for p in list(getattr(gc, "parties", []) or []):
@@ -400,10 +506,10 @@ def _build_kg_digest(gc: GoldCase) -> dict[str, Any]:
         "n_kg_nodes": len(nodes),
         "n_kg_edges": len(edges),
         "kg_node_kinds": node_kinds,
-        "factor_assertions": [
-            getattr(fa, "model_dump", lambda mode=None: fa)(mode="json")
-            for fa in factor_assertions
-        ],
+        "factor_assertions": compact_factors,
+        "factor_assertions_source": (
+            "sha149_sidecar" if sidecar_factors else "graph_builder_only"
+        ),
         "matter_types": matter_types,
         "claim_types": claim_types,
         # Case-distinct enrichment (non-leaking — see docstring).
@@ -600,6 +706,7 @@ async def _run_mode(
     rag: RAGPipeline | None,
     namespace: Any | None,
     outcome_lookup: dict[str, dict[str, str | None]],
+    factor_sidecar: dict[str, list[dict[str, Any]]],
     prior_p_respondent: float,
     top_k: int,
     concurrency: int = 4,
@@ -622,7 +729,7 @@ async def _run_mode(
                     outcome_lookup=outcome_lookup,
                 )
             if mode in ("kg_only", "hybrid"):
-                kg_digest = _build_kg_digest(gc)
+                kg_digest = _build_kg_digest(gc, factor_sidecar=factor_sidecar)
             payload = _render_payload(
                 mode, gc, ref, precedents=precedents, kg_digest=kg_digest
             )
@@ -707,6 +814,19 @@ async def run(args: argparse.Namespace) -> int:
     rag: RAGPipeline | None = None
     namespace: Any | None = None
     outcome_lookup = _build_outcome_lookup(gold)
+    factor_sidecar = _load_factor_sidecar()
+    if factor_sidecar:
+        logger.info(
+            "SHA-149 factor sidecar loaded: %d cases, %d total factor "
+            "assertions (mean %.2f / case)",
+            len(factor_sidecar),
+            sum(len(v) for v in factor_sidecar.values()),
+            (
+                sum(len(v) for v in factor_sidecar.values()) / len(factor_sidecar)
+                if factor_sidecar
+                else 0
+            ),
+        )
     if any(m in ("rag_only", "hybrid") for m in modes):
         rag, namespace = _build_rag_pipeline()
         logger.info(
@@ -733,6 +853,7 @@ async def run(args: argparse.Namespace) -> int:
             rag=rag,
             namespace=namespace,
             outcome_lookup=outcome_lookup,
+            factor_sidecar=factor_sidecar,
             prior_p_respondent=prior_p_resp,
             top_k=args.top_k,
             concurrency=args.concurrency,

@@ -1,0 +1,5102 @@
+{
+  "domain_id": "employment.unfair_dismissal.v1",
+  "evidence_spans_by_case_id": {
+    "d-lock-v-openreach-ltd-6007986-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_067d1a0d97254500",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Ms Jervis",
+        "source_kind": "tribunal_decision",
+        "source_reference": "d-lock-v-openreach-ltd-6007986-slash-2025"
+      }
+    ],
+    "d-spencer-v-deckhouse-sevenoaks-ltd-6021339-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_e28fa283e910485c",
+        "paragraph_range": null,
+        "quote_text": "The claimant alleged unfair dismissal",
+        "source_kind": "tribunal_decision",
+        "source_reference": "d-spencer-v-deckhouse-sevenoaks-ltd-6021339-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_717b6e3de15e4455",
+        "paragraph_range": null,
+        "quote_text": "the respondent did not attend",
+        "source_kind": "tribunal_decision",
+        "source_reference": "d-spencer-v-deckhouse-sevenoaks-ltd-6021339-slash-2024"
+      }
+    ],
+    "dr-l-leonard-v-surrey-and-borders-partnership-nhs-foundation-trust-6008417-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_29aebdceaa284504",
+        "paragraph_range": null,
+        "quote_text": "safeguarding, regulatory and disciplinary steps",
+        "source_kind": "tribunal_decision",
+        "source_reference": "dr-l-leonard-v-surrey-and-borders-partnership-nhs-foundation-trust-6008417-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_f32ce24a5a0f41c6",
+        "paragraph_range": null,
+        "quote_text": "allegations were put to her in October 2023, and a disciplinary investigation and hearing followed",
+        "source_kind": "tribunal_decision",
+        "source_reference": "dr-l-leonard-v-surrey-and-borders-partnership-nhs-foundation-trust-6008417-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_0a0fdbc104184d50",
+        "paragraph_range": null,
+        "quote_text": "The Claimant resigned on 10 April 2024 after the disciplinary hearing",
+        "source_kind": "tribunal_decision",
+        "source_reference": "dr-l-leonard-v-surrey-and-borders-partnership-nhs-foundation-trust-6008417-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_04be75b53e074d27",
+        "paragraph_range": null,
+        "quote_text": "employed by the Respondent from 1 September 2017 ... resigned on 10 April 2024",
+        "source_kind": "tribunal_decision",
+        "source_reference": "dr-l-leonard-v-surrey-and-borders-partnership-nhs-foundation-trust-6008417-slash-2024"
+      }
+    ],
+    "g-shotton-v-brand-media-marketing-ltd-6027914-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_dc8aabe44b084c4c",
+        "paragraph_range": null,
+        "quote_text": "including complaints of unfair dismissal, unauthorised deductions from wages and breach of contract",
+        "source_kind": "tribunal_decision",
+        "source_reference": "g-shotton-v-brand-media-marketing-ltd-6027914-slash-2025"
+      }
+    ],
+    "j-ahmed-v-mitchells-and-butlers-retail-ltd-6019453-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_d6ff40b7560947f9",
+        "paragraph_range": null,
+        "quote_text": "A preliminary hearing in an unfair dismissal claim was held at London South Employment Tribunal by video on 10 December 2025",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-ahmed-v-mitchells-and-butlers-retail-ltd-6019453-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_b67370ea50ae4509",
+        "paragraph_range": null,
+        "quote_text": "The respondent was represented by Ms S Laughton, Solicitor.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-ahmed-v-mitchells-and-butlers-retail-ltd-6019453-slash-2025"
+      }
+    ],
+    "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_6774d0bb3b8b4684",
+        "paragraph_range": null,
+        "quote_text": "dismissal because of the live final written warning",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_a3c48bdeac8649ec",
+        "paragraph_range": null,
+        "quote_text": "had received warnings after previous audit failures",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_10a41bf41a8b4282",
+        "paragraph_range": null,
+        "quote_text": "from 1 February 2020 until 6 January 2025",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025"
+      }
+    ],
+    "j-j-b-legge-v-ferns-surfacing-ltd-6004305-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_bd60a7bd5a6e4c2a",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr R Wayman, Counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-j-b-legge-v-ferns-surfacing-ltd-6004305-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_f3d66e4b4dea4e39",
+        "paragraph_range": null,
+        "quote_text": "The claimant appeared in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "j-j-b-legge-v-ferns-surfacing-ltd-6004305-slash-2024"
+      }
+    ],
+    "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_588d2eec520d473f",
+        "paragraph_range": null,
+        "quote_text": "a meeting that purported to be a performance discussion",
+        "source_kind": "tribunal_decision",
+        "source_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_66c587a75ebd4212",
+        "paragraph_range": null,
+        "quote_text": "a meeting that purported to be a performance discussion at which a letter of dismissal was ready",
+        "source_kind": "tribunal_decision",
+        "source_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_48bf429c068a4089",
+        "paragraph_range": null,
+        "quote_text": "had never received verbal or written warnings for poor performance",
+        "source_kind": "tribunal_decision",
+        "source_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_0a9386eb6fcc489e",
+        "paragraph_range": null,
+        "quote_text": "the respondent did not attend, having emailed the evening before that it would not respond or attend",
+        "source_kind": "tribunal_decision",
+        "source_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_2398fbeb65be4ac8",
+        "paragraph_range": null,
+        "quote_text": "the claimant was represented by Miss Davis",
+        "source_kind": "tribunal_decision",
+        "source_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_cc170c613a524acc",
+        "paragraph_range": null,
+        "quote_text": "with three years\u2019 continuous service",
+        "source_kind": "tribunal_decision",
+        "source_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025"
+      }
+    ],
+    "m-apperley-v-mitchells-and-butler-retail-ltd-1401622-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_052a725b508048dc",
+        "paragraph_range": null,
+        "quote_text": "The claimant advanced complaints of unfair dismissal and of wrongful dismissal.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-apperley-v-mitchells-and-butler-retail-ltd-1401622-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_c4f7ce6697c441af",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Mr Wayman (counsel)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-apperley-v-mitchells-and-butler-retail-ltd-1401622-slash-2024"
+      }
+    ],
+    "m-elnaem-v-serco-ltd-2403227-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_aae6455deaed4653",
+        "paragraph_range": null,
+        "quote_text": "the claimant participated in person with the assistance of Mr Osman (interpreter)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-elnaem-v-serco-ltd-2403227-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_8dfbc8f54fbd4acf",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr McNerney, Counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-elnaem-v-serco-ltd-2403227-slash-2024"
+      }
+    ],
+    "m-foster-v-coleg-ceredigion-and-others-6037640-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_4cee54ac6cf844d6",
+        "paragraph_range": null,
+        "quote_text": "The claims included ordinary unfair dismissal (said to be by reason of redundancy)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-foster-v-coleg-ceredigion-and-others-6037640-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_1fb4a2d1c6c94b1c",
+        "paragraph_range": null,
+        "quote_text": "R1 and R2 were represented by Mr J Burke, solicitor ... and R3 was represented by Mr S Liberazadzki, counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-foster-v-coleg-ceredigion-and-others-6037640-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_ab0b898a009c41fe",
+        "paragraph_range": null,
+        "quote_text": "The claimant attended as a litigant in person.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "m-foster-v-coleg-ceredigion-and-others-6037640-slash-2025"
+      }
+    ],
+    "miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_920d59800cc34f11",
+        "paragraph_range": null,
+        "quote_text": "brought a complaint of unfair dismissal against the respondent, Safeguard Security NE Ltd",
+        "source_kind": "tribunal_decision",
+        "source_reference": "miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_6c35b119ef774200",
+        "paragraph_range": null,
+        "quote_text": "The claimant appeared in person; the respondent was represented by Miss Erin Bright (Litigation Consultant).",
+        "source_kind": "tribunal_decision",
+        "source_reference": "miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025"
+      }
+    ],
+    "miss-l-w-jaye-v-wm-morrison-supermarkets-ltd-6000389-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_191ce435eaeb4674",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr T Westwell, counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "miss-l-w-jaye-v-wm-morrison-supermarkets-ltd-6000389-slash-2025"
+      }
+    ],
+    "mr-a-hussain-v-sainsburys-supermarkets-ltd-6019164-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_6032393482524fce",
+        "paragraph_range": null,
+        "quote_text": "brought a complaint of unfair dismissal under section 111(1) of the Employment Rights Act 1996",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-hussain-v-sainsburys-supermarkets-ltd-6019164-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_41753d02600945b5",
+        "paragraph_range": null,
+        "quote_text": "The claimant attended in person and was unrepresented",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-hussain-v-sainsburys-supermarkets-ltd-6019164-slash-2024"
+      }
+    ],
+    "mr-a-lay-v-creation-11-ltd-6024292-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_b5068e9c53f340ba",
+        "paragraph_range": null,
+        "quote_text": "the claimant participated in person by telephone; the respondent was represented by Mr A Williams (Peninsular Consultant)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-lay-v-creation-11-ltd-6024292-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_9998ea963c2a479f",
+        "paragraph_range": null,
+        "quote_text": "the claimant participated in person by telephone; the respondent was represented by Mr A Williams (Peninsular Consultant)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-lay-v-creation-11-ltd-6024292-slash-2025"
+      }
+    ],
+    "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_cb1f6545d82e4628",
+        "paragraph_range": null,
+        "quote_text": "dismissal on grounds of poor performance",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_f864dc6b04ce4aa5",
+        "paragraph_range": null,
+        "quote_text": "progressed the claimant through informal and formal performance-management stages",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_295d82066e244dec",
+        "paragraph_range": null,
+        "quote_text": "attended a stage-three performance management meeting",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_4ec425aaca8642a8",
+        "paragraph_range": null,
+        "quote_text": "progressed the claimant through informal and formal performance-management stages",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024"
+      }
+    ],
+    "mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023": [
+      {
+        "evidence_span_id": "es_sha149_dad13a0196304978",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Miss C Nicolaou, solicitor.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023"
+      }
+    ],
+    "mr-c-letch-v-go-south-coast-ltd-t-slash-a-morebus-6001836-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_a972260f71e84259",
+        "paragraph_range": null,
+        "quote_text": "Appearances were Mr D Stewart (Counsel) for the claimant",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-c-letch-v-go-south-coast-ltd-t-slash-a-morebus-6001836-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_22ce30ee3ce945a8",
+        "paragraph_range": null,
+        "quote_text": "The matter was heard by CVP from the Bristol Employment Tribunal on 3 November 2023",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-c-letch-v-go-south-coast-ltd-t-slash-a-morebus-6001836-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_7b2311eca0054b44",
+        "paragraph_range": null,
+        "quote_text": "The claim comprised complaints of unfair dismissal and wrongful dismissal.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-c-letch-v-go-south-coast-ltd-t-slash-a-morebus-6001836-slash-2025"
+      }
+    ],
+    "mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_d740304c1d55445d",
+        "paragraph_range": null,
+        "quote_text": "A public preliminary hearing was held at London (South) via CVP on 15 December 2025",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_ae0f638572bb4b53",
+        "paragraph_range": null,
+        "quote_text": "The claimant appeared in person; the respondents were represented by Mr P Oppenheim.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024"
+      }
+    ],
+    "mr-d-wacey-v-veka-plc-6000417-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_6beca8f2523d4df8",
+        "paragraph_range": null,
+        "quote_text": "The claimant represented himself in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-d-wacey-v-veka-plc-6000417-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_371f283a7dc943d6",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Ms A Smith (counsel)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-d-wacey-v-veka-plc-6000417-slash-2025"
+      }
+    ],
+    "mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_5faaef4977d24ba1",
+        "paragraph_range": null,
+        "quote_text": "In February 2024 he raised a formal grievance about the general manager",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025"
+      }
+    ],
+    "mr-j-walsh-v-hmp-portland-6020501-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_5cbfaadccc6d4c85",
+        "paragraph_range": null,
+        "quote_text": "brought a claim against the respondent, HMP Portland, for unfair dismissal",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-j-walsh-v-hmp-portland-6020501-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_ede7a58303c74d22",
+        "paragraph_range": null,
+        "quote_text": "The claimant represented himself in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-j-walsh-v-hmp-portland-6020501-slash-2024"
+      }
+    ],
+    "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_f0d73f8b21eb4869",
+        "paragraph_range": null,
+        "quote_text": "On 27 June 2024 he was told his employment was being terminated due to failed probation",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_98ebc692b375484b",
+        "paragraph_range": null,
+        "quote_text": "On 27 June 2024 he was told his employment was being terminated due to failed probation",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_57e9b0b0bd764f78",
+        "paragraph_range": null,
+        "quote_text": "starting 12 February 2024. On 27 June 2024 he was told his employment was being terminated",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024"
+      }
+    ],
+    "mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_6f22a4d867654904",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Ms S Chan, Barrister",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024"
+      }
+    ],
+    "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_de79538258514e81",
+        "paragraph_range": null,
+        "quote_text": "was dismissed for sexual misconduct concerning allegations raised by three female colleagues",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_1dd318ee3fc841e8",
+        "paragraph_range": null,
+        "quote_text": "employed from 1 July 2012 until dismissal on 7 July 2024",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_77178fe179464fdd",
+        "paragraph_range": null,
+        "quote_text": "The only complaint was ordinary unfair dismissal",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024"
+      }
+    ],
+    "mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_b52f794e29aa40dd",
+        "paragraph_range": null,
+        "quote_text": "taken off night-shift working temporarily while consultation and occupational-health review continued",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_40ec2b163c914c57",
+        "paragraph_range": null,
+        "quote_text": "rejoined the respondent on 3 November 2009 and whose employment ended on 4 September 2024",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024"
+      }
+    ],
+    "mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_db03705be589413a",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Mr Pal (Counsel)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024"
+      }
+    ],
+    "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_f31c4429b32b45e0",
+        "paragraph_range": null,
+        "quote_text": "A Final Hearing was listed for 10:00 on 04 March 2026",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_7f65fb61c8824cab",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr Gareth Graham, Counsel.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_171fb5c95aec4473",
+        "paragraph_range": null,
+        "quote_text": "The claimant was not present or represented",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025"
+      }
+    ],
+    "mr-s-gdey-v-metroline-travel-ltd-6021972-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_143693272ad8454a",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Miss W Gdey (lay representative)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-s-gdey-v-metroline-travel-ltd-6021972-slash-2024"
+      }
+    ],
+    "mr-s-morris-v-mcbritain-ltd-6009962-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_e5ffe22687524016",
+        "paragraph_range": null,
+        "quote_text": "provided no extended procedural narrative or reasons.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-s-morris-v-mcbritain-ltd-6009962-slash-2025"
+      }
+    ],
+    "mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_3ab956c9f342427e",
+        "paragraph_range": null,
+        "quote_text": "The claimant appeared in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025"
+      }
+    ],
+    "mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_0d848e47b70b4471",
+        "paragraph_range": null,
+        "quote_text": "The claimant appeared in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_d01f1b9cc91649e2",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr A Line, counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025"
+      }
+    ],
+    "mrs-b-parry-v-lloyds-bank-plc-6020353-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_04ca1afdd4044ba3",
+        "paragraph_range": null,
+        "quote_text": "brought a claim of ordinary unfair dismissal under section 98",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-b-parry-v-lloyds-bank-plc-6020353-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_5529e07525494a74",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr Gordon, Counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-b-parry-v-lloyds-bank-plc-6020353-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_0fdedbe554084b77",
+        "paragraph_range": null,
+        "quote_text": "The claimant represented herself in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-b-parry-v-lloyds-bank-plc-6020353-slash-2025"
+      }
+    ],
+    "mrs-i-nagra-personal-representative-of-mr-s-nagra-deceased-v-network-rail-infrastructure-ltd-6005403-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_c419d57bf38e4586",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Mr D Panton (legal representative, instructed by Lawfields)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-i-nagra-personal-representative-of-mr-s-nagra-deceased-v-network-rail-infrastructure-ltd-6005403-slash-2025"
+      }
+    ],
+    "mrs-m-nyarko-v-oxleas-nhs-foundation-trust-6003396-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_4f7ac14f2d5d47f7",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Mr MacDonald (counsel)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-m-nyarko-v-oxleas-nhs-foundation-trust-6003396-slash-2024"
+      }
+    ],
+    "mrs-n-bowers-v-east-cheshire-nhs-trust-6003956-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_62e294ae99f34990",
+        "paragraph_range": null,
+        "quote_text": "brought a claim of unfair dismissal against the respondent, East Cheshire NHS Trust.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-n-bowers-v-east-cheshire-nhs-trust-6003956-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_8ce76941b3724d4c",
+        "paragraph_range": null,
+        "quote_text": "The claimant represented herself;",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-n-bowers-v-east-cheshire-nhs-trust-6003956-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_ff78c9b1d9764d53",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr S Proffit (counsel).",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-n-bowers-v-east-cheshire-nhs-trust-6003956-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_04b2f2c00d0141f8",
+        "paragraph_range": null,
+        "quote_text": "A hearing was held at Manchester Employment Tribunals Hearing Centre from 19 to 23 January 2026 (five days).",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-n-bowers-v-east-cheshire-nhs-trust-6003956-slash-2024"
+      }
+    ],
+    "mrs-s-a-shamshiri-v-bury-metropolitan-borough-council-2411301-slash-2023": [
+      {
+        "evidence_span_id": "es_sha149_6551c3f6c624470a",
+        "paragraph_range": null,
+        "quote_text": "concerning a complaint of unfair dismissal",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-a-shamshiri-v-bury-metropolitan-borough-council-2411301-slash-2023"
+      },
+      {
+        "evidence_span_id": "es_sha149_198939377aac4f64",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr E Stenson (counsel)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-a-shamshiri-v-bury-metropolitan-borough-council-2411301-slash-2023"
+      },
+      {
+        "evidence_span_id": "es_sha149_71abb6ceb21a4f10",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Mr H Shamshiri (her husband)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-a-shamshiri-v-bury-metropolitan-borough-council-2411301-slash-2023"
+      }
+    ],
+    "mrs-s-begum-v-design-clinics-ltd-6000457-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_288f025bc98e4f07",
+        "paragraph_range": null,
+        "quote_text": "the dismissal being said to be for redundancy",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-begum-v-design-clinics-ltd-6000457-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_ba11c4079155490c",
+        "paragraph_range": null,
+        "quote_text": "the claimant representing herself",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-begum-v-design-clinics-ltd-6000457-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_c8a9a0ee023e4267",
+        "paragraph_range": null,
+        "quote_text": "the respondent represented by Mr S. Tariq",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-begum-v-design-clinics-ltd-6000457-slash-2025"
+      }
+    ],
+    "mrs-s-brown-v-william-hill-organization-ltd-2500144-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_0cec4efdb6bf4f74",
+        "paragraph_range": null,
+        "quote_text": "brought a complaint of unfair dismissal against the respondent",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-brown-v-william-hill-organization-ltd-2500144-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_e6387f44bdc64972",
+        "paragraph_range": null,
+        "quote_text": "The claimant represented herself in person",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-brown-v-william-hill-organization-ltd-2500144-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_53a1987861bb4863",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Ms Hosking (counsel)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-s-brown-v-william-hill-organization-ltd-2500144-slash-2025"
+      }
+    ],
+    "mrs-z-mateja-v-forza-foods-ltd-1807257-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_4c10c940e6ea4725",
+        "paragraph_range": null,
+        "quote_text": "A preliminary hearing was held in private at Leeds by CVP video conferencing on 28 July 2025",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-z-mateja-v-forza-foods-ltd-1807257-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_917df056e7ff4a01",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Erik Okhiria (consultant)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-z-mateja-v-forza-foods-ltd-1807257-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_597881fe33574777",
+        "paragraph_range": null,
+        "quote_text": "brought a claim of wrongful dismissal against the respondent, Forza Foods Limited",
+        "source_kind": "tribunal_decision",
+        "source_reference": "mrs-z-mateja-v-forza-foods-ltd-1807257-slash-2024"
+      }
+    ],
+    "ms-h-haruna-v-premex-services-ltd-6007159-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_34f034390eb442d6",
+        "paragraph_range": null,
+        "quote_text": "brought a complaint of unfair dismissal against the respondent, Premex Services Limited",
+        "source_kind": "tribunal_decision",
+        "source_reference": "ms-h-haruna-v-premex-services-ltd-6007159-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_6310a8695fb24a78",
+        "paragraph_range": null,
+        "quote_text": "the final hearing listed for 10\u201311 February 2026 was cancelled",
+        "source_kind": "tribunal_decision",
+        "source_reference": "ms-h-haruna-v-premex-services-ltd-6007159-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_6c436da6da974855",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr K Ali, counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "ms-h-haruna-v-premex-services-ltd-6007159-slash-2025"
+      }
+    ],
+    "ms-jones-v-birmingham-city-council-1306579-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_03c11a92fa904642",
+        "paragraph_range": null,
+        "quote_text": "brought a claim of unfair dismissal under sections 94 and 98",
+        "source_kind": "tribunal_decision",
+        "source_reference": "ms-jones-v-birmingham-city-council-1306579-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_96d990796ece4b5c",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Mr Heard, Counsel",
+        "source_kind": "tribunal_decision",
+        "source_reference": "ms-jones-v-birmingham-city-council-1306579-slash-2024"
+      }
+    ],
+    "r-harry-v-halfords-autocentre-6014458-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_36f57f9795f54e8c",
+        "paragraph_range": null,
+        "quote_text": "The claimant was represented by Mr David Coote (lay representative)",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-harry-v-halfords-autocentre-6014458-slash-2024"
+      }
+    ],
+    "r-pyman-v-alitex-ltd-1400384-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_408ad189bc804a09",
+        "paragraph_range": null,
+        "quote_text": "was dismissed, being told it was for poor performance",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_2a4cccbb14864eb4",
+        "paragraph_range": null,
+        "quote_text": "On 9 January 2025 the claimant met Mr Hancock and was dismissed",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_b11fe3405b9a41af",
+        "paragraph_range": null,
+        "quote_text": "On 9 January 2025 the claimant met Mr Hancock and was dismissed",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_793519ddc7804213",
+        "paragraph_range": null,
+        "quote_text": "later raised a grievance treated as an appeal",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_81740f8d8e7840bc",
+        "paragraph_range": null,
+        "quote_text": "He received four weeks' pay in lieu of notice",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_aa3df7cbe7744d01",
+        "paragraph_range": null,
+        "quote_text": "was dismissed, being told it was for poor performance",
+        "source_kind": "tribunal_decision",
+        "source_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025"
+      }
+    ],
+    "s-okan-v-global-edge-consultant-uk-ltd-8002882-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_5a10bcbe3be64074",
+        "paragraph_range": null,
+        "quote_text": "the respondent had paid a statutory redundancy payment to the claimant",
+        "source_kind": "tribunal_decision",
+        "source_reference": "s-okan-v-global-edge-consultant-uk-ltd-8002882-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_3821410358284863",
+        "paragraph_range": null,
+        "quote_text": "proceeded to determine the matter without a hearing under Rule 22",
+        "source_kind": "tribunal_decision",
+        "source_reference": "s-okan-v-global-edge-consultant-uk-ltd-8002882-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_549bf536c04b4c2b",
+        "paragraph_range": null,
+        "quote_text": "the respondent was required to file a response within 28 days but did not do so",
+        "source_kind": "tribunal_decision",
+        "source_reference": "s-okan-v-global-edge-consultant-uk-ltd-8002882-slash-2025"
+      }
+    ],
+    "s-struthers-v-hamilton-academical-football-club-ltd-8002199-slash-2025": [
+      {
+        "evidence_span_id": "es_sha149_90e1d8c4a5dc438d",
+        "paragraph_range": null,
+        "quote_text": "did not attend and no response had been filed",
+        "source_kind": "tribunal_decision",
+        "source_reference": "s-struthers-v-hamilton-academical-football-club-ltd-8002199-slash-2025"
+      },
+      {
+        "evidence_span_id": "es_sha149_0d80aee28ad54216",
+        "paragraph_range": null,
+        "quote_text": "The respondent, Hamilton Academical Football Club Limited, did not attend and no response had been filed.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "s-struthers-v-hamilton-academical-football-club-ltd-8002199-slash-2025"
+      }
+    ],
+    "v-oldham-v-lloyds-bank-plc-6010727-slash-2024": [
+      {
+        "evidence_span_id": "es_sha149_fcc7f0b3550d45d3",
+        "paragraph_range": null,
+        "quote_text": "the respondent was represented by Ms M Tutin, counsel.",
+        "source_kind": "tribunal_decision",
+        "source_reference": "v-oldham-v-lloyds-bank-plc-6010727-slash-2024"
+      },
+      {
+        "evidence_span_id": "es_sha149_e306a001f92942a0",
+        "paragraph_range": null,
+        "quote_text": "the claimant attended in person, assisted by her husband",
+        "source_kind": "tribunal_decision",
+        "source_reference": "v-oldham-v-lloyds-bank-plc-6010727-slash-2024"
+      }
+    ]
+  },
+  "extractor_version": "openai:gpt-5-mini+sha149-employment-et-factors-1.0.0",
+  "factor_assertions_by_case_id": {
+    "d-lock-v-openreach-ltd-6007986-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_f2585b0a60ed475b",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_067d1a0d97254500"
+        ],
+        "supported_by": [
+          "es_sha149_067d1a0d97254500"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "d-spencer-v-deckhouse-sevenoaks-ltd-6021339-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_f6f3eebe952d402e",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_e28fa283e910485c"
+        ],
+        "supported_by": [
+          "es_sha149_e28fa283e910485c"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_6235f5f608a547ed",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_717b6e3de15e4455"
+        ],
+        "supported_by": [
+          "es_sha149_717b6e3de15e4455"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "dr-l-leonard-v-surrey-and-borders-partnership-nhs-foundation-trust-6008417-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_df09a190093b4028",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_29aebdceaa284504"
+        ],
+        "supported_by": [
+          "es_sha149_29aebdceaa284504"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "conduct",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_50bbddf45efc4fd8",
+        "factor_id": "investigation_conducted",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_f32ce24a5a0f41c6"
+        ],
+        "supported_by": [
+          "es_sha149_f32ce24a5a0f41c6"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_8746dd63878b47c2",
+        "factor_id": "disciplinary_hearing_held",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_0a0fdbc104184d50"
+        ],
+        "supported_by": [
+          "es_sha149_0a0fdbc104184d50"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_ee9561d65a4341aa",
+        "factor_id": "length_of_service_years",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "neutral",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_04be75b53e074d27"
+        ],
+        "supported_by": [
+          "es_sha149_04be75b53e074d27"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": 6.5,
+          "value_type": "number"
+        },
+        "value_type": "number",
+        "verifier_version": null
+      }
+    ],
+    "g-shotton-v-brand-media-marketing-ltd-6027914-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_4ac689f31f8b42be",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_dc8aabe44b084c4c"
+        ],
+        "supported_by": [
+          "es_sha149_dc8aabe44b084c4c"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      }
+    ],
+    "j-ahmed-v-mitchells-and-butlers-retail-ltd-6019453-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_46f30bd8d4794b93",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_d6ff40b7560947f9"
+        ],
+        "supported_by": [
+          "es_sha149_d6ff40b7560947f9"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_d99d180c6f40408e",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_b67370ea50ae4509"
+        ],
+        "supported_by": [
+          "es_sha149_b67370ea50ae4509"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "j-dutchman-v-jd-sports-gyms-ltd-1802056-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_74586f39f3d84745",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6774d0bb3b8b4684"
+        ],
+        "supported_by": [
+          "es_sha149_6774d0bb3b8b4684"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "conduct",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_111ad61320214a08",
+        "factor_id": "prior_warnings_given",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_a3c48bdeac8649ec"
+        ],
+        "supported_by": [
+          "es_sha149_a3c48bdeac8649ec"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_910dc9aab4d74a69",
+        "factor_id": "length_of_service_years",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "neutral",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_10a41bf41a8b4282"
+        ],
+        "supported_by": [
+          "es_sha149_10a41bf41a8b4282"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": 5.0,
+          "value_type": "number"
+        },
+        "value_type": "number",
+        "verifier_version": null
+      }
+    ],
+    "j-j-b-legge-v-ferns-surfacing-ltd-6004305-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_0af6fb9a3e6e43fd",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_bd60a7bd5a6e4c2a"
+        ],
+        "supported_by": [
+          "es_sha149_bd60a7bd5a6e4c2a"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_45dd8e11a9e046e6",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_f3d66e4b4dea4e39"
+        ],
+        "supported_by": [
+          "es_sha149_f3d66e4b4dea4e39"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.82,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_ba8ce0d7fb65406c",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_588d2eec520d473f"
+        ],
+        "supported_by": [
+          "es_sha149_588d2eec520d473f"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "capability",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.85,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_8184c7b65a2b46f7",
+        "factor_id": "investigation_conducted",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_66c587a75ebd4212"
+        ],
+        "supported_by": [
+          "es_sha149_66c587a75ebd4212"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_c34e5f976880447b",
+        "factor_id": "prior_warnings_given",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_48bf429c068a4089"
+        ],
+        "supported_by": [
+          "es_sha149_48bf429c068a4089"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_6fe8798e376049a4",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_0a9386eb6fcc489e"
+        ],
+        "supported_by": [
+          "es_sha149_0a9386eb6fcc489e"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_b4eb476f97c24288",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_2398fbeb65be4ac8"
+        ],
+        "supported_by": [
+          "es_sha149_2398fbeb65be4ac8"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.99,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_8d5ed98cb2ef4d15",
+        "factor_id": "length_of_service_years",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "neutral",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_cc170c613a524acc"
+        ],
+        "supported_by": [
+          "es_sha149_cc170c613a524acc"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": 3.0,
+          "value_type": "number"
+        },
+        "value_type": "number",
+        "verifier_version": null
+      }
+    ],
+    "m-apperley-v-mitchells-and-butler-retail-ltd-1401622-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.85,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_8df98a3f176d4444",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_052a725b508048dc"
+        ],
+        "supported_by": [
+          "es_sha149_052a725b508048dc"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_60077ae3c4b5444f",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_c4f7ce6697c441af"
+        ],
+        "supported_by": [
+          "es_sha149_c4f7ce6697c441af"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "m-elnaem-v-serco-ltd-2403227-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_7c11830d7644493b",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_aae6455deaed4653"
+        ],
+        "supported_by": [
+          "es_sha149_aae6455deaed4653"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_1c36fac8af264f9e",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_8dfbc8f54fbd4acf"
+        ],
+        "supported_by": [
+          "es_sha149_8dfbc8f54fbd4acf"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "m-foster-v-coleg-ceredigion-and-others-6037640-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_ba87507286f944f7",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_4cee54ac6cf844d6"
+        ],
+        "supported_by": [
+          "es_sha149_4cee54ac6cf844d6"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_bdab775baaeb4bea",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_1fb4a2d1c6c94b1c"
+        ],
+        "supported_by": [
+          "es_sha149_1fb4a2d1c6c94b1c"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_42646a3784b945a5",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_ab0b898a009c41fe"
+        ],
+        "supported_by": [
+          "es_sha149_ab0b898a009c41fe"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_7b3dcec4de6f4cdb",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_920d59800cc34f11"
+        ],
+        "supported_by": [
+          "es_sha149_920d59800cc34f11"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_7498023fec344010",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6c35b119ef774200"
+        ],
+        "supported_by": [
+          "es_sha149_6c35b119ef774200"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "miss-l-w-jaye-v-wm-morrison-supermarkets-ltd-6000389-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_40d7b24099a446b8",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_191ce435eaeb4674"
+        ],
+        "supported_by": [
+          "es_sha149_191ce435eaeb4674"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-a-hussain-v-sainsburys-supermarkets-ltd-6019164-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_5c7f5044abd047b9",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6032393482524fce"
+        ],
+        "supported_by": [
+          "es_sha149_6032393482524fce"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_0004dedba3eb4ab0",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_41753d02600945b5"
+        ],
+        "supported_by": [
+          "es_sha149_41753d02600945b5"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-a-lay-v-creation-11-ltd-6024292-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_91b1cb15cdc54bf6",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_b5068e9c53f340ba"
+        ],
+        "supported_by": [
+          "es_sha149_b5068e9c53f340ba"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_33cc74157bc2482e",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_9998ea963c2a479f"
+        ],
+        "supported_by": [
+          "es_sha149_9998ea963c2a479f"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-a-m-said-v-the-department-of-health-and-social-care-2200225-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_2e4aabaab2274ad1",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_cb1f6545d82e4628"
+        ],
+        "supported_by": [
+          "es_sha149_cb1f6545d82e4628"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "capability",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_728671948ca44a14",
+        "factor_id": "investigation_conducted",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_f864dc6b04ce4aa5"
+        ],
+        "supported_by": [
+          "es_sha149_f864dc6b04ce4aa5"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_50b91a207a274f93",
+        "factor_id": "disciplinary_hearing_held",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_295d82066e244dec"
+        ],
+        "supported_by": [
+          "es_sha149_295d82066e244dec"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_ed85b60997ef4b55",
+        "factor_id": "prior_warnings_given",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_4ec425aaca8642a8"
+        ],
+        "supported_by": [
+          "es_sha149_4ec425aaca8642a8"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_4eeb65ebe6ab4ed7",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_dad13a0196304978"
+        ],
+        "supported_by": [
+          "es_sha149_dad13a0196304978"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-c-letch-v-go-south-coast-ltd-t-slash-a-morebus-6001836-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_308c935fc45e4615",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_a972260f71e84259"
+        ],
+        "supported_by": [
+          "es_sha149_a972260f71e84259"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.85,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_dc26fff747e44fab",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_22ce30ee3ce945a8"
+        ],
+        "supported_by": [
+          "es_sha149_22ce30ee3ce945a8"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_fefb82fb4a854ab3",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_7b2311eca0054b44"
+        ],
+        "supported_by": [
+          "es_sha149_7b2311eca0054b44"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      }
+    ],
+    "mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_1c20a681d9d5462e",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_d740304c1d55445d"
+        ],
+        "supported_by": [
+          "es_sha149_d740304c1d55445d"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_95cd8e13e50247b2",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_ae0f638572bb4b53"
+        ],
+        "supported_by": [
+          "es_sha149_ae0f638572bb4b53"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-d-wacey-v-veka-plc-6000417-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_e2ccbe071f494d46",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6beca8f2523d4df8"
+        ],
+        "supported_by": [
+          "es_sha149_6beca8f2523d4df8"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_86745c5c8f504dfd",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_371f283a7dc943d6"
+        ],
+        "supported_by": [
+          "es_sha149_371f283a7dc943d6"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_1b3845bb6d97427f",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_5faaef4977d24ba1"
+        ],
+        "supported_by": [
+          "es_sha149_5faaef4977d24ba1"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      }
+    ],
+    "mr-j-walsh-v-hmp-portland-6020501-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.85,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_af45be4919e6465e",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_5cbfaadccc6d4c85"
+        ],
+        "supported_by": [
+          "es_sha149_5cbfaadccc6d4c85"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_2601f251670a4fee",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_ede7a58303c74d22"
+        ],
+        "supported_by": [
+          "es_sha149_ede7a58303c74d22"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-l-hounsome-v-team-industrial-services-uk-ltd-6020754-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_b97f9e4e56eb44c5",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_f0d73f8b21eb4869"
+        ],
+        "supported_by": [
+          "es_sha149_f0d73f8b21eb4869"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "capability",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_aa443cf3acf64e32",
+        "factor_id": "investigation_conducted",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_98ebc692b375484b"
+        ],
+        "supported_by": [
+          "es_sha149_98ebc692b375484b"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_229f8dadd0054d3c",
+        "factor_id": "length_of_service_years",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "neutral",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_57e9b0b0bd764f78"
+        ],
+        "supported_by": [
+          "es_sha149_57e9b0b0bd764f78"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": 0.0,
+          "value_type": "number"
+        },
+        "value_type": "number",
+        "verifier_version": null
+      }
+    ],
+    "mr-m-nutt-v-dhl-services-ltd-3310770-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_0e5ca75a2ecf4df3",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6f22a4d867654904"
+        ],
+        "supported_by": [
+          "es_sha149_6f22a4d867654904"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-n-hiorns-v-west-midlands-ambulance-service-6017408-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_3cc0255fda614a75",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_de79538258514e81"
+        ],
+        "supported_by": [
+          "es_sha149_de79538258514e81"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "conduct",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_4c80f573796e456d",
+        "factor_id": "length_of_service_years",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "neutral",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_1dd318ee3fc841e8"
+        ],
+        "supported_by": [
+          "es_sha149_1dd318ee3fc841e8"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": 12.0,
+          "value_type": "number"
+        },
+        "value_type": "number",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.75,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_96908c4fdcc04ae5",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_77178fe179464fdd"
+        ],
+        "supported_by": [
+          "es_sha149_77178fe179464fdd"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-r-r-sinclair-v-james-johnston-and-co-of-elgin-ltd-4107417-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_5cb2cd862126408a",
+        "factor_id": "investigation_conducted",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_b52f794e29aa40dd"
+        ],
+        "supported_by": [
+          "es_sha149_b52f794e29aa40dd"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_09fc501878a54b30",
+        "factor_id": "length_of_service_years",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "neutral",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_40ec2b163c914c57"
+        ],
+        "supported_by": [
+          "es_sha149_40ec2b163c914c57"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": 15.0,
+          "value_type": "number"
+        },
+        "value_type": "number",
+        "verifier_version": null
+      }
+    ],
+    "mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_70e04a4fd4f248f9",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_db03705be589413a"
+        ],
+        "supported_by": [
+          "es_sha149_db03705be589413a"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-s-bennett-v-the-compass-partnership-of-schools-6034122-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_e6a773c0d8e4441b",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_f31c4429b32b45e0"
+        ],
+        "supported_by": [
+          "es_sha149_f31c4429b32b45e0"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_c01c297ddf92438d",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_7f65fb61c8824cab"
+        ],
+        "supported_by": [
+          "es_sha149_7f65fb61c8824cab"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_8b7e134ec11c4acf",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_171fb5c95aec4473"
+        ],
+        "supported_by": [
+          "es_sha149_171fb5c95aec4473"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-s-gdey-v-metroline-travel-ltd-6021972-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_b9d05692ce5a4f5b",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_143693272ad8454a"
+        ],
+        "supported_by": [
+          "es_sha149_143693272ad8454a"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-s-morris-v-mcbritain-ltd-6009962-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_cef89360af654b00",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_e5ffe22687524016"
+        ],
+        "supported_by": [
+          "es_sha149_e5ffe22687524016"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      }
+    ],
+    "mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.99,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_46393b3fdef3473d",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_3ab956c9f342427e"
+        ],
+        "supported_by": [
+          "es_sha149_3ab956c9f342427e"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mr-w-whiteside-v-london-borough-of-islington-6002031-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_ae80862b46dc4345",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_0d848e47b70b4471"
+        ],
+        "supported_by": [
+          "es_sha149_0d848e47b70b4471"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_71af00b74a634e06",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_d01f1b9cc91649e2"
+        ],
+        "supported_by": [
+          "es_sha149_d01f1b9cc91649e2"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-b-parry-v-lloyds-bank-plc-6020353-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_6f7369ecaae84d84",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_04ca1afdd4044ba3"
+        ],
+        "supported_by": [
+          "es_sha149_04ca1afdd4044ba3"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_17c63ce9ece849b7",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_5529e07525494a74"
+        ],
+        "supported_by": [
+          "es_sha149_5529e07525494a74"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.99,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_d3e6fc8d939241de",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_0fdedbe554084b77"
+        ],
+        "supported_by": [
+          "es_sha149_0fdedbe554084b77"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-i-nagra-personal-representative-of-mr-s-nagra-deceased-v-network-rail-infrastructure-ltd-6005403-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_a5c565c9ccce43bf",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_c419d57bf38e4586"
+        ],
+        "supported_by": [
+          "es_sha149_c419d57bf38e4586"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-m-nyarko-v-oxleas-nhs-foundation-trust-6003396-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_be67ed784e8a45e3",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_4f7ac14f2d5d47f7"
+        ],
+        "supported_by": [
+          "es_sha149_4f7ac14f2d5d47f7"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-n-bowers-v-east-cheshire-nhs-trust-6003956-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_2801935515524cde",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_62e294ae99f34990"
+        ],
+        "supported_by": [
+          "es_sha149_62e294ae99f34990"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.99,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_69effe070bf5476a",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_8ce76941b3724d4c"
+        ],
+        "supported_by": [
+          "es_sha149_8ce76941b3724d4c"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_b8087dce175947c1",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_ff78c9b1d9764d53"
+        ],
+        "supported_by": [
+          "es_sha149_ff78c9b1d9764d53"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_3b67be9c8b6f412a",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_04b2f2c00d0141f8"
+        ],
+        "supported_by": [
+          "es_sha149_04b2f2c00d0141f8"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-s-a-shamshiri-v-bury-metropolitan-borough-council-2411301-slash-2023": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_0d81bb566cd742b2",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6551c3f6c624470a"
+        ],
+        "supported_by": [
+          "es_sha149_6551c3f6c624470a"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_04f0d68f0ac848a1",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_198939377aac4f64"
+        ],
+        "supported_by": [
+          "es_sha149_198939377aac4f64"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_7967ee7750fa4c50",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_71abb6ceb21a4f10"
+        ],
+        "supported_by": [
+          "es_sha149_71abb6ceb21a4f10"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-s-begum-v-design-clinics-ltd-6000457-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_7bab2259561f447b",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_288f025bc98e4f07"
+        ],
+        "supported_by": [
+          "es_sha149_288f025bc98e4f07"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "redundancy",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_0429dbb0b75a4d5e",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_ba11c4079155490c"
+        ],
+        "supported_by": [
+          "es_sha149_ba11c4079155490c"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_39e0de2467544f1f",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_c8a9a0ee023e4267"
+        ],
+        "supported_by": [
+          "es_sha149_c8a9a0ee023e4267"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-s-brown-v-william-hill-organization-ltd-2500144-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_a48ccb0b9ec14cce",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_0cec4efdb6bf4f74"
+        ],
+        "supported_by": [
+          "es_sha149_0cec4efdb6bf4f74"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_6d531fedd89e4a0a",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_e6387f44bdc64972"
+        ],
+        "supported_by": [
+          "es_sha149_e6387f44bdc64972"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_f38c53cf85a74be5",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_53a1987861bb4863"
+        ],
+        "supported_by": [
+          "es_sha149_53a1987861bb4863"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "mrs-z-mateja-v-forza-foods-ltd-1807257-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_745f99626ebe4fb3",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_4c10c940e6ea4725"
+        ],
+        "supported_by": [
+          "es_sha149_4c10c940e6ea4725"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_8468fa58c7ba4767",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_917df056e7ff4a01"
+        ],
+        "supported_by": [
+          "es_sha149_917df056e7ff4a01"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_fd676d5048ab4a15",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_597881fe33574777"
+        ],
+        "supported_by": [
+          "es_sha149_597881fe33574777"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      }
+    ],
+    "ms-h-haruna-v-premex-services-ltd-6007159-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_5e2157e35b304fac",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_34f034390eb442d6"
+        ],
+        "supported_by": [
+          "es_sha149_34f034390eb442d6"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_ad8f623393154110",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6310a8695fb24a78"
+        ],
+        "supported_by": [
+          "es_sha149_6310a8695fb24a78"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_bcdec9710279487c",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_6c436da6da974855"
+        ],
+        "supported_by": [
+          "es_sha149_6c436da6da974855"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "ms-jones-v-birmingham-city-council-1306579-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_b071953ee37342d8",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_03c11a92fa904642"
+        ],
+        "supported_by": [
+          "es_sha149_03c11a92fa904642"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_346192c905b945d4",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_96d990796ece4b5c"
+        ],
+        "supported_by": [
+          "es_sha149_96d990796ece4b5c"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "r-harry-v-halfords-autocentre-6014458-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_673797518afb44cd",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_36f57f9795f54e8c"
+        ],
+        "supported_by": [
+          "es_sha149_36f57f9795f54e8c"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "r-pyman-v-alitex-ltd-1400384-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_1e1acf56023f4d55",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_408ad189bc804a09"
+        ],
+        "supported_by": [
+          "es_sha149_408ad189bc804a09"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "capability",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_dec28a6b9f3e4df4",
+        "factor_id": "investigation_conducted",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_2a4cccbb14864eb4"
+        ],
+        "supported_by": [
+          "es_sha149_2a4cccbb14864eb4"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.8,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_c82f938f3a3e407f",
+        "factor_id": "disciplinary_hearing_held",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_b11fe3405b9a41af"
+        ],
+        "supported_by": [
+          "es_sha149_b11fe3405b9a41af"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_0a7b76d68beb4008",
+        "factor_id": "appeal_offered",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_793519ddc7804213"
+        ],
+        "supported_by": [
+          "es_sha149_793519ddc7804213"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_fc359464e9044c97",
+        "factor_id": "dismissal_was_summary",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_81740f8d8e7840bc"
+        ],
+        "supported_by": [
+          "es_sha149_81740f8d8e7840bc"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_856cf599d7904335",
+        "factor_id": "gross_misconduct_alleged",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_aa3df7cbe7744d01"
+        ],
+        "supported_by": [
+          "es_sha149_aa3df7cbe7744d01"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "s-okan-v-global-edge-consultant-uk-ltd-8002882-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.85,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_f1a9a3ca85c24877",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_5a10bcbe3be64074"
+        ],
+        "supported_by": [
+          "es_sha149_5a10bcbe3be64074"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "redundancy",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_005c133a03c547b1",
+        "factor_id": "is_preliminary_or_strike_out_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_3821410358284863"
+        ],
+        "supported_by": [
+          "es_sha149_3821410358284863"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_73b56fd62ddd49f1",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_549bf536c04b4c2b"
+        ],
+        "supported_by": [
+          "es_sha149_549bf536c04b4c2b"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "s-struthers-v-hamilton-academical-football-club-ltd-8002199-slash-2025": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_04d2251a93314fc4",
+        "factor_id": "fair_reason_category",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "respondent_success",
+          "claimant_success",
+          "partial_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_respondent",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_90e1d8c4a5dc438d"
+        ],
+        "supported_by": [
+          "es_sha149_90e1d8c4a5dc438d"
+        ],
+        "value": {
+          "boolean": null,
+          "date": null,
+          "duration_days": null,
+          "enum": "none_stated",
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "enum"
+        },
+        "value_type": "enum",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.95,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_cb8ac08746da4cec",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_0d80aee28ad54216"
+        ],
+        "supported_by": [
+          "es_sha149_0d80aee28ad54216"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ],
+    "v-oldham-v-lloyds-bank-plc-6010727-slash-2024": [
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.98,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_117a7b27405b4986",
+        "factor_id": "respondent_failed_to_engage",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "non_merits"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_fcc7f0b3550d45d3"
+        ],
+        "supported_by": [
+          "es_sha149_fcc7f0b3550d45d3"
+        ],
+        "value": {
+          "boolean": false,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      },
+      {
+        "claim_head_id": "unfair_dismissal",
+        "confidence": 0.9,
+        "domain_id": "employment.unfair_dismissal.v1",
+        "expected_effects": [],
+        "extraction_method": "llm_extracted",
+        "extractor_version": "sha149-employment-et-factors-1.0.0",
+        "factor_assertion_id": "fa_sha149_1fbf619c79b24b25",
+        "factor_id": "claimant_represented_at_hearing",
+        "linked_events": [],
+        "linked_issues": [],
+        "maps_to_outcomes": [
+          "claimant_success",
+          "respondent_success"
+        ],
+        "maps_to_remedies": [],
+        "polarity": "pro_claimant",
+        "refuted_by": [],
+        "requires_human_review": false,
+        "source_span_refs": [
+          "es_sha149_e306a001f92942a0"
+        ],
+        "supported_by": [
+          "es_sha149_e306a001f92942a0"
+        ],
+        "value": {
+          "boolean": true,
+          "date": null,
+          "duration_days": null,
+          "enum": null,
+          "money_currency": null,
+          "money_minor_units": null,
+          "number": null,
+          "value_type": "boolean"
+        },
+        "value_type": "boolean",
+        "verifier_version": null
+      }
+    ]
+  },
+  "schema_version": "v1"
+}

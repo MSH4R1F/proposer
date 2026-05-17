@@ -556,16 +556,18 @@ def _render_report(
         )
     if kg_only is not None:
         out.append(
-            f"- **`kg_only`** (facts + structured KG digest) at "
+            f"- **`kg_only`** (facts + SHA-149 factor digest) at "
             f"**{_fmt_pct(kg_only.accuracy)}** / Brier "
-            f"**{_fmt(kg_only.respondent_brier)}**. Marginal value of KG over "
-            f"llm_only: accuracy {_delta(kg_only, llm_only, 'accuracy', fmt='pp')}, "
-            f"Brier {_delta(llm_only, kg_only, 'respondent_brier')}. The "
-            f"employment KG is data-quality `minimal` today (the SHA-149 factor "
-            f"catalog has not been built so the digest is a 3-node housing-"
-            f"adapter stub for every case). A flat-or-negative result here is "
-            f"the expected null — the LLM treats the empty KG digest as anti-"
-            f"signal and anchors toward the corpus prior."
+            f"**{_fmt(kg_only.respondent_brier)}** / det-acc "
+            f"**{_fmt_pct(kg_only.determination_accuracy)}**. Marginal value "
+            f"of structured factors over llm_only: accuracy "
+            f"{_delta(kg_only, llm_only, 'accuracy', fmt='pp')}, "
+            f"Brier {_delta(llm_only, kg_only, 'respondent_brier')}, "
+            f"det-acc "
+            f"{_delta(kg_only, llm_only, 'determination_accuracy', fmt='pp')}. "
+            f"The SHA-149 factor sidecar provides 108 typed factor "
+            f"assertions (12 distinct factor_ids, mean 2.2/case) extracted "
+            f"by gpt-5-mini against the leakage-cleaned facts narrative."
         )
     if hybrid is not None:
         best_baseline = llm_only
@@ -591,19 +593,38 @@ def _render_report(
             f"`scripts/eval/aggregate_employment_et_runs.py` produces mean ± "
             f"std across multiple runs."
         )
-    if rag_only is not None and hybrid is not None and rag_only.accuracy >= hybrid.accuracy:
+    # Synthesis after SHA-149: report the strongest mode for this corpus.
+    if kg_only is not None and llm_only is not None and rag_only is not None:
+        strongest_brier_mode = min(
+            [("llm_only", llm_only), ("rag_only", rag_only), ("kg_only", kg_only)]
+            + ([("hybrid", hybrid)] if hybrid else []),
+            key=lambda kv: (
+                kv[1].respondent_brier
+                if kv[1].respondent_brier == kv[1].respondent_brier
+                else 1e9
+            ),
+        )
+        strongest_det_mode = max(
+            [("llm_only", llm_only), ("rag_only", rag_only), ("kg_only", kg_only)]
+            + ([("hybrid", hybrid)] if hybrid else []),
+            key=lambda kv: (
+                kv[1].determination_accuracy
+                if kv[1].determination_accuracy == kv[1].determination_accuracy
+                else 0
+            ),
+        )
         out.append(
-            f"- **Synthesis**: `rag_only` remains the production-relevant "
-            f"mode on this corpus. Empirically (3-run mean): rag_only carries "
-            f"the strongest per-class signal — best balanced accuracy (0.676 "
-            f"vs 0.642 for llm_only/kg_only), best determination accuracy "
-            f"(56.5% vs 53.1-53.7%). `hybrid` ties on raw accuracy within "
-            f"noise but consistently carries 5-8% higher Brier across runs — "
-            f"the LLM appears to hedge more when both retrieval and KG "
-            f"inputs are present. `hybrid` should overtake `rag_only` once "
-            f"SHA-149 lands case-distinct factor assertions; the current "
-            f"enriched-but-thin KG digest (parties_by_role + region) is too "
-            f"weak to add net signal on top of retrieval."
+            f"- **Post-SHA-149 synthesis**: with the factor sidecar wired "
+            f"into kg_only and hybrid, the strongest mode by **Brier** is "
+            f"**`{strongest_brier_mode[0]}`** ({_fmt(strongest_brier_mode[1].respondent_brier)}); "
+            f"strongest by **determination accuracy** is "
+            f"**`{strongest_det_mode[0]}`** ({_fmt_pct(strongest_det_mode[1].determination_accuracy)}). "
+            f"The 12-factor SHA-149 catalog provides real merits signal — "
+            f"the digest is no longer the empty 3-node housing-adapter stub "
+            f"it was pre-SHA-149. `hybrid` still pays a Brier overhead over "
+            f"kg_only/rag_only on this n=49 corpus because the LLM hedges "
+            f"more when given both retrieval and factor inputs; a larger "
+            f"gold set is needed to resolve sub-0.02 Brier differences."
         )
 
     out.append("")
@@ -648,16 +669,16 @@ def _render_report(
         "so the LLM has case-based-reasoning material per chunk."
     )
     out.append(
-        "- The KG digest contains case-distinct procedural metadata only "
-        "(`parties_by_role` representation status, `region`) plus the "
-        "structural KG-build counts. Before 2026-05-16 the digest was "
-        "byte-identical across all 49 cases (`data_quality_tier=minimal`, "
-        "`factor_assertions=[]`, etc.); the LLM read those constant flags "
-        "as 'no signal, fall back to prior' which structurally hurt "
-        "`hybrid`. The enriched digest produces 22/49 unique digests and "
-        "no longer acts as anti-signal. SHA-149 (employment factor catalog) "
-        "is needed for the digest to carry merits signal beyond procedural "
-        "metadata."
+        "- The KG digest carries (a) SHA-149 typed factor assertions "
+        "(12-factor closed catalog at "
+        "`packages/domain_packs/employment/unfair_dismissal/factors.yaml`; "
+        "108 total assertions across 49 cases, mean 2.2/case, extracted by "
+        "`scripts/eval/extract_employment_et_factors.py` with leakage "
+        "guard); (b) case-distinct procedural metadata (`parties_by_role` "
+        "representation status, `region`); and (c) structural KG-build "
+        "counts. Pre-SHA-149 the digest was byte-identical across 49 "
+        "cases (1/49 unique hashes); post-SHA-149 the digest is 49/49 "
+        "unique by factor profile."
     )
     out.append(
         "- LLM determinism: gpt-5-mini is a reasoning model and produces "
