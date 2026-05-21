@@ -823,6 +823,23 @@ async def run(args: argparse.Namespace) -> int:
     if not gold:
         raise SystemExit(f"no gold rows loaded from {gold_path}")
 
+    # Sharding: split the gold deterministically so N processes can run
+    # disjoint slices in parallel (~Nx throughput on a 150-case set).
+    # Shard k of M takes gold[k::M] (round-robin keeps each shard's
+    # determination/winner mix close to the full set). The shard's
+    # predictions go to a shard-suffixed run dir; a separate --merge-shards
+    # pass concatenates them per mode before scoring.
+    if args.num_shards > 1:
+        if not (0 <= args.shard_index < args.num_shards):
+            raise SystemExit(
+                f"--shard-index must be in [0,{args.num_shards}); got {args.shard_index}"
+            )
+        gold = gold[args.shard_index :: args.num_shards]
+        if not gold:
+            raise SystemExit(
+                f"shard {args.shard_index}/{args.num_shards} is empty"
+            )
+
     selection_path = Path(args.selection_manifest).expanduser()
     if not selection_path.is_absolute():
         selection_path = REPO_ROOT / selection_path
@@ -965,6 +982,18 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--top-k", type=int, default=5)
     p.add_argument("--run-id", default=None)
     p.add_argument("--concurrency", type=int, default=4)
+    p.add_argument(
+        "--num-shards",
+        type=int,
+        default=1,
+        help="Split the gold into this many disjoint round-robin shards.",
+    )
+    p.add_argument(
+        "--shard-index",
+        type=int,
+        default=0,
+        help="Which shard (0-based) this process handles when --num-shards>1.",
+    )
     return p
 
 
