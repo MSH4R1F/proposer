@@ -1,0 +1,522 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024",
+  "case_reference": "mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-12-15",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6013952/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr D Castro v Ms M Rangel and Cubana (Waterloo) Ltd: 6013952/2024 - Preliminary",
+    "url": "https://assets.publishing.service.gov.uk/media/69973bf2bfdab2546272c01a/Mr_D_Castro_v_1__Ms_M_Rangel_2__Cubana__Waterloo__Limited_6013952_2024_.pdf"
+  },
+  "pdf_sha256": "bd8cae0232c1a9e1d8e16e416bad84da13a4a6885f04bc01a0b4c1f997ff4e75",
+  "ocr_text_sha256": "42c71e3ac1a78410b667a762d3685bb2eac69172d4e8b692fb293eb8fdcc7d40",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-d-castro-v-ms-m-rangel-and-cubana-waterloo-ltd-6013952-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1418, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 6013952/2024\\n\\n1 of 2\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\n\\nClaimant:\\n\\n\\n\\n\\n\\n\\n\\nRespondent:\\nMr D Castro\\n\\n\\nv\\n\\n(1) Ms M Rangel\\n\\n\\n\\n\\n\\n\\n\\n(2) Cubana (Waterloo) Limited\\n\\n\\n\\n\\nHeard at: London (South) (via CVP)\\n\\n\\nOn: 15 December 2025\\n\\nBefore: Employment Judge Fredericks-Bowyer\\n\\nAppearances\\nFor the claimant:\\nIn Person\\nFor the respondent: Mr P Oppenheim\\n\\n\\nJUDGMENT AT PUBLIC PRELIMINARY\\nHEARING\\n\\n1. The harassment claim against the 1st respondent is dismissed because it was\\nbrought out of time and it is not just and equitable for the Tribunal to hear the\\ncomplaint; it is beyond the jurisdiction of the Tribunal.\\n\\n2. The unfair dismissal claim against the 2nd respondent is struck out because, given\\nhis admissions about his conduct leading to dismissal in this hearing, it has no\\nreasonable prospect of success.\\n\\n3. The five day hearing listed to be heard for from 19 April 2027 is consequentially\\nvacated.\\n\\n\\n\\nEmployment Judge Fredericks-Bowyer\\n\\nDated: 15 December 2025\\n\\n\\nCase Number: 6013952/2024\\n\\n2 of 2\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nNOTES:\\n\\n1.\\nOral judgment was given at the hearing. Written reasons will not be provided unless requested at the hearing or a\\nrequest is made in writing by a party within 14 days of the sending of this document.\\n\\n2.\\nWhere written reasons are produced, they will be published in their entirety on the public Employment Tribunal\\ndecisions website here: Employment tribunal decisions - GOV.UK (www.gov.uk).\"}]}",
+  "n_chunks": 1,
+  "section_tag_counts": {
+    "case_header": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[615,637]}]},\"decision_date\":{\"value\":\"2025-12-15\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[948,964]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[668,806]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"non_merits\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[668,678]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[668,806]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The unfair dismissal claim against the 2nd respondent is struck out because, given his admissions about his conduct leading to dismissal in this hearing, it has no reasonable prospect of success.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[611,806]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[615,637]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":null,\"unavailable_reason\":\"representation status not stated in source text\"}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[95,106]},{\"page\":1,\"paragraph\":1,\"text_span\":[134,163]},{\"page\":1,\"paragraph\":1,\"text_span\":[283,345]}]},\"region\":{\"value\":\"london\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[178,202]}]},\"region_source\":{\"value\":\"London (South) (via CVP)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[178,202]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              615,
+              637
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-12-15",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              948,
+              964
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                668,
+                806
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                668,
+                678
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    668,
+                    806
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The unfair dismissal claim against the 2nd respondent is struck out because, given his admissions about his conduct leading to dismissal in this hearing, it has no reasonable prospect of success."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              611,
+              806
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              615,
+              637
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": null,
+            "unavailable_reason": "representation status not stated in source text"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              95,
+              106
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              134,
+              163
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              283,
+              345
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              178,
+              202
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London (South) (via CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              178,
+              202
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no case-law authorities are cited in the provided source text\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"2025-12-15\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no evidence section present in the provided source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no facts or issues section present in the provided source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1418\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": null,\n      \"unavailable_reason\": \"no monetary award is stated in the provided source text\"\n    },\n    \"unapportioned_reason\": {\n      \"value\": \"Preliminary hearing: claims were dismissed/struck out at a preliminary stage and no merits award was made.\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1418\n          ]\n        }\n      ]\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1418\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"respondent\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1418\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": null,\n          \"unavailable_reason\": \"no compensatory or basic award is stated in the provided source text\"\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"The harassment claim against the 1st respondent is dismissed because it was brought out of time and it is not just and equitable for the Tribunal to hear the complaint; it is beyond the jurisdiction of the Tribunal.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1418\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"The unfair dismissal claim against the 2nd respondent is struck out because, given his admissions about his conduct leading to dismissal in this hearing, it has no reasonable prospect of success.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1418\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"preliminary_hearing\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"london\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"London (South) (via CVP)\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1418\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no statute and section are cited in the provided source text\"\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": null,
+        "unavailable_reason": "no case-law authorities are cited in the provided source text"
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-12-15",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence section present in the provided source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts or issues section present in the provided source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1418
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null,
+          "unavailable_reason": "no monetary award is stated in the provided source text"
+        },
+        "unapportioned_reason": {
+          "value": "Preliminary hearing: claims were dismissed/struck out at a preliminary stage and no merits award was made.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1418
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1418
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1418
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null,
+              "unavailable_reason": "no compensatory or basic award is stated in the provided source text"
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The harassment claim against the 1st respondent is dismissed because it was brought out of time and it is not just and equitable for the Tribunal to hear the complaint; it is beyond the jurisdiction of the Tribunal.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1418
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The unfair dismissal claim against the 2nd respondent is struck out because, given his admissions about his conduct leading to dismissal in this hearing, it has no reasonable prospect of success.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1418
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "preliminary_hearing",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London (South) (via CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1418
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": null,
+        "unavailable_reason": "no statute and section are cited in the provided source text"
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:52:47.106356+00:00",
+  "source_pdf_sha256": "bd8cae0232c1a9e1d8e16e416bad84da13a4a6885f04bc01a0b4c1f997ff4e75",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

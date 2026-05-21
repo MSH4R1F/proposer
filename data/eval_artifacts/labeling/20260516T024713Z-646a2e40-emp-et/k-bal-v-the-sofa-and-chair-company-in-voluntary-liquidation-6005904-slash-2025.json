@@ -1,0 +1,698 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025",
+  "case_reference": "k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-11-27",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6005904/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "K Bal v The Sofa and Chair Company (in voluntary liquidation): 6005904/2025 - Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/695b8b1c6a4ea67a402a83f5/Kanwaljit_Bal_v_The_Sofa_and_Chair_Company__in_voluntary_liquidation__-_6005904-2025.pdf"
+  },
+  "pdf_sha256": "07c711c0bcfd5dfecf6dd51624a6508e844f0876c754069edcc4097b0bf487ed",
+  "ocr_text_sha256": "b6feb06898413187884dfb6ab5da797abe2ff72b0ee95df1daf8c4961c3da9e8",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"k-bal-v-the-sofa-and-chair-company-in-voluntary-liquidation-6005904-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1500, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"CASE NUMBER: 6005904/2025\\n\\n\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\n\\nClaimant:\\n\\nKanwaljit Bal\\n\\n\\nRespondent:\\nTHE SOFA AND CHAIR COMPANY (IN VOLUNTARY\\nLIQUIDATION)\\n\\nHeard at:\\nLondon Central Employment Tribunal\\nOn:\\n27/11/25\\n\\nBefore:\\nEmployment Judge Dowling\\n\\n\\n\\n\\n\\nRepresentation\\nClaimant: Miss Davis\\nRespondent: did not attend and was not represented\\n\\n\\nJUDGMENT\\n\\n\\nThe Tribunal judgment is as follows:\\n\\n\\n1. This is a claim for unfair dismissal under s.94 Employment Rights Act 1996\\nbrought by Kanwaljit Bal against the Sofa and Chair Company Ltd (in\\nliquidation).\\n\\n2. This is the written decision following oral judgment delivered at the hearing.\\n\\nPreliminary matters\\n\\n3. The respondent has played no part in the proceedings\\n\\n4. The tribunal received an email from the respondent's representatives on the\\nevening before the hearing stating that they would not be responding to the\\nclaim or attending at trial.\\n\\n5. Rule 47 of the Employment Tribunal Procedure Rules 2024 provides that If\\na party fails to attend or to be represented at a hearing, the Tribunal may\\ndismiss the claim or proceed with the hearing in the absence of that party\\nwhich I proceeded to do.\\n\\nThe hearing\\n\\n6. I heard evidence from the claimant on oath and had a 57 page bundle as\\nwell as a witness statement from the claimant of the 17/10/25.\\n\\n7. In the absence of the respondents I asked the claimant some questions\\nregarding her claim and the evidence she had provided.\\n\\n8. The Claimant's evidence was unchallenged and I accept her evidence.\"}, {\"char_end\": 2984, \"char_start\": 1500, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Decision\\n\\n9. The claimant was an employee of the respondent and worked as a sales\\nexecutive for the respondent from 12/7/21 until her dismissal on 28/11/24.\\n\\n10. She performed consistently well and achieved good sales figures up until\\nthe point of her dismissal. She was within 85% of her sales target when she\\nwas dismissed and this was around what she consistently delivered. She\\nhas not been provided with the more lucrative trade clients promised to her\\n\\nby her employer, or the management support on sales technique which had\\nalso been promised to her.\\n\\n11. I find her performance was at a good level. She was not a poor performer.\\nIt seems the company was in financial difficulty given it entered liquidation\\nshortly after C dismissal and this may have been more of a consideration in\\nits decision to dismiss the claimant than her performance.\\n\\n\\n12. She was entitled not to be unfairly dismissed under s.94 Employment Rights\\nAct 1996.\\n\\n13. She was not dismissed for a potentially fair reason and therefore the\\ndismissal was unlawful. The employer has not established a potentially fair\\nreason for dismissal.\\n\\n14. Her dismissal came out of the blue - she had not been put on notice of the\\npossibility of dismissal. She had never received a verbal warning or written\\nwarning due to alleged poor performance. The employer had a written letter\\nof dismissal ready at a meeting which purported to be a performance\\ndiscussion. The respondent had reached a pre-determined outcome prior\"}, {\"char_end\": 4197, \"char_start\": 2984, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"tribunal_reasoning\", \"text\": \"to that meeting. The dismissal was procedurally unfair as well as\\nsubstantively unfair.\\n\\n15. The respondent failed to follow the ACAS Code.\\n\\n16. No compensatory award is sought due to the respondent's insolvent status,\\na company in liquidation with little likelihood if any, of payment to unsecured\\ncreditors.\\n\\n17. Therefore the remedy sought is a basic award which can be met by the\\nNational Insurance Fund.\\n\\n18. Miss Bal has 3 years continuous service and was aged over 41 during the\\nperiod of employment and is therefore entitled to 4.5 times her average\\nweekly salary. Her average weekly salary is above the statutory cap for the\\n\\npurposes of seeking payment from the National Insurance Fund and\\ntherefore I use the capped figure of £719\\n\\n19. Therefore the total amount payable to the Claimant is £3,235.50.\\n\\n\\n\\n1. The complaint of unfair dismissal is well-founded and succeeds.\\n\\n2. I make an order of a basic award to be paid to the claimant of £3,235.50.\\n\\n\\n\\n\\nEmployment Judge Dowling\\n\\n27 November 2025\\n\\n\\nJUDGMENT SENT TO THE PARTIES ON\\n\\n2 December 2025\\n................................................................\\n\\n\\n................................................................\\nFOR THE TRIBUNAL OFFICE\"}]}",
+  "n_chunks": 3,
+  "section_tag_counts": {
+    "case_header": 1,
+    "tribunal_reasoning": 2
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]}]},\"decision_date\":{\"value\":\"2025-11-27\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"evidence\":{\"value\":\"The Tribunal heard evidence from the claimant on oath, had a 57-page bundle and the claimant's witness statement dated 17/10/25; the claimant's evidence was unchallenged.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]}]},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues tagged source text is available for this field.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"total_awarded_gbp\":{\"value\":\"3235.50\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"claimant_success\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"awarded_gbp\":{\"value\":\"3235.50\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]}}],\"basic_award_gbp\":{\"value\":\"3235.50\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"compensatory_award_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"She was entitled not to be unfairly dismissed under s.94 Employment Rights Act 1996.\",\"She was not dismissed for a potentially fair reason and therefore the dismissal was unlawful. The employer has not established a potentially fair reason for dismissal.\",\"The dismissal was procedurally unfair as well as substantively unfair.\",\"The respondent failed to follow the ACAS Code.\",\"No compensatory award is sought due to the respondent's insolvent status, a company in liquidation with little likelihood if any, of payment to unsecured creditors.\",\"The complaint of unfair dismissal is well-founded and succeeds.\",\"I make an order of a basic award to be paid to the claimant of £3,235.50.\"],\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1500,2984]},{\"page\":1,\"paragraph\":3,\"text_span\":[2984,4197]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":false}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]}]},\"region\":{\"value\":\"london\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]}]},\"region_source\":{\"value\":\"London Central Employment Tribunal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.94\"}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1500]},{\"page\":1,\"paragraph\":2,\"text_span\":[1500,2984]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-11-27",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2984,
+              4197
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The Tribunal heard evidence from the claimant on oath, had a 57-page bundle and the claimant's witness statement dated 17/10/25; the claimant's evidence was unchallenged.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues tagged source text is available for this field."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "3235.50",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "claimant",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 3,
+                  "text_span": [
+                    2984,
+                    4197
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "3235.50",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 3,
+                  "text_span": [
+                    2984,
+                    4197
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": "3235.50",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "compensatory_award_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "She was entitled not to be unfairly dismissed under s.94 Employment Rights Act 1996.",
+          "She was not dismissed for a potentially fair reason and therefore the dismissal was unlawful. The employer has not established a potentially fair reason for dismissal.",
+          "The dismissal was procedurally unfair as well as substantively unfair.",
+          "The respondent failed to follow the ACAS Code.",
+          "No compensatory award is sought due to the respondent's insolvent status, a company in liquidation with little likelihood if any, of payment to unsecured creditors.",
+          "The complaint of unfair dismissal is well-founded and succeeds.",
+          "I make an order of a basic award to be paid to the claimant of £3,235.50."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1500,
+              2984
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2984,
+              4197
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": false
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London Central Employment Tribunal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.94"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1500,
+              2984
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no case-law authorities explicitly cited in source text\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1500\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"2025-11-27\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          2984,\n          4197\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no evidence section present in source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no facts or issues section present in source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"claimant\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 3,\n          \"text_span\": [\n            2984,\n            4197\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"3235.50\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 2,\n          \"text_span\": [\n            1500,\n            2984\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"claimant_success\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 3,\n          \"text_span\": [\n            2984,\n            4197\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"claimant\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 3,\n              \"text_span\": [\n                2984,\n                4197\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": \"3235.50\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 2,\n              \"text_span\": [\n                1500,\n                2984\n              ]\n            }\n          ]\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": \"3235.50\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 2,\n          \"text_span\": [\n            1500,\n            2984\n          ]\n        }\n      ]\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": \"0.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 2,\n          \"text_span\": [\n            1500,\n            2984\n          ]\n        }\n      ]\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"She was not dismissed for a potentially fair reason and therefore the dismissal was unlawful. The employer has not established a potentially fair reason for dismissal.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 2,\n            \"text_span\": [\n              1500,\n              2984\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"The dismissal was procedurally unfair as well as substantively unfair.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 2,\n            \"text_span\": [\n              1500,\n              2984\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"No compensatory award is sought due to the respondent's insolvent status, a company in liquidation with little likelihood if any, of payment to unsecured creditors.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 2,\n            \"text_span\": [\n              1500,\n              2984\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"Therefore the remedy sought is a basic award which can be met by the National Insurance Fund.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 2,\n            \"text_span\": [\n              1500,\n              2984\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"Therefore the total amount payable to the Claimant is \\u00a33,235.50.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 2,\n            \"text_span\": [\n              1500,\n              2984\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 2,\n        \"text_span\": [\n          1500,\n          2984\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1500\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1500\n            ]\n          }\n        ]\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": false,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1500\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1500\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"london\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1500\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"London Central Employment Tribunal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1500\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.94\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1500\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1500\n        ]\n      }\n    ]\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": null,
+        "unavailable_reason": "no case-law authorities explicitly cited in source text"
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-11-27",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2984,
+              4197
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence section present in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts or issues section present in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "3235.50",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 2,
+              "text_span": [
+                1500,
+                2984
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 3,
+              "text_span": [
+                2984,
+                4197
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "claimant",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 3,
+                  "text_span": [
+                    2984,
+                    4197
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "3235.50",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 2,
+                  "text_span": [
+                    1500,
+                    2984
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": "3235.50",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 2,
+              "text_span": [
+                1500,
+                2984
+              ]
+            }
+          ]
+        },
+        "compensatory_award_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 2,
+              "text_span": [
+                1500,
+                2984
+              ]
+            }
+          ]
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "She was not dismissed for a potentially fair reason and therefore the dismissal was unlawful. The employer has not established a potentially fair reason for dismissal.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 2,
+                "text_span": [
+                  1500,
+                  2984
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The dismissal was procedurally unfair as well as substantively unfair.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 2,
+                "text_span": [
+                  1500,
+                  2984
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "No compensatory award is sought due to the respondent's insolvent status, a company in liquidation with little likelihood if any, of payment to unsecured creditors.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 2,
+                "text_span": [
+                  1500,
+                  2984
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "Therefore the remedy sought is a basic award which can be met by the National Insurance Fund.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 2,
+                "text_span": [
+                  1500,
+                  2984
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "Therefore the total amount payable to the Claimant is £3,235.50.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 2,
+                "text_span": [
+                  1500,
+                  2984
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1500,
+              2984
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1500
+                ]
+              }
+            ]
+          },
+          {
+            "role": "respondent_employer",
+            "represented": false,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1500
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "london",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "London Central Employment Tribunal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.94",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1500
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1500
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:50:55.039213+00:00",
+  "source_pdf_sha256": "07c711c0bcfd5dfecf6dd51624a6508e844f0876c754069edcc4097b0bf487ed",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

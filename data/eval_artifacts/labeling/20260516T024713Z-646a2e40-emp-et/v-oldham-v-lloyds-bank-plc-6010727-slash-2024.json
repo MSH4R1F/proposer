@@ -1,0 +1,447 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "v-oldham-v-lloyds-bank-plc-6010727-slash-2024",
+  "case_reference": "v-oldham-v-lloyds-bank-plc-6010727-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-03-10",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6010727/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/v-oldham-v-lloyds-bank-plc-6010727-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "V Oldham v Lloyds Bank plc: 6010727/2024 - Partial Dismissal",
+    "url": "https://assets.publishing.service.gov.uk/media/69c8d9954321776215360a10/6010727.2024_Mrs_V_Oldham_v_Lloyds_Bank_Plc.pdf"
+  },
+  "pdf_sha256": "80d17ba857add6b74e9133badfb9dbd6d233fca5cd76526aca096f1930977e65",
+  "ocr_text_sha256": "2debb96f9d061c08df7cc364f28e1167992c27fe51908289590a8c82980d67ff",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"v-oldham-v-lloyds-bank-plc-6010727-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1499, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case number: 6010727/2024\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\n\\nClaimant:\\n\\nVictoria Oldham\\n\\nRespondent: Lloyds Bank Plc\\n\\n\\n\\nHeard at:\\nHull (by video)\\n\\n\\n\\n\\n\\n\\nOn:\\n\\n6 March 2026\\n\\nBefore:\\nEmployment Judge Miller\\n\\nRepresentation\\nClaimant:\\n\\nIn person (assisted by her husband)\\nRespondent:\\nMs M Tutin - counsel\\n\\n\\nJUDGMENT\\n\\n1.\\nThe complaint of unfair dismissal was not presented within the applicable time\\nlimit. It was not reasonably practicable to do so but the claim was not\\npresented within a further reasonable period. The claim is therefore\\ndismissed.\\n2. The complaint of a failure to make reasonable adjustments in relation only to\\nthe complaints arising from the provision, criterion or practice of the\\nrespondent applying its attendance policy and attendance triggers rigidly was\\nnot presented within the applicable time limit. It is not just and equitable to\\nextend the time limit. That complaint is therefore dismissed.\\n3. The remaining claims of failure to make reasonable adjustments will continue\\nto a final hearing.\\n\\n\\n\\n\\n\\nApproved by\\n\\n\\n\\n\\n\\nEmployment Judge Miller\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nDate: 10 March 2026\\n\\n\\n\\n\\n\\n\\nJUDGMENT SENT TO THE PARTIES ON\\n\\n\\n\\n\\n\\n11 March 2026\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nFOR THE TRIBUNAL OFFICE Case number: 6010727/2024\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nNotes\\nReasons for the judgment having been given orally at the hearing, written reasons will not be provided\\nunless a request was made by either party at the hearing or a written request is presented by either\\nparty within 14 days of the sending of this written record of the decision.\"}, {\"char_end\": 1744, \"char_start\": 1499, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Public access to employment tribunal decisions\\nJudgments and reasons for the judgments are published, in full, online at www.gov.uk/employment-\\ntribunal-decisions shortly after a copy has been sent to the claimant(s) and respondent(s) in a case.\"}]}",
+  "n_chunks": 2,
+  "section_tag_counts": {
+    "case_header": 1,
+    "tribunal_reasoning": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[321,337]}]},\"decision_date\":{\"value\":\"2026-03-10\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[1071,1084]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[304,534]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":\"Claim dismissed on time-limit grounds before the unfair-dismissal merits were determined.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[304,534]}]},\"determination\":{\"value\":\"non_merits\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[304,534]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[304,534]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The complaint of unfair dismissal was not presented within the applicable time limit. It was not reasonably practicable to do so but the claim was not presented within a further reasonable period. The claim is therefore dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[304,534]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[321,337]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[220,255]},{\"page\":1,\"paragraph\":1,\"text_span\":[268,288]}]},\"region\":{\"value\":\"yorkshire_and_humber\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[120,135]}]},\"region_source\":{\"value\":\"Hull (by video)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[120,135]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              321,
+              337
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-03-10",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              1071,
+              1084
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                304,
+                534
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": "Claim dismissed on time-limit grounds before the unfair-dismissal merits were determined.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                304,
+                534
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                304,
+                534
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    304,
+                    534
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The complaint of unfair dismissal was not presented within the applicable time limit. It was not reasonably practicable to do so but the claim was not presented within a further reasonable period. The claim is therefore dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              304,
+              534
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              321,
+              337
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              220,
+              255
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              268,
+              288
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "yorkshire_and_humber",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              120,
+              135
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Hull (by video)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              120,
+              135
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": [],\n  \"claim_types\": [\n    \"unfair_dismissal\"\n  ],\n  \"decision_date\": {\n    \"value\": \"10 March 2026\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1499\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No evidence section present in source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"No facts or issues sections present in source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1499\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": null,\n      \"unavailable_reason\": \"No award or remedy amount stated in source text\"\n    },\n    \"unapportioned_reason\": {\n      \"value\": null,\n      \"unavailable_reason\": \"Not applicable; claim dismissed on time-limits\"\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1499\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [],\n    \"basic_award_gbp\": {\n      \"value\": null,\n      \"unavailable_reason\": \"No basic award stated in source text\"\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null,\n      \"unavailable_reason\": \"No compensatory award stated in source text\"\n    },\n    \"deductions_pct\": {\n      \"value\": null,\n      \"unavailable_reason\": \"No deduction percentage stated in source text\"\n    },\n    \"uplifts_pct\": {\n      \"value\": null,\n      \"unavailable_reason\": \"No uplift percentage stated in source text\"\n    },\n    \"reinstatement_sought\": {\n      \"value\": null,\n      \"unavailable_reason\": \"Not stated in source text\"\n    },\n    \"reinstatement_granted\": {\n      \"value\": null,\n      \"unavailable_reason\": \"Not stated in source text\"\n    },\n    \"re_engagement_sought\": {\n      \"value\": null,\n      \"unavailable_reason\": \"Not stated in source text\"\n    },\n    \"re_engagement_granted\": {\n      \"value\": null,\n      \"unavailable_reason\": \"Not stated in source text\"\n    }\n  },\n  \"key_reasoning_quotes\": [\n    {\n      \"quote\": \"The complaint of unfair dismissal was not presented within the applicable time limit. It was not reasonably practicable to do so but the claim was not presented within a further reasonable period. The claim is therefore dismissed.\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1499\n          ]\n        }\n      ]\n    },\n    {\n      \"quote\": \"The complaint of a failure to make reasonable adjustments in relation only to the complaints arising from the provision, criterion or practice of the respondent applying its attendance policy and attendance triggers rigidly was not presented within the applicable time limit. It is not just and equitable to extend the time limit. That complaint is therefore dismissed. The remaining claims of failure to make reasonable adjustments will continue to a final hearing.\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1499\n          ]\n        }\n      ]\n    }\n  ],\n  \"matter_type\": {\n    \"value\": null,\n    \"unavailable_reason\": \"Matter type not stated in source text\"\n  },\n  \"parties\": [\n    {\n      \"role\": \"claimant\",\n      \"represented\": false\n    },\n    {\n      \"role\": \"respondent_employer\",\n      \"represented\": true\n    }\n  ],\n  \"region\": {\n    \"value\": \"yorkshire_and_humber\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1499\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Hull (by video)\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1499\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": []\n}",
+    "parsed": {
+      "cited_authorities": [],
+      "claim_types": [
+        "unfair_dismissal"
+      ],
+      "decision_date": {
+        "value": "10 March 2026",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section present in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues sections present in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null,
+          "unavailable_reason": "No award or remedy amount stated in source text"
+        },
+        "unapportioned_reason": {
+          "value": null,
+          "unavailable_reason": "Not applicable; claim dismissed on time-limits"
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        "per_issue": [],
+        "basic_award_gbp": {
+          "value": null,
+          "unavailable_reason": "No basic award stated in source text"
+        },
+        "compensatory_award_gbp": {
+          "value": null,
+          "unavailable_reason": "No compensatory award stated in source text"
+        },
+        "deductions_pct": {
+          "value": null,
+          "unavailable_reason": "No deduction percentage stated in source text"
+        },
+        "uplifts_pct": {
+          "value": null,
+          "unavailable_reason": "No uplift percentage stated in source text"
+        },
+        "reinstatement_sought": {
+          "value": null,
+          "unavailable_reason": "Not stated in source text"
+        },
+        "reinstatement_granted": {
+          "value": null,
+          "unavailable_reason": "Not stated in source text"
+        },
+        "re_engagement_sought": {
+          "value": null,
+          "unavailable_reason": "Not stated in source text"
+        },
+        "re_engagement_granted": {
+          "value": null,
+          "unavailable_reason": "Not stated in source text"
+        }
+      },
+      "key_reasoning_quotes": [
+        {
+          "quote": "The complaint of unfair dismissal was not presented within the applicable time limit. It was not reasonably practicable to do so but the claim was not presented within a further reasonable period. The claim is therefore dismissed.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        {
+          "quote": "The complaint of a failure to make reasonable adjustments in relation only to the complaints arising from the provision, criterion or practice of the respondent applying its attendance policy and attendance triggers rigidly was not presented within the applicable time limit. It is not just and equitable to extend the time limit. That complaint is therefore dismissed. The remaining claims of failure to make reasonable adjustments will continue to a final hearing.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        }
+      ],
+      "matter_type": {
+        "value": null,
+        "unavailable_reason": "Matter type not stated in source text"
+      },
+      "parties": [
+        {
+          "role": "claimant",
+          "represented": false
+        },
+        {
+          "role": "respondent_employer",
+          "represented": true
+        }
+      ],
+      "region": {
+        "value": "yorkshire_and_humber",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Hull (by video)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "statutory_basis": []
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:58:39.535720+00:00",
+  "source_pdf_sha256": "80d17ba857add6b74e9133badfb9dbd6d233fca5cd76526aca096f1930977e65",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

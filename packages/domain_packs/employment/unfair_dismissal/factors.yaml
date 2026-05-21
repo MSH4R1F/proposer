@@ -1,0 +1,204 @@
+# employment.unfair_dismissal.v1 factor catalog (SHA-149 v1)
+#
+# Sources of authority:
+#   - Employment Rights Act 1996, ss.94, 98, 98(4), 108, 111, 122, 123
+#   - ACAS Code of Practice on Disciplinary and Grievance Procedures (2015)
+#   - British Home Stores v Burchell [1980] ICR 303 (investigation test)
+#   - Iceland Frozen Foods v Jones [1982] IRLR 439 (band of reasonable responses)
+#   - Polkey v AE Dayton Services Ltd [1987] UKHL 8 (procedural-fairness deduction)
+#
+# Design rules (leakage audit applied):
+#   - Every factor describes a PRE-DECISION fact the LLM can read from the
+#     redacted facts narrative. No factor encodes a tribunal finding.
+#   - "fair_reason_category" captures the EMPLOYER'S STATED reason, not the
+#     tribunal's acceptance of it.
+#   - Procedural factors capture observable steps (whether a hearing was held,
+#     whether an appeal was offered) — not the tribunal's reasonableness
+#     assessment of those steps.
+#   - "et1_lodged_in_time" is observable from the dates in the narrative
+#     (claim date vs effective date of termination + 3 months); it does NOT
+#     encode the tribunal's s111 conclusion.
+#   - "non_merits" outcome is included because preliminary / strike-out /
+#     withdrawal / default-judgment cases are a 39% slice of the gold set
+#     and the LLM needs structural signal to identify them.
+#
+# Polarity convention (abstract; surface labels rendered domain-side):
+#   pro_claimant   — when present/true, pushes toward claimant_success
+#   pro_respondent — when present/true, pushes toward respondent_success
+#   neutral        — jurisdictional or routing factor; does not favour either
+
+factors:
+
+  # ---- Fair reason (s.98(2)) -------------------------------------------------
+
+  - id: fair_reason_category
+    value_type: enum
+    polarity: pro_respondent
+    requires_evidence: true
+    enum_values: [capability, conduct, redundancy, statutory_bar, sosr, none_stated]
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+      - partial_success
+      - non_merits
+    description: >-
+      The s.98(2) statutory category of the dismissal reason as STATED BY
+      THE EMPLOYER. Capture the employer's pleaded reason, not the tribunal's
+      acceptance of it. "none_stated" when the employer's stated reason is
+      not in the source narrative (typically a non_merits disposition).
+
+  # ---- Procedural fairness (ACAS Code + Burchell) -----------------------------
+
+  - id: investigation_conducted
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+    description: >-
+      Whether the employer carried out an investigation before deciding to
+      dismiss. True when the source describes specific investigatory steps
+      (witness interviews, document review, fact-finding meeting). False
+      when the source describes immediate dismissal with no investigation,
+      or when no investigation is mentioned in a conduct/capability case.
+
+  - id: disciplinary_hearing_held
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+    description: >-
+      Whether the employer convened a formal disciplinary or capability
+      meeting before dismissing the claimant. True when a hearing date,
+      attendees, or invitation letter is described. False when the source
+      describes summary dismissal without a hearing.
+
+  - id: appeal_offered
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+    description: >-
+      Whether the employer offered the claimant a right of appeal after
+      dismissal. True when the dismissal letter or subsequent communication
+      mentioned an appeal; True when an appeal hearing was actually held.
+
+  - id: prior_warnings_given
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+    description: >-
+      Whether the claimant received any prior disciplinary warnings (verbal,
+      written, or final written) about the conduct/performance for which they
+      were ultimately dismissed. False when the dismissal was for first-time
+      gross misconduct OR when no warnings preceded the dismissal in a
+      non-gross case.
+
+  # ---- Substantive characteristics --------------------------------------------
+
+  - id: dismissal_was_summary
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - respondent_success
+    description: >-
+      Whether the dismissal was summary — without notice or pay in lieu of
+      notice. True when the source describes immediate termination without
+      notice. Pair with fair_reason_category=conduct for gross-misconduct
+      cases (where summary dismissal can still be lawful).
+
+  - id: gross_misconduct_alleged
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+    description: >-
+      Whether the employer characterised the alleged conduct as gross
+      misconduct (e.g. theft, violence, deliberate breach of safety). The
+      "gross" framing alters the s.98(4) analysis around summary dismissal.
+
+  - id: length_of_service_years
+    value_type: number
+    polarity: neutral
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+    description: >-
+      The claimant's continuous service with the employer at the effective
+      date of termination, in years. Used by the tribunal as context (basic-
+      award scaling) and indirectly correlates with procedural-fairness
+      expectations.
+
+  # ---- Jurisdiction / non_merits indicators -----------------------------------
+
+  - id: et1_in_time
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - non_merits
+      - claimant_success
+      - respondent_success
+    description: >-
+      Whether the ET1 claim was lodged within the s.111 three-month time
+      limit from the effective date of termination, accounting for ACAS
+      early-conciliation extension. True when dates in the narrative show
+      filing within the window. False when the narrative describes the
+      claim being late or "out of time" pleaded by the respondent — but
+      always derive this from raw dates, not from a tribunal finding on
+      time-limit issues.
+
+  - id: is_preliminary_or_strike_out_hearing
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - non_merits
+    description: >-
+      Whether the hearing described in the source is a PRELIMINARY HEARING,
+      STRIKE-OUT APPLICATION, or RECONSIDERATION (rather than a final merits
+      hearing). True signals the case is procedurally-decided rather than
+      decided on the s.98 merits.
+
+  - id: respondent_failed_to_engage
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - non_merits
+    description: >-
+      Whether the respondent failed to file an ET3 response, did not attend
+      the hearing, or otherwise failed to engage with the proceedings. True
+      indicates a default-judgment scenario where the merits typically
+      resolve in the claimant's favour. (NB: in this corpus, some such
+      cases are coded as non_merits respondent-wins where the tribunal
+      treated the disposition as administrative rather than substantive.)
+
+  # ---- Representation (procedural-outcome correlate) --------------------------
+
+  - id: claimant_represented_at_hearing
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - respondent_success
+    description: >-
+      Whether the claimant had legal representation (solicitor, counsel, or
+      lay representative) at the ET hearing. Procedurally observable; weakly
+      correlates with claimant_success in published unfair-dismissal data
+      but is not by itself a merits signal.

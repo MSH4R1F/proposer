@@ -1,0 +1,468 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-s-morris-v-mcbritain-ltd-6009962-slash-2025",
+  "case_reference": "mr-s-morris-v-mcbritain-ltd-6009962-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-03-07",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6009962/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-s-morris-v-mcbritain-ltd-6009962-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr S Morris v McBritain Ltd: 6009962/2025 - Partial Dismissal",
+    "url": "https://assets.publishing.service.gov.uk/media/69f1cc330bb62e692c5d6ddf/stuart_morris_v_MCBRITAIN_LTD_-_Judgment_-_6009962.2025.pdf"
+  },
+  "pdf_sha256": "024adfac3aa0105116c59d586675b277b4d6e0da68ee1d3a5ce94cfcb3e1afff",
+  "ocr_text_sha256": "13b4a2913ff80003855e9d613f797bb155e3da2b7f42832c5fb185abcb8ab23c",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-s-morris-v-mcbritain-ltd-6009962-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 416, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case No: 6009962/2025\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\n\\nClaimant:\\n\\nMr. S Morris\\n\\nRespondent: McBritain Limited\\n\\n\\nJUDGMENT\\n\\n\\n1. The complaint of unfair dismissal is dismissed on the basis that the Tribunal\\ndoes not have jurisdiction to hear it due to the Claimant's length of service.\\n\\n2. This Judgment does not affect any other complaint by the Claimant.\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nEmployment Judge Faulkner\\n\\n\\n\\n\\n\\nApproved on: 7 March 2026\"}]}",
+  "n_chunks": 1,
+  "section_tag_counts": {
+    "case_header": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[125,154]}]},\"decision_date\":{\"value\":\"7 March 2026\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[404,416]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence section is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[155,167]},{\"page\":1,\"paragraph\":1,\"text_span\":[199,277]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"non_merits\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[199,277]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[125,167]},{\"page\":1,\"paragraph\":1,\"text_span\":[199,277]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The complaint of unfair dismissal is dismissed on the basis that the Tribunal does not have jurisdiction to hear it due to the Claimant's length of service.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[125,277]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[125,154]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":null,\"unavailable_reason\":\"representation status not stated in source text\"},{\"role\":\"respondent_employer\",\"represented\":null,\"unavailable_reason\":\"representation status not stated in source text\"}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[50,73]},{\"page\":1,\"paragraph\":1,\"text_span\":[75,104]}]},\"region\":{\"value\":null,\"unavailable_reason\":\"Hearing centre or region is not stated in source text.\"},\"region_source\":{\"value\":null,\"unavailable_reason\":\"Hearing centre is not stated in source text.\"},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              125,
+              154
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "7 March 2026",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              404,
+              416
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                155,
+                167
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                199,
+                277
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                199,
+                277
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    125,
+                    167
+                  ]
+                },
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    199,
+                    277
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The complaint of unfair dismissal is dismissed on the basis that the Tribunal does not have jurisdiction to hear it due to the Claimant's length of service."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              125,
+              277
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              125,
+              154
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": null,
+            "unavailable_reason": "representation status not stated in source text"
+          },
+          {
+            "role": "respondent_employer",
+            "represented": null,
+            "unavailable_reason": "representation status not stated in source text"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              50,
+              73
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              75,
+              104
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": null,
+        "unavailable_reason": "Hearing centre or region is not stated in source text."
+      },
+      "region_source": {
+        "value": null,
+        "unavailable_reason": "Hearing centre is not stated in source text."
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no authorities cited in source text\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          416\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"7 March 2026\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          416\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no evidence section in source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no facts or issues section in source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            416\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"0.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            416\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": \"The Tribunal does not have jurisdiction to hear it due to the Claimant's length of service.\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            416\n          ]\n        }\n      ]\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            416\n          ]\n        }\n      ]\n    },\n    \"per_issue\": {\n      \"value\": [],\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            416\n          ]\n        }\n      ]\n    },\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      \"The complaint of unfair dismissal is dismissed on the basis that the Tribunal does not have jurisdiction to hear it due to the Claimant's length of service.\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          416\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          416\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": null,\n        \"unavailable_reason\": \"representation status not stated in source text\"\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": null,\n        \"unavailable_reason\": \"representation status not stated in source text\"\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          416\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": null,\n    \"unavailable_reason\": \"hearing centre not stated in source text\"\n  },\n  \"region_source\": {\n    \"value\": null,\n    \"unavailable_reason\": \"hearing centre not stated in source text\"\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no statute cited in source text\"\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": null,
+        "unavailable_reason": "no authorities cited in source text"
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              416
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "7 March 2026",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              416
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence section in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts or issues section in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                416
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                416
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": "The Tribunal does not have jurisdiction to hear it due to the Claimant's length of service.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                416
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                416
+              ]
+            }
+          ]
+        },
+        "per_issue": {
+          "value": [],
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                416
+              ]
+            }
+          ]
+        },
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The complaint of unfair dismissal is dismissed on the basis that the Tribunal does not have jurisdiction to hear it due to the Claimant's length of service."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              416
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              416
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": null,
+            "unavailable_reason": "representation status not stated in source text"
+          },
+          {
+            "role": "respondent_employer",
+            "represented": null,
+            "unavailable_reason": "representation status not stated in source text"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              416
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": null,
+        "unavailable_reason": "hearing centre not stated in source text"
+      },
+      "region_source": {
+        "value": null,
+        "unavailable_reason": "hearing centre not stated in source text"
+      },
+      "statutory_basis": {
+        "value": null,
+        "unavailable_reason": "no statute cited in source text"
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:58:10.951377+00:00",
+  "source_pdf_sha256": "024adfac3aa0105116c59d586675b277b4d6e0da68ee1d3a5ce94cfcb3e1afff",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

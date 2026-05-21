@@ -1,0 +1,547 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "r-pyman-v-alitex-ltd-1400384-slash-2025",
+  "case_reference": "r-pyman-v-alitex-ltd-1400384-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-02-13",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "1400384/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/r-pyman-v-alitex-ltd-1400384-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "R Pyman v Alitex Ltd: 1400384/2025 - Judgment with Reasons",
+    "url": "https://assets.publishing.service.gov.uk/media/69ea19efed93f72cf81632ec/Richard_Pyman_-vs-_Alitex_LTD_-_Judgment.pdf"
+  },
+  "pdf_sha256": "35468896f9eb42ef868ac3359e8c09a5a9cf0cf4f2b3045f90c18bf2df3434ca",
+  "ocr_text_sha256": "ad635ba5f1fe341aad89f120fef23ef22fc4e2df451feea7ba56a1e170d8c886",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"r-pyman-v-alitex-ltd-1400384-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1302, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"1\\n\\nCase Number: 1400384/2025\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\n\\nRichard Pyman\\n\\n\\nRespondent:\\nAlitex LTD\\n\\nHeard at:\\nBristol (by CVP)\\n\\n\\n\\n\\nOn:\\n12th and 13th February 2026\\n\\n\\nBefore:\\nEmployment Judge Clarkson\\n\\n\\n\\n\\n\\nRepresentation\\nClaimant:\\nMr Mofatt, Lay representative.\\n\\n\\n\\nRespondent: Ms Brown, Solicitor.\\n\\nJUDGMENT\\n\\nThe judgment of the Tribunal is as follows:\\n1.\\nThe complaint of unfair dismissal is well-founded and succeeds.\\n2.\\nThe Claimant's employment would have ended on 20 February 2025 when\\nthe Claimant would have been fairly dismissed.\\n3.\\nThe Respondent shall pay the Claimant the following sums:\\n(a)\\nA basic award of £1584, three weeks gross pay.\\n(b)\\nA compensatory award of £2652. This is loss of earnings for six\\nweeks, the time it would have taken for a fair process to be carried\\nout.\\n\\nREASONS\\n\\nINTRODUCTION\\n\\n1. This claim is brought by the Claimant, Mr Pyman, against his former\\nemployer Alitex LTD. The Claimant was an installer of bespoke\\ngreenhouses, for the Respondent in their company of approximately 75\\npeople.\\n\\n2. The Claimant attended the hearing and gave evidence with the assistance\\n2\\n\\nof his lay representative. On behalf of the Respondent, Mr Hancock the\\nmanaging director attended and gave evidence as did Mrs Hall, the brand\\ndirector and Mr O'Leary the installation manager.\"}, {\"char_end\": 2763, \"char_start\": 1302, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"3. There was a bundle of 164 pages that had been agreed between the\\nparties. This exceeded the hundred pages provided for in the case\\nmanagement directions. Having considered the evidence within the bundle\\nand the Respondent's application permission was given for the entire\\nbundle to be considered for the hearing along with the three witness\\nstatements on behalf of the Respondent and the Claimant's witness\\nstatement.\\n\\n4. The claim was heard on the 12th and 13th of February 2026 via CVP. The\\nClaimant and the three witnesses for the Respondent gave oral evidence,\\nadopted their statements, and were cross examined in relation to their\\nevidence. I then heard submissions on behalf of both parties.\\n\\nThe claims and issues\\n\\n5. The claim was made for unfair dismissal on the basis that the Claimant\\nwas not given a valid reason for his dismissal nor was a fair process\\nfollowed. The issues the Tribunal has to determine are:-\\n\\n6. Was the Claimant dismissed?\\n\\n7. What was the reason for dismissal? The Respondent ET3 sets out the\\nfactual basis for the dismissal, the serious allegation made against the\\nClaimant. At the hearing the Respondent clarified that they considered the\\nfacts, a serious allegation, resulted in a breach of trust in the Claimant, and\\ntherefore were some other substantial reason, which is a potentially fair\\nreason for dismissal under s. 98 (2) of the Employment Rights Act 1996 and\\nin the alternative the reason was related to conduct.\"}, {\"char_end\": 4120, \"char_start\": 2763, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"8. Was the decision to dismiss a fair sanction, that is, was it within the range\\nof reasonable responses open to a reasonable employer when faced with\\nthese facts?\\n\\n9. Did the Respondent adopt a fair procedure? The Claimant challenges the\\nfairness of the procedure in the following respects;\\n\\na) He was not notified of the real reason for his dismissal\\nb) He was not given the chance to present his version of events.\\n\\n10. The Respondent conceded the dismissal was procedurally unfair.\\n\\n11. If it did not use a fair procedure, would the Claimant have been fairly\\ndismissed in any event and/or to what extent and when?\\n\\n12. If the dismissal was unfair, did the Claimant contribute to the dismissal by\\nculpable conduct? This requires the Respondent to prove, on the balance\\nof probabilities, that the claimant actually committed the misconduct\\nalleged. The issues in relation to contributory fault are:-\\n\\n3\\n\\na. Was any conduct of the Claimant before the dismissal such that it\\nwould be just and equitable to reduce the amount of the basic\\naward and, if so, by how much (per s122 (2) Employment Rights\\nAct 1996)?\\nb. Was the dismissal, to any extent, caused or contributed to by any\\naction of the complainant and, if so, by what proportion is it just and\\nequitable to reduce the amount of the compensatory award (per\\ns123(6) Employment Rights Act 1996)\\n\\nFACTS\"}, {\"char_end\": 5529, \"char_start\": 4120, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"13. Most of the facts in this claim are undisputed. The dispute arises in regard\\nto an allegation that another employee of the Respondent made against\\nthe Claimant. The Claimant does not accept this other employee's account\\nor her allegations but did not challenge the credibility of the evidence of\\nMrs Hall, the brand director, to whom the report of the allegation was\\nmade by the other employee.\\n\\n14. Mrs Hall provided a written witness statement and gave oral evidence, she\\nwas consistent in her evidence as well as detailed and I found her to be a\\nfull and frank witness. She was not challenged in regard to credibility by\\nthe Claimant, and I found her evidence to be supported by\\ncontemporaneous messages that were included within the bundle. Overall\\nI find her to be a credible witness.\\n\\n15. Her evidence was that on 19 December 2024 the Respondent held their\\nChristmas party. The Claimant agreed that this was at a barn local to the\\ncompany and that he attended. Mrs Hall gave evidence that she had seen\\nthe other employee at the party drunk and was aware that there was\\nalcohol at the Christmas party.\\n\\n16. During the weekend following the Christmas party, on 22 December 2024,\\nthe another employee of the Respondent contacted Mrs Hall to request a\\nmeeting the following day.\\n\\n17. On 23 December 2024 Mrs Hall met with this employee and found her to\\nbe extremely distressed, very shaken and crying.\"}, {\"char_end\": 7022, \"char_start\": 5529, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"18. Mrs Hall's evidence was that she reported to her that she had not been in\\na fit state to give consent, that she had been driven from the party to the\\naccommodation where she was staying with her friend by the Claimant.\\nShe also said that she had grazes over her face from falling on the\\ndriveway to this accommodation after the party. The Claimant accepted in\\nhis evidence that the other employee and her friend had been drunk and\\nthat he had driven them from the party to their accommodation and that\\nshe had fallen and injured herself.\\n\\n19. The accounts of what happened next subsequently diverged. The other\\nemployee reported to Mrs Hall that the Claimant had stayed overnight, that\\nher friend had seen him having sex with her during the night, that he had\\nleft in a hurry in the morning and left his underpants and that she had then\\nmade a report of being assaulted, had had a forensic examination and\\nDNA samples taken and a record of what had happened had been made.\\n4\\n\\nMrs Hall's oral evidence was that the employee was then told that she\\nwould have some time to decide whether she wished to proceed with the\\ncriminal prosecution against the Claimant. She informed Mrs Hall that she\\ndid not want the Claimant to be told the allegation as she needed time to\\ndecide what she would do.\\n\\n20. Mrs Hall's evidence was that she was concerned for the safety and\\nwelfare this employee, the safety of the other employees and their\\ncustomers. She had found the account to be highly credible.\"}, {\"char_end\": 8402, \"char_start\": 7022, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"facts\", \"text\": \"21. The Respondent's company then closed for the Christmas holiday. On 7\\nJanuary 2025 Mrs Hall told Mr Hall, the company chairman, and Mr\\nHancock the managing director, of the allegation made, with the\\nemployee's permission.\\n\\n22. Mr Hancock's evidence was that he considered it was impossible to\\nensure that the Claimant and the other employee were kept apart at work.\\nHe was also concerned about the other female employees and customers\\nand considered it best to dismiss the Claimant immediately. He was\\nconsistent in his evidence and it was consistent with the evidence of Mrs\\nHall and I accept this as the principal reason for the dismissal. I accept his\\nevidence that the lack of trust meant that they did not want him to be about\\nother females.\\n\\n23. On 08/01/25 Mr O'Leary told the Claimant to attend a meeting at work the\\nnext day.\\n\\n24. On 09/01/25 the Claimant had a meeting with Mr Hancock and the\\nClaimant was dismissed. He was told this was on the basis of poor\\nperformance. He was given four weeks pay in lieu of notice.\\n\\n25. On 10/01/25 the Claimant raised a grievance which the Respondent said\\nthey would treat as an appeal.\\n\\n26. The Claimant then wrote to the Respondent to say that he did not wish to\\nattend the appeal hearing on the 20/01/25 and the Respondent then sent\\nhim the written reasons for his dismissal citing poor performance on the\\n29/01/25.\\n\\nTHE LAW\"}, {\"char_end\": 9850, \"char_start\": 8402, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"facts\", \"text\": \"27. The legal framework\\nSection 98 of the Employment Rights Act 1996 (ERA) is the starting point. It\\nprovides:\\n(1) In determining for the purposes of this Part whether the dismissal of\\nan employee is fair or unfair, it is for the employer to show-\\n(a) the reason (or, if more than one, the principal reason) for the dismissal,\\nand\\n(b)that it is either a reason falling within subsection\\n(2) or some other substantial reason of a kind such as to justify the\\ndismissal of an employee holding the position which the employee held.\\n(2) a reason falls within this subsection if it-\\n5\\n\\n(a) relates to the capability ... of the employee for performing work\\nof the kind which he was employed by the employer to do ...\\n(b) relates to the conduct of the employee\\n...\\n(4) Where the employer has fulfilled the requirements of subsection (1),\\nthe determination of the question whether the dismissal is fair or unfair\\n(having regard to the reason shown by the employer)-\\n(a) depends on whether in the circumstances (including the size\\nand administrative resources of the employer's undertaking) the\\nemployer acted reasonably or unreasonably in treating it as a\\nsufficient reason for dismissing the employee, and\\n(b) shall be determined in accordance with equity and the\\nsubstantial merits of the case.\\n\\n\\n28. Section 98(1)(b) is a catch-all provision covering dismissal for 'some other\\nsubstantial reason of a kind such as to justify the dismissal of an employee\"}, {\"char_end\": 11339, \"char_start\": 9850, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"facts\", \"text\": \"holding the position which the employee held'. Sir John Brightman in RS\\nComponents Ltd v Irwin 1973 ICR 535, NIRC.\\n\\n29. The reason must be genuine, 'one which is genuinely held, and\\nparticularly is one which most employers would be expected to adopt, it\\nmay be a substantial reason even where modern sophisticated opinion\\ncan be adduced to suggest that it has no scientific foundation' Harper v\\nNational Coal Board 1980 IRLR 260, EAT.\\n\\n30. In regard to some other substantial reason the court of session in L v K\\n2021 CSIH 35 upheld the decision of the Employment Tribunal,\\n\\npara 27 'In the proven circumstance it decided that it could no longer place\\nthe necessary trust and confidence in him, not because it was satisfied\\nthat he was guilty, but because there was a real possibility that he was an\\noffender.'\\n\\nPara 28 'The ET correctly recognised that the issue is whether the\\ndecision to dismiss for the stated reason fell within the band of reasonable\\nresponses, and for the reasons summarised above, which we regard as\\nfree of error or legal flaw, held that it did.'\\n\\nPara 35. ' An employment contract is a bilateral relationship. Cases such\\nas the present throw the parties' respective interests into acute and direct\\nconflict. Nonetheless, however the case may seem from the perspective of\\nthe employee, particularly if in fact he is blameless, once a substantial and\\ngenuine reason in terms of section 98(1)(b) is established, the statutory\\ntest in subsection 4 must be applied.'\"}, {\"char_end\": 12795, \"char_start\": 11339, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"tribunal_reasoning\", \"text\": \"31. In determining whether the Respondent acted reasonably or\\nunreasonably, I cannot substitute my own view as to what would have\\ndone in the circumstances. Instead, I am required to determine the range\\nof reasonable responses open to an employer acting reasonably in the\\ncircumstances and determine whether this Respondent's decision to\\ndismiss this Claimant fell within that range.\\n\\n6\\n\\n32. The legal principles on the correct approach to fairness in s.98(4) of ERA\\nare well established and were not in dispute. A useful summary of the\\nrelevant principles as they apply to misconduct is set out in the judgment\\nof Aikens LJ in Orr v Milton Keynes Council [2011] ICR 704 at paragraph\\n78. While the fairness of dismissal is judged on the basis of facts known to\\nthe employer at the time, the important words \\\"in accordance with the\\nequity and the substantial merits\\\" in s.98(4) ERA mean that the band is not\\n\\\"infinitely wide\\\" and mean tribunals should not turn the assessment of\\nfairness into a matter of \\\"procedural box ticking\\\": see Bean LJ (with whom\\nKing and Sir Terence Etherton agreed) in Newbound v Thames Water\\nUtilities [2015] IRLR 734 at paragraphs 60-61.\\n\\n\\n33. Mummery LJ in London Ambulance v Small [2009] IRLR 563 contrasted\\nthe exercise conducted by an employment tribunal in objectively reviewing\\nthe fairness of a dismissal with the very different issue about an\\nemployee's conduct in relation to contributory fault, which is a decision for\"}, {\"char_end\": 14280, \"char_start\": 12795, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"tribunal_reasoning\", \"text\": \"the tribunal, not the employer, based on the evidence heard by the tribunal\\n(paragraph 44). 31. 32. Mummery LJ added this advice at paragraph\\n\\\"... As a general rule, however, it might be better practice in an\\nunfair dismissal case for the ET to keep its findings on that\\nparticular issue separate from its findings on disputed facts that are\\nonly relevant to other issues, such as contributory fault, constructive\\ndismissal and, increasingly, discrimination and victimisation claims.\\nOf course, some facts will be relevant to more than one issue, but\\nthe legal elements of the different issues, the role of the ET and the\\nrelevant facts are not necessarily all the same. Separate and\\nsequential findings of fact on discrete issues may help to avoid\\nerrors of law, such as substitution, even if it may lead to some\\nduplication.\\\"\\n\\n34. Where an ET has found the dismissal to be unfair, it will proceed to\\nconsider the question of remedy. In doing so, the amount of any\\ncompensatory award shall be: \\\"123 Compensatory award (1)...such\\namount as the tribunal considers just and equitable in all the\\ncircumstances having regard to the loss sustained by the complainant in\\nconsequence of the dismissal in so far as that loss is attributable to action\\ntaken by the employer.\\\"\\n\\n35. In determining what is just and equitable for these purposes, an ET is\\nentitled to reduce the compensation by a percentage, representing the\\nchance that the employee would still have lost their employment had the\"}, {\"char_end\": 15718, \"char_start\": 14280, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"tribunal_reasoning\", \"text\": \"dismissal been fairly carried out (see Sillifant v Powell Duffryn Timber\\nLimited [1983] IRLR 91 per Browne-Wilkinson J (as he then was at page\\n96), cited with approval by Lord Bridge of Harwich at page 163 Polkey v A\\nE Dayton Services Limited G H [1988] ICR 142 (\\\"the Polkey reduction\\\").\\n\\n36. In Software 2000 Limited v Andrews & Ors [2007] ICR 825, Elias J (as he\\nthen was) set out (at paragraph 54) a summary of the principles to be\\napplied in assessing compensation where a Polkey deduction is being\\nconsidered.\\n\\n7\\n\\n37. It should be noted that this case was decided at a time when s.98A(2) of\\nthe 1996 Act was in force. That provision was of course repealed in 2012\\nand so those parts referring to s.98A(2) no longer apply.\\n\\n38. However, the remainder of the summary of the principles remains\\nrelevant:\\n\\\"(1) In assessing compensation the task of the Tribunal is to assess the\\nloss flowing from the dismissal, using its common sense, experience and\\nsense of justice. In the normal case that requires it to assess for how long\\nthe employee would have been employed but for the dismissal.\\n\\n(2) If the employer seeks to contend that the employee would or might\\nhave ceased to be employed in any event had fair procedures been\\nfollowed, or alternatively would not have continued in employment\\nindefinitely, it is for him to adduce any relevant evidence on which he\\nwishes to rely. However, the Tribunal must have regard to all the evidence\"}, {\"char_end\": 17155, \"char_start\": 15718, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"tribunal_reasoning\", \"text\": \"when making that assessment, including any evidence from the employee\\nhimself. (He might, for example, have given evidence that he had intended\\nto retire in the near future).\\n\\n(3) However, there will be circumstances where the nature of the evidence\\nwhich the employer wishes to adduce, or on which he seeks to rely, is so\\nunreliable that the tribunal may take the view that the whole exercise of\\nseeking to reconstruct what might have been is so riddled with uncertainty\\nthat no sensible prediction based on that evidence can properly be made.\\n\\n(4) Whether that is the position is a matter of impression and judgment for\\nthe Tribunal. But in reaching that decision the Tribunal must direct itself\\nproperly. It must recognise that it should have regard to any material and\\nreliable evidence which might assist it in fixing just compensation, even if\\nthere are limits to the extent to which it can confidently predict what might\\nhave been; and it must appreciate that a degree of uncertainty is an\\ninevitable feature of the exercise. The mere fact that an element of\\nspeculation is involved is not a reason for refusing to have regard to the\\nevidence.\\n\\n(5) An appellate court must be wary about interfering with the Tribunal's\\nassessment that the exercise is too speculative...\\\"\\n\\n39. It is clear therefore that the burden does lie on the Respondent; that at this\\nstage it is inevitable that there is a speculative element to the exercise\"}, {\"char_end\": 18589, \"char_start\": 17155, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"tribunal_reasoning\", \"text\": \"which the Tribunal has to undertake; and that the Tribunal should have\\nregard to all relevant facts and matters in coming to its conclusions.\\n\\n\\n\\nCONCLUSIONS\\n\\n40. It is necessary to first determine what was the reason or the principal\\nreason for the Claimant's dismissal. The Claimant had been informed that\\nhis dismissal had been related to poor performance. The Claimant\\nasserted in his witness statement that he did not believe this to be the real\\nreason for his dismissal. The Respondent accepted in their response to\\n8\\n\\nthe claim that the real reason for the dismissal of the Claimant was the\\nassertion made by the other employee. It was not disputed that the\\nClaimant had not been told the real reason for his dismissal. The\\nRespondent asserted that they were in a very difficult position as the other\\nemployee had requested that they did not inform the Claimant that she\\nhad made the allegation. On the evidence before me, and on\\nconsideration that issues had arisen with the Claimant's performance\\npreviously which had not resulted in dismissal, I conclude that the principal\\nreason for the Claimant's dismissal was the allegation of assault.\\n\\n41. The employer in claims of unfair dismissal must show that the reason they\\ndismissed the employee was a reason of a kind to justify that dismissal.\\nThe Respondent clarified at the hearing that there was some other\\nsubstantial reason, namely a loss of trust and a breakdown of the\"}, {\"char_end\": 20002, \"char_start\": 18589, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"tribunal_reasoning\", \"text\": \"relationship between the employer and the employee. In the alternative\\nthey asserted the conduct of the employee justified the decision.\\n\\n42. I note that the allegation was reported to the Respondent promptly and\\nbefore the decision had been made about whether to pursue a criminal\\nprosecution. I also note that the Respondent's evidence included concern\\nand consideration for other employees and women that made them very\\nuncomfortable reflecting the lack of trust in the Claimant. I have concluded\\nthat this demonstrated that the Respondent felt that they could no longer\\nplace the necessary trust and confidence in their employee, not because\\nthey were satisfied that he was guilty, but because there was a real\\npossibility that he was an offender. I accept that the circumstances and\\nreasoning amount to some other substantial reason, L v K 2021 CSIH 35\\nconsidered on the principle that guilt did not need to be shown but a real\\npossibility of being an offender.\\n\\n43. Given the gravity of the allegation, along with the detailed consistent\\nevidence given to the Respondent, it was reasonable for the Respondent\\nto no longer have the necessary trust and confidence in the Claimant. Had\\nthe employer not discharged the burden in regard to some other\\nsubstantial reason I would have accepted that conduct in the\\ncircumstances would also satisfy the test of establishing a potentially fair\\nreason for dismissal.\"}, {\"char_end\": 21385, \"char_start\": 20002, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"tribunal_reasoning\", \"text\": \"44. I therefore move on to consider whether the Claimant's dismissal was fair.\\nThe burden in this regard as neutral and I have had regard to the reasons\\ngiven by the Respondent, its size, the company of 75 people, and its\\nresources including the fact that it did not have a HR department and had\\npreviously instructed solicitors for legal advice. I have considered fairness\\nin accordance with the principle of equity and the substantial merits of the\\ncase.\\n\\n45. I accept that the allegation relates to an issue that happened outside the\\ncourse of the Claimant's normal employment but that 'actings... Reflect\\nupon the employer-employee relationship' Thomson v Alloa motor\\ncompany Ltd 1983 IRLR 403 EAT, and can amount to the basis for\\ndismissal.\\n\\n46. Whilst I accept that some circumstances are so grave that an employee\\nmay be fairly dismissed on the basis of a charge alone, such as a charge\\n9\\n\\nof murder Kearney v Royal Mail Group Ltd ET Case No.3100476/10. I\\nnote that the facts in this case are to be differentiated because at the date\\nof dismissal no criminal charges had been brought against the Claimant. I\\nalso note that the case law in regard to when criminal charges are brought\\nis consistent with the ACAS Code in considering the employee's actions in\\nrelation to their ability to continue to work with colleagues and the potential\\nreputation damage to their employers.\"}, {\"char_end\": 22817, \"char_start\": 21385, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"judgment\", \"text\": \"47. The Respondent failed to carry out a reasonable investigation. The\\nallegation as reported to them indicated that there was potentially a\\nwitness as well as potential objective evidence. There was also the\\npotential for criminal charges being brought which may have affected the\\nemployer's ability to carry out an investigation. But despite this the\\nRespondent's failure to carry out any investigation or notify the Claimant of\\nthe real reason for his dismissal was not procedurally fair.\\n\\n48. The Respondent accepted that the procedure was not fair and I have\\nconcluded on the evidence before me that they believed there was a real\\npossibility that the Claimant was an offender but 'Of course, it would be\\nunfair, as it was found to be here to a marginal extent by the Tribunal, to\\ntake into account matters that were not fully vented between decision\\nmaker and employee at the time that the decision was to be made'\\nPhoenix House v Stockman 2017 ICR 84 EAT, para 21. The Respondent\\nhad failed to have a procedure where the Claimant was aware of the\\nactual reason for his dismissal, the alleged assault, and therefore this\\nshould not have been taken into account in the decision-making process.\\n\\n49. Whilst I accept that the Respondent was in a difficult position faced with\\nthe conflicting rights of two different employees I note that the impact on\\nthe employee of the potential loss of his job, his reputation, and effect on\"}, {\"char_end\": 24220, \"char_start\": 22817, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"judgment\", \"text\": \"future employment should be 'subject to the most careful investigation' A v\\nB 2003 IRLR 405 EAT, which it was not in this case rendering the\\ndismissal unfair.\\n\\n50. It would have been a reasonable response to have suspended the\\nClaimant for a period of six weeks from 09/01/25 in order to carry out an\\ninvestigation. This period would not have started any earlier, Zen Internet\\nv Stobart [2025] EAT 153 considered, as the company was closed over\\nChristmas. This would have allowed them sufficient time to contact the\\nother employee and find out if a criminal charge was pending, consider\\nany objective evidence, and decide whether to contact any witnesses, and\\nmost importantly give the Claimant the opportunity to respond so that an\\naccount could have been taken of what he says happened, to decide on a\\nreasonable and fair response.\\n\\n51. I have considered whether it is just and equitable to award a lesser\\namount than would otherwise be appropriate for the loss sustained in\\nconsequence of the unfair dismissal under section 123 (1) of the\\nEmployment Rights Act 1996. This includes my assessment under Polkey.\\nI have considered whether there was a real chance that the Claimant\\nwould have remained in employment, Venkatesan v Surabi Ltd and anor\\nEAT 0193/14 in order to do this I must consider whether there was a likely\\ndismissal in the event that there had been a fair procedure. In considering\\n10\"}, {\"char_end\": 25698, \"char_start\": 24220, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"judgment\", \"text\": \"this hypothetical dismissal the test that I must apply is an assessment that\\nis specific to the particular employer and the particular facts, Williams v\\nAmey Services Ltd EAT 0287/14.\\n\\n52. Firstly in this hypothetical scenario I have considered whether the\\nRespondent would have dismissed the Claimant. I have accepted that it is\\nreasonable for the employer to consider the acts of the employee even\\noutside of their employment and that case law as well as the ACAS code\\nfor discipline and grievance sets out consideration of offences on an\\nemployee's suitability to do the job, relationship with the employer, work\\ncolleagues and customers. These are all considerations that I have\\naccepted the Respondent took into account in making the decision and\\nconclude that these would have been potentially fair considerations for\\ndismissal.\\n\\n53. I therefore move on to whether the Respondent would have dismissed the\\nClaimant in this hypothetical situation. I have considered that subsequent\\nto an investigation over a period of six weeks, at its highest the\\nRespondent may have had independent corroborated evidence of the\\nallegation and potentially a criminal charge having been made but at the\\nlowest it would remain a claim by one employee against another\\nemployee.\\n\\n54. The allegation by one employee was that she was raped by the other\\nemployee, she had been an unfit state to give consent and that Mrs Hall,\\nthe brand director, had accepted that employees account as credible,\"}, {\"char_end\": 27197, \"char_start\": 25698, \"page\": 1, \"paragraph\": 19, \"section_tag\": \"judgment\", \"text\": \"having been reported the next day, being visibly distressed reporting the\\noffence, reporting there to be a witness, reporting there to be forensic\\nevidence, and submitting to DNA examination. Mrs Hall had given\\nevidence that she knew that there was alcohol at the party, that the\\nemployee had been drunk, and saw no reason for her to lie. I therefore\\nconclude that had an investigation taken place the Respondent would\\nhave still have found this other employee's evidence to be credible and\\nwould have had to weigh that against the response they would have\\nreceived from the Claimant.\\n\\n55. I have concluded that the Claimant would have responded in the same\\nway that he has done in his evidence in this claim, namely denial. The\\nClaimant admitted in his oral evidence that he took the other employee\\nand her friend to their accommodation after the party. That the other\\nemployee was intoxicated and that she fell and hurt her face on the\\ndriveway of accommodation. He denied that he had entered the property\\nor that any assault had taken place. He asserted in his witness statement\\nparagraph 20 that he would provide proof, 'I could have given a full\\naccount of my movements on the night in question provided evidential\\nproof that no assault, whatever is now alleged, could have been\\ncommitted by me.' Despite having been aware of the allegation since at\\nleast June 2025 he has not provided any evidential proof and in oral\\nevidence did not assert that any was available or provide any more details\"}, {\"char_end\": 28529, \"char_start\": 27197, \"page\": 1, \"paragraph\": 20, \"section_tag\": \"judgment\", \"text\": \"in regard to that evening.\\n\\n56. I note that in this hypothetical consideration of dismissal for the\\nRespondent Mrs Hall and Mr Hancock had both said that consideration\\n11\\n\\nwas given for the safety of others despite it only being an allegation, due\\nto the gravity and nature of the allegation.\\n\\n57. The question of a Polkey deduction requires the tribunal to consider both\\nwhether the employer could have dismissed fairly and whether it would\\nhave done so. Furthermore, the enquiry is directed at what the particular\\nemployer before the tribunal would have done, not what a hypothetical fair\\nemployer would have done. The role of the tribunal is to decide what the\\nchances of a (fair) dismissal were.\\n\\n58. I have concluded that had there been an investigation that at the lowest\\nwould have resulted into differing accounts of what happened on that\\nevening. Given the Respondent's accepting one employee's detailed\\nevidence is credible and the lack of weight of the evidence provided by the\\nClaimant on balance they would have found the other employee to be the\\nmost credible and would have preferred her evidence. They would\\ntherefore have have been bound to accept and prefer the other\\nemployee's account and would therefore continue to have lost the trust\\nand confidence in the Claimant and would have dismissed him in any\\nevent.\"}, {\"char_end\": 29887, \"char_start\": 28529, \"page\": 1, \"paragraph\": 21, \"section_tag\": \"judgment\", \"text\": \"59. As I have concluded that the Claimant would have been dismissed fairly in\\nany event he is entitled to full losses and then no further loss, in this case\\nsix weeks, O'Donoghue v Redcar and Cleveland Borough Council 2001 IRLR\\n615, CA.\\n\\n60. I have not made a reduction for contributory conduct as there was no\\ninvestigation to seek verification of the Claimant's actual guilty conduct.\\nThe correct test is to consider would be if the conduct was culpable,\\nblameworthy, foolish or similar which includes conduct that falls short of\\ngross misconduct and need not necessarily amount to a breach of contract\\nNelson v British Broadcasting Corporation (No. 2) [1980] ICR 110. This\\nwas not done by the Respondent. I have not applied an uplift for failure to\\nfollow the ACAS code as I have found that the grounds for the dismissal of\\nsome other substantial reason and therefore the ACAS code does not\\napply, Phoenix House v Stockman 2017 2017 ICR 84 EAT.\\n\\n61. The Claimant is entitled to the basic award of three weeks' gross pay and\\nthe compensatory award of six weeks' net pay for the period that it would\\nhave taken the Respondent to carry out a fair investigation and then\\ndismissed the Claimant fairly.\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n12\\n\\nApproved by:\\nEmployment Judge Clarkson\\n13 February 2026\\n\\nJUDGMENT SENT TO THE PARTIES\\nON 31 MARCH 2026\\n\\nJade Lobb\\nFOR THE TRIBUNAL OFFICE\"}, {\"char_end\": 31072, \"char_start\": 29887, \"page\": 1, \"paragraph\": 22, \"section_tag\": \"judgment\", \"text\": \"Notes\\nReasons for the judgment having been given orally at the hearing, written reasons will not be\\nprovided unless a request was made by either party at the hearing or a written request is\\npresented by either party within 14 days of the sending of this written record of the decision. If\\nwritten reasons are provided they will be placed online.\\nAll judgments (apart from judgments under Rule 51) and any written reasons for the judgments\\nare published, in full, online at https://www.gov.uk/employment-tribunal-decisions shortly after a\\ncopy has been sent to the Claimants and Respondents.\\nIf a Tribunal hearing has been recorded, you may request a transcript of the recording. Unless there are\\nexceptional circumstances, you will have to pay for it. If a transcript is produced it will not include any oral\\njudgment or reasons given at the hearing. The transcript will not be checked, approved or verified by a judge.\\nThere is more information in the joint Presidential Practice Direction on the Recording and Transcription of\\nHearings and accompanying Guidance, which can be found here:\\n\\nwww.judiciary.uk/guidance-and-resources/employment-rules-and-legislation-\\npractice-directions/\"}]}",
+  "n_chunks": 22,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 7,
+    "tribunal_reasoning": 7,
+    "judgment": 7
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[{\"name\":\"RS Components Ltd v Irwin\",\"citation\":\"1973 ICR 535, NIRC\",\"cited_date\":\"1973\"},{\"name\":\"Harper v National Coal Board\",\"citation\":\"1980 IRLR 260, EAT\",\"cited_date\":\"1980\"},{\"name\":\"L v K\",\"citation\":\"2021 CSIH 35\",\"cited_date\":\"2021\"},{\"name\":\"Orr v Milton Keynes Council\",\"citation\":\"[2011] ICR 704\",\"cited_date\":\"2011\"},{\"name\":\"Newbound v Thames Water Utilities\",\"citation\":\"[2015] IRLR 734\",\"cited_date\":\"2015\"},{\"name\":\"London Ambulance v Small\",\"citation\":\"[2009] IRLR 563\",\"cited_date\":\"2009\"},{\"name\":\"Sillifant v Powell Duffryn Timber Limited\",\"citation\":\"[1983] IRLR 91\",\"cited_date\":\"1983\"},{\"name\":\"Polkey v A E Dayton Services Limited\",\"citation\":\"[1988] ICR 142\",\"cited_date\":\"1988\"},{\"name\":\"Software 2000 Limited v Andrews & Ors\",\"citation\":\"[2007] ICR 825\",\"cited_date\":\"2007\"},{\"name\":\"Thomson v Alloa motor company Ltd\",\"citation\":\"1983 IRLR 403 EAT\",\"cited_date\":\"1983\"},{\"name\":\"Phoenix House v Stockman\",\"citation\":\"2017 ICR 84 EAT\",\"cited_date\":\"2017\"},{\"name\":\"A v B\",\"citation\":\"2003 IRLR 405 EAT\",\"cited_date\":\"2003\"},{\"name\":\"Zen Internet v Stobart\",\"citation\":\"[2025] EAT 153\",\"cited_date\":\"2025\"},{\"name\":\"O'Donoghue v Redcar and Cleveland Borough Council\",\"citation\":\"2001 IRLR 615, CA\",\"cited_date\":\"2001\"},{\"name\":\"Nelson v British Broadcasting Corporation (No. 2)\",\"citation\":\"[1980] ICR 110\",\"cited_date\":\"1980\"}],\"spans\":[{\"page\":1,\"paragraph\":8,\"text_span\":[9850,11339]},{\"page\":1,\"paragraph\":9,\"text_span\":[11339,12795]},{\"page\":1,\"paragraph\":10,\"text_span\":[12795,14280]},{\"page\":1,\"paragraph\":11,\"text_span\":[14280,15718]},{\"page\":1,\"paragraph\":14,\"text_span\":[18589,20002]},{\"page\":1,\"paragraph\":15,\"text_span\":[20002,21385]},{\"page\":1,\"paragraph\":16,\"text_span\":[21385,22817]},{\"page\":1,\"paragraph\":17,\"text_span\":[22817,24220]},{\"page\":1,\"paragraph\":21,\"text_span\":[28529,29887]}]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1302,2763]}]},\"decision_date\":{\"value\":\"2026-02-13\",\"spans\":[{\"page\":1,\"paragraph\":21,\"text_span\":[28529,29887]}]},\"evidence\":{\"value\":\"The tribunal considered an agreed 164-page bundle and witness statements. The claimant and three respondent witnesses gave oral evidence, adopted their statements, and were cross-examined.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1302,2763]}]},\"facts\":{\"value\":\"The claimant was employed by the respondent as an installer of bespoke greenhouses. After the respondent's Christmas party on 19 December 2024, another employee reported an allegation to Mrs Hall. The claimant accepted that he had driven the employee and her friend from the party to their accommodation and that the employee was drunk and fell and injured herself. The respondent told senior managers of the allegation on 7 January 2025. On 9 January 2025 the claimant met Mr Hancock and was dismissed, being told it was for poor performance. He received four weeks' pay in lieu of notice and later raised a grievance treated as an appeal.\",\"spans\":[{\"page\":1,\"paragraph\":4,\"text_span\":[4120,5529]},{\"page\":1,\"paragraph\":5,\"text_span\":[5529,7022]},{\"page\":1,\"paragraph\":6,\"text_span\":[7022,8402]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"claimant_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":\"1584.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"compensatory_award_gbp\":{\"value\":\"2652.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The complaint of unfair dismissal is well-founded and succeeds.\",\"The Respondent failed to carry out a reasonable investigation.\",\"the Respondent's failure to carry out any investigation or notify the Claimant of the real reason for his dismissal was not procedurally fair.\",\"the impact on the employee of the potential loss of his job, his reputation, and effect on future employment should be 'subject to the most careful investigation' A v B 2003 IRLR 405 EAT, which it was not in this case rendering the dismissal unfair.\",\"It would have been a reasonable response to have suspended the Claimant for a period of six weeks from 09/01/25 in order to carry out an investigation.\",\"As I have concluded that the Claimant would have been dismissed fairly in any event he is entitled to full losses and then no further loss, in this case six weeks.\",\"I have not made a reduction for contributory conduct as there was no investigation to seek verification of the Claimant's actual guilty conduct.\",\"I have not applied an uplift for failure to follow the ACAS code as I have found that the grounds for the dismissal of some other substantial reason and therefore the ACAS code does not apply.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]},{\"page\":1,\"paragraph\":16,\"text_span\":[21385,22817]},{\"page\":1,\"paragraph\":17,\"text_span\":[22817,24220]},{\"page\":1,\"paragraph\":21,\"text_span\":[28529,29887]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1302,2763]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"region\":{\"value\":\"south_west\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"region_source\":{\"value\":\"Bristol (by CVP)\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1302]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.98\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.122\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.123\"}],\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1302,2763]},{\"page\":1,\"paragraph\":3,\"text_span\":[2763,4120]},{\"page\":1,\"paragraph\":7,\"text_span\":[8402,9850]},{\"page\":1,\"paragraph\":17,\"text_span\":[22817,24220]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "RS Components Ltd v Irwin",
+            "citation": "1973 ICR 535, NIRC",
+            "cited_date": "1973"
+          },
+          {
+            "name": "Harper v National Coal Board",
+            "citation": "1980 IRLR 260, EAT",
+            "cited_date": "1980"
+          },
+          {
+            "name": "L v K",
+            "citation": "2021 CSIH 35",
+            "cited_date": "2021"
+          },
+          {
+            "name": "Orr v Milton Keynes Council",
+            "citation": "[2011] ICR 704",
+            "cited_date": "2011"
+          },
+          {
+            "name": "Newbound v Thames Water Utilities",
+            "citation": "[2015] IRLR 734",
+            "cited_date": "2015"
+          },
+          {
+            "name": "London Ambulance v Small",
+            "citation": "[2009] IRLR 563",
+            "cited_date": "2009"
+          },
+          {
+            "name": "Sillifant v Powell Duffryn Timber Limited",
+            "citation": "[1983] IRLR 91",
+            "cited_date": "1983"
+          },
+          {
+            "name": "Polkey v A E Dayton Services Limited",
+            "citation": "[1988] ICR 142",
+            "cited_date": "1988"
+          },
+          {
+            "name": "Software 2000 Limited v Andrews & Ors",
+            "citation": "[2007] ICR 825",
+            "cited_date": "2007"
+          },
+          {
+            "name": "Thomson v Alloa motor company Ltd",
+            "citation": "1983 IRLR 403 EAT",
+            "cited_date": "1983"
+          },
+          {
+            "name": "Phoenix House v Stockman",
+            "citation": "2017 ICR 84 EAT",
+            "cited_date": "2017"
+          },
+          {
+            "name": "A v B",
+            "citation": "2003 IRLR 405 EAT",
+            "cited_date": "2003"
+          },
+          {
+            "name": "Zen Internet v Stobart",
+            "citation": "[2025] EAT 153",
+            "cited_date": "2025"
+          },
+          {
+            "name": "O'Donoghue v Redcar and Cleveland Borough Council",
+            "citation": "2001 IRLR 615, CA",
+            "cited_date": "2001"
+          },
+          {
+            "name": "Nelson v British Broadcasting Corporation (No. 2)",
+            "citation": "[1980] ICR 110",
+            "cited_date": "1980"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 8,
+            "text_span": [
+              9850,
+              11339
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11339,
+              12795
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 10,
+            "text_span": [
+              12795,
+              14280
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 11,
+            "text_span": [
+              14280,
+              15718
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              18589,
+              20002
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              20002,
+              21385
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              21385,
+              22817
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 17,
+            "text_span": [
+              22817,
+              24220
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              28529,
+              29887
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1302,
+              2763
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-02-13",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              28529,
+              29887
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The tribunal considered an agreed 164-page bundle and witness statements. The claimant and three respondent witnesses gave oral evidence, adopted their statements, and were cross-examined.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1302,
+              2763
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant was employed by the respondent as an installer of bespoke greenhouses. After the respondent's Christmas party on 19 December 2024, another employee reported an allegation to Mrs Hall. The claimant accepted that he had driven the employee and her friend from the party to their accommodation and that the employee was drunk and fell and injured herself. The respondent told senior managers of the allegation on 7 January 2025. On 9 January 2025 the claimant met Mr Hancock and was dismissed, being told it was for poor performance. He received four weeks' pay in lieu of notice and later raised a grievance treated as an appeal.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4120,
+              5529
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5529,
+              7022
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 6,
+            "text_span": [
+              7022,
+              8402
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1302
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1302
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "claimant",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1302
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": "1584.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1302
+              ]
+            }
+          ]
+        },
+        "compensatory_award_gbp": {
+          "value": "2652.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1302
+              ]
+            }
+          ]
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The complaint of unfair dismissal is well-founded and succeeds.",
+          "The Respondent failed to carry out a reasonable investigation.",
+          "the Respondent's failure to carry out any investigation or notify the Claimant of the real reason for his dismissal was not procedurally fair.",
+          "the impact on the employee of the potential loss of his job, his reputation, and effect on future employment should be 'subject to the most careful investigation' A v B 2003 IRLR 405 EAT, which it was not in this case rendering the dismissal unfair.",
+          "It would have been a reasonable response to have suspended the Claimant for a period of six weeks from 09/01/25 in order to carry out an investigation.",
+          "As I have concluded that the Claimant would have been dismissed fairly in any event he is entitled to full losses and then no further loss, in this case six weeks.",
+          "I have not made a reduction for contributory conduct as there was no investigation to seek verification of the Claimant's actual guilty conduct.",
+          "I have not applied an uplift for failure to follow the ACAS code as I have found that the grounds for the dismissal of some other substantial reason and therefore the ACAS code does not apply."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1302
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              21385,
+              22817
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 17,
+            "text_span": [
+              22817,
+              24220
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 21,
+            "text_span": [
+              28529,
+              29887
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1302,
+              2763
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1302
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "south_west",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1302
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Bristol (by CVP)",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1302
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.98"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.122"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.123"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1302,
+              2763
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2763,
+              4120
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 7,
+            "text_span": [
+              8402,
+              9850
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 17,
+            "text_span": [
+              22817,
+              24220
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "",
+    "parsed": null,
+    "error": "LLMIncompleteResponseError('Response incomplete (reason=max_output_tokens, tokens_out=8192); increase max_output_tokens')"
+  },
+  "labeled_at": "2026-05-16T02:56:46.545857+00:00",
+  "source_pdf_sha256": "35468896f9eb42ef868ac3359e8c09a5a9cf0cf4f2b3045f90c18bf2df3434ca",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

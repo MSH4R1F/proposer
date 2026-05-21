@@ -1,0 +1,525 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025",
+  "case_reference": "mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-10-23",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6005068/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr T Pauk v Marks and Spencer plc: 6005068/2025 - Dismissal",
+    "url": "https://assets.publishing.service.gov.uk/media/6957b910e8f9a8d94d8d191f/Thomas_Pauk_v_Marks___Spencer_PLC_6005068.2025_Judgment.pdf"
+  },
+  "pdf_sha256": "1219bc5befd9e37466f51178526c9bb1ed727627a0688c9f80a164f7a9ac36cf",
+  "ocr_text_sha256": "944067fcea231b5347d3d36f0c20350e11677db5c906ce8693ca4a44ca3d92da",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-t-pauk-v-marks-and-spencer-plc-6005068-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1451, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 6005068/2025\\n\\n\\n\\n1 of 2\\n\\n\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\n\\n\\nMr T Pauk\\n\\n\\nRespondent:\\nMarks & Spencer Plc\\n\\n\\n\\n\\nHeard at:\\nNottingham\\n\\nOn: 22-23 October 2025\\n\\nBefore:\\nEmployment Judge Price\\n\\nAppearances\\n\\nFor the claimant:\\nIn person\\nFor the respondent: Mr Neaman (Counsel)\\n\\n\\nJUDGMENT\\n\\n\\n1.\\nThe claim of unfair dismissal is not well-founded and is dismissed.\\n\\n\\n\\n\\n\\n\\n\\n\\nApproved by:\\n\\n\\n\\n\\n\\nEmployment Judge Price\\n\\n\\n\\n\\n\\nDated: 23 October 2025\\n\\nSent to the parties on\\n...27 November 2025............\\n\\n\\n\\n\\n\\nFor the Employment Tribunal\\n..............................................\\n\\n\\nNotes\\n\\nReasons for the judgment having been given orally at the hearing, written reasons will not be provided unless a\\nrequest was made by either party at the hearing or a written request is presented by either party within 14 days of\\nthe sending of this written record of the decision. If written reasons are provided they will be placed online.\\n\\nAll judgments (apart from judgments under Rule 51) and any written reasons for the judgments are published, in Case Number: 6005068/2025\\n\\n\\n\\n2 of 2\\n\\nfull, online at https://www.gov.uk/employment-tribunal-decisions shortly after a copy has been sent to the claimants\\nand respondents.\\n\\nRecording and Transcription\\n\\nPlease note that if a Tribunal hearing has been recorded you may request a transcript of the recording,\\nfor which a charge may be payable. If a transcript is produced it will not include any oral judgment or\"}, {\"char_end\": 1823, \"char_start\": 1451, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"tribunal_reasoning\", \"text\": \"reasons given at the hearing. The transcript will not be checked, approved or verified by a judge. There\\nis more information in the joint Presidential Practice Direction on the Recording and Transcription of\\nHearings, and accompanying Guidance, which can be found here:\\n\\nhttps://www.judiciary.uk/guidance-and-resources/employment-rules-and-legislation-practice-directions/\"}]}",
+  "n_chunks": 2,
+  "section_tag_counts": {
+    "case_header": 1,
+    "tribunal_reasoning": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,332]}]},\"decision_date\":{\"value\":\"2025-10-23\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[428,443]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,366]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,366]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,366]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,366]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,366]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The claim of unfair dismissal is not well-founded and is dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,366]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[300,332]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[234,243]},{\"page\":1,\"paragraph\":1,\"text_span\":[244,283]}]},\"region\":{\"value\":\"east_midlands\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[135,145]}]},\"region_source\":{\"value\":\"Nottingham\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[135,145]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              300,
+              332
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-10-23",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              428,
+              443
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                300,
+                366
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                300,
+                366
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                300,
+                366
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    300,
+                    366
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    300,
+                    366
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The claim of unfair dismissal is not well-founded and is dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              300,
+              366
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              300,
+              332
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              234,
+              243
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              244,
+              283
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "east_midlands",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              135,
+              145
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Nottingham",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              135,
+              145
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [],\n    \"unavailable_reason\": \"no case-law authorities cited in source text\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"23 October 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no evidence section present in source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no facts or issues section present in source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1451\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"0.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1451\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"respondent_success\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1451\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"respondent\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1451\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": \"0.00\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1451\n              ]\n            }\n          ]\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"The claim of unfair dismissal is not well-founded and is dismissed.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1451\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": false\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"east_midlands\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Nottingham\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1451\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [],\n    \"unavailable_reason\": \"no statute or section explicitly cited in source text\"\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "unavailable_reason": "no case-law authorities cited in source text"
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "23 October 2025",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence section present in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts or issues section present in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1451
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1451
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1451
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1451
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1451
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The claim of unfair dismissal is not well-founded and is dismissed.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1451
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "east_midlands",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Nottingham",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1451
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "unavailable_reason": "no statute or section explicitly cited in source text"
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:48:55.023473+00:00",
+  "source_pdf_sha256": "1219bc5befd9e37466f51178526c9bb1ed727627a0688c9f80a164f7a9ac36cf",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

@@ -1,0 +1,898 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "m-reynolds-v-s-myles-and-a-myles-t-slash-a-butterflies-nursery-school-emmock-woods-and-s-myles-a-myles-and-t-devine-t-slash-a-butterflies-nursery-school-kingsway-east-8001803-slash-2024",
+  "case_reference": "m-reynolds-v-s-myles-and-a-myles-t-slash-a-butterflies-nursery-school-emmock-woods-and-s-myles-a-myles-and-t-devine-t-slash-a-butterflies-nursery-school-kingsway-east-8001803-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-10-15",
+  "country": "scotland",
+  "case_numbers": [
+    "8001803/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/m-reynolds-v-s-myles-and-a-myles-t-slash-a-butterflies-nursery-school-emmock-woods-and-s-myles-a-myles-and-t-devine-t-slash-a-butterflies-nursery-school-kingsway-east-8001803-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "M Reynolds v S Myles and A Myles T/a Butterflies Nursery School Emmock Woods and S Myles, A Myles and T Devine T/a Butterflies Nursery School Kingsway East: 8001803/2024 - Preliminary",
+    "url": "https://assets.publishing.service.gov.uk/media/6966399099fbdc498faecd85/M_Reynolds_v_Stacey_Myles_and_Anne_Myles__t.a_Butterflies_Nursery_School_Emmock_Woods___1_Other_-_8001803.2024_-_Judgment.pdf"
+  },
+  "pdf_sha256": "7d61d2fce3129a76a7970a0b1abadea69f071590b63937dd7bdc8126059d67e5",
+  "ocr_text_sha256": "4b697d3c95be09aca4d063524b5a4f02a0c3f10603b1ec24473670f41268ac11",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"m-reynolds-v-s-myles-and-a-myles-t-slash-a-butterflies-nursery-school-emmock-woods-and-s-myles-a-myles-and-t-devine-t-slash-a-butterflies-nursery-school-kingsway-east-8001803-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1483, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"EMPLOYMENT TRIBUNALS (SCOTLAND)\\n\\nCase No: 8001803/2024\\n\\nPreliminary Hearing heard in person in Dundee on 30 September 2025\\nat 10am\\n\\nEmployment Judge Porter SIR\\n\\n\\nM Reynolds\\nClaimant\\nRepresented by:\\nMr Lawson,\\nSolicitor\\n\\n\\nS Myles and A Myles,\\nFirst Respondent\\nt/a Butterflies Nursery School Emmock Woods\\nRepresented by:\\nMr Muirhead,\\nConsultant\\n\\nS Myles, A Myles and T Devine,\\nSecond Respondent\\nt/a Butterflies Nursery School Kingsway East\\nRepresented by:\\nMr Muirhead,\\nConsultant\\n\\n\\nJUDGMENT OF THE EMPLOYMENT TRIBUNAL\\nIt is the judgment of the Employment Tribunal to dismiss the claimant's claim of\\nunfair dismissal as the Tribunal does not have jurisdiction to hear this claim\\n\\nREASONS\\nIntroduction\\n1.\\nIn these proceedings the claimant claims unfair dismissal. Following a\\nPreliminary Hearing on the 27 June 2025 the case was set down for a one\\nday PH in person on 30 September 2025 on the issues of (a) who was the\\nclaimant's correct employer; and (b) does the claimant have sufficient\\n8001803/2024\\nPage 2\\ncontinuity of service to bring a complaint of ordinary unfair dismissal or\\nalternatively unfair constructive dismissal. It was a matter of agreement\\nthat the onus lay on the claimant to prove these issues.\\n2.\\nAt the PH on the 30 September 2025 the claimant was represented by\\nMr Lawson solicitor and the respondents were represented by\\nMr Muirhead solicitor. Evidence was heard from Miss Stacey Myles. The\\nparties made reference to a Joint Bundle of Documentation prepared for\"}, {\"char_end\": 2940, \"char_start\": 1483, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"the PH numbered 1- 107. Reference was also made to a Joint Bundle of\\nDocumentation prepared for an earlier postponed Hearing on the Merits\\nand numbered 1-212.\\n3.\\nAt the outset of the PH Mr Lawson submitted that the respondents' ET3\\nrequires amendment as it does not reflect their current position, namely\\nthat the claimant does not have qualifying service to bring this claim and\\ntherefore the Tribunal has no jurisdiction over this claim. The Tribunal\\nallowed 14 days from 30 September 2025 for the respondents to update\\ntheir pleadings and a further 14 days for the claimant to respond thereto.\\nStatement of Agreed Facts\\n4.\\nIn advance of the commencement of the PH parties agreed a Statement\\nof Agreed Facts which is replicated below.\\nThe claimant signed a contract of employment with Butterflies Nursery\\nSchool Kingsway East 15th September 2022.\\nThe claimant signed a contract of employment with Butterflies Nursery\\nSchool Emmock Woods on 5th March 2024.\\nThe claimant's payslips are all in the name of Butterflies Nursery\\nSchool Kingsway East.\\nThe claimant's P45 is in the name of Butterflies Nursery School\\nKingsway East.\\nThe respondents have separate bank accounts.\\nThe respondents have separate HM Revenue and Customs self-\\nassessment and HM Revenue & Customs PAYE registration. The\\nrespondents are separate legal entities.\\nThe respondents have separate partnership agreements. The 1st\\nrespondent's partnership agreement was signed on 1st April 2010.\"}, {\"char_end\": 4438, \"char_start\": 2940, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"The 2nd respondent's partnership agreement was signed on 1st March\\n2015.\\nThe respondents have separate SSSC registration.\\n\\n8001803/2024\\nPage 3\\nFindings in Fact\\n5.\\nThe Tribunal made the undernoted Findings in Fact from the evidence of\\nStacey Myles and from the documentation.\\n6.\\nOn 2 April 2010 Anne Myles and Stacey Myles entered into a Partnership\\nAgreement for \\\"Butterflies Nursery School\\\" at 56 William Fitzgerald Way,\\nEmmock Woods, Dundee (93). This Nursery School became known as\\nButterflies Nursery School - Emmock Woods.\\n7.\\nStacey Myles is the daughter of Anne Myles. Anne Myles' duties included\\npayroll and payment of staff,\\n8.\\nOn 1 March 2015 Stacey Myles and Anne Myles entered into a partnership\\nwith Teri Devine and opened up another nursery known as Butterflies\\nNursery School - Kingsway East (91-92). This Nursery School has now\\nbeen sold by the partnership.\\n9.\\nIt is a matter of agreement that the two Nurseries are separate legal\\nentities and as such have separate bank accounts and have separate\\nHMRC self-assessment and PAYE registration. They have separate\\nSSSC accounts, and separate accounts for the Government's Free Milk\\nand Healthy Snacks scheme and for maintenance at Howdens and\\nScrewfix.\\n10.\\nThe two Nurseries shared training (57). The Tribunal accepted the\\nevidence of Stacey Myles that it is not uncommon for nurseries in Dundee\\ngenerally to share training facilities. The two nurseries would share\\nrecruitment campaigns (65); however such campaigns made it clear that\"}, {\"char_end\": 5933, \"char_start\": 4438, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"applications had to be made to the individual nursery. The Tribunal\\naccepted the evidence of Stacey Myles that the screenshot from a website\\nto be found at 68 is outdated and is not representative of the true situation\\nbetween the two Nurseries. It was admitted by the respondents however\\nthat Butterflies Nursery School - Emmock Woods paid for the Atlas system\\nthat regulated holiday requests from employees from the two nurseries\\n(173 bundle, Hearing on the Merits).\\n11.\\nThe claimant was employed by Butterflies Nursery School - Kingsway East\\nfrom the 15 September 2022. Her Contract of Employment with Butterflies\\nNursery School is to be found at 48 onwards. In 2023 and 2024 the\\nclaimant was absent for a period of maternity leave.\\n12.\\nPrior to her return from maternity leave the claimant requested that the\\nrespondents transfer her to Butterflies Nursery School - Emmock Woods\\nas her child was to attend Butterflies Nursery School - Kingsway East and\\nshe did not wish to work in the same entity. The respondents agreed to\\nthis transfer. The claimant signed a separate Contract of Employment with\\nButterflies Nursery School - Emmock Woods on the 6 March 2024 (58-\\n64). That contract provided: \\\"Start date 05/03/2024 The date on which\\nyour continuous employment began is the same as the start date shown\\nabove.\\\" The claimant did not resign from her employment from Butterflies\\nNursery - Kingsway East.\\n8001803/2024\\nPage 4\\n13.\\nThe claimant's Contracts of Employment with the respondents both\"}, {\"char_end\": 7380, \"char_start\": 5933, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"contain a clause which states: \\\"You may be required to work at other\\nlocations to meet the needs of the business, including our other Nursery\\nsites.\\\" (49 and 59). The Tribunal accepted the evidence of Stacey Myles\\nthat in practice this did not happen as the two Nurseries are separate legal\\nentities and, further, as a matter of practice staff would have to have SSSC\\nand PVG registration for both nurseries to transfer between the two. The\\nclaimant never worked for Butterflies Nursery School - Kingsway East after\\nthe 5 March 2024 when her employment with Butterflies Nursery -\\nEmmock Woods commenced. The evidence of Stacey Myles was\\naccepted that the only people who worked in both Nurseries were Stacey\\nMyles' daughter and Teri Devine who was a partner of Kingsway East as\\nboth were registered for the two Nurseries. The Tribunal accepted the\\nevidence of Stacey Myles that the reason this clause was entered into the\\nemployees' Contracts of Employment by their HR advisers was to cover\\nthe then exigencies of Covid.\\n14.\\nThe claimant's transfer to Butterflies Nursery School - Emmock Woods\\nnecessitated separate SSSC and PVG applications for the claimant. To\\nthis end the Tribunal had regard to the correspondence to be found at 71\\nwhich is a letter from the SSSC confirming that the claimant was registered\\nat Butterflies Nursery School (Emmock Woods) between the 5 March\\n2024 and the 12 July 2024. The correspondence to be found at 72 is an\"}, {\"char_end\": 8841, \"char_start\": 7380, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"tribunal_reasoning\", \"text\": \"email from SSSC registration which states that the claimant's employment\\nwith Butterflies Nursery School - Kingsway East terminated on the 12 July\\n2024. The Tribunal accepted the evidence of Stacey Myles that the email\\nat 72 was based on statements provided to the SSSC by the claimant\\nherself.\\n15.\\nThe claimant was required to do further induction training prior to\\ncommencing with Butterflies Nursery School - Emmock Woods. (122-123\\nbundle, Hearing on the Merits).\\n16.\\nThe claimant continued to be paid by Butterflies Nursery School -\\nKingsway East. Her P45 was in the name of \\\"Butterflies Nursery Kingsway\\nEast\\\" (73-90). The Tribunal accepted the evidence of Stacey Myles that\\nthis was due to human error on the part of Anne Myles. This evidence was\\nnot challenged in cross examination.\\nThe Law\\n17.\\ns218(6) of the Employment Rights Act 1996 provides:\\n\\\"6 If an employee of an employer is taken into the employment of\\nanother employer who, at the time when the employee enters the\\nsecond employer's employment, is an associated employer of the\\nfirst employer (a) the employee's period of employment at that time\\ncounts as a period of employment with the second employer, and\\n8001803/2024\\nPage 5\\n(b) the change of employer does not break the continuity of the\\nperiod of employment.\\\"\\n18.\\ns231 of the Employment Rights Act 1996 provides:\\n\\\"Associated Employers For the purposes of this Act any two\\nemployers shall be treated as associated if- (a) one is a company\"}, {\"char_end\": 10322, \"char_start\": 8841, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"tribunal_reasoning\", \"text\": \"of which the other (directly or indirectly) has control, or (b) both are\\ncompanies of which a third person (directly or indirectly) has\\ncontrol; and \\\"associated employer\\\" shall be construed accordingly.\\\"\\n19.\\nThe Court of Appeal considered the definition of 'company' in Merton\\nLondon Borough Council v Gardiner 1982 ICR 186, CA, and held that\\nfor an employee to sustain a claim of continuity of employment between\\ntwo employers under s151, Schedule 13 and s153(4) of the Employment\\nProtection (Consolidation) Act 1978 (being the precursor of s218(6) and\\ns231 of the ERA 1996) the employers must fit the definition of 'associated'\\nemployers in s153(4) (s231 ERA 1996) otherwise they will not be legally\\nassociated. It further held that the word 'company' as used in s231 means\\nlimited company - and nothing else.\\n20.\\nFor the claimant, Mr Lawson asked the Tribunal to prefer the definition of\\ncompany to be found in the later case of Glasgow City Council v Unison\\n(2014) IRLR 532 where the Inner House of the Court of Session adopted\\na wider definition of what constitutes a 'company'.\\nSubmissions\\n21.\\nThe parties each made able submissions before the Tribunal. The parties\\nsummarised their submissions before the Tribunal for insertion into the\\njudgment, which are replicated below.\\nSubmissions for the claimant\\nEmployed with Stacey Myles, Anne Myles and Teri Devine T/A\\nButterflies Nursery School Kingsway East\\nThe claimant argues that her employment with Stacey Myles, Anne Myles\"}, {\"char_end\": 11791, \"char_start\": 10322, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"tribunal_reasoning\", \"text\": \"and Teri Devine t/a Butterflies Nursery School Kingsway East (Kingsway\\nEast) was continuous from the 2nd November 2020 until the 12th July 2024.\\nThe claimant was employed by Kingsway East, notwithstanding signing a\\ncontract with Emmock Woods. The claimant can be employed by both\\nnurseries at one time. The claimant's payslips and P45 were both in the\\nname of Kingsway East. Each contract contains a clause titled Place of\\nWork which refers to being \\\"required to work at other locations to meet the\\nneeds of the business including our other nursery sites.\\\" The Tribunal\\nshould accept that the claimant's employment with Kingsway East never\\nended on the 6th March 2024 when signing the contract of Emmock Woods\\nand that the claimant's employment with Kingsway East was continuous\\n8001803/2024\\nPage 6\\nand thus the claimant does have sufficient service under Section 108 of\\nthe Employment Rights Act 1996.\\nAssociated Employer\\nIf the Tribunal is not with the claimant regarding remaining in employment\\nwith Kingsway East, the claimant submits that her length of service is\\npreserved under Section 218(6) of the Employment Rights Act 1996. We\\nsubmit that the Tribunal should not follow the decision in Gardiner v\\nLondon Bourgh of Merton [1980] IRLR 472, but rather take the\\napproach the Inner House took in the case of Glasgow City Council v\\nFox Cross Claimants [2014] IRLR 532, when considering if the\\npartnerships can be considered as a company for s.231 of the 1996 Act.\"}, {\"char_end\": 13255, \"char_start\": 11791, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"tribunal_reasoning\", \"text\": \"If the Tribunal is with us we submit it is our position that Emmock Woods\\nhas control over Kingsway East. This is on the basis that in theory the two\\npartners in Emmock Wood, Stacey Myles and Anne Myles have a 50%\\nshare of the voting right each in Emmock Woods and they both have a\\ncombined share of 66% of the voting rights in Kingsway East. Therefore,\\nworking practically they have control over Kingsway East as well as\\nEmmock Woods. We would refer the Tribunal to the case of Tice v\\nCartwright [1999] ICR 769.\\nSubmissions for the respondents\\nThe claimant was not employed for the required 2 year period in terms of\\nsection 108 ERA 1996 to bring a claim for unfair dismissal.\\nA change of Employer breaks continuity (section 218 ERA 1996).\\nRespondent 1 and respondent 2 were not Associated Employers in terms\\nof section 231 ERA 1996.\\nS231 - Reference to Company in s231 is a reference to a Limited\\nCompany. This does not include partnerships or other unincorporated\\nassociations (Wynne v Hair Control [1978] ICR 870 EAT), ( Southwood\\nHostel Management Committee v Taylor [1979] IRLR 397 EAT). Nor\\ndoes it include corporations other than Limited Companies (Gardiner v\\nLondon Borough of Merton [1980] IRLR 472 CA).\\nThe claimant's reliance on Glasgow City Council and Ors v Unison\\nclaimants should be rejected as it is not on all fours and therefore not\\nbinding on this Tribunal, on the basis that:\\na. GCC was an equal pay claim under the Equality Act 2010. This is\"}, {\"char_end\": 14714, \"char_start\": 13255, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"tribunal_reasoning\", \"text\": \"a claim for unfair dismissal under ERA 1996.\\nb. GCC concerned a TUPE transfer from GCC to 2 LLP's.\\nc. GCC does not appear to have been followed in any case for unfair\\ndismissal involving a partnership other than 'Pinkney' (Not on all\\n8001803/2024\\nPage 7\\nfours as Pinkey involved 3 Limited Companies forming into a\\npartnership to avoid statutory obligations).\\nd. Clear distinction between an LLP (limited liability) and ordinary\\npartnership with no such limits.\\ne. Clear distinction between matters concerning Equal Pay and pay\\ncomparisons and Unfair Dismissal claims.\\nf.\\nLLP is an association of persons, with an economic purpose,\\nformal requirements for its constitution, and a corporate body with\\na legal personality separate from its members, with limited liability.\\nThese do not apply to the respondents in this case.\\ng. Gardiner is the leading case and should be followed in respect of\\nthis unfair dismissal claim. 'Company' meant Limited Company\\n(Page 2).\\nContinuity of employment is a statutory concept and parties cannot\\ncontract to bestow or remove it. (Collison v BBC [1998] IRLR 238).\\nThe respondents did not operate as one business:\\na. Neither respondent is a Limited Company.\\nb. Partnership agreements show the respondents as separate\\npartnerships.\\nc. Claimant's signed contract shows the respondent at time of\\nresignation Emmock Woods, with continuous service date of\\n5/3/24.\\nd. Jobs are advertised separately (in some cases in the same advert,\"}, {\"char_end\": 16140, \"char_start\": 14714, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"judgment\", \"text\": \"but with the businesses of each shown separately).\\ne. Accountants letter confirms Partnerships are separate.\\nf.\\nSSSC Registrations are separate.\\ng. Employee Handbooks are different.\\nh. Case law clear that 'Company' in s231 means Limited Company\\nand does not apply to partnerships.\\ni.\\nKingsway East recently sold as a going concern.\\nj.\\nNo sharing of staff between the 2 Nurseries for the reasons given.\\nk. SSSC registration is particular to each Nursery.\\nl.\\nOwn bank accounts.\\nm. Own HMRC self assessment.\\nn. Own HMRC PAYE.\\no. PVG checks required for each nursery.\\np. Training sometimes shared between, but common for Dundee\\nbased nurseries to do so.\\nq. Separate registrations with Care Inspectorate.\\nr. Separate registrations with Dundee City Council.\\ns. Free Milk and Healthy Snack Scheme.\\nt.\\nMaintenance paid separately.\\nThe claimant is bound by the terms of the signed contract of employment.\\nNo evidence led that the claimant signed the contract under circumstances\\n8001803/2024\\nPage 8\\nwhich would mean that the terms were not binding, and nothing of that\\nnature put to the respondent's witnesses under cross examination.\\nThe claimant was not employed by both settings at the same time. The\\nclaimant moving to Butterflies Nursery and carrying out no work at\\nKingsway East from the date of her move, implied that she was no longer\\nemployed there.\\nOnly if respondents held to be associated (which is not admitted) it is not\"}, {\"char_end\": 17600, \"char_start\": 16140, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"judgment\", \"text\": \"sufficient to show that there was a potential for control, it must be shown\\nthat factually there was control. No evidence led to show that there was\\ncontrol, and nothing of that nature put to the respondent's witnesses under\\ncross examination.\\nDiscussion and Decision\\n22.\\nThe Tribunal considered that their starting point had to be the words of the\\ncontract entered into by the claimant on 6 March 2024 with Butterflies\\nNursery-Emmock Woods.\\n23.\\nIn the absence of evidence from the claimant or any other contradictor the\\nTribunal determined that the existence of this contract showed an intention\\nbetween the parties to enter into binding legal relations. To this end the\\ncontract stated: \\\"Name of Employee Michaelah Reynolds Name of\\nEmployer: Butterflies Nursery School - Emmock Woods 56 WIlliam\\nFItzgerald Way Emmock Woods Dundee Angus [POSTCODE]. Start Date-\\n05/03/2024 Continuous Employment The date on which your continuous\\nemployment began is the same as the start date above.\\\" (58)\\n24.\\nThe contract signed by the claimant was singular in its identification of her\\nemployer and her start date, and the claimant only worked at Butterflies\\nNursery School - Emmock Woods from the 5 March 2024. In these\\ncircumstances the Tribunal considered the absence of an express\\nresignation by the claimant from her employment with Butterflies Nursery\\nSchool-Kingsway East to be of no consequence.\\n25.\\nThe Tribunal accepted the evidence that the fact that the claimant\"}, {\"char_end\": 19054, \"char_start\": 17600, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"judgment\", \"text\": \"continued to be paid by Butterflies Nursery School - Kingsway East and\\nthat the claimant's P45 was in the name of Butterflies Nursery School-\\nKingsway East were attributable to human error on the part of Anne Myles.\\n26.\\nThe Tribunal noted that the two Nurseries carried out training together and\\nthat Butterflies Nursery t/a Emmock Woods continued to pay for the Atlas\\nsystem that governed holiday requests for both nurseries. However, the\\nTribunal placed little import on this against an agreed factual matrix\\nwhereby it is not disputed that the respondents were separate legal\\nentities with separate bank accounts, self assessment and PAYE\\nregistration and separate SSC registration and separate accounts with\\nsupplying entities. Neither is it disputed that Butterflies Nursery School-\\nKingsway East has been sold as a separate entity.\\n8001803/2024\\nPage 9\\n27.\\nIt is for all of these reasons that the Tribunal finds that the identity of the\\nclaimant's employer was Stacey Myles and Anne Myles t/a Butterflies\\nNursery School - Emmock Woods and that the claimant's period of\\nemployment was between the 5 March 2024 and the 12 July 2024. The\\nTribunal does not, therefore, have jurisdiction to hear the claimant's claim\\nof unfair dismissal.\\n28.\\nFor the sake of completeness, the Tribunal proceeded to consider the\\nclaimant's arguments under and in terms of s218(6) of the Employment\\nRights Act 1996. To this end the Tribunal considered the terms of s231 of\"}, {\"char_end\": 20414, \"char_start\": 19054, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"judgment\", \"text\": \"the Employment Rights Act 1996 and the relevant case law and concluded\\nthat the case of Gardiner v London Borough of Merton remains the\\nrelevant authority on the definition of 'company' in this context. In reaching\\nthis decision the Tribunal took into account that the case of Gardiner\\nconcerned interpretation of the Employment Protection (Consolidation)\\nAct 1978 which was a precursor to the Employment Rights Act 1996. The\\ncase of Glasgow City Council v Unison on the other hand concerned\\ninterpretation of matters of equal pay in the Equal Pay Act 1970, later\\nconsolidated in the Equality Act 2010. Accordingly, entirely different\\npieces of legislation were being interpreted in the dicta within these two\\ncases. The Tribunal determined that the relevant dicta was that within\\nGardiner as it interpreted the legislation closest to the Employment Rights\\nAct 1996, being the Employment Protection (Consolidation) Act 1978.\\n29.\\nFurther and in any event the Tribunal determined that insufficient evidence\\nwas led for them to conclude that Butterflies Nursery School - Emmock\\nWoods had control over Butterflies Nursery School - Kingsway East.\\n30.\\nIt is for all of these reasons that it is the decision of this Tribunal to dismiss\\nthe claimant's claim of unfair dismissal in these proceedings.\\n\\n\\n\\n\\nDate sent to parties\\n\\n\\n\\n________________________\\n15 October 2025\"}]}",
+  "n_chunks": 14,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 4,
+    "tribunal_reasoning": 5,
+    "judgment": 4
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[{\"name\":\"Merton London Borough Council v Gardiner\",\"citation\":\"1982 ICR 186, CA\",\"cited_date\":\"1982\"},{\"name\":\"Glasgow City Council v Unison\",\"citation\":\"(2014) IRLR 532\",\"cited_date\":\"2014\"}],\"spans\":[{\"page\":1,\"paragraph\":7,\"text_span\":[8841,10322]},{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]}]},\"decision_date\":{\"value\":\"15 October 2025\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]},\"evidence\":{\"value\":\"Evidence was heard from Miss Stacey Myles. The parties referred to a joint bundle for the preliminary hearing and a joint bundle prepared for an earlier postponed hearing on the merits.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]},{\"page\":1,\"paragraph\":2,\"text_span\":[1483,2940]}]},\"facts\":{\"value\":\"The claimant signed a contract of employment with Butterflies Nursery School Kingsway East on 15 September 2022 and a contract with Butterflies Nursery School Emmock Woods on 5 March 2024. The claimant's payslips and P45 were in the name of Butterflies Nursery School Kingsway East. The respondents were separate legal entities with separate bank accounts, HMRC registrations, partnership agreements and SSSC registrations. The claimant moved from Kingsway East to Emmock Woods after maternity leave because her child was to attend Kingsway East, and the Emmock Woods contract stated that continuous employment began on the start date shown in that contract.\",\"spans\":[{\"page\":1,\"paragraph\":2,\"text_span\":[1483,2940]},{\"page\":1,\"paragraph\":3,\"text_span\":[2940,4438]},{\"page\":1,\"paragraph\":4,\"text_span\":[4438,5933]},{\"page\":1,\"paragraph\":5,\"text_span\":[5933,7380]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]},{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]},{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"non_merits\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]},{\"page\":1,\"paragraph\":13,\"text_span\":[17600,19054]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The Tribunal does not, therefore, have jurisdiction to hear the claimant's claim of unfair dismissal.\",\"It is for all of these reasons that it is the decision of this Tribunal to dismiss the claimant's claim of unfair dismissal in these proceedings.\",\"The Tribunal determined that the relevant dicta was that within Gardiner as it interpreted the legislation closest to the Employment Rights Act 1996, being the Employment Protection (Consolidation) Act 1978.\",\"Further and in any event the Tribunal determined that insufficient evidence was led for them to conclude that Butterflies Nursery School - Emmock Woods had control over Butterflies Nursery School - Kingsway East.\"],\"spans\":[{\"page\":1,\"paragraph\":13,\"text_span\":[17600,19054]},{\"page\":1,\"paragraph\":14,\"text_span\":[19054,20414]}]},\"matter_type\":{\"value\":\"preliminary_hearing\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]}]},\"region\":{\"value\":\"scotland\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]}]},\"region_source\":{\"value\":\"Dundee\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1483]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.218\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.231\"},{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.108\"}],\"spans\":[{\"page\":1,\"paragraph\":6,\"text_span\":[7380,8841]},{\"page\":1,\"paragraph\":8,\"text_span\":[10322,11791]},{\"page\":1,\"paragraph\":9,\"text_span\":[11791,13255]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "Merton London Borough Council v Gardiner",
+            "citation": "1982 ICR 186, CA",
+            "cited_date": "1982"
+          },
+          {
+            "name": "Glasgow City Council v Unison",
+            "citation": "(2014) IRLR 532",
+            "cited_date": "2014"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 7,
+            "text_span": [
+              8841,
+              10322
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19054,
+              20414
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "15 October 2025",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19054,
+              20414
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "Evidence was heard from Miss Stacey Myles. The parties referred to a joint bundle for the preliminary hearing and a joint bundle prepared for an earlier postponed hearing on the merits.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1483,
+              2940
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant signed a contract of employment with Butterflies Nursery School Kingsway East on 15 September 2022 and a contract with Butterflies Nursery School Emmock Woods on 5 March 2024. The claimant's payslips and P45 were in the name of Butterflies Nursery School Kingsway East. The respondents were separate legal entities with separate bank accounts, HMRC registrations, partnership agreements and SSSC registrations. The claimant moved from Kingsway East to Emmock Woods after maternity leave because her child was to attend Kingsway East, and the Emmock Woods contract stated that continuous employment began on the start date shown in that contract.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1483,
+              2940
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2940,
+              4438
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4438,
+              5933
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5933,
+              7380
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1483
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 14,
+              "text_span": [
+                19054,
+                20414
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1483
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 14,
+              "text_span": [
+                19054,
+                20414
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1483
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 13,
+              "text_span": [
+                17600,
+                19054
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 14,
+                  "text_span": [
+                    19054,
+                    20414
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 14,
+                  "text_span": [
+                    19054,
+                    20414
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The Tribunal does not, therefore, have jurisdiction to hear the claimant's claim of unfair dismissal.",
+          "It is for all of these reasons that it is the decision of this Tribunal to dismiss the claimant's claim of unfair dismissal in these proceedings.",
+          "The Tribunal determined that the relevant dicta was that within Gardiner as it interpreted the legislation closest to the Employment Rights Act 1996, being the Employment Protection (Consolidation) Act 1978.",
+          "Further and in any event the Tribunal determined that insufficient evidence was led for them to conclude that Butterflies Nursery School - Emmock Woods had control over Butterflies Nursery School - Kingsway East."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 13,
+            "text_span": [
+              17600,
+              19054
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19054,
+              20414
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "preliminary_hearing",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "scotland",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Dundee",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.218"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.231"
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.108"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 6,
+            "text_span": [
+              7380,
+              8841
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 8,
+            "text_span": [
+              10322,
+              11791
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 9,
+            "text_span": [
+              11791,
+              13255
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": [\n      {\n        \"authority\": \"Merton London Borough Council v Gardiner\",\n        \"citation\": \"1982 ICR 186, CA\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 7,\n            \"text_span\": [\n              8841,\n              10322\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Glasgow City Council v Unison\",\n        \"citation\": \"2014 IRLR 532\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 8,\n            \"text_span\": [\n              10322,\n              11791\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Tice v Cartwright\",\n        \"citation\": \"[1999] ICR 769\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 9,\n            \"text_span\": [\n              11791,\n              13255\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Wynne v Hair Control\",\n        \"citation\": \"[1978] ICR 870 EAT\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 9,\n            \"text_span\": [\n              11791,\n              13255\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Southwood Hostel Management Committee v Taylor\",\n        \"citation\": \"[1979] IRLR 397 EAT\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 9,\n            \"text_span\": [\n              11791,\n              13255\n            ]\n          }\n        ]\n      },\n      {\n        \"authority\": \"Collison v BBC\",\n        \"citation\": \"[1998] IRLR 238\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 9,\n            \"text_span\": [\n              11791,\n              13255\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 7,\n        \"text_span\": [\n          8841,\n          10322\n        ]\n      }\n    ]\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1483\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"15 October 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 14,\n        \"text_span\": [\n          19054,\n          20414\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": \"Evidence was heard from Miss Stacey Myles.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1483\n        ]\n      }\n    ]\n  },\n  \"facts\": {\n    \"value\": \"The claimant signed a contract of employment with Butterflies Nursery School Kingsway East on 15 September 2022 and a contract with Butterflies Nursery School Emmock Woods on 5 March 2024; the claimant's payslips and P45 were in the name of Butterflies Nursery School Kingsway East; the respondents have separate bank accounts, separate HMRC self-assessment and PAYE registration and are separate legal entities; the claimant's transfer to Emmock Woods required separate SSSC/PVG registration and SSSC correspondence records the claimant as registered at Emmock Woods between 5 March 2024 and 12 July 2024; the claimant did not work for Kingsway East after 5 March 2024.\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 2,\n        \"text_span\": [\n          1483,\n          2940\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 3,\n        \"text_span\": [\n          2940,\n          4438\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 4,\n        \"text_span\": [\n          4438,\n          5933\n        ]\n      },\n      {\n        \"page\": 1,\n        \"paragraph\": 5,\n        \"text_span\": [\n          5933,\n          7380\n        ]\n      }\n    ]\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"respondent\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 13,\n          \"text_span\": [\n            17600,\n            19054\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": \"0.00\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 13,\n          \"text_span\": [\n            17600,\n            19054\n          ]\n        }\n      ]\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"non_merits\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1483\n          ]\n        },\n        {\n          \"page\": 1,\n          \"paragraph\": 13,\n          \"text_span\": [\n            17600,\n            19054\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"It is the judgment of the Employment Tribunal to dismiss the claimant's claim of unfair dismissal as the Tribunal does not have jurisdiction to hear this claim\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1483\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"s218(6) of the Employment Rights Act 1996 provides: \\\"6 If an employee of an employer is taken into the employment of another employer who, at the time when the employee enters the second employer's employment, is an associated employer of the first employer (a) the employee's period of employment at that time counts as a period of employment with the second employer, and (b) the change of employer does not break the continuity of the period of employment.\\\"\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 7,\n            \"text_span\": [\n              8841,\n              10322\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"s231 of the Employment Rights Act 1996 provides: \\\"Associated Employers For the purposes of this Act any two employers shall be treated as associated if- (a) one is a company of which the other (directly or indirectly) has control, or (b) both are companies of which a third person (directly or indirectly) has control; and 'associated employer' shall be construed accordingly.\\\"\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 7,\n            \"text_span\": [\n              8841,\n              10322\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"The Tribunal finds that the identity of the claimant's employer was Stacey Myles and Anne Myles t/a Butterflies Nursery School - Emmock Woods and that the claimant's period of employment was between the 5 March 2024 and the 12 July 2024. The Tribunal does not, therefore, have jurisdiction to hear the claimant's claim of unfair dismissal.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 13,\n            \"text_span\": [\n              17600,\n              19054\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"The Tribunal determined that the case of Gardiner v London Borough of Merton remains the relevant authority on the definition of 'company' in this context.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 14,\n            \"text_span\": [\n              19054,\n              20414\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 13,\n        \"text_span\": [\n          17600,\n          19054\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"employment\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1483\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1483\n            ]\n          }\n        ]\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1483\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1483\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"scotland\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1483\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Preliminary Hearing heard in person in Dundee on 30 September 2025 at 10am\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1483\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": [\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.218\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 7,\n            \"text_span\": [\n              8841,\n              10322\n            ]\n          }\n        ]\n      },\n      {\n        \"statute\": \"Employment Rights Act 1996\",\n        \"section\": \"s.231\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 7,\n            \"text_span\": [\n              8841,\n              10322\n            ]\n          }\n        ]\n      }\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 7,\n        \"text_span\": [\n          8841,\n          10322\n        ]\n      }\n    ]\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "authority": "Merton London Borough Council v Gardiner",
+            "citation": "1982 ICR 186, CA",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 7,
+                "text_span": [
+                  8841,
+                  10322
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Glasgow City Council v Unison",
+            "citation": "2014 IRLR 532",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 8,
+                "text_span": [
+                  10322,
+                  11791
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Tice v Cartwright",
+            "citation": "[1999] ICR 769",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 9,
+                "text_span": [
+                  11791,
+                  13255
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Wynne v Hair Control",
+            "citation": "[1978] ICR 870 EAT",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 9,
+                "text_span": [
+                  11791,
+                  13255
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Southwood Hostel Management Committee v Taylor",
+            "citation": "[1979] IRLR 397 EAT",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 9,
+                "text_span": [
+                  11791,
+                  13255
+                ]
+              }
+            ]
+          },
+          {
+            "authority": "Collison v BBC",
+            "citation": "[1998] IRLR 238",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 9,
+                "text_span": [
+                  11791,
+                  13255
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 7,
+            "text_span": [
+              8841,
+              10322
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "15 October 2025",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19054,
+              20414
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "Evidence was heard from Miss Stacey Myles.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The claimant signed a contract of employment with Butterflies Nursery School Kingsway East on 15 September 2022 and a contract with Butterflies Nursery School Emmock Woods on 5 March 2024; the claimant's payslips and P45 were in the name of Butterflies Nursery School Kingsway East; the respondents have separate bank accounts, separate HMRC self-assessment and PAYE registration and are separate legal entities; the claimant's transfer to Emmock Woods required separate SSSC/PVG registration and SSSC correspondence records the claimant as registered at Emmock Woods between 5 March 2024 and 12 July 2024; the claimant did not work for Kingsway East after 5 March 2024.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1483,
+              2940
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2940,
+              4438
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4438,
+              5933
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5933,
+              7380
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 13,
+              "text_span": [
+                17600,
+                19054
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 13,
+              "text_span": [
+                17600,
+                19054
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1483
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 13,
+              "text_span": [
+                17600,
+                19054
+              ]
+            }
+          ]
+        },
+        "per_issue": [],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "It is the judgment of the Employment Tribunal to dismiss the claimant's claim of unfair dismissal as the Tribunal does not have jurisdiction to hear this claim",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1483
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "s218(6) of the Employment Rights Act 1996 provides: \"6 If an employee of an employer is taken into the employment of another employer who, at the time when the employee enters the second employer's employment, is an associated employer of the first employer (a) the employee's period of employment at that time counts as a period of employment with the second employer, and (b) the change of employer does not break the continuity of the period of employment.\"",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 7,
+                "text_span": [
+                  8841,
+                  10322
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "s231 of the Employment Rights Act 1996 provides: \"Associated Employers For the purposes of this Act any two employers shall be treated as associated if- (a) one is a company of which the other (directly or indirectly) has control, or (b) both are companies of which a third person (directly or indirectly) has control; and 'associated employer' shall be construed accordingly.\"",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 7,
+                "text_span": [
+                  8841,
+                  10322
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The Tribunal finds that the identity of the claimant's employer was Stacey Myles and Anne Myles t/a Butterflies Nursery School - Emmock Woods and that the claimant's period of employment was between the 5 March 2024 and the 12 July 2024. The Tribunal does not, therefore, have jurisdiction to hear the claimant's claim of unfair dismissal.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 13,
+                "text_span": [
+                  17600,
+                  19054
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The Tribunal determined that the case of Gardiner v London Borough of Merton remains the relevant authority on the definition of 'company' in this context.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 14,
+                "text_span": [
+                  19054,
+                  20414
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 13,
+            "text_span": [
+              17600,
+              19054
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "employment",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1483
+                ]
+              }
+            ]
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1483
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "scotland",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Preliminary Hearing heard in person in Dundee on 30 September 2025 at 10am",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1483
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.218",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 7,
+                "text_span": [
+                  8841,
+                  10322
+                ]
+              }
+            ]
+          },
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.231",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 7,
+                "text_span": [
+                  8841,
+                  10322
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 7,
+            "text_span": [
+              8841,
+              10322
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:59:55.922643+00:00",
+  "source_pdf_sha256": "7d61d2fce3129a76a7970a0b1abadea69f071590b63937dd7bdc8126059d67e5",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

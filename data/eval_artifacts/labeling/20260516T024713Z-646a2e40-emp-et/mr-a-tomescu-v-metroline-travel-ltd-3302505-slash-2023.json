@@ -1,0 +1,510 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023",
+  "case_reference": "mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2024-02-29",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "3302505/2023"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr A Tomescu v Metroline Travel Ltd: 3302505/2023 - Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/65f867efead702001adfae98/Mr_A_Tomescu_v___Metroline_Travel_Ltd_3302505-2023._judgment.pdf"
+  },
+  "pdf_sha256": "c9b837f588195dab1ee65ada284e7a10212e8dcb018e344e8a3c0fe01e8efafe",
+  "ocr_text_sha256": "5a00c60140c514c78919e4dfd405cc0b365f5dfe3185ffbc6c6f100542d05f18",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-a-tomescu-v-metroline-travel-ltd-3302505-slash-2023\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1499, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 3302505/2023\\n\\n\\n1\\n\\n\\nEMPLOYMENT TRIBUNALS\\nClaimant\\n\\n\\n\\n\\n\\n\\n\\nRespondent\\nMr A Tomescu\\n\\n\\nv\\n\\n\\nMetroline Travel Ltd\\n\\nHeard at:\\nWatford\\n\\n\\nOn:\\n20 and 21 February 2024\\nBefore:\\nEmployment Judge Andrew Clarke KC\\n\\nAppearances\\nFor the Claimant:\\nIn person\\nFor the Respondent: Miss C Nicolaou, solicitor\\n\\n\\nJUDGMENT\\n\\n1.\\nThe claimant was unfairly dismissed.\\n\\n2.\\nThe case is to be re-listed for the consideration of remedy if either party\\napplies for this. No such application may be made before 28 February\\n2024. If the case is relisted it should be for 1 day before EJ Clarke KC and\\nthe hearing should take place after 19 April 2024. If the case is settled the\\nparties are to inform the Tribunal in writing.\\n\\n\\n\\n\\n\\n\\n\\n\\n_____________________________\\n\\n\\n\\n\\n\\nEmployment Judge Andrew Clarke KC\\n\\n\\n\\n\\n\\n\\nDate: 29 February 2024\\n\\n\\n\\n\\n\\n\\nSent to the parties on: 8 March 2024\\n\\n\\n\\n\\n\\n\\n\\nT Cadman\\n\\n\\n\\n\\n\\nFor the Tribunal Office\\n.\\n\\nNote\\nReasons for the judgment having been given orally at the hearing, written reasons will not be provided\\nunless a request was made by either party at the hearing or a written request is presented by either party\\nwithin 14 days of the sending of this written record of the decision.\\n\\nRecording and Transcription\\nPlease note that if a Tribunal hearing has been recorded you may request a transcript of the\\nrecording, for which a charge may be payable. If a transcript is produced it will not include any\\noral judgment or reasons given at the hearing. The transcript will not be checked, approved or\"}, {\"char_end\": 1793, \"char_start\": 1499, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"tribunal_reasoning\", \"text\": \"verified by a judge. There is more information in the joint Presidential Practice Direction on the\\nRecording and Transcription of Hearings, and accompanying Guidance, which can be found here:\\nhttps://www.judiciary.uk/guidance-and-resources/employment-rules-and-legislation-practice-\\ndirections/\"}]}",
+  "n_chunks": 2,
+  "section_tag_counts": {
+    "case_header": 1,
+    "tribunal_reasoning": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[314,350]}]},\"decision_date\":{\"value\":\"2024-02-29\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1499]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is included in source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is included in source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[314,350]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[355,701]}]},\"unapportioned_reason\":{\"value\":\"Liability-only judgment; remedy deferred to a separate hearing.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[355,701]}]},\"determination\":{\"value\":\"claimant_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[314,350]}]},\"per_issue\":{\"value\":[],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[355,701]}]},\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The claimant was unfairly dismissed.\",\"The case is to be re-listed for the consideration of remedy if either party applies for this. No such application may be made before 28 February 2024. If the case is relisted it should be for 1 day before EJ Clarke KC and the hearing should take place after 19 April 2024. If the case is settled the parties are to inform the Tribunal in writing.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[314,350]},{\"page\":1,\"paragraph\":1,\"text_span\":[355,701]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[314,350]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[224,251]},{\"page\":1,\"paragraph\":1,\"text_span\":[252,298]}]},\"region\":{\"value\":\"east_of_england\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[131,138]}]},\"region_source\":{\"value\":\"Watford\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[131,138]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              314,
+              350
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2024-02-29",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is included in source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is included in source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                314,
+                350
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                355,
+                701
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": "Liability-only judgment; remedy deferred to a separate hearing.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                355,
+                701
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                314,
+                350
+              ]
+            }
+          ]
+        },
+        "per_issue": {
+          "value": [],
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                355,
+                701
+              ]
+            }
+          ]
+        },
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The claimant was unfairly dismissed.",
+          "The case is to be re-listed for the consideration of remedy if either party applies for this. No such application may be made before 28 February 2024. If the case is relisted it should be for 1 day before EJ Clarke KC and the hearing should take place after 19 April 2024. If the case is settled the parties are to inform the Tribunal in writing."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              314,
+              350
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              355,
+              701
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              314,
+              350
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              224,
+              251
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              252,
+              298
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "east_of_england",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              131,
+              138
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Watford",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              131,
+              138
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\": {\"value\": [], \"spans\": []}, \"claim_types\": {\"value\": [\"unfair_dismissal\"], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"decision_date\": {\"value\": \"29 February 2024\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"evidence\": {\"value\": null, \"unavailable_reason\": \"No evidence section present in source text\"}, \"facts\": {\"value\": null, \"unavailable_reason\": \"No facts or issues section present in source text\"}, \"ground_truth_outcome\": {\"overall_winner\": {\"value\": \"claimant\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"total_awarded_gbp\": {\"value\": \"0.00\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"unapportioned_reason\": {\"value\": \"Liability-only judgment; remedy deferred to a separate hearing.\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"determination\": {\"value\": \"claimant_success\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"per_issue\": [], \"basic_award_gbp\": {\"value\": null}, \"compensatory_award_gbp\": {\"value\": null}, \"deductions_pct\": {\"value\": null}, \"uplifts_pct\": {\"value\": null}, \"reinstatement_sought\": {\"value\": null}, \"reinstatement_granted\": {\"value\": null}, \"re_engagement_sought\": {\"value\": null}, \"re_engagement_granted\": {\"value\": null}}, \"key_reasoning_quotes\": {\"value\": [{\"quote\": \"The claimant was unfairly dismissed.\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, {\"quote\": \"The case is to be re-listed for the consideration of remedy if either party applies for this. No such application may be made before 28 February 2024.\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}], \"spans\": []}, \"matter_type\": {\"value\": \"unfair_dismissal\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"parties\": {\"value\": [{\"role\": \"claimant\", \"represented\": false}, {\"role\": \"respondent_employer\", \"represented\": true}], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"region\": {\"value\": \"east_of_england\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"region_source\": {\"value\": \"Watford\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 1499]}]}, \"statutory_basis\": {\"value\": [], \"spans\": []}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "29 February 2024",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence section present in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section present in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": "Liability-only judgment; remedy deferred to a separate hearing.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1499
+              ]
+            }
+          ]
+        },
+        "per_issue": [],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The claimant was unfairly dismissed.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1499
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The case is to be re-listed for the consideration of remedy if either party applies for this. No such application may be made before 28 February 2024.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1499
+                ]
+              }
+            ]
+          }
+        ],
+        "spans": []
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "east_of_england",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Watford",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1499
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:48:14.945975+00:00",
+  "source_pdf_sha256": "c9b837f588195dab1ee65ada284e7a10212e8dcb018e344e8a3c0fe01e8efafe",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

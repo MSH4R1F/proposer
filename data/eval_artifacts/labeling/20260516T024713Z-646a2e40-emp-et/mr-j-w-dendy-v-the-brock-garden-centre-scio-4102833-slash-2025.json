@@ -1,0 +1,448 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025",
+  "case_reference": "mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-11-26",
+  "country": "scotland",
+  "case_numbers": [
+    "4102833/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr J W Dendy v The Brock Garden Centre SCIO: 4102833/2025 - Judgment with Reasons",
+    "url": "https://assets.publishing.service.gov.uk/media/699968989f2f510ba1d0ba0e/4102833.2025_-_Mr__James_William_Dendy_v_The_Brock_Garden_Centre_SCIO_-_Judgment_Issued_26.11.2025.pdf"
+  },
+  "pdf_sha256": "7edc2ffc346f32ee844a31de9b010549fa952b86acc84e3dbcd4e5d7e70354ac",
+  "ocr_text_sha256": "3330b404f77e91521888d4978d7846e0db5023a99c18c2e4a4cf378a4c882eaa",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-j-w-dendy-v-the-brock-garden-centre-scio-4102833-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1454, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"EMPLOYMENT TRIBUNALS (SCOTLAND)\\nCase No: 4102833/2025\\nHeld in Edinburgh on 17, 18 & 19 November 2025\\nEmployment Judge O'Donnell\\nMr James William Dendy\\nClaimant\\n\\nIn Person\\nThe Brock Garden Centre SCIO\\nRespondent\\n\\nRepresented by:\\n\\n\\nMr A Farooq -\\n\\n\\nLitigation\\n\\nConsultant\\nJUDGMENT OF THE EMPLOYMENT TRIBUNAL\\nThe judgment of the Employment Tribunal is that the claim of unfair dismissal is not\\nwell-founded and is hereby dismissed.\\nREASONS\\nIntroduction\\n1.\\nThe claimant has brought a complaint of unfair dismissal which is resisted by\\nthe respondent.\\nPreliminary issues\\n2.\\nAt the outset of the hearing there was an outstanding issue with a witness\\norder for Sam Dickinson. The claimant had obtained an order for Mr\\nDickinson (who was an external consultant engaged by the respondent to\\ninvestigate the claimant's grievance) to attend the hearing to give evidence\\nand the respondent sought to have this revoked.\\n3.\\nAfter a discussion about the issues to be determined in the case, the claimant\\nstated that, on reflection, he did not intend to call Mr Dickinson. The Tribunal,\\ntherefore, revoked the witness order as it was no longer required. 4102833/2025\\nPage 2\\nEvidence\\n4.\\nThe Tribunal heard evidence from the following witnesses:-\\na. The claimant.\\nb. John McLean (JM) - the chair of the Board of the respondent.\\nc. Koen Van der Straeten (KVS) - the respondent's general manager.\\n5.\\nThere was an agreed file of documents prepared by the parties. A reference\"}, {\"char_end\": 2899, \"char_start\": 1454, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"facts\", \"text\": \"to a page number below is a reference to a page in that file. There were some\\nadditional documents lodged by the claimant at the start of the hearing; if there\\nis a need to reference these documents then the letter \\\"C\\\" will be in front of\\nthe page number.\\n6.\\nThis was not a case where there was a significant dispute of fact about the\\nevents leading to the claimant's dismissal. The process followed by the\\nrespondent was not in dispute and supported by contemporaneous\\ncorrespondence and other documents.\\n7.\\nIn these circumstances, the Tribunal did not have to resolve any dispute of\\nfact and assess the credibility and reliability of the witnesses. Broadly, the\\nTribunal considers that all witnesses sought to give an accurate account of\\nevents based on their best recollection.\\n8.\\nThe main dispute of fact in this case related to the issues which the claimant\\nsays prompted him to raise the grievances that he did. There was a dispute\\nbetween him and KVS about events which occurred in the workplace.\\nHowever, those events were not relevant to the issues to be determined in\\nthis case; the Tribunal was not re-running the grievance process nor was it\\ndeciding what conclusion it would have reached about those matters.\\n9.\\nIn these circumstances, the Tribunal found that the evidence from KVS was\\nnot of particular relevance to the issues to be determined in this case; his\\nevidence was directed towards what he says happened in the workplace\"}, {\"char_end\": 4383, \"char_start\": 2899, \"page\": 1, \"paragraph\": 3, \"section_tag\": \"facts\", \"text\": \"whereas the Tribunal was concerned with what information the respondent (in\\nthe person of JM) had before it when making its decision to dismiss.\\nFindings in fact\\n10.\\nThe Tribunal made the following relevant findings in fact.\\n11.\\nThe respondent is a social enterprise that operates a not-for-profit garden\\ncentre. The purpose of this is to provide people who have mental health\\nissues with the opportunity to socialise and engage in meaningful activity to\\nhelp in their recovery. 4102833/2025\\nPage 3\\n12.\\nAt the relevant time, the respondent had four employees; a general manager\\n(KVS); two facilitators (one of whom was the claimant); an administrator.\\nThere were also service users and volunteers who worked at the garden\\ncentre. The activities included growing and selling plants, craft workshops\\nand, latterly, some garden maintenance work.\\n13.\\nThe respondent is overseen by a Board of Trustees chaired by JM. The\\nBoard does not get involved in the day-to-day running of the organisation but\\nexercise a governance function.\\n14.\\nThe claimant commenced employment on 9 January 2020. The duties of the\\nrole was to take the lead in the horticulture side of the organisation, working\\nwith service users to grow and sell the plants in the garden centre. The\\nclaimant worked Monday to Friday, 8.30am to 4.30pm, with some work at the\\nweekends.\\n15.\\nKVS had been employed with the respondent prior to the claimant starting.\\nHe was originally the operations manager from January 2019 becoming\"}, {\"char_end\": 5874, \"char_start\": 4383, \"page\": 1, \"paragraph\": 4, \"section_tag\": \"facts\", \"text\": \"general manager in January 2020.\\n16.\\nOn or around 29 February 2024, the claimant raised a formal grievance about\\nKVS (pp84-96). The grievance had been prompted by an incident involving\\na service user where KVS had disagreed with how the claimant had handled\\nthe situation. The details of the incident are not relevant to the issues to be\\ndetermined in this case.\\n17.\\nThe grievance ran to 13 pages and set out a range of complaints which the\\nclaimant had about KVS and his management of the respondent. Again, the\\nfull detail of the grievance is not relevant to the issues to be determined. It is\\nsufficient to note that the claimant raised complaints about matters going back\\nto December 2022 about which he had been keeping a record and he believed\\nthat there may have been an intention to discipline or dismiss him. The\\ngrievance concludes with an assertion by the claimant that he considered\\nKVS \\\"to be an inconsistent, incompetent and untrustworthy manager\\\".\\n18.\\nThe grievance was based to JM as the chair of the respondent's Board. This\\nis what was required by the respondent's grievance policy where the\\ngrievance was about KVS. JM was surprised by the grievance as he had\\nbelieved that the claimant and KVS had a good working relationship up to that\\npoint.\\n19.\\nJM met with the claimant on or around 29 March 2024 to discuss his\\ngrievance. There had been a delay because the claimant had been off sick\\nfor a period of time. JM's intention was to try to repair the working relationship\"}, {\"char_end\": 7339, \"char_start\": 5874, \"page\": 1, \"paragraph\": 5, \"section_tag\": \"facts\", \"text\": \"between the claimant and KVS. He felt that there could be an improvement\\nin communications and wanted to speak to both of them to see where there 4102833/2025\\nPage 4\\nwas common ground and where there were issues of dispute. He considered\\nthat setting up regular 1-2-1 meetings would assist with this. The claimant\\nagreed to these but was not confident that these would work.\\n20.\\nThe process was delayed further because KVS went on an extended leave of\\nabsence. He has mental health issues of his own and, for a number of\\nreasons, sought a period of leave to help with these. He was given a 12\\nweek leave of absence by the Board.\\n21.\\nOn his return, JM had discussions with him about improving communications\\nbetween KVS and the claimant by way of regular 1-2-1 meetings. He also\\nagreed to this.\\n22.\\nThe first 1-2-1 meeting took place on 16 July 2024 and note of this prepared\\nby KVS is at pp101-104. The claimant does not agree that this note is wholly\\naccurate and representative of the discussion that was had that day in terms\\nof the tone and way in which things were said by KVS. However, it was not\\nin dispute that he sought to raise the issues set out in his grievance at this\\nmeeting and that the meeting did not go well.\\n23.\\nA formal response to the claimant's grievance was issued by letter dated 26\\nJuly 2024 (pp126-128). The letter set out that the Board did not consider that\\nthere was anything to take forward. There is a specific denial that there was\"}, {\"char_end\": 8835, \"char_start\": 7339, \"page\": 1, \"paragraph\": 6, \"section_tag\": \"facts\", \"text\": \"any plan to dismiss the claimant with nothing of this nature ever being raised\\nby KVS. The only action taken by him was to petition the Board for all\\nemployees to be made permanent. The letter goes on to state that they\\nwould introduce regular 1-2-1 meetings between KVS and all employees to\\nallow any misunderstandings or misgivings to be discussed.\\n24.\\nThe second 1-2-1 meeting between KVS and the claimant took place on 26\\nJuly 2024. The detail of this meeting is not relevant to the issues to be\\ndetermined. The relevant issue is that the claimant handed KVS a\\nhandwritten note (p129) that subsequently became the basis of what was\\ndescribed as the \\\"second grievance\\\".\\n25.\\nThe second grievance states that the claimant continues to have issues about\\nhow his grievance had been dealt with. He states that he is willing to move\\non but that KVS \\\"whether by illness or personality\\\" would not accept that some\\nof the fault was his. The claimant goes on to state that \\\"being unwell, or not\\ncompetent at your job\\\" does not give KVS licence to make employees feel\\nunwell or under pressure. The grievance asserts he feels bullied and that\\n\\\"feeling bullied is being bullied\\\".\\n26.\\nAgain, the grievance was passed to JM and a reply was sent by the Board by\\nletter dated 12 August 2024 (pp130-132). The letter sets out what the Board\\nunderstands to be the claimant's grievance and goes on the address various 4102833/2025\\nPage 5\\npoints, in particular, that they consider KVS to be a competent manager and\"}, {\"char_end\": 10291, \"char_start\": 8835, \"page\": 1, \"paragraph\": 7, \"section_tag\": \"tribunal_reasoning\", \"text\": \"that references to his mental health are not appropriate. The letter\\nacknowledges that this is a difficult situation for the claimant and KVS; it is\\nnoted that the 1-2-1 meetings have only just commenced and encourages the\\nclaimant to continue with these in the hope that they will be of benefit.\\n27.\\nA further 1-2-1 meeting was held on 22 August 2024. A note of the meeting\\nrecords that the claimant wanted further clarification from JM before\\nproceeding with these meetings (p133).\\n28.\\nAround this time, the Board decided that it would contract with an external HR\\nprovider to assist in dealing with the claimant's grievance. They contracted\\nwith Peninsula who appointed a consultant, Sam Dickinson (SD), to\\ninvestigate the claimant's grievance.\\n29.\\nThe claimant had been absent from work on sick leave around this time. He\\nremained off work until the end of his employment although this was not sick\\nleave. He had been given a period of paid leave to consider various options\\nthat had been presented to him. He was then asked to remain off work until\\nthe grievance process and, subsequently, the dismissal process had\\nconcluded. He was paid as normal for the whole of this period.\\n30.\\nThe respondent had asked the claimant to stay off work because there was a\\nconcern about the working relationship between him and KVS whilst the\\ndispute was ongoing. JM had hoped that the relationship could be repaired\\nand the claimant could return in due course.\\n31.\"}, {\"char_end\": 11749, \"char_start\": 10291, \"page\": 1, \"paragraph\": 8, \"section_tag\": \"tribunal_reasoning\", \"text\": \"The claimant was invited to an online meeting with SD (p138) to be held on\\n19 September 2024. This meeting did not proceed as planned with the\\nclaimant asserting that there had been technical difficulties on the day. It was\\nagreed that he would provide written submissions to SD (p149). SD\\nconducted an interview with KVS on 30 September 2024.\\n32.\\nSD produced a report with his findings and recommendations (pp156-169)\\ndated 21 October 2024. The report recommended that the grievance be\\nupheld in part, that is, that the respondent had not considered other options\\nsuch as mediation to try to resolve the issues between the claimant and KVS.\\nOtherwise the report recommended that the grievance not be upheld for\\ndifferent reasons for different issues. The Tribunal does not consider that it\\nis necessary to set out the detail of this as it is not relevant to the issues in\\nthis case.\\n33.\\nThe report made a number of recommendations for actions the respondent\\ncould take to resolve the workplace dispute. This included giving\\nconsideration to mediation, training on effective communication, undertaking 4102833/2025\\nPage 6\\na culture review, regular welfare meetings for the claimant and training mental\\nhealth first aiders.\\n34.\\nBy letter dated 1 November 2024 (p170), the Board wrote to the claimant to\\nconfirm that, based on the report from SD, his grievance had not been upheld\\nexcept in relation to trying further resolution methods. The letter goes on to\"}, {\"char_end\": 13236, \"char_start\": 11749, \"page\": 1, \"paragraph\": 9, \"section_tag\": \"tribunal_reasoning\", \"text\": \"state that the respondent remains open to any suggestions which the claimant\\nmay have. The claimant was provided with a copy of SD's report and informed\\nof his right to appeal.\\n35.\\nMediation did not take place; KVS indicated that he was not willing to engage\\nin this and JM took the view that, unless both the claimant and KVS were\\nwilling to take part in mediation, it could not be taken forward.\\n36.\\nOn 15 November 2024, KVS spoke to JM about the claimant returning to\\nwork. JM took a note of the meeting (p181) which set out KVS's misgiving\\nand concerns about the claimant returning to work with the same attitude (as\\nKVS saw it) that he had shown previously. In particular, KVS considered that\\na number of issues needed to be addressed relating to the claimant and that\\nhe believed that the claimant would have a detrimental effect on the\\norganisation. He stated that it would be his intention to leave if the claimant\\nreturned.\\n37.\\nBy letter dated 26 November 2024 (p186), the claimant submitted his appeal.\\nThe appeal documents runs for 13 pages (pp187-199) going through SD's\\nreport paragraph-by-paragraph. Again, the detail of the appeal is not relevant\\nto the issues in this case.\\n38.\\nBy letter dated 2 December 2024 (pp200-201), the claimant was invited to an\\nappeal hearing on 6 December 2024 with a Board member, Mark Hall.\\n39.\\nBy letter dated 16 January 2025, Mr Hall wrote to the claimant setting out his\\ndecision. This was accompanied by an appeal report that Mr Hall had\"}, {\"char_end\": 14726, \"char_start\": 13236, \"page\": 1, \"paragraph\": 10, \"section_tag\": \"tribunal_reasoning\", \"text\": \"prepared (pp210-238). Mr Hall did not uphold the claimant's appeal and the\\nreasons for this were set out in the letter. Again, these are not relevant to the\\nissues to be determined in this case.\\n40.\\nBy letter dated 23 January 2025 (p243), the claimant responded to the appeal\\noutcome stating that he did not agree with the decision but thanked Mr Hall\\nfor his time. He went on to state that he remained committed to working for\\nthe respondent and wished to return to work.\\n41.\\nBy letter dated 5 March 2025 (pp250-251), the claimant was asked to attend\\na formal hearing with a consultant from Peninsula on 10 March 2025. The\\nletter sets out that it is felt that there has been an irretrievable breakdown in\\nthe working relationship between the claimant and the respondent. The 4102833/2025\\nPage 7\\nconsultant would not be making any decision but was investigating the matter\\nand making recommendations to the respondent. The letter went on to\\nexplain that this could result in the termination of his employment. The\\nclaimant was advised of his right to be accompanied.\\n42.\\nThe claimant met with the consultant, Kerry Tipple, as planned. Ms Tipple\\nproduced a report (pp268-276) which concluded that there was a basis to find\\nthat there had been an irretrievable breakdown in the working relationship.\\nThe report recommend that the claimant be dismissed for \\\"some other\\nsubstantial reason\\\" with payment in lieu of notice.\\n43.\\nBy letter dated 21 March 2025 (p277-278), JM dismissed the claimant\"}, {\"char_end\": 16161, \"char_start\": 14726, \"page\": 1, \"paragraph\": 11, \"section_tag\": \"tribunal_reasoning\", \"text\": \"because of the breakdown in the working relationship. The letter set out the\\ngrievance process followed and the conclusion that the grievance was not\\nsubstantiated. It went on to note that the claimant continued to disagree with\\nthis conclusion. JM considered that it was hard to see how the working\\nrelationship could be rebuilt when the claimant still disagreed with how the\\nrespondent was being run. JM also made reference to the claimant's personal\\ncomments about KVS as indicating a breakdown in the relationship.\\n44.\\nThe letter goes on to set out that, given the small number of staff employed\\nby the respondent, employees needed to interact well. JM notes that the\\nclaimant has said that he was willing to draw a line under matters but did not\\nconsider that this was demonstrated by the claimant's behaviour.\\n45.\\nJM also explained that the respondent had considered whether there was any\\nchange in working practices which would help resolve matters but concluded\\nthat there was nothing feasible that would avoid the claimant and KVS coming\\ninto contact.\\n46.\\nThe letter concluded by advising the claimant of his right to appeal.\\n47.\\nThe claimant did appeal (pp279-282) and a further external consultant was\\nappointed to investigate the appeal. The claimant met with the consultant on\\n7 April 2025 and a report (pp306-312) was produced which recommended\\nthat the appeal was not upheld. JM wrote to the claimant by letter dated 30\"}, {\"char_end\": 17635, \"char_start\": 16161, \"page\": 1, \"paragraph\": 12, \"section_tag\": \"tribunal_reasoning\", \"text\": \"April 2025 (pp313-314) confirming that his appeal had not been upheld and\\nsetting out the reasons for this.\\nSubmissions\\n48.\\nBoth parties gave oral submissions. For the sake of brevity, the Tribunal\\ndoes not intend to set out the submissions in details. These have been noted\\nand the Tribunal will refer to any point raised that requires to be specifically\\naddressed in its decision below. 4102833/2025\\nPage 8\\nRelevant Law\\n49.\\nThe reason for a dismissal was described by Cairns, LJ in Abernethy v Mott\\nHay and Anderson [1974] IRLR 213 (approved by the House of Lords in\\nsubsequent decisions such as W Devis & Sons Ltd v Atkins [1977] AC 931\\nand West Midlands Co-operative Society v Tipton [1986] IRLR 112) as\\nfollows:\\n\\\"A reason for the dismissal of an employee is a set of facts known to the\\nemployer, or it may be of beliefs held by him, which cause him to dismiss the\\nemployee.\\\"\\n50.\\nIt is a matter of law as to whether any such set of facts or beliefs falls into one\\nof the categories of potentially fair reasons for dismissal and, if so, which\\none(s).\\n51.\\nThe \\\"some other substantial reason\\\" (SOSR) is an open-ended category and\\nso long as the reason is not minor, whimsical or capricious then it can be\\nconsidered \\\"substantial\\\" and if it could justify a dismissal then it is a potentially\\nfair reason (Harper v National Coal Board [1980] IRLR 260, Kent County\\nCouncil v Gilham [1985] IRLR 18, CA).\\n52.\\nA breakdown in working relationships can amount to SOSR although the\"}, {\"char_end\": 19121, \"char_start\": 17635, \"page\": 1, \"paragraph\": 13, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Tribunal has to be alive to the possibility that this reason is being as a\\n\\\"smokescreen\\\" for conduct issues in order to avoid any disciplinary process\\n(Ezsias v North Glamorgan NHS Trust 2011 IRLR 550).\\n53.\\nWhere there is some breakdown in the working relationship between an\\nemployee and a particular manager then dismissal may not be fair where the\\nemployer can reorganise their business to avoid this, for example, by\\nappointing a different manager to oversee the employee (SA Brain and Co\\nLtd v Philippart EAT 0571/06).\\n54.\\nIf the respondent discharges the burden of showing that there was a\\npotentially fair reason, the test then turns to the requirements of s98(4) for the\\nTribunal to consider whether dismissal was fair in all the circumstances of the\\ncase. There is a neutral burden of proof in relation to this part of the test.\\n55.\\nIn considering s98(4), the Tribunal should take into account all relevant factors\\nsuch as the size and administrative resources of the employer. There are\\ntwo matters which have generated considerable case law and which are worth\\nhighlighting\\n56.\\nFirst, there is the question of whether an employer has followed a fair\\nprocedure in dismissing the employee. The well-known case of Polkey v AE 4102833/2025\\nPage 9\\nDayton Services Ltd [1987] IRLR 503 it was held that a failure to follow a fair\\nprocedure was sufficient to render a dismissal unfair in itself (although the\\ncompensation to be awarded in such cases may fall to be reduce to reflect\"}, {\"char_end\": 20610, \"char_start\": 19121, \"page\": 1, \"paragraph\": 14, \"section_tag\": \"judgment\", \"text\": \"the degree to which the employee would have been fairly dismissed if the\\nprocedural errors had not been made - the so-called \\\"Polkey\\\" reduction).\\n57.\\nProcedural fairness includes giving an employee the opportunity to explain\\ntheir actions or provide some form of mitigation.\\n58.\\nThe Tribunal should have regard to the ACAS Code of Practice on Disciplinary\\nPractices and Procedures in Employment (\\\"ACAS Code\\\") in assessing the\\nprocedural fairness of any dismissal as well as considering whether the\\nemployer had complied with their own procedures and policies.\\n59.\\nOn the question of whether the procedure followed by the employer was\\nreasonable, the case of Sainsbury's Supermarket v Hitt [2003] IRLR 30 is\\nauthority for the proposition that the band of reasonable responses test\\napplies to conduct of the process leading to dismissal.\\n60.\\nThe second broad issue in considering s98(4) is that the Tribunal needs to\\nconsider whether the dismissal was a fair sanction applying the \\\"band of\\nreasonable responses\\\" test. The Tribunal must not substitute its own\\ndecision as to what sanction it would have applied and, rather, it must assess\\nwhether the sanction applied by the employer fell within a reasonable band of\\noptions available to the employer.\\nDecision\\n61.\\nThe first question for the Tribunal is whether there is a potentially fair reason\\nfor dismissal. The respondent relies on the SOSR of a breakdown of the\\nworking relationship between the claimant and KVS. There is no suggestion\"}, {\"char_end\": 22065, \"char_start\": 20610, \"page\": 1, \"paragraph\": 15, \"section_tag\": \"judgment\", \"text\": \"of any other reason being in the mind of JM when he made the decision to\\ndismiss; the claimant did not suggest any ulterior motive on the part of JM and\\nthere was no evidence of any other possible reason for his dismissal.\\n62.\\nIn these circumstances, the Tribunal finds that the breakdown in working\\nrelationships was the genuine reason for the claimant's dismissal.\\n63.\\nIt is almost beyond question that a breakdown in working relationships\\nbetween a manager and one of only three employees in an organisation was\\nsomething more than minor or trivial. This would be a substantial reason that\\ncould potentially justify dismissal.\\n64.\\nThe question is whether it was reasonable for JM to conclude that there had\\nbeen a breakdown in the working relationship based on the facts known to\\nhim at the time. The Tribunal considers that it was reasonable for the\\nfollowing reasons: 4102833/2025\\nPage 10\\na. The claimant had described KVS as \\\"inconsistent, incompetent and\\nuntrustworthy\\\" in his first grievance (p96) and in his second grievance\\n(p129) had repeated the issue about competence adding comments\\nabout KVS's mental health issue being a potential cause of how he\\nhad conducted himself. These are matters which would undoubtedly\\nseverely damage, if not destroy, the working relationship between the\\nclaimant and KVS.\\nb. There was no material before JM that the claimant had reflected on\\nthese comments and had come to a different view that might allow for\"}, {\"char_end\": 23504, \"char_start\": 22065, \"page\": 1, \"paragraph\": 16, \"section_tag\": \"judgment\", \"text\": \"some form of reconciliation. Rather, the available material suggested\\nthat these comments still reflected the claimant's views about KVS.\\nc. The respondent had heard and determined the claimant's grievance\\n(including engaging a third party consultant to carry out the\\ninvestigation as well as give the claimant the right to an appeal) but\\nthis had not resolved matters. The claimant's stated position was that\\nhe did not agree with the outcome of the process.\\nd. A system of 1-2-1 meetings had been put in place to try to improve\\ncommunications between the claimant and KVS but these had not\\nbeen successful.\\ne. KVS had expressed the view that it would be difficult for him to\\ncontinue to work with the claimant given what had happened.\\n65.\\nIn these circumstances, the Tribunal considers that it was reasonable for JM\\nto conclude that the working relationship between the claimant and KVS had\\nbroken down.\\n66.\\nThe question is then whether dismissal was within the band of reasonable\\nresponses in such circumstances. The Tribunal reminds itself that it is not to\\nsubstitute its own decision as to what it would have done nor is it deciding\\nwhether the respondent should have done something else. The Tribunal is\\ndeciding whether the decision to dismiss was within the band of reasonable\\nresponses open to the respondent in all the circumstances of the case.\\n67.\\nThis is not a case where there were any obvious alternatives that would avoid\"}, {\"char_end\": 24971, \"char_start\": 23504, \"page\": 1, \"paragraph\": 17, \"section_tag\": \"judgment\", \"text\": \"dismissal and mean that dismissal was not within the band of reasonable\\nresponses. The claimant did not suggest anything either at the time or at\\nthe Tribunal hearing. There was no alternative manager who could oversee\\nthe claimant's work; KVS was the only manager in the organisation. It would\\nnot have been feasible for a Board member to take over managing the\\nclaimant; this would involve them in the day-to-day running of the respondent\\nwhich is not their role; the claimant and KVS had to be able to work together\\nin such a small organisation. 4102833/2025\\nPage 11\\n68.\\nThe only apparent alternative to dismissing the claimant that would have\\nresolved the situation was to have dismissed KVS. This would have involved\\ndismissing a manager whom the respondent considered to be competent\\nleaving the organisation with no-one to run it on a day-to-day basis. The\\nTribunal considers that this was not a viable alternative.\\n69.\\nAlthough the claimant did not advance an argument about a lesser sanction\\n(such as a warning), the Tribunal bears in mind that he is a party litigant and\\nso, in keeping with the Overriding Objective and the need for equality of arms,\\nthe Tribunal has given consideration to this. This was not a conduct or similar\\ndisciplinary case so a warning would have been an unusual sanction in the\\ncircumstances. Further, it would not have obviously solved the situation in\\nwhich the respondent found itself of two of its four employees (one of whom\"}, {\"char_end\": 26362, \"char_start\": 24971, \"page\": 1, \"paragraph\": 18, \"section_tag\": \"judgment\", \"text\": \"was the manager of the organisation) being unable to work together.\\n70.\\nIn all these circumstances, the Tribunal considers that dismissal was within\\nthe band of reasonable responses open to the respondent.\\n71.\\nIn terms of procedure, the Tribunal considers that a fair procedure was\\nfollowed. The claimant had been given the opportunity to pursue his\\ngrievance including an appeal, efforts had been made to repair the working\\nrelationship, he had been invited to a dismissal hearing where he had the\\nopportunity to put his case and given the right to appeal the decision to\\ndismiss him. It is difficult to criticise the process followed by the respondent\\nand the claimant did not advance any particular case that his dismissal was\\nprocedurally unfair. Further, the process followed complies with the ACAS\\nCode.\\n72.\\nThe Tribunal was conscious that a lot of the process was carried out by a third\\nparty provider but, given the respondent's small size and resources, the\\nTribunal does not consider that this approach was beyond the band of\\nreasonable responses.\\n73.\\nIn these circumstances, the Tribunal cannot identify any basis on which it\\ncould be said that the claimant's dismissal was procedurally unfair.\\n74.\\nFor all these reasons, the Tribunal finds that the claim of unfair dismissal is\\nnot well-founded and is hereby dismissed.\\nEntered in register: 26 November 2025\\nand copied to parties\"}]}",
+  "n_chunks": 18,
+  "section_tag_counts": {
+    "case_header": 1,
+    "facts": 5,
+    "tribunal_reasoning": 7,
+    "judgment": 5
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[{\"name\":\"Abernethy v Mott Hay and Anderson\",\"citation\":\"[1974] IRLR 213\",\"cited_date\":\"1974\"},{\"name\":\"W Devis & Sons Ltd v Atkins\",\"citation\":\"[1977] AC 931\",\"cited_date\":\"1977\"},{\"name\":\"West Midlands Co-operative Society v Tipton\",\"citation\":\"[1986] IRLR 112\",\"cited_date\":\"1986\"},{\"name\":\"Harper v National Coal Board\",\"citation\":\"[1980] IRLR 260\",\"cited_date\":\"1980\"},{\"name\":\"Kent County Council v Gilham\",\"citation\":\"[1985] IRLR 18, CA\",\"cited_date\":\"1985\"},{\"name\":\"Ezsias v North Glamorgan NHS Trust\",\"citation\":\"2011 IRLR 550\",\"cited_date\":\"2011\"},{\"name\":\"Polkey v AE Dayton Services Ltd\",\"citation\":\"[1987] IRLR 503\",\"cited_date\":\"1987\"},{\"name\":\"Sainsbury's Supermarket v Hitt\",\"citation\":\"[2003] IRLR 30\",\"cited_date\":\"2003\"}],\"spans\":[{\"page\":1,\"paragraph\":12,\"text_span\":[16161,17635]},{\"page\":1,\"paragraph\":13,\"text_span\":[17635,19121]},{\"page\":1,\"paragraph\":14,\"text_span\":[19121,20610]}]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1454]}]},\"decision_date\":{\"value\":\"26 November 2025\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]},\"evidence\":{\"value\":\"The Tribunal heard evidence from the claimant, John McLean, the chair of the respondent's Board, and Koen Van der Straeten, the respondent's general manager. There was an agreed file of documents prepared by the parties, with additional documents lodged by the claimant at the start of the hearing.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1454]},{\"page\":1,\"paragraph\":2,\"text_span\":[1454,2899]}]},\"facts\":{\"value\":\"The respondent operated a not-for-profit garden centre as a social enterprise. The claimant commenced employment on 9 January 2020 as a facilitator taking the lead in horticulture. In February 2024 he raised a formal grievance about the general manager, KVS, and later provided a handwritten note that became a second grievance, continuing to challenge how the first grievance had been dealt with and asserting that he felt bullied.\",\"spans\":[{\"page\":1,\"paragraph\":3,\"text_span\":[2899,4383]},{\"page\":1,\"paragraph\":4,\"text_span\":[4383,5874]},{\"page\":1,\"paragraph\":5,\"text_span\":[5874,7339]},{\"page\":1,\"paragraph\":6,\"text_span\":[7339,8835]}]},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]},\"total_awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"respondent_success\",\"spans\":[{\"page\":1,\"paragraph\":15,\"text_span\":[20610,22065]},{\"page\":1,\"paragraph\":17,\"text_span\":[23504,24971]},{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]},\"awarded_gbp\":{\"value\":\"0.00\",\"spans\":[{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The respondent relies on the SOSR of a breakdown of the working relationship between the claimant and KVS.\",\"the Tribunal finds that the breakdown in working relationships was the genuine reason for the claimant's dismissal.\",\"The question is then whether dismissal was within the band of reasonable responses in such circumstances.\",\"the Tribunal considers that dismissal was within the band of reasonable responses open to the respondent.\",\"the Tribunal considers that a fair procedure was followed.\",\"the Tribunal finds that the claim of unfair dismissal is not well-founded and is hereby dismissed.\"],\"spans\":[{\"page\":1,\"paragraph\":15,\"text_span\":[20610,22065]},{\"page\":1,\"paragraph\":16,\"text_span\":[22065,23504]},{\"page\":1,\"paragraph\":17,\"text_span\":[23504,24971]},{\"page\":1,\"paragraph\":18,\"text_span\":[24971,26362]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1454]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1454]}]},\"region\":{\"value\":\"scotland\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1454]}]},\"region_source\":{\"value\":\"Edinburgh\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1454]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [
+          {
+            "name": "Abernethy v Mott Hay and Anderson",
+            "citation": "[1974] IRLR 213",
+            "cited_date": "1974"
+          },
+          {
+            "name": "W Devis & Sons Ltd v Atkins",
+            "citation": "[1977] AC 931",
+            "cited_date": "1977"
+          },
+          {
+            "name": "West Midlands Co-operative Society v Tipton",
+            "citation": "[1986] IRLR 112",
+            "cited_date": "1986"
+          },
+          {
+            "name": "Harper v National Coal Board",
+            "citation": "[1980] IRLR 260",
+            "cited_date": "1980"
+          },
+          {
+            "name": "Kent County Council v Gilham",
+            "citation": "[1985] IRLR 18, CA",
+            "cited_date": "1985"
+          },
+          {
+            "name": "Ezsias v North Glamorgan NHS Trust",
+            "citation": "2011 IRLR 550",
+            "cited_date": "2011"
+          },
+          {
+            "name": "Polkey v AE Dayton Services Ltd",
+            "citation": "[1987] IRLR 503",
+            "cited_date": "1987"
+          },
+          {
+            "name": "Sainsbury's Supermarket v Hitt",
+            "citation": "[2003] IRLR 30",
+            "cited_date": "2003"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 12,
+            "text_span": [
+              16161,
+              17635
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 13,
+            "text_span": [
+              17635,
+              19121
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 14,
+            "text_span": [
+              19121,
+              20610
+            ]
+          }
+        ]
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1454
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "26 November 2025",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              24971,
+              26362
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": "The Tribunal heard evidence from the claimant, John McLean, the chair of the respondent's Board, and Koen Van der Straeten, the respondent's general manager. There was an agreed file of documents prepared by the parties, with additional documents lodged by the claimant at the start of the hearing.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1454
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 2,
+            "text_span": [
+              1454,
+              2899
+            ]
+          }
+        ]
+      },
+      "facts": {
+        "value": "The respondent operated a not-for-profit garden centre as a social enterprise. The claimant commenced employment on 9 January 2020 as a facilitator taking the lead in horticulture. In February 2024 he raised a formal grievance about the general manager, KVS, and later provided a handwritten note that became a second grievance, continuing to challenge how the first grievance had been dealt with and asserting that he felt bullied.",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 3,
+            "text_span": [
+              2899,
+              4383
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 4,
+            "text_span": [
+              4383,
+              5874
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 5,
+            "text_span": [
+              5874,
+              7339
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 6,
+            "text_span": [
+              7339,
+              8835
+            ]
+          }
+        ]
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 18,
+              "text_span": [
+                24971,
+                26362
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": "0.00",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 18,
+              "text_span": [
+                24971,
+                26362
+              ]
+            }
+          ]
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "respondent_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 15,
+              "text_span": [
+                20610,
+                22065
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 17,
+              "text_span": [
+                23504,
+                24971
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 18,
+              "text_span": [
+                24971,
+                26362
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 18,
+                  "text_span": [
+                    24971,
+                    26362
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": "0.00",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 18,
+                  "text_span": [
+                    24971,
+                    26362
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The respondent relies on the SOSR of a breakdown of the working relationship between the claimant and KVS.",
+          "the Tribunal finds that the breakdown in working relationships was the genuine reason for the claimant's dismissal.",
+          "The question is then whether dismissal was within the band of reasonable responses in such circumstances.",
+          "the Tribunal considers that dismissal was within the band of reasonable responses open to the respondent.",
+          "the Tribunal considers that a fair procedure was followed.",
+          "the Tribunal finds that the claim of unfair dismissal is not well-founded and is hereby dismissed."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 15,
+            "text_span": [
+              20610,
+              22065
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 16,
+            "text_span": [
+              22065,
+              23504
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 17,
+            "text_span": [
+              23504,
+              24971
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 18,
+            "text_span": [
+              24971,
+              26362
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1454
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1454
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "scotland",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1454
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Edinburgh",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1454
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "",
+    "parsed": null,
+    "error": "LLMIncompleteResponseError('Response incomplete (reason=max_output_tokens, tokens_out=8192); increase max_output_tokens')"
+  },
+  "labeled_at": "2026-05-16T03:00:23.964549+00:00",
+  "source_pdf_sha256": "7edc2ffc346f32ee844a31de9b010549fa952b86acc84e3dbcd4e5d7e70354ac",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

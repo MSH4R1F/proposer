@@ -1,0 +1,518 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025",
+  "case_reference": "miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2026-03-15",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6016818/2025"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Miss A Durrant v Safeguard Security NE Ltd: 6016818/2025 - Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/69fd8d6081a251700a20b26f/Miss_Angela_Durrant_v_Safeguard_Security_NE_Ltd_6016818-25_Judgment.pdf"
+  },
+  "pdf_sha256": "908af7a46ef98071c8ade8d8932a6d087f1e213256f6fc9c2857131495d10de1",
+  "ocr_text_sha256": "d366e2b6230bd5a416763e08f5f3eaf50bd360f83a37e1e90bdf1464a48cf358",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"miss-a-durrant-v-safeguard-security-ne-ltd-6016818-slash-2025\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 706, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case Number: 6016818/2025\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\n\\n\\nMiss Angela Durrant\\n\\n\\nRespondent:\\nSafeguard Security NE Ltd\\n\\n\\n\\n\\nHeard at:\\nNewcastle by CVP\\n\\n\\nOn: 13 March 2026\\n\\nBefore:\\nEmployment Judge Moss\\n\\nAppearances\\nFor the claimant:\\nIn person\\nFor the respondent: Miss Erin Bright (Litigation Consultant)\\n\\n\\nJUDGMENT\\n\\n\\n1. The claimant's complaint of unfair dismissal is dismissed pursuant to Rule\\n28 of The Employment Tribunal Procedure Rules 2024 because the tribunal\\nhas no jurisdiction to consider the claim due to the claimant not having had 2\\nyears' continuous employment with the respondent, as required by s108(1)\\nof the Employment Rights Act 1996.\\n\\n\\n\\n\\n\\nEmployment Judge Moss\\n\\n15 March 2026\"}]}",
+  "n_chunks": 1,
+  "section_tag_counts": {
+    "case_header": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[357,373]}]},\"decision_date\":{\"value\":\"2026-03-15\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[693,706]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[344,386]},{\"page\":1,\"paragraph\":1,\"text_span\":[476,664]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":\"No monetary award stated because the claim was dismissed for lack of jurisdiction.\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[344,386]},{\"page\":1,\"paragraph\":1,\"text_span\":[476,664]}]},\"determination\":{\"value\":\"non_merits\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[476,664]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"respondent\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[344,386]},{\"page\":1,\"paragraph\":1,\"text_span\":[476,664]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The claimant's complaint of unfair dismissal is dismissed pursuant to Rule 28 of The Employment Tribunal Procedure Rules 2024 because the tribunal has no jurisdiction to consider the claim due to the claimant not having had 2 years' continuous employment with the respondent, as required by s108(1) of the Employment Rights Act 1996.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[326,664]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[357,373]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":false},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[224,251]},{\"page\":1,\"paragraph\":1,\"text_span\":[252,312]}]},\"region\":{\"value\":\"north_east\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[143,159]}]},\"region_source\":{\"value\":\"Newcastle by CVP\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[143,159]}]},\"statutory_basis\":{\"value\":[{\"statute\":\"Employment Rights Act 1996\",\"section\":\"s.108\"}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[622,664]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              357,
+              373
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-03-15",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              693,
+              706
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                344,
+                386
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                476,
+                664
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": "No monetary award stated because the claim was dismissed for lack of jurisdiction.",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                344,
+                386
+              ]
+            },
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                476,
+                664
+              ]
+            }
+          ]
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                476,
+                664
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "respondent",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    344,
+                    386
+                  ]
+                },
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    476,
+                    664
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The claimant's complaint of unfair dismissal is dismissed pursuant to Rule 28 of The Employment Tribunal Procedure Rules 2024 because the tribunal has no jurisdiction to consider the claim due to the claimant not having had 2 years' continuous employment with the respondent, as required by s108(1) of the Employment Rights Act 1996."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              326,
+              664
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              357,
+              373
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              224,
+              251
+            ]
+          },
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              252,
+              312
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "north_east",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              143,
+              159
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Newcastle by CVP",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              143,
+              159
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.108"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              622,
+              664
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\": {\"value\": [], \"spans\": []}, \"claim_types\": {\"value\": [\"unfair_dismissal\"], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"decision_date\": {\"value\": \"2026-03-15\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"evidence\": {\"value\": null, \"unavailable_reason\": \"no evidence-section text present in source; only case header is provided\"}, \"facts\": {\"value\": null, \"unavailable_reason\": \"no facts- or issues-tagged text present in source; only case header is provided\"}, \"ground_truth_outcome\": {\"overall_winner\": {\"value\": \"respondent\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"total_awarded_gbp\": {\"value\": null, \"unavailable_reason\": \"no award amount stated in source text\"}, \"unapportioned_reason\": {\"value\": null}, \"determination\": {\"value\": \"non_merits\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"per_issue\": {\"value\": [], \"spans\": []}, \"basic_award_gbp\": {\"value\": null}, \"compensatory_award_gbp\": {\"value\": null}, \"deductions_pct\": {\"value\": null}, \"uplifts_pct\": {\"value\": null}, \"reinstatement_sought\": {\"value\": null}, \"reinstatement_granted\": {\"value\": null}, \"re_engagement_sought\": {\"value\": null}, \"re_engagement_granted\": {\"value\": null}}, \"key_reasoning_quotes\": {\"value\": [\"The claimant's complaint of unfair dismissal is dismissed pursuant to Rule 28 of The Employment Tribunal Procedure Rules 2024 because the tribunal has no jurisdiction to consider the claim due to the claimant not having had 2 years' continuous employment with the respondent, as required by s108(1) of the Employment Rights Act 1996.\"], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"matter_type\": {\"value\": \"unfair_dismissal\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"parties\": {\"value\": [{\"role\": \"claimant\", \"represented\": false}, {\"role\": \"respondent_employer\", \"represented\": true}], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"region\": {\"value\": \"north_east\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"region_source\": {\"value\": \"Newcastle by CVP\", \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}, \"statutory_basis\": {\"value\": [{\"statute\": \"Employment Rights Act 1996\", \"section\": \"s.108\"}], \"spans\": [{\"page\": 1, \"paragraph\": 1, \"text_span\": [0, 706]}]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2026-03-15",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence-section text present in source; only case header is provided"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts- or issues-tagged text present in source; only case header is provided"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "respondent",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                706
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null,
+          "unavailable_reason": "no award amount stated in source text"
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "non_merits",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                706
+              ]
+            }
+          ]
+        },
+        "per_issue": {
+          "value": [],
+          "spans": []
+        },
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The claimant's complaint of unfair dismissal is dismissed pursuant to Rule 28 of The Employment Tribunal Procedure Rules 2024 because the tribunal has no jurisdiction to consider the claim due to the claimant not having had 2 years' continuous employment with the respondent, as required by s108(1) of the Employment Rights Act 1996."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": false
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "north_east",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Newcastle by CVP",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [
+          {
+            "statute": "Employment Rights Act 1996",
+            "section": "s.108"
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              706
+            ]
+          }
+        ]
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:58:51.568786+00:00",
+  "source_pdf_sha256": "908af7a46ef98071c8ade8d8932a6d087f1e213256f6fc9c2857131495d10de1",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}

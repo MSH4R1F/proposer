@@ -1,0 +1,519 @@
+{
+  "schema_version": "employment_et_panel_artifact_v1",
+  "run_id": "20260516T024713Z-646a2e40-emp-et",
+  "case_id": "mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024",
+  "case_reference": "mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024",
+  "domain_id": "employment.et.unfair_dismissal.v1",
+  "compat_domain_id": "employment.unfair_dismissal.v1",
+  "decision_date": "2025-12-08",
+  "country": "england_and_wales",
+  "case_numbers": [
+    "6015259/2024"
+  ],
+  "jurisdiction_codes": [
+    "Unfair Dismissal"
+  ],
+  "source_url": "https://www.gov.uk/employment-tribunal-decisions/mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024",
+  "first_attachment": {
+    "content_type": "application/pdf",
+    "file_size_bytes": null,
+    "title": "Mr R Thomas v Mid and West Wales Fire & Rescue Service: 6015259/2024 - Judgment",
+    "url": "https://assets.publishing.service.gov.uk/media/68878ec6b0e1dfe5b5f0e4b9/6015259.2024_R_Thomas_v_Mid_and_West_Wales_Fire_and_Rescue_Service_Liability_Judgment_.pdf"
+  },
+  "pdf_sha256": "a91d2fb9c1069b511880f66d5194be55ef6e85063f576a7b15202eee9700eefc",
+  "ocr_text_sha256": "e067623e12d4053909590de1823e367021c33fbdaa49b054e36484af484ef6c5",
+  "prompt_pack_version": "employment.et.unfair_dismissal.v1-1.1.0",
+  "prompt_template_hash": "43fe38a693db29b37115606bcd439f0cc93df6cafe19078a75f4f3da5dca4ee0",
+  "rendered_prompt": "{\"allowed_fields\": [\"cited_authorities\", \"claim_types\", \"decision_date\", \"evidence\", \"facts\", \"ground_truth_outcome\", \"key_reasoning_quotes\", \"matter_type\", \"parties\", \"region\", \"region_source\", \"statutory_basis\"], \"case_id\": \"mr-r-thomas-v-mid-and-west-wales-fire-and-rescue-service-6015259-slash-2024\", \"domain_id\": \"employment.et.unfair_dismissal.v1\", \"prompt_pack_version\": \"employment.et.unfair_dismissal.v1-1.1.0\", \"source_text\": [{\"char_end\": 1388, \"char_start\": 0, \"page\": 1, \"paragraph\": 1, \"section_tag\": \"case_header\", \"text\": \"Case No. 6015259/2024\\nv3 10.2.25\\n1\\n\\n\\n\\nEMPLOYMENT TRIBUNALS\\n\\nClaimant:\\nMr R Thomas\\n\\nRespondent:\\nMid and West Wales Fire & Rescue Service\\n\\nHeard at:\\n\\nCardiff; by video\\nOn: 14, 15, 16 & 17 July 2025\\n\\nBefore:\\nEmployment Judge R Harfield\\n\\n\\nREPRESENTATION:\\n\\nClaimant:\\nMr Pal (Counsel)\\nRespondent:\\nMs Grennan (Counsel)\\n\\nJUDGMENT\\nThe Judgment of the Tribunal is as follows:\\n1.\\nThe complaint of unfair dismissal is well-founded. The claimant was unfairly\\ndismissed.\\n2.\\nThere is no deduction to reflect a chance that the claimant would have been fairly\\ndismissed in any event.\\n3.\\nThe claimant caused or contributed to the dismissal by blameworthy conduct and\\nit is just and equitable to reduce the compensatory award payable to the claimant\\nby 40 %.\\n4.\\nIt is just and equitable to reduce the basic award payable to the claimant by 40%\\nbecause of the claimant's conduct before the dismissal.\\n5.\\nThe complaint of wrongful dismissal is not well founded and is dismissed.\\n\\n\\n\\n\\n\\nCase No. 6015259/2024\\nv3 10.2.25\\n2\\n\\nApproved by:\\nEmployment Judge R Harfield\\n17 July 2025\\n\\nJudgment sent to the parties on:\\n\\n25 July 2025\\nFor the Tribunal:\\n\\n\\nKatie Dickson\\n\\nNote\\nReasons for the judgment were given orally at the hearing. Written reasons will not be provided unless a\\nparty asked for them at the hearing or a party makes a written request within 14 days of the sending of this\\nwritten record of the decision.\"}, {\"char_end\": 1669, \"char_start\": 1388, \"page\": 1, \"paragraph\": 2, \"section_tag\": \"tribunal_reasoning\", \"text\": \"Public access to employment tribunal decisions\\nJudgments (apart from judgments under rule 51) and reasons for the judgments are published, in full, online\\nat www.gov.uk/employment-tribunal-decisions shortly after a copy has been sent to the claimant(s) and\\nrespondent(s) in a case.\"}]}",
+  "n_chunks": 2,
+  "section_tag_counts": {
+    "case_header": 1,
+    "tribunal_reasoning": 1
+  },
+  "labeler_a": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\"cited_authorities\":{\"value\":[],\"spans\":[]},\"claim_types\":{\"value\":[\"unfair_dismissal\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"decision_date\":{\"value\":\"2025-07-17\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"evidence\":{\"value\":null,\"unavailable_reason\":\"No evidence summary is provided in the source text.\"},\"facts\":{\"value\":null,\"unavailable_reason\":\"No facts or issues section is provided in the source text.\"},\"ground_truth_outcome\":{\"overall_winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"total_awarded_gbp\":{\"value\":null},\"unapportioned_reason\":{\"value\":null},\"determination\":{\"value\":\"claimant_success\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"per_issue\":[{\"issue\":\"unfair_dismissal\",\"winner\":{\"value\":\"claimant\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"awarded_gbp\":{\"value\":null}}],\"basic_award_gbp\":{\"value\":null},\"compensatory_award_gbp\":{\"value\":null},\"deductions_pct\":{\"value\":null},\"uplifts_pct\":{\"value\":null},\"reinstatement_sought\":{\"value\":null},\"reinstatement_granted\":{\"value\":null},\"re_engagement_sought\":{\"value\":null},\"re_engagement_granted\":{\"value\":null}},\"key_reasoning_quotes\":{\"value\":[\"The complaint of unfair dismissal is well-founded. The claimant was unfairly dismissed.\",\"There is no deduction to reflect a chance that the claimant would have been fairly dismissed in any event.\",\"The claimant caused or contributed to the dismissal by blameworthy conduct and it is just and equitable to reduce the compensatory award payable to the claimant by 40 %.\",\"It is just and equitable to reduce the basic award payable to the claimant by 40% because of the claimant's conduct before the dismissal.\"],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"matter_type\":{\"value\":\"unfair_dismissal\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"parties\":{\"value\":[{\"role\":\"claimant\",\"represented\":true},{\"role\":\"respondent_employer\",\"represented\":true}],\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"region\":{\"value\":\"wales\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"region_source\":{\"value\":\"Cardiff; by video\",\"spans\":[{\"page\":1,\"paragraph\":1,\"text_span\":[0,1388]}]},\"statutory_basis\":{\"value\":[],\"spans\":[]}}",
+    "parsed": {
+      "cited_authorities": {
+        "value": [],
+        "spans": []
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "2025-07-17",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "No evidence summary is provided in the source text."
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "No facts or issues section is provided in the source text."
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1388
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1388
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "claimant",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1388
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          "The complaint of unfair dismissal is well-founded. The claimant was unfairly dismissed.",
+          "There is no deduction to reflect a chance that the claimant would have been fairly dismissed in any event.",
+          "The claimant caused or contributed to the dismissal by blameworthy conduct and it is just and equitable to reduce the compensatory award payable to the claimant by 40 %.",
+          "It is just and equitable to reduce the basic award payable to the claimant by 40% because of the claimant's conduct before the dismissal."
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true
+          }
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "wales",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Cardiff; by video",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": [],
+        "spans": []
+      }
+    },
+    "error": null
+  },
+  "labeler_b": {
+    "spec": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "api_version": null,
+      "reasoning_effort": null,
+      "text_verbosity": null,
+      "store": false
+    },
+    "raw_response": "{\n  \"cited_authorities\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no case-law authorities cited in source text\"\n  },\n  \"claim_types\": {\n    \"value\": [\n      \"unfair_dismissal\"\n    ],\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1388\n        ]\n      }\n    ]\n  },\n  \"decision_date\": {\n    \"value\": \"17 July 2025\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1388\n        ]\n      }\n    ]\n  },\n  \"evidence\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no evidence section present in source text\"\n  },\n  \"facts\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no facts or issues section present in source text\"\n  },\n  \"ground_truth_outcome\": {\n    \"overall_winner\": {\n      \"value\": \"claimant\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1388\n          ]\n        }\n      ]\n    },\n    \"total_awarded_gbp\": {\n      \"value\": null\n    },\n    \"unapportioned_reason\": {\n      \"value\": null\n    },\n    \"determination\": {\n      \"value\": \"claimant_success\",\n      \"spans\": [\n        {\n          \"page\": 1,\n          \"paragraph\": 1,\n          \"text_span\": [\n            0,\n            1388\n          ]\n        }\n      ]\n    },\n    \"per_issue\": [\n      {\n        \"issue\": \"unfair_dismissal\",\n        \"winner\": {\n          \"value\": \"claimant\",\n          \"spans\": [\n            {\n              \"page\": 1,\n              \"paragraph\": 1,\n              \"text_span\": [\n                0,\n                1388\n              ]\n            }\n          ]\n        },\n        \"awarded_gbp\": {\n          \"value\": null\n        }\n      }\n    ],\n    \"basic_award_gbp\": {\n      \"value\": null\n    },\n    \"compensatory_award_gbp\": {\n      \"value\": null\n    },\n    \"deductions_pct\": {\n      \"value\": null\n    },\n    \"uplifts_pct\": {\n      \"value\": null\n    },\n    \"reinstatement_sought\": {\n      \"value\": null\n    },\n    \"reinstatement_granted\": {\n      \"value\": null\n    },\n    \"re_engagement_sought\": {\n      \"value\": null\n    },\n    \"re_engagement_granted\": {\n      \"value\": null\n    }\n  },\n  \"key_reasoning_quotes\": {\n    \"value\": [\n      {\n        \"quote\": \"The complaint of unfair dismissal is well-founded. The claimant was unfairly dismissed.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1388\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"There is no deduction to reflect a chance that the claimant would have been fairly dismissed in any event.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1388\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"The claimant caused or contributed to the dismissal by blameworthy conduct and it is just and equitable to reduce the compensatory award payable to the claimant by 40%.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1388\n            ]\n          }\n        ]\n      },\n      {\n        \"quote\": \"It is just and equitable to reduce the basic award payable to the claimant by 40% because of the claimant's conduct before the dismissal.\",\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1388\n            ]\n          }\n        ]\n      }\n    ]\n  },\n  \"matter_type\": {\n    \"value\": \"unfair_dismissal\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1388\n        ]\n      }\n    ]\n  },\n  \"parties\": {\n    \"value\": [\n      {\n        \"role\": \"claimant\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1388\n            ]\n          }\n        ]\n      },\n      {\n        \"role\": \"respondent_employer\",\n        \"represented\": true,\n        \"spans\": [\n          {\n            \"page\": 1,\n            \"paragraph\": 1,\n            \"text_span\": [\n              0,\n              1388\n            ]\n          }\n        ]\n      }\n    ]\n  },\n  \"region\": {\n    \"value\": \"wales\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1388\n        ]\n      }\n    ]\n  },\n  \"region_source\": {\n    \"value\": \"Cardiff; by video\",\n    \"spans\": [\n      {\n        \"page\": 1,\n        \"paragraph\": 1,\n        \"text_span\": [\n          0,\n          1388\n        ]\n      }\n    ]\n  },\n  \"statutory_basis\": {\n    \"value\": null,\n    \"unavailable_reason\": \"no statute or section explicitly cited in source text\"\n  }\n}",
+    "parsed": {
+      "cited_authorities": {
+        "value": null,
+        "unavailable_reason": "no case-law authorities cited in source text"
+      },
+      "claim_types": {
+        "value": [
+          "unfair_dismissal"
+        ],
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "decision_date": {
+        "value": "17 July 2025",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "evidence": {
+        "value": null,
+        "unavailable_reason": "no evidence section present in source text"
+      },
+      "facts": {
+        "value": null,
+        "unavailable_reason": "no facts or issues section present in source text"
+      },
+      "ground_truth_outcome": {
+        "overall_winner": {
+          "value": "claimant",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1388
+              ]
+            }
+          ]
+        },
+        "total_awarded_gbp": {
+          "value": null
+        },
+        "unapportioned_reason": {
+          "value": null
+        },
+        "determination": {
+          "value": "claimant_success",
+          "spans": [
+            {
+              "page": 1,
+              "paragraph": 1,
+              "text_span": [
+                0,
+                1388
+              ]
+            }
+          ]
+        },
+        "per_issue": [
+          {
+            "issue": "unfair_dismissal",
+            "winner": {
+              "value": "claimant",
+              "spans": [
+                {
+                  "page": 1,
+                  "paragraph": 1,
+                  "text_span": [
+                    0,
+                    1388
+                  ]
+                }
+              ]
+            },
+            "awarded_gbp": {
+              "value": null
+            }
+          }
+        ],
+        "basic_award_gbp": {
+          "value": null
+        },
+        "compensatory_award_gbp": {
+          "value": null
+        },
+        "deductions_pct": {
+          "value": null
+        },
+        "uplifts_pct": {
+          "value": null
+        },
+        "reinstatement_sought": {
+          "value": null
+        },
+        "reinstatement_granted": {
+          "value": null
+        },
+        "re_engagement_sought": {
+          "value": null
+        },
+        "re_engagement_granted": {
+          "value": null
+        }
+      },
+      "key_reasoning_quotes": {
+        "value": [
+          {
+            "quote": "The complaint of unfair dismissal is well-founded. The claimant was unfairly dismissed.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1388
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "There is no deduction to reflect a chance that the claimant would have been fairly dismissed in any event.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1388
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "The claimant caused or contributed to the dismissal by blameworthy conduct and it is just and equitable to reduce the compensatory award payable to the claimant by 40%.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1388
+                ]
+              }
+            ]
+          },
+          {
+            "quote": "It is just and equitable to reduce the basic award payable to the claimant by 40% because of the claimant's conduct before the dismissal.",
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1388
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "matter_type": {
+        "value": "unfair_dismissal",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "parties": {
+        "value": [
+          {
+            "role": "claimant",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1388
+                ]
+              }
+            ]
+          },
+          {
+            "role": "respondent_employer",
+            "represented": true,
+            "spans": [
+              {
+                "page": 1,
+                "paragraph": 1,
+                "text_span": [
+                  0,
+                  1388
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "region": {
+        "value": "wales",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "region_source": {
+        "value": "Cardiff; by video",
+        "spans": [
+          {
+            "page": 1,
+            "paragraph": 1,
+            "text_span": [
+              0,
+              1388
+            ]
+          }
+        ]
+      },
+      "statutory_basis": {
+        "value": null,
+        "unavailable_reason": "no statute or section explicitly cited in source text"
+      }
+    },
+    "error": null
+  },
+  "labeled_at": "2026-05-16T02:51:35.840945+00:00",
+  "source_pdf_sha256": "a91d2fb9c1069b511880f66d5194be55ef6e85063f576a7b15202eee9700eefc",
+  "gold_schema_hash": "b4a7534bc211133257df65e3a93d57dbd27d64939548d04550f810a649fa9cf2",
+  "corpus_manifest_hash": "4f02a43fcb986920bcd39fc28c9d329f5e1a4e9cd896b774021ceee2944c9272",
+  "canonicalizer_version": "research_mode_no_canonicalizer-1.0.0",
+  "grounder_version": "research_mode_no_grounder-1.0.0"
+}
