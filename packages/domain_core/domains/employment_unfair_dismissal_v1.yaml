@@ -54,6 +54,9 @@ forum_profiles:
 party_roles:
   - claimant
   - respondent_employer
+party_role_labels:
+  claimant: { label: "Employee (claimant)", blurb: "Bringing the claim" }
+  respondent_employer: { label: "Employer (respondent)", blurb: "Responding to the claim" }
 matter_types:
   - unfair_dismissal
 remedies:

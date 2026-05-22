@@ -45,6 +45,9 @@ forum_profiles:
 party_roles:
   - tenant
   - landlord
+party_role_labels:
+  tenant: { label: "Tenant", blurb: "Applying for a rent repayment order" }
+  landlord: { label: "Landlord", blurb: "Responding to the application" }
 matter_types:
   - rent_repayment_order
 remedies:

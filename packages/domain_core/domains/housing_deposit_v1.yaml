@@ -85,6 +85,9 @@ party_roles:
   - tenant
   - landlord
   - letting_agent
+party_role_labels:
+  tenant: { label: "Tenant", blurb: "Disputing deposit deductions" }
+  landlord: { label: "Landlord", blurb: "Seeking deposit recovery" }
 matter_types:
   - deposit_deduction
   - deposit_non_protection

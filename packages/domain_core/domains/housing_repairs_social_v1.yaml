@@ -50,6 +50,9 @@ forum_profiles:
 party_roles:
   - resident
   - landlord_provider
+party_role_labels:
+  resident: { label: "Resident", blurb: "Reporting disrepair or a complaint" }
+  landlord_provider: { label: "Housing provider", blurb: "Responding to the complaint" }
 matter_types:
   - repairs_damp_mould
   - repairs_disrepair

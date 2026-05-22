@@ -46,6 +46,9 @@ forum_profiles:
 party_roles:
   - tenant
   - landlord
+party_role_labels:
+  tenant: { label: "Tenant", blurb: "Challenging the rent" }
+  landlord: { label: "Landlord", blurb: "Defending the rent" }
 matter_types:
   - rent_determination
 remedies:
