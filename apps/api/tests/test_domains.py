@@ -32,3 +32,10 @@ async def test_non_default_domain_has_research_disclaimer_and_bulk_only(async_cl
     if emp["availability"] != "live":
         assert emp["disclaimer_level"] == "research"
     assert emp["intake_modes"] == ["bulk"]
+
+
+@pytest.mark.asyncio
+async def test_chat_start_rejects_role_not_in_domain(async_client):
+    # 'claimant' is not a deposit party_role -> 400
+    resp = await async_client.post("/chat/start", json={"role": "claimant", "domain_id": "housing.deposit.v1"})
+    assert resp.status_code == 400
