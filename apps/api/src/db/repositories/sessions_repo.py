@@ -11,7 +11,7 @@ from apps.api.src.db.models import IntakeSessionRow
 from apps.api.src.db.repositories._domain_meta import (
     extract_domain_block as _extract_domain_block,
 )
-from packages.llm_orchestrator.models.conversation import ConversationState
+from llm_orchestrator.models.conversation import ConversationState
 
 
 @dataclass(frozen=True)

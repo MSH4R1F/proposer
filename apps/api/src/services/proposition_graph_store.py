@@ -8,7 +8,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.api.src.db.uow import UnitOfWork
-from packages.kg_builder.propositions import (
+from kg_builder.propositions import (
     DecisionDocument,
     Proposition,
     PropositionEdge,

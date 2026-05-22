@@ -10,9 +10,9 @@ from typing import Any, Optional
 
 import structlog
 
-from packages.kg_builder.models.edges import Edge
-from packages.kg_builder.models.graph import KnowledgeGraph
-from packages.kg_builder.models.nodes import (
+from kg_builder.models.edges import Edge
+from kg_builder.models.graph import KnowledgeGraph
+from kg_builder.models.nodes import (
     BaseNode,
     ClaimedAmountNode,
     EventNode,

@@ -30,7 +30,7 @@ try:  # package-style imports in the normal PYTHONPATH=packages runtime
         normalize_for_matching,
     )
 except ModuleNotFoundError:  # repository-root imports used by some API tests
-    from packages.kg_builder.propositions import (
+    from kg_builder.propositions import (
         DecisionDocument,
         Proposition,
         PropositionEdge,

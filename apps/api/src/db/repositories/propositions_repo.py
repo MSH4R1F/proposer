@@ -20,7 +20,7 @@ from apps.api.src.db.models import (
     PropositionExtractionRunRow,
     PropositionRow,
 )
-from packages.kg_builder.propositions import (
+from kg_builder.propositions import (
     DecisionDocument,
     ExtractionRunStatus,
     Proposition,

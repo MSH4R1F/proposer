@@ -12,7 +12,7 @@ from apps.api.src.db.repositories._domain_meta import (
     extract_domain_block as _extract_domain_block,
 )
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
-from packages.llm_orchestrator.models.mediation import MediationSession
+from llm_orchestrator.models.mediation import MediationSession
 
 
 @dataclass(frozen=True)

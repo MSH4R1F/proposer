@@ -11,7 +11,7 @@ from apps.api.src.db.repositories._domain_meta import (
     extract_domain_block as _extract_domain_block,
     extract_source_provenance as _extract_source_provenance,
 )
-from packages.llm_orchestrator.models.evidence import EvidenceMetadata
+from llm_orchestrator.models.evidence import EvidenceMetadata
 
 
 class EvidenceRepo:
