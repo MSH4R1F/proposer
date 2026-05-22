@@ -29,9 +29,11 @@ export function formatConfidence(confidence: number): string {
 
 export function formatOutcome(outcome: string): string {
   switch (outcome) {
+    case 'tenant_wins':
     case 'tenant_win':
     case 'tenant_favored':
       return 'Tenant Likely to Win';
+    case 'landlord_wins':
     case 'landlord_win':
     case 'landlord_favored':
       return 'Landlord Likely to Win';

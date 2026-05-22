@@ -25,9 +25,9 @@ export function ExpectationCard({ expectationData }: ExpectationCardProps) {
 
   const confidencePct = Math.round(overall_confidence * 100);
   const isTenantFavored =
-    overall_outcome === 'tenant_favored' || overall_outcome === 'tenant_win';
+    overall_outcome === 'tenant_favored' || overall_outcome === 'tenant_win' || overall_outcome === 'tenant_wins';
   const isLandlordFavored =
-    overall_outcome === 'landlord_favored' || overall_outcome === 'landlord_win';
+    overall_outcome === 'landlord_favored' || overall_outcome === 'landlord_win' || overall_outcome === 'landlord_wins';
 
   const outcomeBadgeVariant =
     isTenantFavored

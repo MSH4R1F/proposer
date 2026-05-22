@@ -6,7 +6,9 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Scale, Sparkles } from 'lucide-react';
 
 interface OutcomeDisplayProps {
-  outcome: 'tenant_win' | 'landlord_win' | 'tenant_favored' | 'landlord_favored' | 'split' | 'uncertain';
+  // The API/pipeline emits plural outcome values (tenant_wins/landlord_wins);
+  // older singular/favored variants are accepted for backward compatibility.
+  outcome: 'tenant_wins' | 'landlord_wins' | 'tenant_win' | 'landlord_win' | 'tenant_favored' | 'landlord_favored' | 'split' | 'uncertain';
   confidence: number;
 }
 
@@ -74,7 +76,12 @@ const outcomeConfig = {
 };
 
 export function OutcomeDisplay({ outcome, confidence }: OutcomeDisplayProps) {
-  const config = outcomeConfig[outcome] || outcomeConfig.uncertain;
+  // Normalize the canonical plural values onto the singular config keys.
+  const normalizedOutcome =
+    outcome === 'tenant_wins' ? 'tenant_win'
+    : outcome === 'landlord_wins' ? 'landlord_win'
+    : outcome;
+  const config = outcomeConfig[normalizedOutcome] || outcomeConfig.uncertain;
   const Icon = config.icon;
 
   return (
