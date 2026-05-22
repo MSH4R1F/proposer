@@ -23,7 +23,7 @@ import structlog
 
 from apps.api.src.config import APIConfig, config
 from apps.api.src.db.engine import create_engine_from_url, make_sessionmaker
-from apps.api.src.routers import chat, evidence, predictions, cases, disputes, mediation
+from apps.api.src.routers import chat, evidence, predictions, cases, disputes, mediation, domains
 
 # Configure logging
 structlog.configure(
@@ -114,7 +114,7 @@ def create_app(settings: Optional[APIConfig] = None) -> FastAPI:
     # Include routers
     logger.debug(
         "registering_routers",
-        routers=["chat", "evidence", "predictions", "cases", "disputes", "mediation"],
+        routers=["chat", "evidence", "predictions", "cases", "disputes", "mediation", "domains"],
     )
     app.include_router(chat.router)
     app.include_router(evidence.router)
@@ -122,6 +122,7 @@ def create_app(settings: Optional[APIConfig] = None) -> FastAPI:
     app.include_router(cases.router)
     app.include_router(disputes.router)
     app.include_router(mediation.router)
+    app.include_router(domains.router)
     logger.debug("routers_registered")
 
     if settings.debug:
