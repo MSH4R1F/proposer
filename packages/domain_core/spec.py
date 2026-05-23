@@ -249,6 +249,7 @@ class DomainSpec(BaseModel):
     forums: List[Forum]
     forum_profiles: List[ForumProfile]
     party_roles: List[str]
+    party_role_labels: Dict[str, Dict[str, str]] = Field(default_factory=dict)
     matter_types: List[str]
     remedies: List[str]
     intake_schema_ref: str

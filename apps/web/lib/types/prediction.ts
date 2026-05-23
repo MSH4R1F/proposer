@@ -1,4 +1,6 @@
 export type OutcomeType =
+  | 'tenant_wins'
+  | 'landlord_wins'
   | 'tenant_win'
   | 'landlord_win'
   | 'tenant_favored'

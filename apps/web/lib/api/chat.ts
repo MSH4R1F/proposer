@@ -10,18 +10,13 @@ import type {
 } from '@/lib/types/chat';
 import type { RouteResponse } from '@/lib/types/domain';
 
-interface StartSessionOptions {
-  role: PartyRole;
-  inviteCode?: string;
-  createDispute?: boolean;
-}
-
 export const chatApi = {
-  startSession: (role: PartyRole, options?: { inviteCode?: string; createDispute?: boolean }) =>
+  startSession: (role: PartyRole, options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }) =>
     api.post<StartSessionResponse>('/chat/start', {
       role,
       invite_code: options?.inviteCode,
       create_dispute: options?.createDispute ?? true,
+      domain_id: options?.domainId,
     }),
 
   setRole: (sessionId: string, role: PartyRole) =>
@@ -55,12 +50,13 @@ export const chatApi = {
   validateInviteCode: (inviteCode: string) =>
     api.post<ValidateInviteResponse>('/disputes/validate-invite', { invite_code: inviteCode }),
 
-  bulkIntake: (role: PartyRole, caseText: string, options?: { inviteCode?: string; createDispute?: boolean }) =>
+  bulkIntake: (role: PartyRole, caseText: string, options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }) =>
     api.post<BulkIntakeResponse>('/chat/bulk-intake', {
       role,
       case_text: caseText,
       invite_code: options?.inviteCode,
       create_dispute: options?.createDispute ?? true,
+      domain_id: options?.domainId,
     }),
 
   /**

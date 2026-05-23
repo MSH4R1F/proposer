@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { chatApi } from '@/lib/api/chat';
-import { saveSessionId, saveCaseId, getSessionId } from '@/lib/utils/storage';
+import { saveSessionId, saveCaseId } from '@/lib/utils/storage';
 import type {
   Message,
   ChatState,
   IntakeStage,
   PartyRole,
-  CaseFile,
-  DisputeInfo,
 } from '@/lib/types/chat';
 import type { RoutingMetadata } from '@/lib/types/domain';
 
@@ -38,7 +36,7 @@ export function useChat(initialSessionId?: string) {
 
   const startSession = useCallback(async (
     role: PartyRole,
-    options?: { inviteCode?: string; createDispute?: boolean }
+    options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }
   ): Promise<string | null> => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
@@ -86,7 +84,7 @@ export function useChat(initialSessionId?: string) {
   const startBulkSession = useCallback(async (
     role: PartyRole,
     caseText: string,
-    options?: { inviteCode?: string; createDispute?: boolean }
+    options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }
   ): Promise<string | null> => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 

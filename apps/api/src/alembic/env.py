@@ -4,10 +4,23 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
 from sqlalchemy.engine import Connection
+
+# Use the same import roots as scripts/api.py so package imports
+# (`llm_orchestrator`, `kg_builder`) resolve to a single module identity.
+# Without `packages/` on sys.path the model imports below fail with
+# ModuleNotFoundError once repositories import the packages without a
+# `packages.` prefix.
+_PROJECT_ROOT = Path(__file__).resolve().parents[4]
+for _p in (_PROJECT_ROOT, _PROJECT_ROOT / "packages"):
+    _ps = str(_p)
+    if _ps not in sys.path:
+        sys.path.insert(0, _ps)
 
 from apps.api.src.db.base import Base
 from apps.api.src.db.engine import create_engine_from_url

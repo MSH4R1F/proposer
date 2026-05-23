@@ -269,9 +269,34 @@ class SessionStatusResponse(BaseModel):
     dispute: Optional[DisputeInfo] = None
 
 
+def _validate_role_and_resolve_domain(
+    request: StartSessionRequest,
+) -> DomainRuntimeContext:
+    """Dependency: resolve domain and validate request.role against domain party_roles.
+
+    Listed before ``get_intake_service`` in the handler signature so FastAPI
+    resolves it first (sequential dependency resolution). An invalid role raises
+    HTTPException(400) before the DB-backed service dependency runs.
+    """
+    runtime = _resolve_domain_or_400(request.domain_id)
+    allowed_roles = runtime.domain_spec.party_roles
+    if request.role not in allowed_roles:
+        logger.warning(
+            "invalid_role_attempted",
+            invalid_role=request.role,
+            domain_id=runtime.domain_id,
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=f"role must be one of {allowed_roles} for domain {runtime.domain_id}",
+        )
+    return runtime
+
+
 @router.post("/start", response_model=StartSessionResponse)
 async def start_session(
     request: StartSessionRequest,
+    domain_runtime: DomainRuntimeContext = Depends(_validate_role_and_resolve_domain),
     intake_service: IntakeService = Depends(get_intake_service),
 ):
     """
@@ -291,17 +316,8 @@ async def start_session(
         create_dispute=request.create_dispute,
     )
 
-    if request.role not in ("tenant", "landlord"):
-        logger.warning("invalid_role_attempted", invalid_role=request.role)
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
-        )
-
-    # SHA-20 Phase 3: resolve domain runtime up-front. Default request
-    # (no domain_id) resolves to housing.deposit.v1 with gate=enabled and
-    # allowlist=unrestricted, so persisted payloads/responses are unchanged.
-    domain_runtime = _resolve_domain_or_400(request.domain_id)
+    # Domain resolution and role validation are handled by
+    # _validate_role_and_resolve_domain (injected first, before intake_service).
 
     try:
         dispute_info: Optional[DisputeInfo] = None
@@ -403,12 +419,6 @@ async def bulk_intake(
         "bulk_intake_request", role=request.role, text_length=len(request.case_text)
     )
 
-    if request.role not in ("tenant", "landlord"):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid role: {request.role}. Must be 'tenant' or 'landlord'",
-        )
-
     # SHA-20 Phase 9: deterministic-first router. Only fire when the
     # caller did NOT pass an explicit domain_id and the runtime flag
     # is on. The flag defaults to false, so the deposit baseline is
@@ -440,6 +450,13 @@ async def bulk_intake(
             )
 
     domain_runtime = _resolve_domain_or_400(effective_domain_id)
+
+    allowed_roles = domain_runtime.domain_spec.party_roles
+    if request.role not in allowed_roles:
+        raise HTTPException(
+            status_code=400,
+            detail=f"role must be one of {allowed_roles} for domain {domain_runtime.domain_id}",
+        )
 
     try:
         if request.invite_code or request.create_dispute:

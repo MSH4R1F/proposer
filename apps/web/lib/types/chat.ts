@@ -11,7 +11,8 @@ export type IntakeStage =
   | 'confirmation'
   | 'complete';
 
-export type PartyRole = 'tenant' | 'landlord';
+// Domain-driven: concrete values come from the selected domain's party_roles.
+export type PartyRole = string;
 
 export interface Message {
   id: string;

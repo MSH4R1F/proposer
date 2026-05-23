@@ -12,9 +12,9 @@ from apps.api.src.db.repositories._domain_meta import (
     extract_domain_block as _extract_domain_block,
     extract_reproducibility_hashes as _extract_repro_hashes,
 )
-from packages.kg_builder.models.edges import Edge
-from packages.kg_builder.models.graph import KnowledgeGraph
-from packages.kg_builder.models.nodes import (
+from kg_builder.models.edges import Edge
+from kg_builder.models.graph import KnowledgeGraph
+from kg_builder.models.nodes import (
     BaseNode,
     ClaimedAmountNode,
     EventNode,
@@ -24,7 +24,7 @@ from packages.kg_builder.models.nodes import (
     PartyNode,
     PropertyNode,
 )
-from packages.kg_builder.storage.graph_serialization import (
+from kg_builder.storage.graph_serialization import (
     deserialize_knowledge_graph,
     serialize_knowledge_graph,
     serialize_node,

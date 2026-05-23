@@ -18,7 +18,7 @@ from apps.api.src.db.repositories._domain_meta import (
     extract_forum as _extract_forum,
     extract_reproducibility_hashes as _extract_repro_hashes,
 )
-from packages.llm_orchestrator.models.prediction_v2 import PredictionResult
+from llm_orchestrator.models.prediction_v2 import PredictionResult
 
 
 class PredictionsRepo:

@@ -116,10 +116,28 @@ class DisputeCase(BaseModel):
         self.update_timestamp()
     
     def _update_status(self) -> None:
-        """Update status based on linked sessions."""
+        """Update status based on linked sessions.
+
+        Linking the second party must never regress a status that already
+        records progress for a party. Otherwise a tenant who completed before
+        the landlord joined would be reset to BOTH_IN_PROGRESS, losing their
+        completion and stranding the dispute below READY_FOR_MEDIATION.
+        """
+        # Don't clobber completion or terminal states.
+        if self.status in (
+            DisputeStatus.TENANT_COMPLETE,
+            DisputeStatus.LANDLORD_COMPLETE,
+            DisputeStatus.BOTH_COMPLETE,
+            DisputeStatus.READY_FOR_MEDIATION,
+            DisputeStatus.IN_MEDIATION,
+            DisputeStatus.SETTLED,
+            DisputeStatus.CLOSED,
+        ):
+            return
+
         has_tenant = self.tenant_session_id is not None
         has_landlord = self.landlord_session_id is not None
-        
+
         if has_tenant and has_landlord:
             self.status = DisputeStatus.BOTH_IN_PROGRESS
         elif has_tenant:

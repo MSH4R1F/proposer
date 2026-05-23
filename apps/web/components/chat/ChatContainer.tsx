@@ -8,6 +8,8 @@ import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { RoleSelector } from './RoleSelector';
 import { DisputeEntrySelector } from './DisputeEntrySelector';
+import { DomainPicker } from './DomainPicker';
+import { useDomain } from '@/lib/contexts/DomainContext';
 import { BulkPasteForm } from './BulkPasteForm';
 import { IntakeSidebar } from './IntakeSidebar';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -56,6 +58,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     missingRecommended,
   } = useChat(sessionId);
 
+  const { selected: selectedDomain, selectDomain } = useDomain();
+
   const [entryMode, setEntryMode] = useState<EntryMode>(
     inviteCodeFromUrl ? 'join' : 'select'
   );
@@ -101,6 +105,16 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     initializeSession();
   }, [sessionId, resumeSession, router]);
 
+  // For resumed/legacy sessions AND the invite-code join path (joiners inherit
+  // the dispute's domain rather than picking one), default to the housing
+  // deposit domain — the only currently-joinable domain — so the role selector
+  // has roles to render and the flow isn't stranded.
+  useEffect(() => {
+    if ((sessionId || pendingInviteCode) && !selectedDomain) {
+      selectDomain('housing.deposit.v1');
+    }
+  }, [sessionId, pendingInviteCode, selectedDomain, selectDomain]);
+
   const handleStartNew = () => {
     setEntryMode('new');
   };
@@ -110,7 +124,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     setEntryMode('join');
   };
 
-  const handleRoleSelect = async (role: 'tenant' | 'landlord') => {
+  const handleRoleSelect = async (role: PartyRole) => {
     if (currentSessionId) {
       await setRole(role);
     } else {
@@ -123,8 +137,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     if (mode === 'guided' && selectedRole) {
       startingNewSessionRef.current = true;
       const options = pendingInviteCode
-        ? { inviteCode: pendingInviteCode, createDispute: false }
-        : { createDispute: true };
+        ? { inviteCode: pendingInviteCode, createDispute: false, domainId: selectedDomain?.id }
+        : { createDispute: true, domainId: selectedDomain?.id };
 
       const newSessionId = await startSession(selectedRole, options);
       if (newSessionId) {
@@ -141,8 +155,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
 
     startingNewSessionRef.current = true;
     const options = pendingInviteCode
-      ? { inviteCode: pendingInviteCode, createDispute: false }
-      : { createDispute: true };
+      ? { inviteCode: pendingInviteCode, createDispute: false, domainId: selectedDomain?.id }
+      : { createDispute: true, domainId: selectedDomain?.id };
 
     const newSessionId = await startBulkSession(selectedRole, caseText, options);
     if (newSessionId) {
@@ -176,12 +190,15 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     );
   }
 
+  const supportsGuided = selectedDomain?.intake_modes.includes('guided') ?? true;
+
   const noActiveSession = !sessionId && !currentSessionId;
   const showEntrySelector = noActiveSession && entryMode === 'select' && !selectedRole;
-  const showRoleSelectorForNew = noActiveSession && entryMode === 'new' && !selectedRole;
+  const showDomainPicker = noActiveSession && entryMode === 'new' && !selectedDomain && !selectedRole;
+  const showRoleSelectorForNew = noActiveSession && entryMode === 'new' && !!selectedDomain && !selectedRole;
   const showRoleSelectorForJoin = noActiveSession && entryMode === 'join' && pendingInviteCode && !selectedRole;
-  const showIntakeModeSelector = noActiveSession && selectedRole && intakeMode === 'select';
-  const showBulkPasteForm = noActiveSession && selectedRole && intakeMode === 'paste';
+  const showIntakeModeSelector = noActiveSession && selectedRole && intakeMode === 'select' && supportsGuided;
+  const showBulkPasteForm = noActiveSession && selectedRole && (intakeMode === 'paste' || (!supportsGuided && intakeMode === 'select'));
 
   return (
     <div className="flex flex-col h-full">
@@ -214,6 +231,10 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
             isLoading={isLoading}
           />
         </div>
+      ) : showDomainPicker ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <DomainPicker onSelect={(id) => selectDomain(id)} />
+        </div>
       ) : (showRoleSelectorForNew || showRoleSelectorForJoin) ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           <div className="max-w-xl text-center space-y-6">
@@ -225,7 +246,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
                 ? 'Please confirm your role in this dispute:'
                 : 'First, please tell me which party you are:'}
             </p>
-            <RoleSelector onSelect={handleRoleSelect} disabled={isLoading} />
+            <RoleSelector roles={selectedDomain?.party_roles ?? []} onSelect={handleRoleSelect} disabled={isLoading} />
             {!pendingInviteCode && (
               <Button
                 variant="ghost"
@@ -321,10 +342,10 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
           <div className="max-w-xl text-center space-y-6">
             <h1 className="text-2xl font-semibold">Welcome to Proposer</h1>
             <p className="text-muted-foreground">
-              I'm here to help you understand your tenancy deposit dispute.
-              First, please tell me which party you are:
+              {`I'm here to help you understand your ${selectedDomain?.user_facing_name ?? 'dispute'}.`}
+              {' '}First, please tell me which party you are:
             </p>
-            <RoleSelector onSelect={handleRoleSelect} disabled={isLoading} />
+            <RoleSelector roles={selectedDomain?.party_roles ?? []} onSelect={handleRoleSelect} disabled={isLoading} />
           </div>
         </div>
       ) : (
@@ -332,15 +353,17 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
           <div className="flex-1 overflow-hidden">
             <MessageList messages={messages} isLoading={isLoading} />
           </div>
-          <IntakeSidebar
-            currentStage={stage}
-            caseFile={caseFile}
-            completeness={completeness}
-            isCollapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            dispute={dispute}
-            userRole={caseFile?.user_role}
-          />
+          {supportsGuided && (
+            <IntakeSidebar
+              currentStage={stage}
+              caseFile={caseFile}
+              completeness={completeness}
+              isCollapsed={sidebarCollapsed}
+              onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+              dispute={dispute}
+              userRole={caseFile?.user_role}
+            />
+          )}
         </div>
       )}
 

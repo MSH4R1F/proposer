@@ -18,16 +18,15 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Proposer - AI-Powered Deposit Dispute Resolution',
+  title: 'Proposer - AI-Powered Dispute Resolution',
   description:
-    'Get fair resolution for your tenancy deposit dispute using AI-powered legal analysis based on real tribunal decisions.',
+    'Predict likely legal outcomes and reach fair settlements, based on real tribunal and court decisions.',
   keywords: [
-    'deposit dispute',
-    'tenant rights',
-    'landlord',
-    'UK housing',
+    'dispute resolution',
+    'UK legal',
     'legal mediation',
     'AI legal',
+    'tribunal outcomes',
   ],
 };
 

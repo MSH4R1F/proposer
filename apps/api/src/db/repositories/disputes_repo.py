@@ -14,7 +14,7 @@ from apps.api.src.db.repositories._domain_meta import (
     extract_forum as _extract_forum,
 )
 from apps.api.src.db.repositories.sessions_repo import ConcurrentUpdateError
-from packages.llm_orchestrator.models.dispute import DisputeCase
+from llm_orchestrator.models.dispute import DisputeCase
 
 
 @dataclass(frozen=True)

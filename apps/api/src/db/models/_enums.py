@@ -21,7 +21,7 @@ dispute_status_enum = ENUM(
 )
 party_role_enum = ENUM("tenant", "landlord", name="party_role", create_type=False)
 outcome_type_enum = ENUM(
-    "tenant_win", "landlord_win", "split", "uncertain",
+    "tenant_wins", "landlord_wins", "split", "uncertain",
     name="outcome_type", create_type=False,
 )
 issue_outcome_enum = ENUM(

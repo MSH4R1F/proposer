@@ -16,8 +16,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.api.src.config import config
 from apps.api.src.db.uow import UnitOfWork
-from packages.llm_orchestrator.models.case_file import EvidenceType
-from packages.llm_orchestrator.models.evidence import EvidenceMetadata
+from llm_orchestrator.models.case_file import EvidenceType
+from llm_orchestrator.models.evidence import EvidenceMetadata
 
 logger = structlog.get_logger()
 

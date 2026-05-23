@@ -30,7 +30,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
           </div>
           <h2 className="text-2xl font-semibold mb-2">Welcome to Proposer</h2>
           <p className="text-muted-foreground">
-            I'll help you understand your deposit dispute. Select your role below to get started.
+            I'll help you understand your dispute. Select your role below to get started.
           </p>
         </div>
       </div>
