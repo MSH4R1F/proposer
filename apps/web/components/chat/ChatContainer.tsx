@@ -105,13 +105,15 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     initializeSession();
   }, [sessionId, resumeSession, router]);
 
-  // For resumed / legacy sessions that have no domain selected, default to the
-  // housing deposit domain so the resumed path still works without a picker step.
+  // For resumed/legacy sessions AND the invite-code join path (joiners inherit
+  // the dispute's domain rather than picking one), default to the housing
+  // deposit domain — the only currently-joinable domain — so the role selector
+  // has roles to render and the flow isn't stranded.
   useEffect(() => {
-    if (sessionId && !selectedDomain) {
+    if ((sessionId || pendingInviteCode) && !selectedDomain) {
       selectDomain('housing.deposit.v1');
     }
-  }, [sessionId, selectedDomain, selectDomain]);
+  }, [sessionId, pendingInviteCode, selectedDomain, selectDomain]);
 
   const handleStartNew = () => {
     setEntryMode('new');
