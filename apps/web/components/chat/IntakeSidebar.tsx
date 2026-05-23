@@ -227,8 +227,8 @@ export function IntakeSidebar({
     if (!dispute?.invite_code) return;
     const shareUrl = `${window.location.origin}/chat?invite=${dispute.invite_code}`;
     const shareData = {
-      title: 'Join My Deposit Dispute',
-      text: `Join my deposit dispute on Proposer using code: ${dispute.invite_code}`,
+      title: 'Join My Dispute on Proposer',
+      text: `Join my dispute on Proposer using code: ${dispute.invite_code}`,
       url: shareUrl,
     };
 
@@ -237,7 +237,7 @@ export function IntakeSidebar({
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(
-          `Join my deposit dispute on Proposer: ${shareUrl}`
+          `Join my dispute on Proposer: ${shareUrl}`
         );
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);

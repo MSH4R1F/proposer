@@ -28,8 +28,8 @@ export function InviteCodeDisplay({ dispute, userRole }: InviteCodeDisplayProps)
 
   const handleShare = async () => {
     const shareData = {
-      title: 'Join My Deposit Dispute',
-      text: `Join my deposit dispute on Proposer using code: ${dispute.invite_code}`,
+      title: 'Join My Dispute on Proposer',
+      text: `Join my dispute on Proposer using code: ${dispute.invite_code}`,
       url: `${window.location.origin}/chat?invite=${dispute.invite_code}`,
     };
 
@@ -38,7 +38,7 @@ export function InviteCodeDisplay({ dispute, userRole }: InviteCodeDisplayProps)
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(
-          `Join my deposit dispute on Proposer using code: ${dispute.invite_code}\n${shareData.url}`
+          `Join my dispute on Proposer using code: ${dispute.invite_code}\n${shareData.url}`
         );
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);

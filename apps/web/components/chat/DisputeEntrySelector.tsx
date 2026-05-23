@@ -168,7 +168,7 @@ export function DisputeEntrySelector({
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-semibold">Welcome to Proposer</h1>
         <p className="text-muted-foreground">
-          Get AI-powered guidance on your tenancy deposit dispute
+          Get AI-powered guidance on your legal dispute
         </p>
       </div>
       

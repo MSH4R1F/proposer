@@ -32,7 +32,7 @@ export function Footer() {
             <div>
               <span className="font-semibold">Proposer</span>
               <p className="text-xs text-muted-foreground">
-                AI-Powered Deposit Dispute Resolution
+                AI-Powered Dispute Resolution
               </p>
             </div>
           </div>

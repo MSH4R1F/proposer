@@ -340,8 +340,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
           <div className="max-w-xl text-center space-y-6">
             <h1 className="text-2xl font-semibold">Welcome to Proposer</h1>
             <p className="text-muted-foreground">
-              I'm here to help you understand your tenancy deposit dispute.
-              First, please tell me which party you are:
+              {`I'm here to help you understand your ${selectedDomain?.user_facing_name ?? 'dispute'}.`}
+              {' '}First, please tell me which party you are:
             </p>
             <RoleSelector roles={selectedDomain?.party_roles ?? []} onSelect={handleRoleSelect} disabled={isLoading} />
           </div>
