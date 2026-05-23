@@ -10,12 +10,6 @@ import type {
 } from '@/lib/types/chat';
 import type { RouteResponse } from '@/lib/types/domain';
 
-interface StartSessionOptions {
-  role: PartyRole;
-  inviteCode?: string;
-  createDispute?: boolean;
-}
-
 export const chatApi = {
   startSession: (role: PartyRole, options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }) =>
     api.post<StartSessionResponse>('/chat/start', {

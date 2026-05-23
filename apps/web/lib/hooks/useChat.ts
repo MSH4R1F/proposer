@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { chatApi } from '@/lib/api/chat';
-import { saveSessionId, saveCaseId, getSessionId } from '@/lib/utils/storage';
+import { saveSessionId, saveCaseId } from '@/lib/utils/storage';
 import type {
   Message,
   ChatState,
   IntakeStage,
   PartyRole,
-  CaseFile,
-  DisputeInfo,
 } from '@/lib/types/chat';
 import type { RoutingMetadata } from '@/lib/types/domain';
 
