@@ -619,17 +619,51 @@ def _render_payload(
 # ---------------------------------------------------------------------------
 
 
+# gpt-5-mini is a reasoning model: max_output_tokens must cover BOTH the
+# hidden reasoning tokens AND the visible JSON output. The hybrid/rag
+# payloads (~16KB) push reasoning past a small budget, so the API returns
+# status="incomplete" with ZERO visible tokens. The old budget of 2048
+# silently truncated 56-80% of rag/kg/hybrid responses to empty, which the
+# fallback then stamped as the corpus prior — the entire "hybrid loses"
+# artifact. Give reasoning real headroom and retry once at a larger budget.
+# 12000 is ample: low-effort reasoning on these ~16KB prompts uses a few
+# thousand tokens and the JSON output is <300 tokens. Kept well above the
+# observed need but not so large it inflates per-request TPM reservation and
+# trips gpt-5-mini's rate limit under parallelism.
+_PREDICT_MAX_TOKENS = 12000
+_PREDICT_RETRY_MAX_TOKENS = 20000
+
+
 async def _call_predictor(
     client: BaseLLMClient,
     user_payload: str,
 ) -> tuple[str, dict[str, Any] | None]:
-    raw = await client.generate(
-        messages=[{"role": "user", "content": user_payload}],
-        system_prompt=PREDICTOR_SYSTEM_PROMPT,
-        max_tokens=2048,
-        temperature=0.0,
-    )
-    return raw, _safe_json_loads(raw)
+    """Call the predictor with a reasoning-aware token budget.
+
+    Returns ``(raw, parsed)``. On an incomplete/empty completion we retry
+    ONCE at a larger budget rather than letting the caller silently coerce
+    the result to the majority-class prior. A genuinely empty response
+    after the retry is surfaced (raw="") so the caller can flag it as a
+    real extraction failure instead of a confident prior prediction.
+    """
+    for budget in (_PREDICT_MAX_TOKENS, _PREDICT_RETRY_MAX_TOKENS):
+        try:
+            raw = await client.generate(
+                messages=[{"role": "user", "content": user_payload}],
+                system_prompt=PREDICTOR_SYSTEM_PROMPT,
+                max_tokens=budget,
+                temperature=0.0,
+            )
+        except Exception as e:  # incomplete-response / transient API error
+            if budget == _PREDICT_RETRY_MAX_TOKENS:
+                raise
+            logger.warning("predictor incomplete at budget=%d, retrying larger: %r", budget, e)
+            continue
+        if raw and raw.strip():
+            return raw, _safe_json_loads(raw)
+        if budget == _PREDICT_RETRY_MAX_TOKENS:
+            return raw or "", None
+    return "", None
 
 
 def _safe_json_loads(raw: str) -> dict[str, Any] | None:
@@ -659,6 +693,10 @@ def _coerce_prediction(
     fallback_p_respondent: float,
 ) -> dict[str, Any]:
     if not isinstance(raw_parsed, dict):
+        # Genuine extraction failure (empty/incomplete response after retry,
+        # or unparseable JSON). Flag it explicitly so it can be EXCLUDED from
+        # scoring rather than silently scored as a confident majority-class
+        # prediction — the prior bug that invalidated the whole ablation.
         return {
             "case_id": gc.case_id,
             "overall_winner": "respondent",
@@ -666,7 +704,8 @@ def _coerce_prediction(
             "predicted_determination": "respondent_success",
             "total_predicted_gbp": None,
             "abstained": True,
-            "rationale": "LLM response unparseable; falling back to respondent prior.",
+            "extraction_failed": True,
+            "rationale": "LLM response empty/unparseable after retry; flagged extraction_failed.",
         }
 
     winner_raw = str(raw_parsed.get("overall_winner") or "").strip().lower()
@@ -716,6 +755,7 @@ def _coerce_prediction(
         "predicted_determination": det_raw,
         "total_predicted_gbp": amount,
         "abstained": False,
+        "extraction_failed": False,
         "rationale": rationale,
     }
 
@@ -865,7 +905,23 @@ async def run(args: argparse.Namespace) -> int:
     spec = _parse_spec(args.predictor)
     if not api_keys.get(spec.provider):
         raise SystemExit(f"missing API key for provider {spec.provider!r}")
-    client = build_labeler_client(spec, api_keys=api_keys)
+    # For OpenAI reasoning models build the client directly with
+    # reasoning_effort="low": medium (the labeler-factory default) burns
+    # thousands of hidden reasoning tokens on the larger hybrid/rag
+    # payloads, which — combined with a tight max_tokens — produced the
+    # empty-completion truncation bug. "low" keeps reasoning bounded while
+    # the raised _PREDICT_MAX_TOKENS budget gives headroom.
+    if spec.provider == "openai":
+        from llm_orchestrator.clients.openai_client import OpenAIClient
+
+        client: BaseLLMClient = OpenAIClient(
+            api_key=api_keys["openai"],
+            model=spec.model,
+            reasoning_effort="low",
+            max_retries=8,  # ride out 429 bursts under parallelism
+        )
+    else:
+        client = build_labeler_client(spec, api_keys=api_keys)
 
     modes = [m.strip() for m in (args.modes or "").split(",") if m.strip()] or list(
         VALID_MODES

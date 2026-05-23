@@ -13,7 +13,9 @@ model cost = None, reset_stats).
 """
 from __future__ import annotations
 
+import asyncio
 import json
+import time
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 from unittest.mock import AsyncMock
@@ -399,6 +401,46 @@ async def test_5xx_retried_with_backoff_eventual_success() -> None:
     assert client.client.responses.create.await_count == 3
     # No errors counted because we recovered.
     assert client.get_stats()["errors"] == 0
+
+
+# ---------------------------------------------------------------------------
+# 8b. Per-call total deadline bounds a hung SDK call
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_call_deadline_aborts_hung_request(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A configured per-call deadline bounds a hung SDK call.
+
+    Regression guard for the multi-hour eval hangs: ``AsyncOpenAI(timeout=...)``
+    takes a float, which httpx applies as a per-read (inter-byte) timeout, not a
+    total-request deadline. A long gpt-5.5 reasoning request that the server
+    keeps warm with periodic bytes never trips it, so the bare ``await`` in
+    ``_call_with_retries_and_fallback`` hangs indefinitely. Setting
+    ``OPENAI_CALL_DEADLINE_SECONDS`` wraps each attempt in an asyncio total
+    deadline; on expiry the attempt is aborted and surfaced as the bounded
+    ``LLMAPIError`` (after retries) rather than waiting forever.
+    """
+    monkeypatch.setenv("OPENAI_CALL_DEADLINE_SECONDS", "0.05")
+    client = _make_client(max_retries=1)
+
+    async def _hang(**_kwargs: Any) -> Any:
+        await asyncio.sleep(5)  # would hang far beyond the 0.05s deadline
+        return _response(output=[_output_message([_text_part("never returned")])])
+
+    client.client.responses.create.side_effect = _hang
+
+    start = time.monotonic()
+    with pytest.raises(LLMAPIError):
+        await client.generate(
+            [{"role": "user", "content": "x"}], system_prompt="s"
+        )
+    elapsed = time.monotonic() - start
+    # Aborted at the ~0.05s deadline, NOT after the 5s sleep.
+    assert elapsed < 2.0, f"call not bounded by deadline: {elapsed:.2f}s"
+    assert client.get_stats()["errors"] == 1
 
 
 # ---------------------------------------------------------------------------
