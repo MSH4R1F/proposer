@@ -242,7 +242,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
                 ? 'Please confirm your role in this dispute:'
                 : 'First, please tell me which party you are:'}
             </p>
-            <RoleSelector onSelect={handleRoleSelect} disabled={isLoading} />
+            <RoleSelector roles={selectedDomain?.party_roles ?? []} onSelect={handleRoleSelect} disabled={isLoading} />
             {!pendingInviteCode && (
               <Button
                 variant="ghost"
@@ -341,7 +341,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
               I'm here to help you understand your tenancy deposit dispute.
               First, please tell me which party you are:
             </p>
-            <RoleSelector onSelect={handleRoleSelect} disabled={isLoading} />
+            <RoleSelector roles={selectedDomain?.party_roles ?? []} onSelect={handleRoleSelect} disabled={isLoading} />
           </div>
         </div>
       ) : (
