@@ -75,3 +75,24 @@ export function sourceKindLabelFor(kind?: string | null): string | null {
   if (!kind) return null;
   return SOURCE_KIND_LABELS[kind] ?? kind.replace(/_/g, ' ');
 }
+
+// SHA domain catalog types — returned by GET /domains
+export type DomainAvailability = 'live' | 'research_beta' | 'coming_soon';
+
+export interface PartyRoleOption {
+  value: string;
+  label: string;
+  blurb?: string;
+}
+
+export interface DomainCatalogItem {
+  id: string;
+  user_facing_name: string;
+  family: string;
+  stage: string;
+  availability: DomainAvailability;
+  party_roles: PartyRoleOption[];
+  intake_modes: ('guided' | 'bulk')[];
+  matter_types: string[];
+  disclaimer_level: 'standard' | 'research';
+}
