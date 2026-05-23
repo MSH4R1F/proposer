@@ -114,6 +114,13 @@ class OpenAIClient(BaseLLMClient):
         timeout_seconds: SDK request timeout. Defaults to
             ``OPENAI_TIMEOUT_SECONDS`` or 300 seconds, which avoids treating
             long legal reasoning responses as failed rows during eval runs.
+        call_deadline_seconds: Optional *total* wall-clock deadline per SDK
+            attempt, enforced via ``asyncio.wait_for``. Defaults to
+            ``OPENAI_CALL_DEADLINE_SECONDS`` or ``None`` (disabled). Unlike
+            ``timeout_seconds`` (an httpx *per-read* timeout that a slow
+            reasoning stream can keep resetting indefinitely), this bounds the
+            whole request, so a stuck call can't hang for hours; on expiry the
+            attempt is retried via the normal timeout path.
         client: Optional pre-built ``AsyncOpenAI`` for tests. When provided,
             ``api_key`` is unused for SDK construction.
         retry_base_delay: Base delay (seconds) for the exponential backoff
@@ -134,6 +141,7 @@ class OpenAIClient(BaseLLMClient):
         client: Optional[AsyncOpenAI] = None,
         retry_base_delay: float = 0.1,
         timeout_seconds: Optional[float] = None,
+        call_deadline_seconds: Optional[float] = None,
     ) -> None:
         # We construct AsyncOpenAI with the supplied key only when no client is
         # injected; tests that mock ``responses.create`` typically pass their
@@ -158,6 +166,21 @@ class OpenAIClient(BaseLLMClient):
             client
             if client is not None
             else AsyncOpenAI(api_key=api_key, timeout=timeout)
+        )
+        # Total per-attempt deadline (asyncio-level). ``timeout`` above is an
+        # httpx *per-read* timeout — a long reasoning request the server keeps
+        # warm with periodic bytes never trips it, so a stuck call can hang for
+        # hours. When set, each SDK call is wrapped in ``asyncio.wait_for`` so a
+        # stuck attempt aborts at the deadline and routes through the timeout
+        # retry path. ``None`` preserves the legacy unbounded behaviour.
+        self._call_deadline_seconds = (
+            float(call_deadline_seconds)
+            if call_deadline_seconds is not None
+            else (
+                float(os.environ["OPENAI_CALL_DEADLINE_SECONDS"])
+                if os.getenv("OPENAI_CALL_DEADLINE_SECONDS")
+                else None
+            )
         )
         self.model = model
         self.fallback_model = fallback_model
@@ -723,6 +746,11 @@ class OpenAIClient(BaseLLMClient):
 
         while True:
             try:
+                if self._call_deadline_seconds is not None:
+                    return await asyncio.wait_for(
+                        sdk_callable(**kwargs),
+                        timeout=self._call_deadline_seconds,
+                    )
                 return await sdk_callable(**kwargs)
 
             except RateLimitError as e:
@@ -775,7 +803,7 @@ class OpenAIClient(BaseLLMClient):
                 self._stats["errors"] += 1
                 raise LLMAPIError(str(e)) from e
 
-            except (APITimeoutError, APIConnectionError) as e:
+            except (APITimeoutError, APIConnectionError, asyncio.TimeoutError) as e:
                 attempt += 1
                 if attempt < self.max_retries:
                     delay = self._retry_base_delay * (2 ** (attempt - 1))
