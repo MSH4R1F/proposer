@@ -1,0 +1,262 @@
+# housing.property_chamber.rro.v1 factor catalog (cross-domain build, v1)
+#
+# Sources of authority:
+#   - Housing and Planning Act 2016, Part 2 Chapter 4, ss.40-52 (rent
+#     repayment orders): s.40 (power to make), s.43 (when made), s.44
+#     (amount — occupier), s.46 (amount — local-housing-authority), and
+#     the s.40(3) table of qualifying offences.
+#   - Housing Act 2004, s.72 (control/management of an unlicensed HMO),
+#     s.95 (control/management of an unlicensed Part 3 house),
+#     ss.1/21/30 (improvement-notice / prohibition-order offences).
+#   - Protection from Eviction Act 1977, ss.1(2)-(3A) (unlawful eviction
+#     and harassment) — a qualifying RRO offence.
+#   - Housing and Planning Act 2016, s.21 (breach of a banning order).
+#   - Williams v Parmar [2021] UKUT 244 (LC) (the maximum is the
+#     starting point only where the conduct is serious; tribunal must
+#     reason the deduction) and Vadamalayan v Stewart [2020] UKUT 183
+#     (LC) (amount need not deduct landlord's costs as a matter of
+#     course). NB: these inform how the AMOUNT factors are weighed; they
+#     are NOT themselves extractable facts.
+#
+# Design rules (leakage audit applied — mirrors the employment v1 catalog):
+#   - Every factor describes a PRE-DECISION fact the LLM can read from the
+#     redacted facts narrative. No factor encodes a tribunal FINDING.
+#   - "offence_type" captures the offence the TENANT ALLEGED / the type of
+#     application made, NOT the tribunal's conclusion that an offence was
+#     committed.
+#   - "property_was_licensable" is the observable regulatory status of the
+#     property (is it an HMO requiring a licence / in a selective-licensing
+#     area), not the tribunal's finding that it was unlicensed at the
+#     material time.
+#   - "landlord_engaged_with_proceedings" captures observable procedural
+#     conduct (filed a response, attended, was represented) — not the
+#     tribunal's assessment of the landlord's credibility or conduct.
+#   - "period_claimed_months" is the length of the rent period the tenant
+#     claimed for (max 12 under s.44(3)) — derived from the application /
+#     narrative dates, not the period the tribunal ultimately ordered.
+#   - "non_merits" outcome is included because withdrawn / struck-out /
+#     consent / out-of-time RRO applications occur and the predictor needs
+#     a structural signal for them.
+#
+# Polarity convention (abstract; surface labels rendered domain-side):
+#   pro_claimant   — when present/true, pushes toward an RRO being made for
+#                    the tenant (the "claimant" slot == the tenant applicant)
+#   pro_respondent — when present/true, pushes toward the landlord
+#                    (application dismissed, or amount materially reduced)
+#   neutral        — jurisdictional / routing / scaling factor
+
+factors:
+
+  # ---- Offence foundation (s.40(3) table; Housing Act 2004 ss.72/95) ----------
+
+  - id: offence_type
+    value_type: enum
+    polarity: pro_claimant
+    requires_evidence: true
+    enum_values:
+      - unlicensed_hmo
+      - failure_to_license_part3
+      - illegal_eviction
+      - harassment
+      - breach_of_banning_order
+      - improvement_notice_breach
+      - prohibition_order_breach
+      - other
+      - none_stated
+    maps_to_outcomes:
+      - claimant_success
+      - respondent_success
+      - partial_success
+      - non_merits
+    description: >-
+      The category of qualifying RRO offence the TENANT ALLEGES against the
+      landlord (per the s.40(3) table). Capture the offence as pleaded in
+      the application / recited in the facts, NOT the tribunal's conclusion
+      that the offence was or was not committed. "unlicensed_hmo" =
+      control/management of an HMO required to be licensed (Housing Act
+      2004 s.72). "none_stated" only when the source does not name an
+      offence (typically a non_merits disposition).
+
+  - id: property_was_licensable
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - respondent_success
+    description: >-
+      Whether the property was subject to a licensing requirement at the
+      material time — i.e. it met the HMO definition (e.g. occupied by 5+
+      persons forming 2+ households, or 3+ storeys) for mandatory licensing,
+      OR sat within a designated additional/selective licensing area.
+      Derive from the described occupancy / regulatory designation, NOT from
+      a tribunal finding that the property was unlicensed.
+
+  - id: licence_application_pending
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - partial_success
+    description: >-
+      Whether, at the material time, the landlord had a licence application
+      or a temporary-exemption notice in train for the property (a
+      "reasonable excuse" / mitigation signal under Housing Act 2004 s.72(4)
+      / s.95(4)). True when the source describes a pending or submitted
+      application or exemption; do not infer from the tribunal's acceptance
+      of any defence.
+
+  # ---- Landlord characteristics (conduct / professionalism weighting) ---------
+
+  - id: landlord_was_professional
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - partial_success
+    description: >-
+      Whether the landlord is a professional / portfolio landlord or a
+      company (as opposed to an accidental / single-property private
+      landlord). Professionalism aggravates culpability under the s.44
+      conduct assessment. Derive from descriptions of the landlord's
+      portfolio, business, or corporate status.
+
+  - id: prior_enforcement_action
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - partial_success
+    description: >-
+      Whether the landlord had prior relevant enforcement history — an
+      earlier civil penalty, prosecution, improvement notice, prohibition
+      order, or a previous RRO — described in the facts. Aggravates the
+      conduct assessment. Derive from recited history, not from the
+      tribunal's weighing of it.
+
+  - id: landlord_engaged_with_proceedings
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - claimant_success
+      - non_merits
+    description: >-
+      Whether the landlord engaged with the tribunal proceedings — filed a
+      statement / response, attended the hearing, or was represented. True
+      when the source records a respondent representative, attendance, or
+      filed evidence. False when the source records the respondent did not
+      respond or did not attend. Observable procedural conduct only.
+
+  - id: landlord_pleaded_reasonable_excuse
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - respondent_success
+      - partial_success
+    description: >-
+      Whether the landlord ADVANCED a reasonable-excuse or statutory-defence
+      argument (e.g. reliance on a managing agent, belief the property was
+      not an HMO, pending licence). Capture that the defence was RAISED, not
+      whether the tribunal accepted it.
+
+  # ---- Tenancy / rent characteristics (amount drivers, s.44) ------------------
+
+  - id: rent_paid_in_full
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - partial_success
+    description: >-
+      Whether the rent for the claimed period was actually paid by the
+      tenant (in full / substantially), as opposed to part-paid, paid by
+      housing benefit / universal credit, or in arrears. Relevant to the
+      s.44 amount and to who receives the repayment. Derive from the
+      payment narrative.
+
+  - id: rent_paid_via_benefit
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - partial_success
+      - claimant_success
+    description: >-
+      Whether some or all of the rent was met by housing benefit or the
+      housing element of universal credit (which can reduce the amount
+      repayable to the tenant personally). True when the source describes
+      benefit-funded rent; observable from the payment narrative.
+
+  - id: tenant_still_in_occupation
+    value_type: boolean
+    polarity: neutral
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - respondent_success
+    description: >-
+      Whether the tenant was still in occupation of the property at the date
+      of the application (versus a former tenant applying after leaving).
+      Routing/context signal; derive from the tenancy-status narrative.
+
+  - id: period_claimed_months
+    value_type: number
+    polarity: neutral
+    requires_evidence: true
+    maps_to_outcomes:
+      - claimant_success
+      - partial_success
+    description: >-
+      The length, in months, of the rent period for which the tenant claims
+      repayment (statutory maximum 12 under s.44(3)). Derive from the
+      application period / tenancy dates in the narrative. Use the period
+      CLAIMED, never the period the tribunal ultimately orders.
+
+  - id: landlord_financial_hardship_raised
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - partial_success
+      - respondent_success
+    description: >-
+      Whether the landlord raised financial hardship / inability to pay as a
+      mitigating circumstance bearing on the amount (a s.44(4) factor).
+      Capture that hardship was RAISED with supporting material, not the
+      tribunal's decision on whether to reduce for it.
+
+  # ---- Jurisdiction / non_merits indicators -----------------------------------
+
+  - id: application_within_time_limit
+    value_type: boolean
+    polarity: pro_claimant
+    requires_evidence: true
+    maps_to_outcomes:
+      - non_merits
+      - claimant_success
+      - respondent_success
+    description: >-
+      Whether the RRO application was made within 12 months of the offence
+      (s.41(2)(b) time limit), derived from the offence date and application
+      date in the narrative. True when the dates show filing within the
+      window. Always derive from raw dates, never from a tribunal ruling on
+      the time-limit point.
+
+  - id: application_withdrawn_or_consent
+    value_type: boolean
+    polarity: pro_respondent
+    requires_evidence: true
+    maps_to_outcomes:
+      - non_merits
+    description: >-
+      Whether the application was withdrawn, settled by consent, or otherwise
+      resolved without a contested merits determination. True signals a
+      non_merits disposition. Capture the procedural posture recited in the
+      source, not a substantive outcome.
