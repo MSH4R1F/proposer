@@ -188,13 +188,15 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     );
   }
 
+  const supportsGuided = selectedDomain?.intake_modes.includes('guided') ?? true;
+
   const noActiveSession = !sessionId && !currentSessionId;
   const showEntrySelector = noActiveSession && entryMode === 'select' && !selectedRole;
   const showDomainPicker = noActiveSession && entryMode === 'new' && !selectedDomain && !selectedRole;
   const showRoleSelectorForNew = noActiveSession && entryMode === 'new' && !!selectedDomain && !selectedRole;
   const showRoleSelectorForJoin = noActiveSession && entryMode === 'join' && pendingInviteCode && !selectedRole;
-  const showIntakeModeSelector = noActiveSession && selectedRole && intakeMode === 'select';
-  const showBulkPasteForm = noActiveSession && selectedRole && intakeMode === 'paste';
+  const showIntakeModeSelector = noActiveSession && selectedRole && intakeMode === 'select' && supportsGuided;
+  const showBulkPasteForm = noActiveSession && selectedRole && (intakeMode === 'paste' || (!supportsGuided && intakeMode === 'select'));
 
   return (
     <div className="flex flex-col h-full">
@@ -349,15 +351,17 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
           <div className="flex-1 overflow-hidden">
             <MessageList messages={messages} isLoading={isLoading} />
           </div>
-          <IntakeSidebar
-            currentStage={stage}
-            caseFile={caseFile}
-            completeness={completeness}
-            isCollapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            dispute={dispute}
-            userRole={caseFile?.user_role}
-          />
+          {supportsGuided && (
+            <IntakeSidebar
+              currentStage={stage}
+              caseFile={caseFile}
+              completeness={completeness}
+              isCollapsed={sidebarCollapsed}
+              onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+              dispute={dispute}
+              userRole={caseFile?.user_role}
+            />
+          )}
         </div>
       )}
 
