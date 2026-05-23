@@ -8,6 +8,8 @@ import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { RoleSelector } from './RoleSelector';
 import { DisputeEntrySelector } from './DisputeEntrySelector';
+import { DomainPicker } from './DomainPicker';
+import { useDomain } from '@/lib/contexts/DomainContext';
 import { BulkPasteForm } from './BulkPasteForm';
 import { IntakeSidebar } from './IntakeSidebar';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -56,6 +58,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     missingRecommended,
   } = useChat(sessionId);
 
+  const { selected: selectedDomain, selectDomain } = useDomain();
+
   const [entryMode, setEntryMode] = useState<EntryMode>(
     inviteCodeFromUrl ? 'join' : 'select'
   );
@@ -101,6 +105,14 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     initializeSession();
   }, [sessionId, resumeSession, router]);
 
+  // For resumed / legacy sessions that have no domain selected, default to the
+  // housing deposit domain so the resumed path still works without a picker step.
+  useEffect(() => {
+    if (sessionId && !selectedDomain) {
+      selectDomain('housing.deposit.v1');
+    }
+  }, [sessionId, selectedDomain, selectDomain]);
+
   const handleStartNew = () => {
     setEntryMode('new');
   };
@@ -110,7 +122,7 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     setEntryMode('join');
   };
 
-  const handleRoleSelect = async (role: 'tenant' | 'landlord') => {
+  const handleRoleSelect = async (role: PartyRole) => {
     if (currentSessionId) {
       await setRole(role);
     } else {
@@ -178,7 +190,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
 
   const noActiveSession = !sessionId && !currentSessionId;
   const showEntrySelector = noActiveSession && entryMode === 'select' && !selectedRole;
-  const showRoleSelectorForNew = noActiveSession && entryMode === 'new' && !selectedRole;
+  const showDomainPicker = noActiveSession && entryMode === 'new' && !selectedDomain && !selectedRole;
+  const showRoleSelectorForNew = noActiveSession && entryMode === 'new' && !!selectedDomain && !selectedRole;
   const showRoleSelectorForJoin = noActiveSession && entryMode === 'join' && pendingInviteCode && !selectedRole;
   const showIntakeModeSelector = noActiveSession && selectedRole && intakeMode === 'select';
   const showBulkPasteForm = noActiveSession && selectedRole && intakeMode === 'paste';
@@ -213,6 +226,10 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
             onValidateCode={handleValidateCode}
             isLoading={isLoading}
           />
+        </div>
+      ) : showDomainPicker ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <DomainPicker onSelect={(id) => selectDomain(id)} />
         </div>
       ) : (showRoleSelectorForNew || showRoleSelectorForJoin) ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
