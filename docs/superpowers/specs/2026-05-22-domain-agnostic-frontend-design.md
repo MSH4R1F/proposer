@@ -125,4 +125,12 @@ Picker → `GET /domains` → user selects domain → `DomainContext` set + `dom
 
 ## Rollout
 
-Frontend + the read-only `/domains` endpoint + the `party_role_labels` spec field ship together. `ENABLED_DOMAINS` expansion is a local-config change; production enablement of each non-deposit domain stays gated on its eval/launch artifacts (unchanged policy).
+Frontend + the read-only `/domains` endpoint + the `party_role_labels` spec field ship together. Production enablement of each non-deposit domain stays gated on its eval/launch artifacts (unchanged policy).
+
+## Decision log
+
+**2026-05-23 — availability honors the launch gate (supersedes the earlier "research-beta runnable" framing).** During implementation (plan Task 4) the runnability check found all four non-deposit domains fail closed on the user-facing request path: `_STAGE_MODES` (domain_runtime.py) only permits `requested_mode="research"` for `stage: research` domains, while user-facing calls use `production` mode — so they 403 (`gate=disabled, allowlist=blocked`), independent of `ENABLED_DOMAINS` or `DOMAIN_STRICT_EVAL_GATES`. Per the project's fail-closed philosophy, the user chose to **honor the gate** rather than add a local research-mode bypass. Consequences:
+- `_availability` is computed from `resolve_domain_runtime(id, requested_mode="production").is_usable`: `live` if usable, else `coming_soon`. Deposit is `live`; the four research domains are `coming_soon` (visible but disabled in the picker).
+- `ENABLED_DOMAINS` reverts to deposit-only; the catalog lists *all registered* domains regardless, so the picker still shows the full set.
+- `research_beta` remains a valid catalog value for a future genuinely-runnable beta domain, but is not produced today. The research/beta disclaimer banner (plan Task 14) is therefore dormant until such a domain exists — keep it minimal or defer it.
+- Risk #1 above is resolved by this gate-driven computation: non-runnable domains can never appear selectable.
