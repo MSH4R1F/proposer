@@ -38,7 +38,7 @@ export function useChat(initialSessionId?: string) {
 
   const startSession = useCallback(async (
     role: PartyRole,
-    options?: { inviteCode?: string; createDispute?: boolean }
+    options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }
   ): Promise<string | null> => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
@@ -86,7 +86,7 @@ export function useChat(initialSessionId?: string) {
   const startBulkSession = useCallback(async (
     role: PartyRole,
     caseText: string,
-    options?: { inviteCode?: string; createDispute?: boolean }
+    options?: { inviteCode?: string; createDispute?: boolean; domainId?: string }
   ): Promise<string | null> => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 

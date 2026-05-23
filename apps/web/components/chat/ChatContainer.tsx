@@ -135,8 +135,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
     if (mode === 'guided' && selectedRole) {
       startingNewSessionRef.current = true;
       const options = pendingInviteCode
-        ? { inviteCode: pendingInviteCode, createDispute: false }
-        : { createDispute: true };
+        ? { inviteCode: pendingInviteCode, createDispute: false, domainId: selectedDomain?.id }
+        : { createDispute: true, domainId: selectedDomain?.id };
 
       const newSessionId = await startSession(selectedRole, options);
       if (newSessionId) {
@@ -153,8 +153,8 @@ export function ChatContainer({ sessionId }: ChatContainerProps) {
 
     startingNewSessionRef.current = true;
     const options = pendingInviteCode
-      ? { inviteCode: pendingInviteCode, createDispute: false }
-      : { createDispute: true };
+      ? { inviteCode: pendingInviteCode, createDispute: false, domainId: selectedDomain?.id }
+      : { createDispute: true, domainId: selectedDomain?.id };
 
     const newSessionId = await startBulkSession(selectedRole, caseText, options);
     if (newSessionId) {
