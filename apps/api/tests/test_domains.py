@@ -25,13 +25,20 @@ async def test_deposit_is_live_with_guided_and_bulk(async_client):
 
 
 @pytest.mark.asyncio
-async def test_non_default_domain_has_research_disclaimer_and_bulk_only(async_client):
+async def test_research_staged_domains_are_coming_soon(async_client):
+    # Research-staged domains fail closed on the production request path,
+    # so the catalog must surface them as coming_soon (not selectable) until
+    # their launch gate passes. They are still listed (visible, disabled).
     items = (await async_client.get("/domains")).json()
-    emp = next(d for d in items if d["id"] == "employment.unfair_dismissal.v1")
-    assert emp["availability"] in {"research_beta", "coming_soon"}
-    if emp["availability"] != "live":
-        assert emp["disclaimer_level"] == "research"
-    assert emp["intake_modes"] == ["bulk"]
+    for did in [
+        "employment.unfair_dismissal.v1",
+        "housing.property_chamber.rro.v1",
+        "housing.rent_determination.v1",
+        "housing.repairs_social.v1",
+    ]:
+        d = next(x for x in items if x["id"] == did)
+        assert d["availability"] == "coming_soon", f"{did} should be coming_soon"
+        assert d["intake_modes"] == ["bulk"]
 
 
 @pytest.mark.asyncio

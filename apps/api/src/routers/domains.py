@@ -7,6 +7,7 @@ from pydantic import BaseModel
 import structlog
 
 from apps.api.src.config import config
+from apps.api.src.domain_runtime import resolve_domain_runtime
 from domain_core.registry import list_domain_specs
 from domain_core.spec import DomainSpec
 
@@ -48,11 +49,20 @@ def _party_options(spec: DomainSpec) -> List[PartyRoleOption]:
 
 
 def _availability(domain_id: str) -> str:
-    if domain_id == config.default_domain:
-        return "live"
-    if domain_id in config.enabled_domains:
-        return "research_beta"
-    return "coming_soon"
+    """Compute UI availability from the real launch gate.
+
+    A domain is ``live`` only if it actually resolves usable on the
+    user-facing (``production``-mode) request path. Research/beta-staged
+    domains fail closed there, so they surface as ``coming_soon`` until their
+    launch gate passes — honoring the project's fail-closed policy. The
+    ``research_beta`` value remains valid for a future beta-staged domain
+    that is genuinely user-runnable, but is not produced today.
+    """
+    try:
+        runtime = resolve_domain_runtime(domain_id, requested_mode="production")
+    except Exception:  # noqa: BLE001 — unknown/unregistered -> not selectable
+        return "coming_soon"
+    return "live" if runtime.is_usable else "coming_soon"
 
 
 def _to_item(spec: DomainSpec) -> DomainCatalogItem:
