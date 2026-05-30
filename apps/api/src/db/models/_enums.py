@@ -29,9 +29,10 @@ issue_outcome_enum = ENUM(
     name="issue_outcome", create_type=False,
 )
 issue_type_enum = ENUM(
-    "cleaning", "damage", "rent_arrears", "deposit_protection", "inventory",
-    "garden", "redecoration", "keys", "fair_wear_and_tear", "missing_items",
-    "utilities", "other",
+    "cleaning", "damage", "rent_arrears", "deposit_protection",
+    "repairs_disrepair", "repairs_damp_mould", "complaint_handling_failure",
+    "inventory", "garden", "redecoration", "keys", "fair_wear_and_tear",
+    "missing_items", "utilities", "other",
     name="issue_type", create_type=False,
 )
 evidence_strength_enum = ENUM(

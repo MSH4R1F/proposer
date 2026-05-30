@@ -8,8 +8,9 @@ from llm_orchestrator.clients.types import LLMProvider
 
 
 class _FakeAsyncOpenAI:
-    def __init__(self, *, api_key: str) -> None:
+    def __init__(self, *, api_key: str, timeout: float | None = None, **_kwargs) -> None:
         self.api_key = api_key
+        self.timeout = timeout
         self.responses = object()
 
 
