@@ -22,6 +22,24 @@ sys.path.insert(0, str(project_root / "apps" / "api" / "src"))
 import os
 os.chdir(project_root)
 
+# Cap the open-file-descriptor soft limit before anything imports ChromaDB.
+# Chroma derives its HNSW cache size from RLIMIT_NOFILE (cache = nofile // 5).
+# Container runtimes (Lightsail/ECS/k8s) frequently expose an effectively
+# unlimited nofile (~1e9), which makes Chroma's Rust bindings size an enormous
+# cache and fail to initialise on memory-limited hosts — surfacing as the
+# masked "'RustBindingsAPI' object has no attribute 'bindings'" and leaving the
+# RAG pipeline silently unavailable. Capping to a sane value keeps it small.
+try:
+    import resource
+
+    _soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    _target = 65536
+    _new_soft = _target if _hard == resource.RLIM_INFINITY else min(_target, _hard)
+    if _soft == resource.RLIM_INFINITY or _soft > _new_soft:
+        resource.setrlimit(resource.RLIMIT_NOFILE, (_new_soft, _hard))
+except Exception:
+    pass
+
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
