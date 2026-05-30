@@ -116,10 +116,21 @@ def get_cost_benefit_analysis(
     if role not in ("tenant", "landlord"):
         raise ValueError(f"Invalid role: '{role}'. Must be 'tenant' or 'landlord'.")
 
-    # Extract settlement range from prediction data
-    settlement_range = prediction_data.get("predicted_settlement_range", [0, 0])
-    range_low = float(settlement_range[0]) if settlement_range else 0.0
-    range_high = float(settlement_range[1]) if len(settlement_range) > 1 else range_low
+    # Extract settlement range from prediction data. A degraded or "uncertain"
+    # prediction may carry no range at all (stored as None) or a list with null
+    # bounds, so coerce defensively: drop non-numeric entries and fall back to
+    # £0 framing rather than raising. Callers such as the mediation
+    # /expectation endpoint must not 500 on an uncertain prediction.
+    raw_range = prediction_data.get("predicted_settlement_range")
+    numeric_bounds: List[float] = []
+    if isinstance(raw_range, (list, tuple)):
+        for value in raw_range:
+            try:
+                numeric_bounds.append(float(value))
+            except (TypeError, ValueError):
+                continue
+    range_low = numeric_bounds[0] if numeric_bounds else 0.0
+    range_high = numeric_bounds[1] if len(numeric_bounds) > 1 else range_low
     suggested_amount = (range_low + range_high) / 2
 
     # Build role-specific framing
