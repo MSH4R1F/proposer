@@ -6,6 +6,7 @@ role-aware LLM client for the debug smoke endpoint.
 """
 from __future__ import annotations
 
+import threading
 import uuid
 from collections.abc import AsyncIterator
 from functools import lru_cache
@@ -130,10 +131,31 @@ def get_dispute_service(request: Request) -> DisputeService:
     return DisputeService(sessionmaker=sm)
 
 
-@lru_cache(maxsize=1)
+_prediction_engine_singleton: Any = None
+_prediction_engine_lock = threading.Lock()
+
+
 def _cached_prediction_engine() -> Any:
-    """Process-level cache for the heavy prediction engine + RAG pipeline."""
-    return _build_prediction_engine()
+    """Process-level singleton for the heavy prediction engine + RAG pipeline.
+
+    Uses double-checked locking instead of ``functools.lru_cache`` because the
+    factory builds a ChromaDB ``PersistentClient``, and ChromaDB's
+    ``SharedSystemClient`` is not safe to construct from multiple threads for
+    the same path. ``lru_cache`` does not hold its internal lock across the
+    wrapped call, so concurrent first requests (the web app fires
+    ``/predictions/check``, ``/case`` and ``/generate`` almost simultaneously,
+    each resolved on its own threadpool thread) would each enter the factory
+    and race Chroma's shared state — surfacing as
+    "'RustBindingsAPI' object has no attribute 'bindings'" /
+    "Could not connect to tenant default_tenant" and leaving RAG silently
+    unavailable. The lock serialises the one-time build.
+    """
+    global _prediction_engine_singleton
+    if _prediction_engine_singleton is None:
+        with _prediction_engine_lock:
+            if _prediction_engine_singleton is None:
+                _prediction_engine_singleton = _build_prediction_engine()
+    return _prediction_engine_singleton
 
 
 def get_prediction_service(request: Request) -> PredictionService:
