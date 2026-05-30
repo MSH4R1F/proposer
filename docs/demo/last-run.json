@@ -1,0 +1,116 @@
+[
+  {
+    "scenario": "tenant-led",
+    "dispute_id": "DISP-5C8341E3",
+    "invite_code": "BRAVE-ANCHOR-80",
+    "creator": {
+      "role": "tenant",
+      "session_id": "e4a65415-d9a",
+      "case_id": "4a3ea4d7-71a"
+    },
+    "joiner": {
+      "role": "landlord",
+      "session_id": "eeb0a69c-48c"
+    },
+    "prediction": {
+      "overall_outcome": "tenant_wins",
+      "predicted_settlement_range": [
+        1232.5,
+        1667.4999999999998
+      ],
+      "prediction_id": "4a4af3f4-f07"
+    },
+    "mediation": {
+      "offer_amount": 942.0,
+      "settlement_response": {
+        "action": "accept",
+        "offer": {
+          "id": "12ec2e4b",
+          "amount": 942.0,
+          "proposed_by_role": "tenant",
+          "status": "accepted",
+          "proposed_at": "2026-05-27T15:25:03.652278",
+          "responded_at": "2026-05-27T15:25:03.687549",
+          "counter_amount": null
+        },
+        "settlement_amount": 942.0,
+        "mediation_status": "settled",
+        "messages": [
+          {
+            "id": "da132d92",
+            "sender_role": "ai_mediator",
+            "content": "Offer 12ec2e4b accepted at \u00a3942.00. The mediation record has been marked as settled. This records the parties' stated agreement.\n\nThis is not legal advice. All information is based on analysis of similar tribunal cases.",
+            "message_type": "system",
+            "timestamp": "2026-05-27T15:25:03.687657",
+            "metadata": {},
+            "offer_id": "12ec2e4b",
+            "reasoning_trace": null
+          }
+        ]
+      }
+    },
+    "urls": {
+      "prediction": "http://localhost:3000/prediction/4a3ea4d7-71a?session=e4a65415-d9a&dispute=DISP-5C8341E3",
+      "mediation_expectation_tenant": "http://localhost:3000/mediation/DISP-5C8341E3/expectation?session=e4a65415-d9a",
+      "mediation_expectation_landlord": "http://localhost:3000/mediation/DISP-5C8341E3/expectation?session=eeb0a69c-48c",
+      "mediation_chat": "http://localhost:3000/mediation/DISP-5C8341E3/chat?session=e4a65415-d9a"
+    }
+  },
+  {
+    "scenario": "landlord-led",
+    "dispute_id": "DISP-10D61DAA",
+    "invite_code": "KEEN-HORIZON-11",
+    "creator": {
+      "role": "landlord",
+      "session_id": "fca4ed61-0c8",
+      "case_id": "c661caf3-afb"
+    },
+    "joiner": {
+      "role": "tenant",
+      "session_id": "c4004aa8-e0d"
+    },
+    "prediction": {
+      "overall_outcome": "landlord_wins",
+      "predicted_settlement_range": [
+        399.5,
+        540.5
+      ],
+      "prediction_id": "1357bd51-5d9"
+    },
+    "mediation": {
+      "offer_amount": 238.0,
+      "settlement_response": {
+        "action": "accept",
+        "offer": {
+          "id": "f6bae49e",
+          "amount": 238.0,
+          "proposed_by_role": "landlord",
+          "status": "accepted",
+          "proposed_at": "2026-05-27T15:26:41.377922",
+          "responded_at": "2026-05-27T15:26:41.393819",
+          "counter_amount": null
+        },
+        "settlement_amount": 238.0,
+        "mediation_status": "settled",
+        "messages": [
+          {
+            "id": "74dc7af1",
+            "sender_role": "ai_mediator",
+            "content": "Offer f6bae49e accepted at \u00a3238.00. The mediation record has been marked as settled. This records the parties' stated agreement.\n\nThis is not legal advice. All information is based on analysis of similar tribunal cases.",
+            "message_type": "system",
+            "timestamp": "2026-05-27T15:26:41.393906",
+            "metadata": {},
+            "offer_id": "f6bae49e",
+            "reasoning_trace": null
+          }
+        ]
+      }
+    },
+    "urls": {
+      "prediction": "http://localhost:3000/prediction/c661caf3-afb?session=fca4ed61-0c8&dispute=DISP-10D61DAA",
+      "mediation_expectation_tenant": "http://localhost:3000/mediation/DISP-10D61DAA/expectation?session=c4004aa8-e0d",
+      "mediation_expectation_landlord": "http://localhost:3000/mediation/DISP-10D61DAA/expectation?session=fca4ed61-0c8",
+      "mediation_chat": "http://localhost:3000/mediation/DISP-10D61DAA/chat?session=fca4ed61-0c8"
+    }
+  }
+]
