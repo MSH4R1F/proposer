@@ -333,10 +333,15 @@ export function useChat(initialSessionId?: string) {
     state.dispute.has_both_parties && 
     !state.dispute.is_ready_for_prediction;
 
-  const hasAllRequiredInfo = Array.isArray(state.caseFile?.missing_info) 
-    && state.caseFile.missing_info.length === 0;
-
   const meetsMinimumCompleteness = state.completeness >= 0.5;
+
+  // A freshly-created case file reports an empty `missing_info` before the
+  // user has answered anything, which made the intake look "complete" at 0%
+  // (the "Your Intake Complete!" banner flashed immediately). Require some
+  // real progress so the completion banner can't appear on an empty intake.
+  const hasAllRequiredInfo = Array.isArray(state.caseFile?.missing_info)
+    && state.caseFile.missing_info.length === 0
+    && meetsMinimumCompleteness;
 
   const disputeReady = state.dispute === null || 
     state.dispute === undefined || 
@@ -374,7 +379,7 @@ export function useChat(initialSessionId?: string) {
     showRoleSelector: (!state.sessionId && !state.roleSelected) ||
       (state.stage === 'greeting' && !state.roleSelected),
     hasDispute: state.dispute !== null && state.dispute !== undefined,
-    isWaitingForOtherParty: state.dispute !== null && state.dispute !== undefined && !state.dispute.has_both_parties,
+    isWaitingForOtherParty: hasAllRequiredInfo && state.dispute !== null && state.dispute !== undefined && !state.dispute.has_both_parties,
     isWaitingForOtherPartyToComplete: otherPartyJoinedButNotComplete,
     hasRecommendedMissing,
     missingRecommended,

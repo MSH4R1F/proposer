@@ -859,7 +859,13 @@ class IntakeService:
         if case_file.tenancy.end_date:
             parts.append(f"**Tenancy End:** {case_file.tenancy.end_date}")
         if case_file.tenancy.deposit_amount:
-            parts.append(f"**Deposit:** £{case_file.tenancy.deposit_amount}")
+            _deposit = case_file.tenancy.deposit_amount
+            _deposit_str = (
+                f"{_deposit:,.0f}"
+                if float(_deposit).is_integer()
+                else f"{_deposit:,.2f}"
+            )
+            parts.append(f"**Deposit:** £{_deposit_str}")
         if case_file.tenancy.deposit_protected is not None:
             status = (
                 "Protected" if case_file.tenancy.deposit_protected else "Not protected"
