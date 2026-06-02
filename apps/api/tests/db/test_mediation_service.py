@@ -310,6 +310,43 @@ async def test_get_expectation_data_matches_web_contract(
 
 
 @pytest.mark.asyncio
+async def test_get_expectation_data_handles_uncertain_prediction(
+    mediation_service: MediationService,
+    seeded_dispute,
+) -> None:
+    """An uncertain prediction carries no settlement range (stored as None).
+
+    The expectation endpoint must degrade to £0 framing rather than raising —
+    regression for the mediation /expectation 500 (TypeError on
+    predicted_settlement_range=None).
+    """
+    uncertain_prediction = {
+        "prediction_id": "pred-uncertain-001",
+        "case_id": "case-test-001",
+        "overall_outcome": "uncertain",
+        "overall_confidence": 0.0,
+        "predicted_settlement_range": None,
+        "timestamp": "2026-01-01T00:00:00",
+        "key_strengths": [],
+        "key_weaknesses": [],
+        "retrieved_cases": [],
+        "outcome_summary": "Unable to make a confident prediction.",
+    }
+    mediation_service._fetch_prediction_data_uow = AsyncMock(
+        return_value=uncertain_prediction
+    )
+
+    result = await mediation_service.get_expectation_data(
+        seeded_dispute.dispute_id,
+        seeded_dispute.tenant_session_id,
+    )
+
+    assert result["party_role"] == "tenant"
+    assert result["prediction_summary"]["settlement_range"] == [0.0, 0.0]
+    assert result["cost_benefit"]["settlement_option"]["amount"] == 0.0
+
+
+@pytest.mark.asyncio
 async def test_settle_updates_mediation_and_dispute_atomically(
     mediation_service: MediationService,
     seeded_dispute,

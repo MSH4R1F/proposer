@@ -203,7 +203,24 @@ def _build_prediction_engine() -> Any:
         engine.set_rag_pipeline(rag_pipeline)
         logger.info("rag_pipeline_loaded")
     except Exception as e:
-        logger.warning("rag_pipeline_not_loaded", error=str(e))
+        import traceback as _tb
+
+        try:
+            import resource as _resource
+
+            _nofile = _resource.getrlimit(_resource.RLIMIT_NOFILE)
+        except Exception:  # pragma: no cover - platform without resource
+            _nofile = None
+        # Log the full chain — Chroma masks the real start() failure behind a
+        # later "'RustBindingsAPI' object has no attribute 'bindings'", so the
+        # bare message alone is not actionable.
+        logger.warning(
+            "rag_pipeline_not_loaded",
+            error=str(e),
+            error_type=type(e).__name__,
+            rlimit_nofile=str(_nofile),
+            traceback=_tb.format_exc(),
+        )
 
     return engine
 
