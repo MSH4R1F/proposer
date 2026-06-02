@@ -86,6 +86,10 @@ dist/
 # Vercel
 .vercel
 
+# Cloudflare Workers / OpenNext build artifacts & local state
+.open-next/
+.wrangler/
+
 # Package manager lock files (optional - remove if you want to track them)
 # package-lock.json
 # yarn.lock
@@ -98,6 +102,7 @@ dist/
 .env.local
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
 .env*.local
 *.env
