@@ -53,6 +53,9 @@ def test_retrieval_strategy_is_separate_from_prediction_mode():
         # AGENTIC composes with HYBRID or RAG_ONLY (KG_ONLY / LLM_ONLY
         # skip retrieval entirely so AGENTIC is moot there).
         "agentic",
+        # Agentic GraphRAG amount predictor: the agent searches, reads
+        # comparator order amounts, and emits the final ZOPA itself.
+        "agentic_predict",
         # Stream C PR 5 Task 5.5: factor-constrained two-pass retrieval
         # (comparators + counterexamples). Selected via env flag
         # STREAM_C_FACTOR_RETRIEVAL=1; falls back to chunk_rag when

@@ -98,6 +98,7 @@ class PredictionEngineV2:
         retrieval_strategy: Optional[RetrievalStrategy] = None,
         *,
         matter_type: Optional[str] = None,
+        gold_case_id: str = "",
     ) -> PredictionResult:
         import os
 
@@ -249,6 +250,18 @@ class PredictionEngineV2:
                 pipeline_metadata=metadata,
                 matter_type=matter_type,
                 case_graph=knowledge_graph,
+            )
+
+        # ── Agentic GraphRAG amount prediction (search + read amounts + ZOPA) ──
+        if strategy == RetrievalStrategy.AGENTIC_PREDICT:
+            return await self._agentic_predict(
+                case_file=case_file,
+                issues=issues,
+                knowledge_graph=knowledge_graph,
+                gold_case_id=gold_case_id or getattr(case_file, "case_id", "") or "",
+                matter_type=matter_type,
+                metadata=metadata,
+                start_time=start_time,
             )
 
         # ── Step 2: Per-Issue Retrieval (parallel retriever calls) ──
@@ -437,6 +450,75 @@ class PredictionEngineV2:
         return isinstance(metadata, dict) and (
             metadata.get("domain_id") == "housing.repairs_social.v1"
         )
+
+    async def _agentic_predict(
+        self,
+        *,
+        case_file: CaseFile,
+        issues: List[IssueContext],
+        knowledge_graph: Optional[Any],
+        gold_case_id: str,
+        matter_type: Optional[str],
+        metadata: PipelineMetadata,
+        start_time: float,
+    ) -> PredictionResult:
+        """Agentic GraphRAG amount prediction: the agent searches comparators,
+        reads their ordered amounts, and emits the ZOPA itself."""
+        from ..clients.types import LLMProvider
+        from .agentic_predictor import AgenticPredictor
+
+        if self.rag is None:
+            return PredictionResult.create_uncertain(
+                case_id=case_file.case_id,
+                reason="RAG pipeline not available for agentic_predict.",
+            )
+
+        cls = type(self.llm).__name__
+        provider = (
+            LLMProvider.ANTHROPIC if cls == "ClaudeClient" else LLMProvider.OPENAI
+        )
+        predictor = AgenticPredictor(self.llm, provider=provider, max_turns=6)
+        case_summary = self._build_planner_case_summary(case_file)
+
+        issue_predictions: List[IssuePrediction] = []
+        bounds: List[tuple] = []
+        for issue in issues:
+            ip = await predictor.predict_issue(
+                case_file=case_file,
+                issue=issue,
+                rag=self.rag,
+                knowledge_graph=knowledge_graph,
+                gold_case_id=gold_case_id,
+                case_summary=case_summary,
+            )
+            issue_predictions.append(ip)
+            if ip.amount_range is not None and ip.predicted_amount is not None:
+                bounds.append(ip.amount_range)
+
+        metadata.steps_executed.append("agentic_predict")
+        metadata.total_llm_calls = sum(
+            1 for ip in issue_predictions if ip.outcome != IssueOutcome.UNCERTAIN
+        )
+        metadata.total_latency_ms = int((time.time() - start_time) * 1000)
+        metadata.retrieval_strategy = RetrievalStrategy.AGENTIC_PREDICT.value
+
+        result = self.output_assembler.assemble(
+            case_file=case_file,
+            issues=issues,
+            issue_predictions=issue_predictions,
+            retrieval_results={},
+            verification=CitationVerifier.empty_verification(),
+            pipeline_metadata=metadata,
+            matter_type=matter_type,
+            case_graph=knowledge_graph,
+        )
+        # Preserve the agent's ZOPA bounds (the assembler would otherwise
+        # overwrite predicted_settlement_range with a fixed +/-15% band).
+        if bounds:
+            lows = [b[0] for b in bounds]
+            highs = [b[1] for b in bounds]
+            result.predicted_settlement_range = (round(min(lows), 2), round(max(highs), 2))
+        return result
 
     async def _agentic_retrieve_all(
         self,

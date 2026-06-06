@@ -87,6 +87,9 @@ class RetrievalStrategy(str, Enum):
     # See packages/llm_orchestrator/pipeline/retrieval_agent_loop.py
     # and docs/research/hybrid-rag-agentic-retrieval-plan-2026-05-05.md.
     AGENTIC = "agentic"
+    # Agentic GraphRAG amount predictor: the agent searches, reads comparator
+    # order amounts, and emits the final ZOPA itself (not just retrieval).
+    AGENTIC_PREDICT = "agentic_predict"
     # Stream C PR 5 Task 5.5: factor-constrained two-pass retrieval
     # (comparators + counterexamples) controlled by the active domain
     # pack's retrieval_profile. See

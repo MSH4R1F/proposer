@@ -44,6 +44,113 @@ try:
 except ImportError:
     _CaseFile = None
 
+
+# RQ2 grounded-award anchor (C1): extract monetary award figures from retrieved
+# comparator chunk text so they can be surfaced explicitly in the repairs prompt.
+_AWARD_AMOUNT_RE = re.compile(
+    r"£\s?([\d,]+(?:\.\d{1,2})?)|(\d[\d,]*(?:\.\d{1,2})?)\s?(?:gbp|pounds)\b",
+    re.IGNORECASE,
+)
+
+
+def _extract_award_amounts(text: str) -> List[float]:
+    """Return positive £ amounts mentioned in ``text``, in order, de-duplicated.
+
+    Matches ``£500``, ``£1,200.50`` and word forms like ``1500 pounds``. Bare
+    ``£`` and ``£0`` are ignored. Used to ground the predicted award in the
+    actual figures appearing in retrieved comparator decisions.
+    """
+    if not text:
+        return []
+    out: List[float] = []
+    seen: set[float] = set()
+    for match in _AWARD_AMOUNT_RE.finditer(text):
+        raw = match.group(1) or match.group(2)
+        if not raw:
+            continue
+        try:
+            value = float(raw.replace(",", ""))
+        except ValueError:
+            continue
+        if value > 0 and value not in seen:
+            seen.add(value)
+            out.append(value)
+    return out
+
+
+# RQ2 grounding fix: extract the ACTUAL ordered total from a comparator decision,
+# not every incidental £ figure. Old `_extract_award_amounts` pooled sub-components
+# (e.g. "£1000 made up of £500 + £300 + £200"), OCR-split fragments, and offered/
+# rent figures, biasing the comparator anchor far too low (index median £150 vs
+# real ordered median ~£475). This recovers the order total from the decision text.
+_ORDER_NUM = r"\d(?:[\d,]|\s(?=\d))*(?:\.\s*\d{1,2})?"  # OCR-tolerant: "1, 01 0" / "1\n07\n5"
+_ORDER_TOTAL_PHRASE = re.compile(
+    r"(?:must\s+pay\s+the\s+resident|total\s+compensation\s+of|pay\s+a\s+total\s+of"
+    r"|landlord\s+must\s+pay|compensation\s+totalling)\s*£\s*(" + _ORDER_NUM + r")",
+    re.IGNORECASE,
+)
+_ORDER_CONTEXT = re.compile(
+    r"(?:compensation\s+order|must\s+pay|order(?:s|ed)?\s+(?:the\s+landlord\s+)?to\s+pay"
+    r"|pay\s+(?:the\s+resident|you|a\s+total)|compensation\s+of|in\s+recognition"
+    r"|in\s+the\s+sum\s+of|award(?:s|ed)?)",
+    re.IGNORECASE,
+)
+_INCIDENTAL_CONTEXT = re.compile(
+    r"(?:per\s+month|monthly|per\s+week|weekly|\brent\b|arrears|service\s+charge"
+    r"|per\s+annum|already\s+offered|offered\s+(?:at|in|during|through|compensation)"
+    r"|stage\s*[12])",
+    re.IGNORECASE,
+)
+_ORDER_AMOUNT = re.compile(r"£\s*(" + _ORDER_NUM + r")", re.IGNORECASE)
+
+
+def _clean_order_amount(raw: str) -> Optional[float]:
+    try:
+        value = float(re.sub(r"\s+", "", raw).replace(",", ""))
+    except (ValueError, TypeError):
+        return None
+    # UK Housing Ombudsman compensation orders effectively never exceed this;
+    # the bound also rejects OCR over-merges (e.g. two figures fused).
+    return value if 0 < value <= 20_000 else None
+
+
+def _extract_order_amounts(text: str, section_type: Optional[str] = None) -> List[float]:
+    """Recover the Ombudsman *ordered total* from comparator decision text.
+
+    Returns at most one figure: the order total for this chunk. Prefers an
+    explicit total ("must pay the resident £X"); otherwise, in a decision/order
+    chunk, takes the largest non-incidental £ figure (sub-components are smaller
+    and rent/arrears/offered figures are filtered). OCR-tolerant. Empty when no
+    order figure is present.
+    """
+    if not text:
+        return []
+    totals = [
+        v
+        for m in _ORDER_TOTAL_PHRASE.finditer(text)
+        if (v := _clean_order_amount(m.group(1))) is not None
+    ]
+    if totals:
+        return [max(totals)]  # the grand total, not the breakdown
+    candidates: List[float] = []
+    for m in _ORDER_AMOUNT.finditer(text):
+        v = _clean_order_amount(m.group(1))
+        if v is None:
+            continue
+        window = text[max(0, m.start() - 80) : m.end() + 40]
+        if _INCIDENTAL_CONTEXT.search(window):
+            continue
+        candidates.append(v)
+    if not candidates:
+        return []
+    # In a decision/order chunk the compensation figures live here; the order
+    # total is the largest non-incidental amount. Outside such chunks, require
+    # explicit order language so we don't grab incidental figures from facts.
+    is_order = str(section_type).lower() == "decision" or bool(_ORDER_CONTEXT.search(text))
+    if not is_order:
+        return []
+    return [max(candidates)]
+
 logger = structlog.get_logger()
 
 _REPAIRS_ISSUE_VALUES = {
@@ -579,10 +686,23 @@ class IssuePredictor:
                 if self._get_value(result, "has_award_amount", False)
                 else ""
             )
+            # RQ2 grounding fix (C1): surface the comparator's ORDERED TOTAL
+            # (not every incidental £ figure) so the model anchors on the real
+            # Ombudsman order. _extract_order_amounts filters rent/arrears/offered
+            # figures and recovers OCR-split totals from the decision text.
+            order_amounts = _extract_order_amounts(
+                str(text), self._get_value(result, "section_type", None)
+            )
+            award_values_line = (
+                "\nComparator ordered total: "
+                + ", ".join(f"£{a:,.0f}" for a in order_amounts[:2])
+                if order_amounts
+                else ""
+            )
             formatted_cases.append(
                 f"CASE {i}: {case_ref} ({year})\n"
                 f"Relevance: {score:.3f}"
-                f"{purpose_line}{finding_line}{amount_line}\n"
+                f"{purpose_line}{finding_line}{amount_line}{award_values_line}\n"
                 f"{str(text)[:1500]}\n---"
             )
         retrieved_cases_str = (
@@ -756,7 +876,26 @@ class IssuePredictor:
                     temperature=0.2,
                 )
                 last_response = response
-                prediction = self._parse_prediction_response(response, issue)
+                # Grounded fallback anchor: median of the comparator ORDER
+                # totals in the (full-text) retrieved decisions, used only if
+                # the LLM abstains on the amount under the always-predict flag.
+                _comp_orders: List[float] = []
+                for _r in retrieval.results[:8]:
+                    _txt = self._get_value(
+                        _r, "chunk_text", self._get_value(_r, "text", "")
+                    )
+                    _comp_orders.extend(
+                        _extract_order_amounts(
+                            str(_txt), self._get_value(_r, "section_type", None)
+                        )
+                    )
+                _comp_fallback = None
+                if _comp_orders:
+                    _srt = sorted(_comp_orders)
+                    _comp_fallback = float(_srt[len(_srt) // 2])
+                prediction = self._parse_prediction_response(
+                    response, issue, comparator_fallback_gbp=_comp_fallback
+                )
                 should_retry_parse = (
                     prediction.outcome == IssueOutcome.UNCERTAIN
                     and prediction.data_completeness_impact == "parse_error"
@@ -802,6 +941,7 @@ class IssuePredictor:
         self,
         response: str,
         issue: IssueContext,
+        comparator_fallback_gbp: Optional[float] = None,
     ) -> IssuePrediction:
         try:
             data = self._extract_json_payload(response)
@@ -889,16 +1029,42 @@ class IssuePredictor:
                     "101-250": 175.0,
                     "251-600": 425.0,
                     "601-1000": 800.0,
-                    "1000+": 1500.0,
+                    # Open-topped band: Ombudsman repairs orders extend well
+                    # beyond £1,000 (into the low thousands), so represent the
+                    # real upper range rather than capping at a flat £1,500.
+                    "1000+": 2200.0,
                 }
                 if amount_band in _band_midpoints:
                     amount_value = _band_midpoints[amount_band]
                 else:
-                    # Domain default for repairs_social.v1 ombudsman cases:
-                    # median Ombudsman compensation order is ~£400-£500.
-                    amount_value = 400.0
+                    # Grounded fallback: prefer the median of the comparator
+                    # ORDER totals (passed from _predict_issue, where the full
+                    # retrieved decision text is in scope) over a flat domain
+                    # prior, so an abstaining LLM still gets a per-case,
+                    # evidence-anchored amount rather than a constant.
+                    if comparator_fallback_gbp and comparator_fallback_gbp > 0:
+                        amount_value = float(comparator_fallback_gbp)
+                    else:
+                        amount_value = 650.0
                     if amount_band is None:
-                        amount_band = "251-600"
+                        amount_band = "601-1000"
+
+            # Retrieval-conditioned grounding guard: bound the predicted amount
+            # to the retrieved comparator-order evidence. If the model's figure
+            # is wildly outside the comparators' range (e.g. a hallucinated high
+            # under the always-predict relaxation), snap it to the comparator-
+            # order median. Keeps the model's per-case signal when it is in the
+            # right ballpark; prevents ungrounded magnitudes otherwise.
+            if (
+                comparator_fallback_gbp
+                and comparator_fallback_gbp > 0
+                and amount_value
+                and (
+                    amount_value > 2.0 * comparator_fallback_gbp
+                    or amount_value < 0.5 * comparator_fallback_gbp
+                )
+            ):
+                amount_value = float(comparator_fallback_gbp)
 
             # 2026-05-06 — Housing Ombudsman determination ontology.
             # Optional. Missing or invalid → None (treat as legacy / non-housing prompt).
@@ -1239,14 +1405,20 @@ class IssuePredictor:
                     "Do not mention comparator determinations, proposition IDs, "
                     "paragraph references, case citations, supporting cases, or "
                     "comparator award amounts. For predicted_amount and "
-                    "amount_band: estimate the likely award based on general "
-                    "knowledge of typical UK Housing Ombudsman compensation "
-                    "ranges for this issue type and severity. Be conservative; "
-                    "under-estimate rather than over-promise. Use amount_band "
-                    "only as a Proposer modelling band: 0, 1-100, 101-250, "
-                    "251-600, 601-1000, or 1000+. Set predicted_amount to null "
-                    "only if the facts are too sparse for any order-of-"
-                    "magnitude estimate."
+                    "amount_band: estimate the MOST LIKELY total award from "
+                    "general knowledge of UK Housing Ombudsman compensation for "
+                    "this issue type, scaled to the severity and duration in "
+                    "this case. Give a centred, unbiased point estimate (the "
+                    "median likely award), not a cautious floor. Housing "
+                    "Ombudsman repairs and damp/mould remedies commonly run from "
+                    "low hundreds for short service failures to well over "
+                    "£1,000, and into several thousand pounds for prolonged "
+                    "severe maladministration affecting health or vulnerable "
+                    "residents; do not compress severe, long-running cases "
+                    "toward the low bands. Use amount_band only as a Proposer "
+                    "modelling band: 0, 1-100, 101-250, 251-600, 601-1000, or "
+                    "1000+. Set predicted_amount to null only if the facts are "
+                    "too sparse for any order-of-magnitude estimate."
                 )
             else:
                 amount_clause = (
@@ -1278,14 +1450,18 @@ class IssuePredictor:
             )
             if always_predict_amounts:
                 amount_clause = (
-                    "If no retrieved determination contains a usable award/"
-                    "order amount, estimate predicted_amount and amount_band "
-                    "based on the case facts and general knowledge of typical "
-                    "UK Housing Ombudsman compensation ranges for this issue "
-                    "type and severity. Be conservative; under-estimate rather "
-                    "than over-promise. Set predicted_amount to null only if "
-                    "the facts are too sparse for any order-of-magnitude "
-                    "estimate."
+                    "Estimate predicted_amount and amount_band as the MOST "
+                    "LIKELY total award for this case. Anchor on the "
+                    "'Comparator ordered total' figures surfaced above: your "
+                    "estimate should sit within their range and move toward the "
+                    "higher comparators when the severity, duration, or "
+                    "vulnerability in this case exceeds theirs. Where no "
+                    "comparator total is given, use general UK Housing Ombudsman "
+                    "compensation ranges for this issue type and severity. Give "
+                    "a centred, unbiased point estimate --- the median likely "
+                    "ordered total --- and do not deliberately under- or "
+                    "over-state it. Set predicted_amount to null only if the "
+                    "facts are too sparse for any order-of-magnitude estimate."
                 )
             else:
                 amount_clause = (
