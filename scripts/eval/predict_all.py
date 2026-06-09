@@ -1034,8 +1034,8 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
             "(see eval.factor_assertion_sidecar). When omitted, the runner "
             "auto-resolves the canonical path "
             "data/eval_artifacts/factor_assertions/<gold-stem>.factor_assertions.json. "
-            "If neither path exists, hybrid/kg_only modes run with empty "
-            "asserted_factors (legacy fallback)."
+            "If neither path exists, hybrid/kg_only modes fail fast with a "
+            "hard error; non-KG modes (rag_only, llm_only) still run without one."
         ),
     )
     parser.add_argument(
@@ -1062,8 +1062,8 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
 
     # Stream C: load the case-side factor-assertion sidecar (if present).
     # Default location is canonical; explicit --factor-assertion-sidecar
-    # overrides. A missing sidecar is NOT an error — eval still runs with
-    # the legacy empty-pack fallback so old eval scripts keep working.
+    # overrides. A missing sidecar is a hard error for KG-bearing modes
+    # (hybrid, kg_only); non-KG modes (rag_only, llm_only) still run without one.
     from eval.factor_assertion_sidecar import load_full_sidecar  # noqa: PLC0415
 
     sidecar_path = _resolve_factor_assertion_sidecar_path(
