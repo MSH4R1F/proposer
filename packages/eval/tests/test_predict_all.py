@@ -41,6 +41,9 @@ def _import_script_module():
 
 FIXTURES = Path(__file__).parent / "fixtures"
 GOLD_PATH = FIXTURES / "synthetic_corpus_10.jsonl"
+# Minimal stub sidecar for the synthetic corpus — required by _require_sidecar_exists
+# when KG-bearing modes (hybrid, kg_only) are requested.
+SIDECAR_PATH = FIXTURES / "synthetic_corpus_10.factor_assertions.json"
 
 
 # ---------- In-process ----------
@@ -57,6 +60,8 @@ class TestStubModeWritesPerModeJsonl:
                 str(tmp_path),
                 "--engine",
                 "stub",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -73,6 +78,8 @@ class TestStubModeWritesPerModeJsonl:
                 str(tmp_path),
                 "--engine",
                 "stub",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -104,6 +111,8 @@ class TestStubModeWritesPerModeJsonl:
                 "stub",
                 "--modes",
                 "hybrid,llm_only",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -126,6 +135,8 @@ class TestStubModeWritesPerModeJsonl:
                 "3",
                 "--modes",
                 "hybrid",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -147,6 +158,8 @@ class TestStubModeWritesPerModeJsonl:
                 "1",
                 "--modes",
                 "hybrid",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -169,6 +182,8 @@ class TestAlignmentReport:
                 "stub",
                 "--modes",
                 "hybrid",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -194,6 +209,8 @@ class TestLiveModeRequiresExplicitClient:
                 "live",
                 "--modes",
                 "hybrid",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc != 0
@@ -216,6 +233,8 @@ class TestLiveModeRequiresExplicitClient:
                 "hybrid",
                 "--limit",
                 "1",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0
@@ -531,6 +550,8 @@ class TestSubprocessEntry:
                 "stub",
                 "--modes",
                 "hybrid",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ],
             cwd=str(SCRIPT_PATH.resolve().parents[2]),
             env={
@@ -560,6 +581,8 @@ class TestOutputAblationCompatible:
                 str(tmp_path),
                 "--engine",
                 "stub",
+                "--factor-assertion-sidecar",
+                str(SIDECAR_PATH),
             ]
         )
         assert rc == 0

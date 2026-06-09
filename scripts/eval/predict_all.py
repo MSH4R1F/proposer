@@ -348,6 +348,24 @@ def _resolve_factor_assertion_sidecar_path(
     return direct
 
 
+_KG_BEARING_MODES = {"hybrid", "kg_only"}
+
+
+def _require_sidecar_exists(sidecar_path: Path, modes: list[str]) -> None:
+    """Fail loudly when a KG-bearing mode would run with no factor assertions.
+
+    The 2026-05-21 housing_150 ablation silently consumed a nonexistent
+    sidecar path (load_sidecar returns {} for missing files), running the
+    control plane dark. Never again.
+    """
+    if _KG_BEARING_MODES.intersection(modes) and not sidecar_path.exists():
+        raise SystemExit(
+            f"factor sidecar not found: {sidecar_path} — KG-bearing modes "
+            f"({sorted(_KG_BEARING_MODES.intersection(modes))}) require factor "
+            "assertions. Generate it with scripts/eval/extract_housing_factors.py."
+        )
+
+
 def _decision_date_coverage(rag_pipeline: Any) -> float:
     chunks = []
     try:
@@ -1052,6 +1070,7 @@ def _cli_main(argv: Optional[Sequence[str]] = None) -> int:
         args.gold.resolve(),
         args.factor_assertion_sidecar,
     )
+    _require_sidecar_exists(sidecar_path, modes)
     factor_assertion_sidecar: Optional[dict] = None
     if sidecar_path.exists():
         factor_assertion_sidecar = load_full_sidecar(sidecar_path)

@@ -1,0 +1,29 @@
+{
+  "schema_version": "v1",
+  "domain_id": "housing.repairs_social.v1",
+  "extractor_version": "stub-fixture",
+  "factor_assertions_by_case_id": {
+    "SYN-CLEANING-2020-001": [],
+    "SYN-DAMAGES-2021-002": [],
+    "SYN-DEPOSIT-2022-003": [],
+    "SYN-DISREPAIR-2022-004": [],
+    "SYN-EOT-2023-005": [],
+    "SYN-MULTI-2023-006": [],
+    "SYN-MULTI-2024-007": [],
+    "SYN-LARGE-2021-008": [],
+    "SYN-UNAPPORT-2024-009": [],
+    "SYN-AUTH-2022-010": []
+  },
+  "evidence_spans_by_case_id": {
+    "SYN-CLEANING-2020-001": [],
+    "SYN-DAMAGES-2021-002": [],
+    "SYN-DEPOSIT-2022-003": [],
+    "SYN-DISREPAIR-2022-004": [],
+    "SYN-EOT-2023-005": [],
+    "SYN-MULTI-2023-006": [],
+    "SYN-MULTI-2024-007": [],
+    "SYN-LARGE-2021-008": [],
+    "SYN-UNAPPORT-2024-009": [],
+    "SYN-AUTH-2022-010": []
+  }
+}
