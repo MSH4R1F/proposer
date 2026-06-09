@@ -335,7 +335,11 @@ class OutputAssembler:
         prediction.metadata["matter_type"] = resolved_matter_type
         prediction.metadata["penalty_recovery"] = penalty_recovery
 
-        self._validate_prediction(prediction, verification)
+        # RAG retrieval runs in hybrid and rag_only modes; it is skipped in
+        # kg_only and llm_only modes. The mode field is a plain str whose
+        # values match PredictionMode enum values.
+        retrieval_attempted = pipeline_metadata.mode in ("hybrid", "rag_only")
+        self._validate_prediction(prediction, verification, retrieval_attempted=retrieval_attempted)
         logger.info(
             "output_assembled",
             case_id=case_file.case_id,
@@ -597,6 +601,8 @@ class OutputAssembler:
         self,
         prediction: PredictionResult,
         verification: VerificationResult,
+        *,
+        retrieval_attempted: bool = True,
     ) -> None:
         if prediction.predicted_settlement_range:
             low, high = prediction.predicted_settlement_range
@@ -617,7 +623,13 @@ class OutputAssembler:
             ip.outcome != IssueOutcome.UNCERTAIN for ip in prediction.issue_predictions
         )
         if not has_citations:
-            if not has_non_uncertain_predictions:
+            if not retrieval_attempted:
+                # kg_only / llm_only: citations are impossible by construction —
+                # absence of citations is not evidence of low confidence here.
+                # (Cite-or-abstain still governs the prompt; this only stops the
+                # 0.4 cap from manufacturing degenerate probabilities.)
+                pass
+            elif not has_non_uncertain_predictions:
                 prediction.overall_outcome = OutcomeType.UNCERTAIN
                 prediction.uncertainties = self._dedupe_preserve_order(
                     prediction.uncertainties

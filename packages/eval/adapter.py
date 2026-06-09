@@ -119,9 +119,11 @@ def _outcome_to_winner(outcome_value: str) -> Winner:
 
 def _confidence_to_p_landlord(outcome_value: str, confidence: float) -> float:
     if outcome_value in ("landlord_win", "landlord_wins"):
-        return confidence
+        # Confidence below 0.5 means "weakly landlord", not "actually tenant":
+        # the probability must not cross to the other side of the class label.
+        return max(confidence, 0.5)
     if outcome_value in ("tenant_win", "tenant_wins"):
-        return 1.0 - confidence
+        return min(1.0 - confidence, 0.5)
     if outcome_value in ("split", "uncertain"):
         # split, uncertain → 0.5 (max uncertainty for binary calibration)
         return 0.5
