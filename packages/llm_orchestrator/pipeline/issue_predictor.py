@@ -213,6 +213,7 @@ Safety: legal information, not legal advice. Hedge and explain uncertainty.
     + "\n\n" + REPAIRS_DETERMINATION_GUIDE
 )
 
+
 def _build_no_rag_json_schema() -> str:
     """Apply the no-RAG transformations to the (flag-aware) IRAC schema.
 
