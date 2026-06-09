@@ -18,6 +18,10 @@ MIN_AGGRAVATORS_FOR_SEVERE = 2
 
 
 def _confident(factors: Sequence[Any], factor_id: str) -> Optional[Any]:
+    # First-match semantics: returns the first FactorAssertion for factor_id
+    # that meets the confidence threshold. Callers assume at most one
+    # high-confidence assertion per factor_id per case; conflicting duplicates
+    # resolve first-wins by list order.
     for fa in factors:
         if getattr(fa, "factor_id", None) == factor_id and (
             getattr(fa, "confidence", 0.0) >= MIN_FACTOR_CONFIDENCE

@@ -1331,8 +1331,6 @@ class IssuePredictor:
         """Stream C live-control-plane: deterministic determination rules over
         evidence-backed factor assertions. No-op without factors or when
         STREAM_C_DETERMINATION_RULES=0."""
-        import os
-
         from llm_orchestrator.pipeline.determination_rules import (
             apply_determination_rules,
         )
@@ -1357,6 +1355,37 @@ class IssuePredictor:
             prediction = prediction.model_copy(
                 update={"predicted_determination": new_det}
             )
+
+        # Tariff quantum: runs AFTER determination rules so the band is
+        # selected from the POST-rules determination (e.g. R2 severe upgrade
+        # uses the severe band, not the original maladministration band).
+        # ORDERING CONSTRAINT: tariff must run after rules; running it before
+        # would fill predicted_amount and prevent R3 (reasonable_redress)
+        # from firing (R3 checks predicted_amount is None or 0).
+        if (
+            os.getenv("STREAM_C_TARIFF_QUANTUM", "1") == "1"
+            and prediction.predicted_determination is not None
+        ):
+            from llm_orchestrator.pipeline.tariff_quantum import clamp_to_band
+
+            final_amount, band, adjustment = clamp_to_band(
+                prediction.predicted_amount,
+                prediction.predicted_determination,
+                factors,
+            )
+            if band is not None and (
+                adjustment is not None or prediction.predicted_amount is None
+            ):
+                logger.info(
+                    "tariff_quantum_applied",
+                    adjustment=adjustment,
+                    before=prediction.predicted_amount,
+                    after=final_amount,
+                    band=band,
+                )
+                prediction = prediction.model_copy(
+                    update={"predicted_amount": final_amount}
+                )
         return prediction
 
     @staticmethod
