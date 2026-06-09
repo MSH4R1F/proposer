@@ -585,6 +585,10 @@ class IssuePredictor:
             prediction.issue_type = issue.issue_type
             if not prediction.issue_description:
                 prediction.issue_description = issue.issue_description
+            prediction = self._apply_determination_postrules(
+                prediction,
+                self._case_graph_by_issue.get(issue.issue_type),
+            )
             return self._apply_forced_answer(prediction)
         except Exception as exc:
             logger.error(
@@ -955,6 +959,10 @@ class IssuePredictor:
                         prediction.evidence_strength = self._assess_evidence_strength(
                             issue
                         )
+                    prediction = self._apply_determination_postrules(
+                        prediction,
+                        self._case_graph_by_issue.get(issue.issue_type),
+                    )
                     return self._apply_forced_answer(prediction)
             except Exception as exc:
                 logger.error(
@@ -1316,6 +1324,40 @@ class IssuePredictor:
                 data_completeness_impact=data_impact,
             )
         )
+
+    def _apply_determination_postrules(
+        self, prediction: IssuePrediction, case_graph: Any
+    ) -> IssuePrediction:
+        """Stream C live-control-plane: deterministic determination rules over
+        evidence-backed factor assertions. No-op without factors or when
+        STREAM_C_DETERMINATION_RULES=0."""
+        import os
+
+        from llm_orchestrator.pipeline.determination_rules import (
+            apply_determination_rules,
+        )
+
+        if os.getenv("STREAM_C_DETERMINATION_RULES", "1") != "1":
+            return prediction
+        factors = list(getattr(case_graph, "factor_assertions", []) or [])
+        if not factors or prediction.predicted_determination is None:
+            return prediction
+        new_det, rule = apply_determination_rules(
+            prediction.predicted_determination,
+            predicted_amount=prediction.predicted_amount,
+            factors=factors,
+        )
+        if rule is not None and new_det is not prediction.predicted_determination:
+            logger.info(
+                "determination_rule_applied",
+                rule=rule,
+                before=prediction.predicted_determination.value,
+                after=new_det.value,
+            )
+            prediction = prediction.model_copy(
+                update={"predicted_determination": new_det}
+            )
+        return prediction
 
     @staticmethod
     def _apply_forced_answer(prediction: IssuePrediction) -> IssuePrediction:
