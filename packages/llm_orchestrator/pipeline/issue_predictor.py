@@ -160,7 +160,40 @@ _REPAIRS_ISSUE_VALUES = {
 }
 
 
-_REPAIRS_NO_RAG_SYSTEM_PROMPT = """You analyse social-housing complaints heard by the Housing Ombudsman.
+REPAIRS_DETERMINATION_GUIDE = """
+DETERMINATION GUIDE (housing.repairs_social.v1) — predicted_determination must be exactly one of:
+- no_maladministration: the landlord acted reasonably and complied with its obligations.
+- service_failure: a minor or short-duration failing causing limited detriment
+  (e.g. a one-off missed appointment, a modest delay that was then corrected).
+- maladministration: the landlord failed to meet its obligations in a way that
+  caused injustice — prolonged repair delays, poor communication, inadequate
+  records, failure to follow its own policy.
+- severe_maladministration: serious, repeated, or deliberately obstructive
+  failure causing significant injustice. Look for AGGRAVATORS: a known
+  vulnerability that was ignored; repairs outstanding for around a year or
+  more; repeated failed visits; systemic record-keeping failure; failure
+  compounded by complaint mishandling. Two or more aggravators usually
+  indicates severe_maladministration rather than maladministration.
+- reasonable_redress: a failing occurred BUT the landlord ALREADY offered
+  redress proportionate to it BEFORE the Ombudsman's determination (apology
+  plus compensation consistent with the scale of the failing). The test is
+  the adequacy of the PRIOR offer, made BEFORE the Ombudsman decided — not
+  whether a failing occurred. If the facts show a pre-determination offer of
+  compensation or apology, you MUST explicitly weigh this class before
+  choosing maladministration or service_failure.
+- resolved_with_intervention: the complaint was fully resolved during the
+  investigation following Ombudsman intervention.
+- outside_jurisdiction: the matter is outside the Ombudsman's remit (legal
+  title disputes, matters concurrently before a court, pre-membership events).
+
+Common errors to avoid: do NOT default to maladministration. The
+service_failure / maladministration boundary turns on severity and duration
+of detriment. The maladministration / severe_maladministration boundary turns
+on aggravators. reasonable_redress turns on the landlord's prior offer.
+""".strip()
+
+_REPAIRS_NO_RAG_SYSTEM_PROMPT = (
+    """You analyse social-housing complaints heard by the Housing Ombudsman.
 
 This is an ablation baseline with NO retrieved Ombudsman determinations. Predict from the resident/landlord facts, evidence summary, timeline, and any structured fact card only.
 
@@ -177,6 +210,8 @@ Critical constraints:
 
 Safety: legal information, not legal advice. Hedge and explain uncertainty.
 """
+    + "\n\n" + REPAIRS_DETERMINATION_GUIDE
+)
 
 def _build_no_rag_json_schema() -> str:
     """Apply the no-RAG transformations to the (flag-aware) IRAC schema.
@@ -864,6 +899,8 @@ class IssuePredictor:
             )
 
         system_prompt = self._prediction_system_prompt
+        if self._is_repairs_case(cf, issue):
+            system_prompt = f"{system_prompt}\n\n{REPAIRS_DETERMINATION_GUIDE}"
 
         attempts = 2
         last_response: Optional[str] = None
