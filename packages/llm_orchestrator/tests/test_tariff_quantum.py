@@ -116,3 +116,96 @@ def test_clamp_unknown_determination_returns_amount_unchanged():
     assert final == 400.0
     assert band is None
     assert adj is None
+
+
+# ---------------------------------------------------------------------------
+# Gate-independence tests for _apply_determination_postrules
+# ---------------------------------------------------------------------------
+# _apply_determination_postrules reads nothing from self, so we can use
+# IssuePredictor.__new__(IssuePredictor) to get a bare instance without
+# triggering the heavy __init__.
+# ---------------------------------------------------------------------------
+
+import types
+
+from llm_orchestrator.models.prediction_v2 import (
+    Determination,
+    IssueOutcome,
+    IssueType,
+    IssuePrediction,
+)
+from llm_orchestrator.pipeline.issue_predictor import IssuePredictor
+
+
+def _make_prediction(determination, amount=None):
+    """Return a minimal IssuePrediction with the given determination and amount."""
+    return IssuePrediction(
+        issue_type=IssueType.REPAIRS_DISREPAIR,
+        predicted_outcome=IssueOutcome.TENANT_WINS,
+        confidence=0.8,
+        predicted_determination=determination,
+        predicted_amount=amount,
+    )
+
+
+def _make_case_graph(factors):
+    """Return a minimal case-graph stub with the given factor_assertions."""
+    return types.SimpleNamespace(factor_assertions=factors)
+
+
+def test_rules_off_tariff_on_fills_amount_and_leaves_determination_unruled(monkeypatch):
+    """RULES=0, TARIFF=1: tariff fills None amount; R1 rule does NOT fire.
+
+    The factor list includes issue_outside_jurisdiction=True, which would
+    normally trigger R1 and flip the determination to OUTSIDE_JURISDICTION.
+    With RULES=0 that must NOT happen.  The tariff DOES run on the raw LLM
+    determination (MALADMINISTRATION) and fills the None amount from its band.
+    """
+    monkeypatch.setenv("STREAM_C_DETERMINATION_RULES", "0")
+    monkeypatch.setenv("STREAM_C_TARIFF_QUANTUM", "1")
+
+    # R1 trigger factor (would override determination if rules ran)
+    factors = [_fa("issue_outside_jurisdiction", boolean=True)]
+    prediction = _make_prediction(Determination.MALADMINISTRATION, amount=None)
+    case_graph = _make_case_graph(factors)
+
+    predictor = IssuePredictor.__new__(IssuePredictor)
+    result = predictor._apply_determination_postrules(prediction, case_graph)
+
+    # Determination must stay as LLM proposed (rules gate was off)
+    assert result.predicted_determination is Determination.MALADMINISTRATION, (
+        "R1 must not fire when STREAM_C_DETERMINATION_RULES=0"
+    )
+    # Amount must be filled by tariff from MALADMINISTRATION band [100, 600]
+    assert result.predicted_amount is not None, (
+        "Tariff quantum must fill None amount when STREAM_C_TARIFF_QUANTUM=1"
+    )
+    assert 100.0 <= result.predicted_amount <= 600.0, (
+        f"Filled amount {result.predicted_amount} outside MALADMINISTRATION band [100, 600]"
+    )
+
+
+def test_rules_on_tariff_off_fires_rules_leaves_amount_untouched(monkeypatch):
+    """RULES=1, TARIFF=0: R1 fires and changes determination; amount is untouched.
+
+    A None amount must remain None (tariff gate is off, so no fill happens).
+    """
+    monkeypatch.setenv("STREAM_C_DETERMINATION_RULES", "1")
+    monkeypatch.setenv("STREAM_C_TARIFF_QUANTUM", "0")
+
+    factors = [_fa("issue_outside_jurisdiction", boolean=True)]
+    original_amount = None
+    prediction = _make_prediction(Determination.MALADMINISTRATION, amount=original_amount)
+    case_graph = _make_case_graph(factors)
+
+    predictor = IssuePredictor.__new__(IssuePredictor)
+    result = predictor._apply_determination_postrules(prediction, case_graph)
+
+    # R1 must have fired and changed the determination
+    assert result.predicted_determination is Determination.OUTSIDE_JURISDICTION, (
+        "R1 must fire and set OUTSIDE_JURISDICTION when STREAM_C_DETERMINATION_RULES=1"
+    )
+    # Amount must remain untouched (tariff gate is off)
+    assert result.predicted_amount is original_amount, (
+        "Tariff quantum must not fill amount when STREAM_C_TARIFF_QUANTUM=0"
+    )

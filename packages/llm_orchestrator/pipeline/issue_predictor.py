@@ -1328,33 +1328,47 @@ class IssuePredictor:
     def _apply_determination_postrules(
         self, prediction: IssuePrediction, case_graph: Any
     ) -> IssuePrediction:
-        """Stream C live-control-plane: deterministic determination rules over
-        evidence-backed factor assertions. No-op without factors or when
-        STREAM_C_DETERMINATION_RULES=0."""
-        from llm_orchestrator.pipeline.determination_rules import (
-            apply_determination_rules,
-        )
+        """Stream C live-control-plane: deterministic determination rules and
+        tariff-quantum amount fill over evidence-backed factor assertions.
 
-        if os.getenv("STREAM_C_DETERMINATION_RULES", "1") != "1":
-            return prediction
+        The two mechanisms are independently gated:
+          STREAM_C_DETERMINATION_RULES (default "1") — deterministic rules block.
+          STREAM_C_TARIFF_QUANTUM      (default "1") — amount band fill block.
+
+        Both share the same early-exit guard: no factors or no
+        predicted_determination means neither mechanism can run.
+
+        Truth table:
+          RULES=1, TARIFF=1 → both run
+          RULES=1, TARIFF=0 → rules only
+          RULES=0, TARIFF=1 → tariff only (uses raw LLM determination)
+          RULES=0, TARIFF=0 → neither (early return after guard)
+        """
         factors = list(getattr(case_graph, "factor_assertions", []) or [])
         if not factors or prediction.predicted_determination is None:
             return prediction
-        new_det, rule = apply_determination_rules(
-            prediction.predicted_determination,
-            predicted_amount=prediction.predicted_amount,
-            factors=factors,
-        )
-        if rule is not None and new_det is not prediction.predicted_determination:
-            logger.info(
-                "determination_rule_applied",
-                rule=rule,
-                before=prediction.predicted_determination.value,
-                after=new_det.value,
+
+        # --- Determination rules block (independent gate) ---
+        if os.getenv("STREAM_C_DETERMINATION_RULES", "1") == "1":
+            from llm_orchestrator.pipeline.determination_rules import (
+                apply_determination_rules,
             )
-            prediction = prediction.model_copy(
-                update={"predicted_determination": new_det}
+
+            new_det, rule = apply_determination_rules(
+                prediction.predicted_determination,
+                predicted_amount=prediction.predicted_amount,
+                factors=factors,
             )
+            if rule is not None and new_det is not prediction.predicted_determination:
+                logger.info(
+                    "determination_rule_applied",
+                    rule=rule,
+                    before=prediction.predicted_determination.value,
+                    after=new_det.value,
+                )
+                prediction = prediction.model_copy(
+                    update={"predicted_determination": new_det}
+                )
 
         # Tariff quantum: runs AFTER determination rules so the band is
         # selected from the POST-rules determination (e.g. R2 severe upgrade
