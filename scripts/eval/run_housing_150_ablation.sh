@@ -29,16 +29,21 @@ GOLD=data/gold_standard/housing_repairs_social_v1_150.jsonl
 SIDECAR=data/eval_artifacts/factor_assertions/housing_repairs_social_v1.factor_assertions.json
 SHARED_INDEX_ROOT=data/indices
 COPY_ROOT=/tmp/idx_copies
-BASE=eval/predictions/housing_150_ablation_20260521
+BASE=eval/predictions/housing_150_ablation_20260609
 LOGDIR=/tmp/housing150_runs
 mkdir -p "$LOGDIR"
 
 export LLM_PREDICTION_REASONING_EFFORT=${LLM_PREDICTION_REASONING_EFFORT:-medium}
+export STREAM_C_FACTOR_RETRIEVAL=1     # factor-constrained retrieval in hybrid
+export STREAM_C_KG_GATE_RELAXED=1      # Stream-D extractors (dated events/issues) don't exist yet
+export STREAM_C_DETERMINATION_RULES=1  # determination post-rules
+export STREAM_C_TARIFF_QUANTUM=1       # tariff quantum
+export STREAM_C_PROPOSITION_TAG_FUZZY=1  # bridge IssueType enum IDs → natural proposition tags
 
 run_one() {
   local seed=$1 mode=$2 index_root=$3
   local out="${BASE}/seed${seed}"
-  local runid="housing150-s${seed}-${mode}-20260521"
+  local runid="housing150-s${seed}-${mode}-20260609"
   PYTHONPATH=packages venv/bin/python3 scripts/eval/predict_all.py \
     --gold "$GOLD" \
     --out-dir "$out" \
@@ -51,10 +56,10 @@ run_one() {
     > "${LOGDIR}/seed${seed}_${mode}.log" 2>&1
 }
 
-# Chroma-using modes: per-seed index copy, 3 in parallel.
-for MODE in rag_only hybrid; do
-  echo "=== wave: ${MODE} x 3 seeds (own index copies) ==="
-  for SEED in 1 2 3; do
+# Chroma-using modes: per-seed index copy.
+for MODE in hybrid; do
+  echo "=== wave: ${MODE} x seed1 (own index copy) ==="
+  for SEED in 1; do
     run_one "$SEED" "$MODE" "${COPY_ROOT}/copy${SEED}" &
     echo "launched seed${SEED}/${MODE} PID=$!"
   done
@@ -62,10 +67,10 @@ for MODE in rag_only hybrid; do
   echo "=== ${MODE} wave done ==="
 done
 
-# Non-Chroma modes: shared index root is fine, 3 in parallel.
-for MODE in llm_only kg_only; do
-  echo "=== wave: ${MODE} x 3 seeds (shared index) ==="
-  for SEED in 1 2 3; do
+# Non-Chroma modes: shared index root is fine.
+for MODE in kg_only; do
+  echo "=== wave: ${MODE} x seed1 (shared index) ==="
+  for SEED in 1; do
     run_one "$SEED" "$MODE" "$SHARED_INDEX_ROOT" &
     echo "launched seed${SEED}/${MODE} PID=$!"
   done
@@ -73,4 +78,4 @@ for MODE in llm_only kg_only; do
   echo "=== ${MODE} wave done ==="
 done
 
-echo "ALL 12 (seed x mode) JOBS COMPLETE"
+echo "ALL 2 (seed1 x hybrid+kg_only) JOBS COMPLETE"
