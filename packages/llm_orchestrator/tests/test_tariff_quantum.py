@@ -45,8 +45,8 @@ def test_severity_scales_with_impact_and_aggravators():
 
 def test_maladministration_band_interpolation():
     amount, band = tariff_estimate(Determination.MALADMINISTRATION, [])
-    assert band == (100, 600)
-    assert amount == 350  # 100 + 500 * 0.5
+    assert band == (100, 1200)
+    assert amount == 650  # 100 + round(1100 * 0.5)
 
 
 def test_zero_band_classes_return_zero():
@@ -58,8 +58,8 @@ def test_zero_band_classes_return_zero():
 def test_severe_band():
     factors = [_enum_fa("impact_severity_reported", "minor")]
     amount, band = tariff_estimate(Determination.SEVERE_MALADMINISTRATION, factors)
-    assert band == (600, 2000)
-    assert amount == 600 + round(1400 * 0.3)
+    assert band == (600, 3000)
+    assert amount == 600 + round(2400 * 0.3)
 
 
 def test_unknown_determination_returns_none():
@@ -73,8 +73,8 @@ def test_clamp_none_amount_tariff_fill():
     """None amount is filled with tariff estimate (tariff_fill adjustment)."""
     final, band, adj = clamp_to_band(None, Determination.MALADMINISTRATION, [])
     assert adj == "tariff_fill"
-    assert band == (100, 600)
-    assert final == 350.0  # midpoint estimate
+    assert band == (100, 1200)
+    assert final == 650.0  # 100 + round(1100 * 0.5)
 
 
 def test_clamp_amount_within_tolerance_kept():
@@ -82,7 +82,7 @@ def test_clamp_amount_within_tolerance_kept():
     final, band, adj = clamp_to_band(300.0, Determination.MALADMINISTRATION, [])
     assert adj is None
     assert final == 300.0
-    assert band == (100, 600)
+    assert band == (100, 1200)
 
 
 def test_clamp_amount_below_half_low_snaps_to_low():
@@ -90,15 +90,15 @@ def test_clamp_amount_below_half_low_snaps_to_low():
     final, band, adj = clamp_to_band(40.0, Determination.MALADMINISTRATION, [])
     assert adj == "snap_low"
     assert final == 100.0
-    assert band == (100, 600)
+    assert band == (100, 1200)
 
 
 def test_clamp_amount_above_1p5x_high_snaps_to_high():
-    """Amount above high*1.5 (e.g. £1000 for maladministration band high=600) snaps to high."""
-    final, band, adj = clamp_to_band(1000.0, Determination.MALADMINISTRATION, [])
+    """Amount above high*1.5 (e.g. £2000 for maladministration band high=1200) snaps to high."""
+    final, band, adj = clamp_to_band(2000.0, Determination.MALADMINISTRATION, [])
     assert adj == "snap_high"
-    assert final == 600.0
-    assert band == (100, 600)
+    assert final == 1200.0
+    assert band == (100, 1200)
 
 
 def test_clamp_zero_band_with_nonzero_amount_returns_zero():
@@ -176,12 +176,12 @@ def test_rules_off_tariff_on_fills_amount_and_leaves_determination_unruled(monke
     assert result.predicted_determination is Determination.MALADMINISTRATION, (
         "R1 must not fire when STREAM_C_DETERMINATION_RULES=0"
     )
-    # Amount must be filled by tariff from MALADMINISTRATION band [100, 600]
+    # Amount must be filled by tariff from MALADMINISTRATION band [100, 1200]
     assert result.predicted_amount is not None, (
         "Tariff quantum must fill None amount when STREAM_C_TARIFF_QUANTUM=1"
     )
-    assert 100.0 <= result.predicted_amount <= 600.0, (
-        f"Filled amount {result.predicted_amount} outside MALADMINISTRATION band [100, 600]"
+    assert 100.0 <= result.predicted_amount <= 1200.0, (
+        f"Filled amount {result.predicted_amount} outside MALADMINISTRATION band [100, 1200]"
     )
 
 

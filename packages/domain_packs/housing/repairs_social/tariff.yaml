@@ -1,14 +1,16 @@
 # housing.repairs_social.v1 — compensation tariff bands per determination class.
-# Bands follow the Housing Ombudsman's published remedies guidance structure:
-# service failure attracts modest awards (~up to £100); maladministration
-# £100–£600; severe maladministration £600+. Within-band position is driven
-# by factor severity (impact, vulnerability, delay).
+# Bands widened 2026-06-10 from per-failure HO remedies-guidance bands to
+# case-level aggregate-order ranges (gold total_awarded_gbp = global Ombudsman
+# order). Within-band position is driven by factor severity (impact,
+# vulnerability, delay).
+# reasonable_redress is NOT zero because the Ombudsman orders the prior offer
+# to be honoured — gold median £850, ZERO zeros across 21 RR cases.
 domain_id: housing.repairs_social.v1
 bands:
   no_maladministration: {low: 0, high: 0}
   outside_jurisdiction: {low: 0, high: 0}
-  reasonable_redress: {low: 0, high: 0}        # prior offer accepted; no fresh order
-  resolved_with_intervention: {low: 0, high: 100}
-  service_failure: {low: 50, high: 100}
-  maladministration: {low: 100, high: 600}
-  severe_maladministration: {low: 600, high: 2000}
+  reasonable_redress: {low: 50, high: 3000}    # Ombudsman orders prior offer honoured; gold median £850
+  resolved_with_intervention: {low: 0, high: 2500}
+  service_failure: {low: 50, high: 500}
+  maladministration: {low: 100, high: 1200}
+  severe_maladministration: {low: 600, high: 3000}
