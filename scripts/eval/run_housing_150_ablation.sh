@@ -27,26 +27,29 @@ cd "$(dirname "$0")/../.."
 
 GOLD=data/gold_standard/housing_repairs_social_v1_150.jsonl
 SIDECAR=data/eval_artifacts/factor_assertions/housing_repairs_social_v1.factor_assertions.json
-# 20260609 single-seed run: waves are serialized (one process at a time), so
+# 20260610 single-seed run: waves are serialized (one process at a time), so
 # the per-seed Chroma index copies are unnecessary — both modes read the
 # shared root directly. (Restore /tmp/idx_copies/copy{seed} if multi-seed
 # parallelism returns.)
 SHARED_INDEX_ROOT=indices
-BASE=eval/predictions/housing_150_ablation_20260609
+BASE=eval/predictions/housing_150_ablation_20260610
 LOGDIR=/tmp/housing150_runs
 mkdir -p "$LOGDIR"
 
 export LLM_PREDICTION_REASONING_EFFORT=${LLM_PREDICTION_REASONING_EFFORT:-medium}
 export STREAM_C_FACTOR_RETRIEVAL=1     # factor-constrained retrieval in hybrid
 export STREAM_C_KG_GATE_RELAXED=1      # Stream-D extractors (dated events/issues) don't exist yet
-export STREAM_C_DETERMINATION_RULES=1  # determination post-rules
+export STREAM_C_DETERMINATION_RULES=0  # determination post-rules (net-negative on housing-150 2026-06-10; off by default, kept for ablation)
 export STREAM_C_TARIFF_QUANTUM=1       # tariff quantum
 export STREAM_C_PROPOSITION_TAG_FUZZY=1  # bridge IssueType enum IDs → natural proposition tags
+export STREAM_C_ALWAYS_PREDICT_AMOUNTS=1  # instruct LLM to estimate predicted_amount/amount_band even without comparator amounts
+export STREAM_C_NO_RAG_PREDICT_AMOUNTS=1  # same for no-RAG modes (kg_only, llm_only) using general HO knowledge
+export STREAM_C_DET_OUTCOME_CONSISTENCY=1  # enforce det→outcome consistency (outside_jurisdiction/no_maladministration→landlord; all others→tenant)
 
 run_one() {
   local seed=$1 mode=$2 index_root=$3
   local out="${BASE}/seed${seed}"
-  local runid="housing150-s${seed}-${mode}-20260609"
+  local runid="housing150-s${seed}-${mode}-20260610"
   PYTHONPATH=packages venv/bin/python3 scripts/eval/predict_all.py \
     --gold "$GOLD" \
     --out-dir "$out" \

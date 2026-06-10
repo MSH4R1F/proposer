@@ -180,16 +180,28 @@ DETERMINATION GUIDE (housing.repairs_social.v1) — predicted_determination must
   the adequacy of the PRIOR offer, made BEFORE the Ombudsman decided — not
   whether a failing occurred. If the facts show a pre-determination offer of
   compensation or apology, you MUST explicitly weigh this class before
-  choosing maladministration or service_failure.
+  choosing maladministration or service_failure. A concrete prior offer of
+  compensation broadly proportionate to the failing is required — a bare
+  apology or token gesture does not qualify. When you choose
+  reasonable_redress, set predicted_amount to the TOTAL the landlord already
+  offered and amount_construct to "previously_offered" (the Ombudsman orders
+  that offer to be honoured) — never zero.
 - resolved_with_intervention: the complaint was fully resolved during the
   investigation following Ombudsman intervention.
 - outside_jurisdiction: the matter is outside the Ombudsman's remit (legal
   title disputes, matters concurrently before a court, pre-membership events).
 
-Common errors to avoid: do NOT default to maladministration. The
-service_failure / maladministration boundary turns on severity and duration
-of detriment. The maladministration / severe_maladministration boundary turns
-on aggravators. reasonable_redress turns on the landlord's prior offer.
+Common errors to avoid: the service_failure / maladministration boundary
+turns on severity and duration of detriment; the maladministration /
+severe_maladministration boundary turns on aggravators; reasonable_redress
+turns on the adequacy of the landlord's prior offer. Base rates in published
+Ombudsman repairs determinations: maladministration is the most common single
+outcome (roughly 4 in 10 published cases); service_failure,
+reasonable_redress, severe_maladministration and resolved_with_intervention
+each occur in roughly 1 in 10; outside_jurisdiction is uncommon; a finding
+of no_maladministration on every complaint head is RARE in published
+determinations (well under 1 in 20) — reserve it for genuinely exemplary,
+fully documented landlord conduct.
 """.strip()
 
 _REPAIRS_NO_RAG_SYSTEM_PROMPT = (
@@ -1332,7 +1344,7 @@ class IssuePredictor:
         tariff-quantum amount fill over evidence-backed factor assertions.
 
         The two mechanisms are independently gated:
-          STREAM_C_DETERMINATION_RULES (default "1") — deterministic rules block.
+          STREAM_C_DETERMINATION_RULES (default "0") — deterministic rules block.
           STREAM_C_TARIFF_QUANTUM      (default "1") — amount band fill block.
 
         Both share the same early-exit guard: no factors or no
@@ -1349,7 +1361,8 @@ class IssuePredictor:
             return prediction
 
         # --- Determination rules block (independent gate) ---
-        if os.getenv("STREAM_C_DETERMINATION_RULES", "1") == "1":
+        # Rules evaluated on housing-150 2026-06-10 and found net-negative (R1 0/2 correct, R2 0/8, R3 17/76); off by default, kept for ablation.
+        if os.getenv("STREAM_C_DETERMINATION_RULES", "0") == "1":
             from llm_orchestrator.pipeline.determination_rules import (
                 apply_determination_rules,
             )
@@ -1400,6 +1413,31 @@ class IssuePredictor:
                 prediction = prediction.model_copy(
                     update={"predicted_amount": final_amount}
                 )
+
+        # --- Determination→outcome consistency block ---
+        # Ombudsman repairs semantics — any upheld failing (incl.
+        # reasonable_redress: offer ordered to be honoured) is a
+        # resident-favourable outcome.
+        if os.getenv("STREAM_C_DET_OUTCOME_CONSISTENCY", "1") == "1":
+            det = prediction.predicted_determination
+            if det in (
+                Determination.OUTSIDE_JURISDICTION,
+                Determination.NO_MALADMINISTRATION,
+            ):
+                expected_outcome = IssueOutcome.LANDLORD_WINS
+            else:
+                expected_outcome = IssueOutcome.TENANT_WINS
+            if prediction.outcome != expected_outcome:
+                logger.info(
+                    "det_outcome_consistency_applied",
+                    before=prediction.outcome.value,
+                    after=expected_outcome.value,
+                    determination=det.value,
+                )
+                prediction = prediction.model_copy(
+                    update={"outcome": expected_outcome}
+                )
+
         return prediction
 
     @staticmethod
