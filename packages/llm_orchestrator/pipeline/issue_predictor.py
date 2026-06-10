@@ -204,6 +204,32 @@ determinations (well under 1 in 20) — reserve it for genuinely exemplary,
 fully documented landlord conduct.
 """.strip()
 
+# Appended to the SYSTEM prompt only on the retrieval-bearing repairs path
+# (hybrid / rag_only). The user-prompt amount clause is routinely overridden
+# by the IRAC system prompt's comparator framing (observed: predicted_amount
+# null on 144/147 hybrid cases, smoke 2026-06-10), and the IRAC framing also
+# elicits deflated raw_confidence (0.28-0.62 vs 0.22-0.78 on the no-RAG path
+# for the same model). System-prompt-level instruction is required to win.
+REPAIRS_RAG_CALIBRATION_ADDENDUM = """
+CONFIDENCE AND REMEDY (housing.repairs_social.v1):
+- raw_confidence is your subjective probability (0.0-1.0) that the predicted
+  outcome (which side prevails) is correct. It is NOT a measure of citation
+  coverage or comparator completeness — do not deflate it because comparator
+  evidence is thin. When the facts clearly favour one side, 0.6-0.9 is
+  appropriate; use values below 0.5 only when the predicted outcome is more
+  likely wrong than right.
+- predicted_amount is REQUIRED whenever the determination is not
+  no_maladministration or outside_jurisdiction: estimate the TOTAL
+  compensation (GBP) the Ombudsman would order for this case. Anchor on
+  comparator ordered totals where shown; otherwise use general UK Housing
+  Ombudsman compensation ranges scaled to severity, duration, and
+  vulnerability. For reasonable_redress, predicted_amount equals the
+  landlord's prior offer total (the Ombudsman orders it honoured). Set
+  predicted_amount to null ONLY if no order-of-magnitude estimate is
+  possible. amount_band is one of: 0, 1-100, 101-250, 251-600, 601-1000,
+  1000+.
+""".strip()
+
 _REPAIRS_NO_RAG_SYSTEM_PROMPT = (
     """You analyse social-housing complaints heard by the Housing Ombudsman.
 
@@ -917,7 +943,10 @@ class IssuePredictor:
 
         system_prompt = self._prediction_system_prompt
         if self._is_repairs_case(cf, issue):
-            system_prompt = f"{system_prompt}\n\n{REPAIRS_DETERMINATION_GUIDE}"
+            system_prompt = (
+                f"{system_prompt}\n\n{REPAIRS_DETERMINATION_GUIDE}"
+                f"\n\n{REPAIRS_RAG_CALIBRATION_ADDENDUM}"
+            )
 
         attempts = 2
         last_response: Optional[str] = None
