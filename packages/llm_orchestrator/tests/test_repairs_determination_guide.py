@@ -17,7 +17,9 @@ def test_guide_defines_every_determination_class():
 def test_guide_contains_discriminating_criteria():
     assert "BEFORE the Ombudsman" in REPAIRS_DETERMINATION_GUIDE  # reasonable_redress test
     assert "AGGRAVATORS" in REPAIRS_DETERMINATION_GUIDE           # severe test
-    assert "do NOT default to maladministration" in REPAIRS_DETERMINATION_GUIDE
+    assert "no_maladministration" in REPAIRS_DETERMINATION_GUIDE  # class must be present
+    assert "Base rates" in REPAIRS_DETERMINATION_GUIDE            # base-rate calibration added 2026-06-10
+    assert "previously_offered" in REPAIRS_DETERMINATION_GUIDE    # RR amount semantics added 2026-06-10
 
 
 def test_no_rag_system_prompt_includes_guide():
