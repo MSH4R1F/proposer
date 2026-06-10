@@ -152,12 +152,20 @@ class CitationVerifier:
                     if proposition_id:
                         valid_propositions_by_id[str(proposition_id)] = result
                     valid_proposition_results.append(result)
-                    continue
+                    # NOTE: do NOT continue here — fall through so that factor-
+                    # constrained results (which always carry a proposition_id)
+                    # are also indexed into ref_to_chunks by case_reference.
+                    # The LLM only sees case references, not proposition UUIDs,
+                    # so ref_to_chunks must be populated for citations to verify.
 
                 case_reference = str(self._get_value(result, "case_reference", "") or "")
                 source_id = str(self._get_value(result, "source_id", "") or "")
                 source_kind = self._get_value(result, "source_kind", None)
                 paragraph = self._get_value(result, "paragraph", None)
+                if not case_reference and not source_id:
+                    # Genuine proposition-only row with no case reference;
+                    # nothing to index in ref_to_chunks.
+                    continue
                 meta = {
                     "case_reference": case_reference,
                     "source_id": source_id,
@@ -187,6 +195,16 @@ class CitationVerifier:
                         valid_propositions_by_id,
                         valid_proposition_results,
                     )
+                    if not matched:
+                        # Fallback: only when the proposition UUID is literally
+                        # not found in the retrieved set (i.e. the LLM emitted a
+                        # junk/placeholder id like "comparator").  When the UUID
+                        # *was* found but verification failed for other reasons
+                        # (wrong paragraph, padded quote, etc.) the stricter
+                        # proposition-path result stands and we do NOT fall back.
+                        uuid_exists = str(citation.proposition_id) in valid_propositions_by_id
+                        if not uuid_exists:
+                            matched = self._citation_matches(citation, ref_to_chunks)
                 else:
                     matched = self._citation_matches(citation, ref_to_chunks)
                 if matched:
