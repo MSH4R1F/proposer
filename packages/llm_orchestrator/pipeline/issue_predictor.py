@@ -160,7 +160,78 @@ _REPAIRS_ISSUE_VALUES = {
 }
 
 
-_REPAIRS_NO_RAG_SYSTEM_PROMPT = """You analyse social-housing complaints heard by the Housing Ombudsman.
+REPAIRS_DETERMINATION_GUIDE = """
+DETERMINATION GUIDE (housing.repairs_social.v1) — predicted_determination must be exactly one of:
+- no_maladministration: the landlord acted reasonably and complied with its obligations.
+- service_failure: a minor or short-duration failing causing limited detriment
+  (e.g. a one-off missed appointment, a modest delay that was then corrected).
+- maladministration: the landlord failed to meet its obligations in a way that
+  caused injustice — prolonged repair delays, poor communication, inadequate
+  records, failure to follow its own policy.
+- severe_maladministration: serious, repeated, or deliberately obstructive
+  failure causing significant injustice. Look for AGGRAVATORS: a known
+  vulnerability that was ignored; repairs outstanding for around a year or
+  more; repeated failed visits; systemic record-keeping failure; failure
+  compounded by complaint mishandling. Two or more aggravators usually
+  indicates severe_maladministration rather than maladministration.
+- reasonable_redress: a failing occurred BUT the landlord ALREADY offered
+  redress proportionate to it BEFORE the Ombudsman's determination (apology
+  plus compensation consistent with the scale of the failing). The test is
+  the adequacy of the PRIOR offer, made BEFORE the Ombudsman decided — not
+  whether a failing occurred. If the facts show a pre-determination offer of
+  compensation or apology, you MUST explicitly weigh this class before
+  choosing maladministration or service_failure. A concrete prior offer of
+  compensation broadly proportionate to the failing is required — a bare
+  apology or token gesture does not qualify. When you choose
+  reasonable_redress, set predicted_amount to the TOTAL the landlord already
+  offered and amount_construct to "previously_offered" (the Ombudsman orders
+  that offer to be honoured) — never zero.
+- resolved_with_intervention: the complaint was fully resolved during the
+  investigation following Ombudsman intervention.
+- outside_jurisdiction: the matter is outside the Ombudsman's remit (legal
+  title disputes, matters concurrently before a court, pre-membership events).
+
+Common errors to avoid: the service_failure / maladministration boundary
+turns on severity and duration of detriment; the maladministration /
+severe_maladministration boundary turns on aggravators; reasonable_redress
+turns on the adequacy of the landlord's prior offer. Base rates in published
+Ombudsman repairs determinations: maladministration is the most common single
+outcome (roughly 4 in 10 published cases); service_failure,
+reasonable_redress, severe_maladministration and resolved_with_intervention
+each occur in roughly 1 in 10; outside_jurisdiction is uncommon; a finding
+of no_maladministration on every complaint head is RARE in published
+determinations (well under 1 in 20) — reserve it for genuinely exemplary,
+fully documented landlord conduct.
+""".strip()
+
+# Appended to the SYSTEM prompt only on the retrieval-bearing repairs path
+# (hybrid / rag_only). The user-prompt amount clause is routinely overridden
+# by the IRAC system prompt's comparator framing (observed: predicted_amount
+# null on 144/147 hybrid cases, smoke 2026-06-10), and the IRAC framing also
+# elicits deflated raw_confidence (0.28-0.62 vs 0.22-0.78 on the no-RAG path
+# for the same model). System-prompt-level instruction is required to win.
+REPAIRS_RAG_CALIBRATION_ADDENDUM = """
+CONFIDENCE AND REMEDY (housing.repairs_social.v1):
+- raw_confidence is your subjective probability (0.0-1.0) that the predicted
+  outcome (which side prevails) is correct. It is NOT a measure of citation
+  coverage or comparator completeness — do not deflate it because comparator
+  evidence is thin. When the facts clearly favour one side, 0.6-0.9 is
+  appropriate; use values below 0.5 only when the predicted outcome is more
+  likely wrong than right.
+- predicted_amount is REQUIRED whenever the determination is not
+  no_maladministration or outside_jurisdiction: estimate the TOTAL
+  compensation (GBP) the Ombudsman would order for this case. Anchor on
+  comparator ordered totals where shown; otherwise use general UK Housing
+  Ombudsman compensation ranges scaled to severity, duration, and
+  vulnerability. For reasonable_redress, predicted_amount equals the
+  landlord's prior offer total (the Ombudsman orders it honoured). Set
+  predicted_amount to null ONLY if no order-of-magnitude estimate is
+  possible. amount_band is one of: 0, 1-100, 101-250, 251-600, 601-1000,
+  1000+.
+""".strip()
+
+_REPAIRS_NO_RAG_SYSTEM_PROMPT = (
+    """You analyse social-housing complaints heard by the Housing Ombudsman.
 
 This is an ablation baseline with NO retrieved Ombudsman determinations. Predict from the resident/landlord facts, evidence summary, timeline, and any structured fact card only.
 
@@ -177,6 +248,9 @@ Critical constraints:
 
 Safety: legal information, not legal advice. Hedge and explain uncertainty.
 """
+    + "\n\n" + REPAIRS_DETERMINATION_GUIDE
+)
+
 
 def _build_no_rag_json_schema() -> str:
     """Apply the no-RAG transformations to the (flag-aware) IRAC schema.
@@ -549,6 +623,10 @@ class IssuePredictor:
             prediction.issue_type = issue.issue_type
             if not prediction.issue_description:
                 prediction.issue_description = issue.issue_description
+            prediction = self._apply_determination_postrules(
+                prediction,
+                self._case_graph_by_issue.get(issue.issue_type),
+            )
             return self._apply_forced_answer(prediction)
         except Exception as exc:
             logger.error(
@@ -864,6 +942,11 @@ class IssuePredictor:
             )
 
         system_prompt = self._prediction_system_prompt
+        if self._is_repairs_case(cf, issue):
+            system_prompt = (
+                f"{system_prompt}\n\n{REPAIRS_DETERMINATION_GUIDE}"
+                f"\n\n{REPAIRS_RAG_CALIBRATION_ADDENDUM}"
+            )
 
         attempts = 2
         last_response: Optional[str] = None
@@ -917,6 +1000,10 @@ class IssuePredictor:
                         prediction.evidence_strength = self._assess_evidence_strength(
                             issue
                         )
+                    prediction = self._apply_determination_postrules(
+                        prediction,
+                        self._case_graph_by_issue.get(issue.issue_type),
+                    )
                     return self._apply_forced_answer(prediction)
             except Exception as exc:
                 logger.error(
@@ -1278,6 +1365,109 @@ class IssuePredictor:
                 data_completeness_impact=data_impact,
             )
         )
+
+    def _apply_determination_postrules(
+        self, prediction: IssuePrediction, case_graph: Any
+    ) -> IssuePrediction:
+        """Stream C live-control-plane: deterministic determination rules and
+        tariff-quantum amount fill over evidence-backed factor assertions.
+
+        The two mechanisms are independently gated:
+          STREAM_C_DETERMINATION_RULES (default "0") — deterministic rules block.
+          STREAM_C_TARIFF_QUANTUM      (default "1") — amount band fill block.
+
+        Both share the same early-exit guard: no factors or no
+        predicted_determination means neither mechanism can run.
+
+        Truth table:
+          RULES=1, TARIFF=1 → both run
+          RULES=1, TARIFF=0 → rules only
+          RULES=0, TARIFF=1 → tariff only (uses raw LLM determination)
+          RULES=0, TARIFF=0 → neither (early return after guard)
+        """
+        factors = list(getattr(case_graph, "factor_assertions", []) or [])
+        if not factors or prediction.predicted_determination is None:
+            return prediction
+
+        # --- Determination rules block (independent gate) ---
+        # Rules evaluated on housing-150 2026-06-10 and found net-negative (R1 0/2 correct, R2 0/8, R3 17/76); off by default, kept for ablation.
+        if os.getenv("STREAM_C_DETERMINATION_RULES", "0") == "1":
+            from llm_orchestrator.pipeline.determination_rules import (
+                apply_determination_rules,
+            )
+
+            new_det, rule = apply_determination_rules(
+                prediction.predicted_determination,
+                predicted_amount=prediction.predicted_amount,
+                factors=factors,
+            )
+            if rule is not None and new_det is not prediction.predicted_determination:
+                logger.info(
+                    "determination_rule_applied",
+                    rule=rule,
+                    before=prediction.predicted_determination.value,
+                    after=new_det.value,
+                )
+                prediction = prediction.model_copy(
+                    update={"predicted_determination": new_det}
+                )
+
+        # Tariff quantum: runs AFTER determination rules so the band is
+        # selected from the POST-rules determination (e.g. R2 severe upgrade
+        # uses the severe band, not the original maladministration band).
+        # ORDERING CONSTRAINT: tariff must run after rules; running it before
+        # would fill predicted_amount and prevent R3 (reasonable_redress)
+        # from firing (R3 checks predicted_amount is None or 0).
+        if (
+            os.getenv("STREAM_C_TARIFF_QUANTUM", "1") == "1"
+            and prediction.predicted_determination is not None
+        ):
+            from llm_orchestrator.pipeline.tariff_quantum import clamp_to_band
+
+            final_amount, band, adjustment = clamp_to_band(
+                prediction.predicted_amount,
+                prediction.predicted_determination,
+                factors,
+            )
+            if band is not None and (
+                adjustment is not None or prediction.predicted_amount is None
+            ):
+                logger.info(
+                    "tariff_quantum_applied",
+                    adjustment=adjustment,
+                    before=prediction.predicted_amount,
+                    after=final_amount,
+                    band=band,
+                )
+                prediction = prediction.model_copy(
+                    update={"predicted_amount": final_amount}
+                )
+
+        # --- Determination→outcome consistency block ---
+        # Ombudsman repairs semantics — any upheld failing (incl.
+        # reasonable_redress: offer ordered to be honoured) is a
+        # resident-favourable outcome.
+        if os.getenv("STREAM_C_DET_OUTCOME_CONSISTENCY", "1") == "1":
+            det = prediction.predicted_determination
+            if det in (
+                Determination.OUTSIDE_JURISDICTION,
+                Determination.NO_MALADMINISTRATION,
+            ):
+                expected_outcome = IssueOutcome.LANDLORD_WINS
+            else:
+                expected_outcome = IssueOutcome.TENANT_WINS
+            if prediction.outcome != expected_outcome:
+                logger.info(
+                    "det_outcome_consistency_applied",
+                    before=prediction.outcome.value,
+                    after=expected_outcome.value,
+                    determination=det.value,
+                )
+                prediction = prediction.model_copy(
+                    update={"outcome": expected_outcome}
+                )
+
+        return prediction
 
     @staticmethod
     def _apply_forced_answer(prediction: IssuePrediction) -> IssuePrediction:
